@@ -1,0 +1,26 @@
+# Entorno y caches
+env/
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.ipynb_checkpoints/
+build/
+dist/
+
+# Secretos (NUNCA subir)
+.env
+*.env
+!.env.example
+
+# Archivos desechables locales
+*.local.txt
+
+# Editor / SO
+.vscode/
+.idea/
+.DS_Store

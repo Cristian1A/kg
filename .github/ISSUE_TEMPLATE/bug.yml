@@ -1,0 +1,34 @@
+name: Bug
+description: Algo no funciona como debería
+title: "[ámbito] "
+labels: ["type:bug"]
+body:
+  - type: textarea
+    id: pasos
+    attributes:
+      label: Pasos para reproducir
+      placeholder: |
+        1. kg init
+        2. kg extract .
+        3. ...
+    validations:
+      required: true
+  - type: textarea
+    id: esperado
+    attributes:
+      label: Resultado esperado
+    validations:
+      required: true
+  - type: textarea
+    id: obtenido
+    attributes:
+      label: Resultado obtenido
+      description: Incluye la salida o el traceback
+      render: text
+    validations:
+      required: true
+  - type: input
+    id: entorno
+    attributes:
+      label: Entorno
+      placeholder: kg 0.1.0 · Python 3.12 · Ubuntu 24.04

@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "networkx-project"
+version = "0.1.0"
+description = "Exploración y modelado de grafos con NetworkX"
+readme = "AGENTS.md"
+requires-python = ">=3.12"
+dependencies = [
+    "networkx>=3.7",
+    "matplotlib>=3.11",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8",
+    "pytest-cov",
+    "ruff",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+
+[tool.ruff]
+line-length = 88
+target-version = "py312"
+extend-exclude = ["env", "lib"]

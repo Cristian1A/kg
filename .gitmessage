@@ -1,0 +1,9 @@
+# <tipo>(<ámbito>): <resumen imperativo ≤72 car.>
+#
+# tipos: feat fix docs test refactor perf build ci chore
+# ámbitos: schema extract store merge query render export cli mcp agents docs
+#
+# Cuerpo: qué cambia y por qué (líneas ≤72)
+#
+# Refs: #N  |  Closes: #N
+# RF: RF-xx
