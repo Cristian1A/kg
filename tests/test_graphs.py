@@ -1,6 +1,6 @@
 import networkx as nx
 
-from networkx_project.graphs import build_tech_graph
+from kg.graphs import build_tech_graph
 
 
 def test_shortest_path_cris_to_pandas():

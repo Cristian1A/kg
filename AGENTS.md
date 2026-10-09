@@ -4,31 +4,34 @@ Reglas generales para cualquier agente (Claude Code, Codex, Copilot, etc.) que t
 
 ## Proyecto
 
-Exploración y modelado de grafos con **NetworkX** (Python 3.12). Visualización con matplotlib y HTML interactivo (`graph.html`, `lib/`).
+**kg**: CLI (para humanos y agentes de IA) que convierte el conocimiento de un proyecto —código, dependencias, docs, tests, decisiones— en un grafo de conocimiento consultable, visualizable y exportable. Python 3.12 + NetworkX. Requisitos en `docs/requisitos-funcionales.md`.
 
 ## Estructura
 
 | Ruta | Contenido |
 |------|-----------|
-| `src/networkx_project/` | Código fuente del paquete |
+| `src/kg/` | Código fuente del paquete y la CLI `kg` |
 | `tests/` | Tests con pytest |
 | `.agents/skills/` | Skills especializadas (leer el `SKILL.md` relevante antes de actuar) |
 | `.agents/tools/` | Scripts auxiliares para agentes |
 | `.mcp.json` | Servidores MCP (tools externas) |
 | `env/` | Entorno virtual — **no modificar ni leer** |
-| `lib/` | Assets JS generados para `graph.html` — no editar a mano |
+| `lib/`, `graph.html` | Assets JS del prototipo pyvis — no editar a mano |
+| `graph.py`, `di_graph.py`, `tuto.py`, `*.ipynb` | Prototipos de exploración (excluidos de ruff) |
 
 ## Entorno
 
 ```bash
 source env/bin/activate
 pip install -e ".[dev]"
+kg --help          # o: python -m kg --help
+pytest && ruff check . && ruff format --check .
 ```
 
 ## Reglas
 
 1. **Lee la skill adecuada** en `.agents/skills/<nombre>/SKILL.md` antes de tareas de testing, análisis de datos o cambios de arquitectura.
-2. El código nuevo va en `src/networkx_project/`; los scripts sueltos de la raíz son de exploración.
+2. El código nuevo va en `src/kg/`; los scripts sueltos de la raíz son de exploración.
 3. Todo cambio de lógica lleva su test en `tests/`. Ejecuta `pytest` antes de dar algo por terminado.
 4. Usa type hints y docstrings breves. Formato y lint con `ruff`.
 5. No añadas dependencias sin justificarlo; decláralas en `pyproject.toml`.

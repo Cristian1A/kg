@@ -6,7 +6,7 @@ description: Escribir y ejecutar tests con pytest para el código de grafos del 
 # Testing
 
 ## Cuándo usarla
-- Al crear o modificar funciones en `src/networkx_project/`.
+- Al crear o modificar funciones en `src/kg/`.
 - Al reproducir un bug (primero un test que falle, luego el fix).
 
 ## Convenciones
@@ -20,7 +20,8 @@ description: Escribir y ejecutar tests con pytest para el código de grafos del 
 
 ```python
 import networkx as nx
-from networkx_project.graphs import build_tech_graph
+from kg.graphs import build_tech_graph
+
 
 def test_shortest_path_cris_to_pandas():
     G = build_tech_graph()
@@ -31,7 +32,7 @@ def test_shortest_path_cris_to_pandas():
 ```bash
 pytest                      # todos los tests
 pytest -k shortest -x -q    # filtrar y parar en el primer fallo
-pytest --cov=networkx_project
+pytest --cov=kg
 ```
 
 ## Checklist
