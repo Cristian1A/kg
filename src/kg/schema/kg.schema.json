@@ -1,0 +1,140 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Cristian1A/kg/schema/v1/kg.schema.json",
+  "title": "kg — documento de entrada del grafo de conocimiento",
+  "description": "Entidades (nodes) y relaciones (edges) de un proyecto con su procedencia. Los tipos del catálogo estándar están en $defs; un tipo personalizado es válido, pero kg emite un aviso.",
+  "type": "object",
+  "required": ["version", "nodes", "edges"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "URI opcional del esquema, para editores."
+    },
+    "version": {
+      "const": "1",
+      "description": "Versión del formato de entrada."
+    },
+    "nodes": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/node" }
+    },
+    "edges": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/edge" }
+    }
+  },
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_-]*:\\S.*$",
+      "description": "ID estable `<tipo>:<ruta|nombre cualificado|slug>`; el prefijo es el tipo en minúsculas. Ej.: `file:src/app/main.py`, `function:app.main.run`, `concept:grafo-de-conocimiento`.",
+      "examples": ["file:src/app/main.py", "function:app.main.run", "decision:usar-networkx"]
+    },
+    "standardNodeType": {
+      "description": "Catálogo estándar de entidades (DF 3.2).",
+      "enum": [
+        "Repo", "Package", "Module", "File", "Class", "Function", "Dependency",
+        "Test", "Document", "Config", "Service", "Endpoint", "Person", "Issue",
+        "Decision", "Concept"
+      ]
+    },
+    "standardEdgeType": {
+      "description": "Catálogo estándar de relaciones (DF 3.3).",
+      "enum": [
+        "contains", "imports", "depends_on", "defines", "calls", "documents",
+        "tests", "configures", "authored_by", "implements", "justifies"
+      ]
+    },
+    "nodeType": {
+      "description": "Tipo de entidad: uno del catálogo estándar o uno personalizado en PascalCase (válido, con aviso).",
+      "anyOf": [
+        { "$ref": "#/$defs/standardNodeType" },
+        { "type": "string", "pattern": "^[A-Z][A-Za-z0-9]*$" }
+      ]
+    },
+    "edgeType": {
+      "description": "Tipo de relación: uno del catálogo estándar o uno personalizado en snake_case (válido, con aviso).",
+      "anyOf": [
+        { "$ref": "#/$defs/standardEdgeType" },
+        { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" }
+      ]
+    },
+    "attrs": {
+      "type": "object",
+      "description": "Atributos libres de la entidad o relación."
+    },
+    "provenance": {
+      "type": "object",
+      "description": "Origen del dato (DF 3.4).",
+      "required": ["method", "extractor", "confidence"],
+      "additionalProperties": false,
+      "properties": {
+        "source": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Archivo o fuente de la que se extrajo, relativo a la raíz del repo.",
+          "examples": ["src/app/main.py"]
+        },
+        "lines": {
+          "type": "array",
+          "description": "Rango [inicio, fin] de líneas, 1-indexado e inclusivo.",
+          "prefixItems": [
+            { "type": "integer", "minimum": 1 },
+            { "type": "integer", "minimum": 1 }
+          ],
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "method": {
+          "enum": ["parser", "llm", "manual"],
+          "description": "Cómo se obtuvo el dato."
+        },
+        "extractor": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Herramienta y versión que lo generó.",
+          "examples": ["python-ast@0.1", "claude-code"]
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "1.0 para el parser; 0.0–1.0 para un LLM."
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?(Z|[+-]\\d{2}:\\d{2})$",
+          "description": "Fecha ISO-8601 con zona horaria.",
+          "examples": ["2026-10-09T12:00:00Z"]
+        }
+      }
+    },
+    "node": {
+      "type": "object",
+      "required": ["id", "type", "provenance"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "type": { "$ref": "#/$defs/nodeType" },
+        "label": { "type": "string", "description": "Nombre legible." },
+        "description": { "type": "string" },
+        "attrs": { "$ref": "#/$defs/attrs" },
+        "provenance": { "$ref": "#/$defs/provenance" }
+      }
+    },
+    "edge": {
+      "type": "object",
+      "required": ["source", "target", "type", "provenance"],
+      "additionalProperties": false,
+      "properties": {
+        "source": { "$ref": "#/$defs/id", "description": "ID del nodo origen." },
+        "target": { "$ref": "#/$defs/id", "description": "ID del nodo destino." },
+        "type": { "$ref": "#/$defs/edgeType" },
+        "attrs": { "$ref": "#/$defs/attrs" },
+        "provenance": { "$ref": "#/$defs/provenance" }
+      }
+    }
+  }
+}

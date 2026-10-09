@@ -12,6 +12,7 @@ Reglas generales para cualquier agente (Claude Code, Codex, Copilot, etc.) que t
 |------|-----------|
 | `src/kg/` | Código fuente del paquete y la CLI `kg` |
 | `tests/` | Tests con pytest |
+| `examples/` | JSON de ejemplo válidos contra el esquema (`kg schema`) |
 | `.agents/skills/` | Skills especializadas (leer el `SKILL.md` relevante antes de actuar) |
 | `.agents/tools/` | Scripts auxiliares para agentes |
 | `.mcp.json` | Servidores MCP (tools externas) |
@@ -45,3 +46,4 @@ pytest && ruff check . && ruff format --check .
 ## Documentación de referencia
 
 - `docs/requisitos-funcionales.md` — requisitos funcionales aprobados (RF-xx / RNF-xx).
+- `docs/esquema.md` — formato JSON de entrada: IDs, catálogo estándar, procedencia.

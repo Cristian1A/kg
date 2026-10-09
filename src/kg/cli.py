@@ -17,6 +17,7 @@ from pathlib import Path
 from typing import Any, NoReturn
 
 from kg import __version__
+from kg import schema as kg_schema
 
 EXIT_OK = 0
 EXIT_VALIDATION = 1
@@ -77,6 +78,15 @@ def _not_implemented(issue: int) -> Handler:
     return handler
 
 
+def _schema(args: argparse.Namespace) -> Result:
+    path = kg_schema.schema_path()
+    if args.path:
+        return Result(str(path), {"path": str(path)})
+    data = kg_schema.load_schema()
+    text = json.dumps(data, ensure_ascii=False, indent=2)
+    return Result(text, {"path": str(path), "schema": data})
+
+
 def _global_options() -> argparse.ArgumentParser:
     # default=SUPPRESS para que el valor dado antes del subcomando no se
     # sobrescriba con el default del subparser; los defaults se aplican en main().
@@ -121,6 +131,11 @@ def build_parser() -> argparse.ArgumentParser:
 
     p = add("add", "añade y fusiona entidades y relaciones", _not_implemented(5))
     p.add_argument("file", type=Path, help="archivo JSON conforme al esquema")
+
+    p = add("schema", "muestra el JSON Schema del formato de entrada", _schema)
+    p.add_argument(
+        "--path", action="store_true", help="muestra solo la ruta del archivo"
+    )
 
     p = add("validate", "valida un JSON contra el esquema", _not_implemented(3))
     p.add_argument("file", type=Path, help="archivo JSON a validar")
