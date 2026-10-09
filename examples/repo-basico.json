@@ -1,0 +1,93 @@
+{
+  "$schema": "../src/kg/schema/kg.schema.json",
+  "version": "1",
+  "nodes": [
+    {
+      "id": "repo:kg",
+      "type": "Repo",
+      "label": "kg",
+      "provenance": { "source": ".", "method": "parser", "extractor": "python-ast@0.1", "confidence": 1.0 }
+    },
+    {
+      "id": "file:src/kg/cli.py",
+      "type": "File",
+      "provenance": { "source": "src/kg/cli.py", "method": "parser", "extractor": "python-ast@0.1", "confidence": 1.0 }
+    },
+    {
+      "id": "function:kg.cli.main",
+      "type": "Function",
+      "label": "main",
+      "description": "Ejecuta la CLI y devuelve el código de salida.",
+      "attrs": { "public": true },
+      "provenance": {
+        "source": "src/kg/cli.py",
+        "lines": [179, 202],
+        "method": "parser",
+        "extractor": "python-ast@0.1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "dependency:networkx",
+      "type": "Dependency",
+      "attrs": { "spec": ">=3.7" },
+      "provenance": { "source": "pyproject.toml", "method": "parser", "extractor": "pyproject@0.1", "confidence": 1.0 }
+    },
+    {
+      "id": "decision:usar-networkx",
+      "type": "Decision",
+      "label": "Usar NetworkX como motor del grafo",
+      "provenance": {
+        "source": "docs/requisitos-funcionales.md",
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "timestamp": "2026-10-09T12:00:00Z"
+      }
+    },
+    {
+      "id": "requirement:rf-22",
+      "type": "Requirement",
+      "label": "RF-22: todos los comandos admiten --json",
+      "provenance": {
+        "source": "docs/requisitos-funcionales.md",
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "timestamp": "2026-10-09T12:00:00Z"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "source": "repo:kg",
+      "target": "file:src/kg/cli.py",
+      "type": "contains",
+      "provenance": { "method": "parser", "extractor": "python-ast@0.1", "confidence": 1.0 }
+    },
+    {
+      "source": "file:src/kg/cli.py",
+      "target": "function:kg.cli.main",
+      "type": "defines",
+      "provenance": { "source": "src/kg/cli.py", "method": "parser", "extractor": "python-ast@0.1", "confidence": 1.0 }
+    },
+    {
+      "source": "repo:kg",
+      "target": "dependency:networkx",
+      "type": "depends_on",
+      "provenance": { "source": "pyproject.toml", "method": "parser", "extractor": "pyproject@0.1", "confidence": 1.0 }
+    },
+    {
+      "source": "decision:usar-networkx",
+      "target": "dependency:networkx",
+      "type": "justifies",
+      "provenance": { "method": "llm", "extractor": "claude-code", "confidence": 0.9 }
+    },
+    {
+      "source": "function:kg.cli.main",
+      "target": "requirement:rf-22",
+      "type": "satisfies",
+      "provenance": { "method": "llm", "extractor": "claude-code", "confidence": 0.8 }
+    }
+  ]
+}
