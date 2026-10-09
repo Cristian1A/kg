@@ -15,6 +15,7 @@ Reglas generales para cualquier agente (Claude Code, Codex, Copilot, etc.) que t
 | `.agents/skills/` | Skills especializadas (leer el `SKILL.md` relevante antes de actuar) |
 | `.agents/tools/` | Scripts auxiliares para agentes |
 | `.mcp.json` | Servidores MCP (tools externas) |
+| `samples/` | Repos de terceros clonados para pruebas manuales (ignorados por git; ver `samples/README.md`) |
 | `env/` | Entorno virtual — **no modificar ni leer** |
 | `lib/`, `graph.html` | Assets JS del prototipo pyvis — no editar a mano |
 | `graph.py`, `di_graph.py`, `tuto.py`, `*.ipynb` | Prototipos de exploración (excluidos de ruff) |

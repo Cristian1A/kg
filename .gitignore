@@ -24,3 +24,7 @@ dist/
 .vscode/
 .idea/
 .DS_Store
+
+# Repos de terceros clonados para pruebas manuales (ver samples/README.md)
+samples/*
+!samples/README.md
