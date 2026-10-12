@@ -13,6 +13,60 @@ kg init --json             # {"ok": true, "result": {"kg_dir", "graph", "version
 `kg init` falla con código `2` si la ruta ya existe (no la modifica) o si no
 existe su directorio padre.
 
+## Añadir entidades y relaciones: `kg add`
+
+```bash
+kg add grafo.json          # valida y fusiona en .kg/graph.json
+cat grafo.json | kg add -  # desde stdin
+kg add grafo.json --json   # resumen para agentes
+```
+
+1. Carga el almacén (si no existe: código `2`, sugiere `kg init`).
+2. Valida el documento como `kg validate`, con una diferencia: las aristas
+   pueden apuntar a nodos que **ya están en el almacén**, no solo a los del
+   archivo. Así un agente puede añadir `documents` hacia funciones que creó
+   `kg extract`.
+3. Si hay errores, no modifica nada (código `1`).
+4. Fusiona por ID (RF-30) y guarda. Si nada cambia, no reescribe el archivo:
+   repetir el mismo `add` deja el almacén idéntico.
+
+### Reglas de fusión (MVP)
+
+| Caso | Resultado |
+|------|-----------|
+| Nodo con ID nuevo | Se añade |
+| Nodo con ID existente | Se combinan los campos; los que el documento no trae se conservan |
+| `attrs` | Se combinan por clave de primer nivel; los valores anidados se sustituyen enteros |
+| Arista con (`source`, `target`, `type`) nuevo | Se añade |
+| Arista existente | Se combinan `attrs` y `provenance` igual que en nodos; no se duplica |
+| Mismo campo con valor distinto | **Gana el valor nuevo** y se informa como conflicto |
+| `provenance` existente con `method: parser` y nueva con `llm` o `manual` | **Se mantiene la del parser** y se informa como conflicto |
+
+`provenance` se trata como un único valor. La excepción del parser evita que
+enriquecer con un agente (`kg extract` → `kg add`) borre el dato determinista;
+si solo cambiaba la procedencia, el elemento cuenta como «sin cambios». Ojo:
+el resto de campos sí se actualizan, así que la procedencia describe el origen
+del elemento, no de cada campo. Conservar varias procedencias es RF-31 y la
+política de conflictos configurable es RF-33, ambos de la v0.2.
+
+### Resumen
+
+```text
+grafo.json fusionado en .kg/graph.json
+  nodos:   2 añadidos, 1 fusionado, 9 sin cambios
+  aristas: 4 añadidas, 0 fusionadas, 9 sin cambios
+  2 conflictos:
+    function:size.main · label: "main" → "main(file)"
+    function:size.main · provenance: se mantiene parser (python-ast@0.1, confianza 1.0); se descarta llm (claude-code, confianza 0.85)
+```
+
+Con `--json`, `result` trae `changed`, `nodes` y `edges` (listas `added`,
+`merged` y `unchanged`; las aristas como `source -[type]-> target`),
+`conflicts` (`kind`, `element`, `field`, `old`, `new` y `kept`: `"new"` u
+`"old"`, el valor que se queda) y los `warnings` de la
+validación. Si el documento no es válido, el error lleva los mismos `details`
+que `kg validate`.
+
 ## Estructura
 
 ```
@@ -96,9 +150,9 @@ store.save_graph(graph, Path(".kg"))  # valida antes de escribir
 |-----------|-----------|-----------|
 | `kg init` sobre una ruta existente | `StoreExistsError` | código `2` |
 | `kg init` sin el directorio padre | `StoreNotFoundError` | código `2` |
-| No hay `.kg/graph.json` al cargar | `StoreNotFoundError` (sugiere `kg init`) | — |
-| El archivo no cumple el esquema | `StoreCorruptError` con el `Report` de validación | — |
-| Dos aristas con la misma identidad | `StoreError` con la ruta JSON | — |
+| No hay `.kg/graph.json` al cargar | `StoreNotFoundError` (sugiere `kg init`) | código `2` |
+| El archivo no cumple el esquema | `StoreCorruptError` con el `Report` de validación | código `1` |
+| Dos aristas con la misma identidad | `StoreError` con la ruta JSON | código `2` |
 
 `save_graph` no escribe nada si el grafo no es válido: el almacén anterior se
 conserva intacto.

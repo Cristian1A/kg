@@ -81,7 +81,6 @@ def test_success_json_output(monkeypatch, capsys):
     "argv",
     [
         ["extract"],
-        ["add", "a.json"],
         ["render", "--png"],
     ],
 )
@@ -93,12 +92,12 @@ def test_stub_commands_report_not_implemented(argv, capsys):
 
 
 def test_stub_command_json_error(capsys):
-    assert main(["add", "a.json", "--json"]) == EXIT_INTERNAL
+    assert main(["render", "--png", "--json"]) == EXIT_INTERNAL
     payload = json.loads(capsys.readouterr().out)
     assert payload["ok"] is False
-    assert payload["command"] == "add"
+    assert payload["command"] == "render"
     assert payload["error"]["code"] == EXIT_INTERNAL
-    assert payload["error"]["details"] == {"issue": 5}
+    assert payload["error"]["details"] == {"issue": 9}
 
 
 @pytest.mark.parametrize(

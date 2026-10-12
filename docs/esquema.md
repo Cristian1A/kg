@@ -107,7 +107,7 @@ Con `--json`, los errores van en `error.details.errors` y los avisos en
 | `wrong_type`, `not_allowed`, `out_of_range`, `wrong_length`, `empty` | error | Valor incorrecto |
 | `invalid_id`, `invalid_timestamp`, `invalid_type_name` | error | Formato incorrecto |
 | `duplicate_id` | error | Dos nodos con el mismo ID (RF-05) |
-| `broken_reference` | error | Arista hacia un nodo que no está en el archivo (RF-05) |
+| `broken_reference` | error | Arista hacia un nodo que no está en el archivo (RF-05); en `kg add`, tampoco en el almacén |
 | `custom_type` | aviso | Tipo fuera del catálogo estándar (RF-02) |
 | `id_prefix_mismatch` | aviso | El prefijo del ID no coincide con el `type` del nodo |
 

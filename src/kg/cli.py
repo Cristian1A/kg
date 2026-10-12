@@ -12,11 +12,11 @@ import argparse
 import json
 import sys
 from collections.abc import Callable, Sequence
-from dataclasses import dataclass, field
+from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any, NoReturn
 
-from kg import __version__, store
+from kg import __version__, merge, store
 from kg import schema as kg_schema
 from kg.schema import validation
 
@@ -103,6 +103,50 @@ def _init(args: argparse.Namespace) -> Result:
     )
 
 
+def _add(args: argparse.Namespace) -> Result:
+    name = "stdin" if str(args.file) == "-" else str(args.file)
+    text = sys.stdin.read() if name == "stdin" else _read(args.file)
+    try:
+        result = merge.add_to_store(args.kg_dir, text)
+    except store.StoreCorruptError as e:
+        raise ValidationError(
+            e.message, {"path": str(e.path), **e.report.to_dict()}
+        ) from e
+    except store.StoreError as e:
+        raise UsageError(e.message, {"path": str(e.path)}) from e
+
+    report = result.validation
+    data: dict[str, Any] = {"file": name, "graph": str(result.graph_path)}
+    if result.merge is None:
+        raise ValidationError(
+            report.to_text(name) + "\nno se ha modificado el almacén",
+            {**data, **report.to_dict()},
+        )
+    data |= {
+        **result.merge.to_dict(),
+        "warnings": [asdict(i) for i in report.warnings],
+    }
+    head = (
+        f"{name} fusionado en {result.graph_path}"
+        if result.merge.changed
+        else f"sin cambios: {name} ya estaba en {result.graph_path}"
+    )
+    lines = [head, result.merge.to_text()]
+    lines += [issue.to_text() for issue in report.warnings]
+    return Result("\n".join(lines), data)
+
+
+def _read(path: Path) -> str:
+    try:
+        return path.read_text(encoding="utf-8")
+    except FileNotFoundError as e:
+        raise UsageError(f"no existe el archivo: {path}") from e
+    except UnicodeDecodeError as e:
+        raise ValidationError(f"{path} no está en UTF-8 (byte {e.start})") from e
+    except OSError as e:
+        raise UsageError(f"no se puede leer {path}: {e.strerror}") from e
+
+
 def _validate(args: argparse.Namespace) -> Result:
     # No toca el almacén: solo lee el archivo (RF-03).
     name = "stdin" if str(args.file) == "-" else str(args.file)
@@ -164,8 +208,10 @@ def build_parser() -> argparse.ArgumentParser:
         "path", nargs="?", type=Path, default=Path("."), help="ruta del repo"
     )
 
-    p = add("add", "añade y fusiona entidades y relaciones", _not_implemented(5))
-    p.add_argument("file", type=Path, help="archivo JSON conforme al esquema")
+    p = add("add", "añade y fusiona entidades y relaciones", _add)
+    p.add_argument(
+        "file", type=Path, help="archivo JSON conforme al esquema (`-` para stdin)"
+    )
 
     p = add("schema", "muestra el JSON Schema del formato de entrada", _schema)
     p.add_argument(
