@@ -97,12 +97,46 @@ def test_conflicting_values_last_wins_and_is_reported():
     data = graph.nodes["module:a"]
     assert data["label"] == "A"
     assert data["attrs"]["loc"] == 12
-    assert data["provenance"] == LLM
+    assert report.nodes.merged == ["module:a"]
     assert report.conflicts == [
-        Conflict("node", "module:a", "provenance", PARSER, LLM),
+        Conflict("node", "module:a", "provenance", PARSER, LLM, kept="old"),
         Conflict("node", "module:a", "label", "a", "A"),
         Conflict("node", "module:a", "attrs.loc", 10, 12),
     ]
+
+
+@pytest.mark.parametrize("method", ["llm", "manual"])
+def test_parser_provenance_is_kept_over_other_methods(method):
+    graph, _ = merge_document(nx.MultiDiGraph(), BASE)
+    other = {**LLM, "method": method}
+    graph, report = merge_document(graph, doc([node("module:a", provenance=other)]))
+    assert graph.nodes["module:a"]["provenance"] == PARSER
+    assert not report.changed  # solo cambiaba la procedencia y se descarta
+    assert report.nodes.unchanged == ["module:a"]
+    assert report.conflicts == [
+        Conflict("node", "module:a", "provenance", PARSER, other, kept="old")
+    ]
+
+
+def test_parser_provenance_replaces_parser_or_llm():
+    newer = {**PARSER, "extractor": "python-ast@0.2"}
+    graph, _ = merge_document(nx.MultiDiGraph(), BASE)
+    graph, _ = merge_document(graph, doc([node("module:a", provenance=newer)]))
+    assert graph.nodes["module:a"]["provenance"] == newer
+
+    graph, _ = merge_document(graph, doc([node("concept:x", "Concept", LLM)]))
+    graph, report = merge_document(graph, doc([node("concept:x", "Concept")]))
+    assert graph.nodes["concept:x"]["provenance"] == PARSER
+    assert report.conflicts[0].kept == "new"
+
+
+def test_parser_provenance_kept_on_edges():
+    graph, _ = merge_document(nx.MultiDiGraph(), BASE)
+    graph, report = merge_document(
+        graph, doc(edges=[edge("module:a", "module:b", provenance=LLM)])
+    )
+    assert graph.edges["module:a", "module:b", "imports"]["provenance"] == PARSER
+    assert report.conflicts[0].kept == "old"
 
 
 def test_existing_edge_is_not_duplicated():
@@ -245,8 +279,20 @@ def test_cli_add_reports_conflicts(kg_dir, tmp_path, capsys):
     path = write(tmp_path, doc([node("module:a", label="A")]))
     assert main(["add", path, "--kg-dir", str(kg_dir)]) == EXIT_OK
     out = capsys.readouterr().out
-    assert "1 conflicto (se conserva el valor nuevo):" in out
+    assert "1 conflicto:" in out
     assert 'module:a · label: "a" → "A"' in out
+
+
+def test_cli_add_reports_kept_parser_provenance(kg_dir, tmp_path, capsys):
+    add(kg_dir, BASE)
+    path = write(tmp_path, doc([node("module:a", provenance=LLM)]))
+    assert main(["add", path, "--kg-dir", str(kg_dir)]) == EXIT_OK
+    out = capsys.readouterr().out
+    assert out.startswith("sin cambios:")
+    assert (
+        "module:a · provenance: se mantiene parser (python-ast@0.1, confianza 1.0); "
+        "se descarta llm (claude-code, confianza 0.8)"
+    ) in out
 
 
 def test_cli_add_json(kg_dir, tmp_path, capsys):
@@ -268,6 +314,7 @@ def test_cli_add_json(kg_dir, tmp_path, capsys):
             "field": "label",
             "old": "a",
             "new": "A",
+            "kept": "new",
         }
     ]
     assert [w["code"] for w in result["warnings"]] == ["custom_type"]

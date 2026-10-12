@@ -3,7 +3,9 @@
 Política del MVP: un nodo con ID existente o una arista con la misma identidad
 (`source`, `target`, `type`) se combinan en vez de duplicarse. Los campos que
 el documento no trae se conservan; si trae un valor distinto, gana el nuevo y
-se registra un conflicto. La política configurable es RF-33 (v0.2).
+se registra un conflicto. Excepción: una procedencia `parser` no la sustituye
+otra que no sea `parser`, para no perder el dato determinista al enriquecer con
+un agente. La política configurable es RF-33 (v0.2).
 """
 
 from __future__ import annotations
@@ -20,18 +22,26 @@ from kg.schema.validation import Report, validate_text
 
 Kind = Literal["node", "edge"]
 
-_NODE_SCALARS = ("type", "label", "description")
-
 
 @dataclass(frozen=True)
 class Conflict:
-    """Valor existente sustituido por uno distinto del documento."""
+    """Valor del documento distinto del existente; `kept` indica cuál se queda."""
 
     kind: Kind
     element: str
     field: str
     old: Any
     new: Any
+    kept: Literal["new", "old"] = "new"
+
+    def to_text(self) -> str:
+        show = _show_provenance if self.field == "provenance" else _show
+        if self.kept == "old":
+            return (
+                f"{self.element} · {self.field}: se mantiene {show(self.old)}; "
+                f"se descarta {show(self.new)}"
+            )
+        return f"{self.element} · {self.field}: {show(self.old)} → {show(self.new)}"
 
 
 @dataclass
@@ -74,14 +84,8 @@ class MergeReport:
         ]
         if self.conflicts:
             n = len(self.conflicts)
-            lines.append(
-                f"  {n} {'conflicto' if n == 1 else 'conflictos'} "
-                "(se conserva el valor nuevo):"
-            )
-            lines += [
-                f"    {c.element} · {c.field}: {_show(c.old)} → {_show(c.new)}"
-                for c in self.conflicts
-            ]
+            lines.append(f"  {n} {'conflicto' if n == 1 else 'conflictos'}:")
+            lines += [f"    {c.to_text()}" for c in self.conflicts]
         return "\n".join(lines)
 
     def to_dict(self) -> dict[str, Any]:
@@ -176,11 +180,23 @@ def _merge_into(
         old = current.get(name)
         if old == value:
             continue
+        if name == "provenance" and _keeps_parser(old, value):
+            report.conflicts.append(Conflict(kind, element, name, old, value, "old"))
+            continue
         if name in current:
             report.conflicts.append(Conflict(kind, element, name, old, value))
         current[name] = value
         changed = True
     return changed
+
+
+def _keeps_parser(old: Any, new: dict[str, Any]) -> bool:
+    """La procedencia `parser` prevalece sobre `llm` o `manual` (avance de RF-33)."""
+    return (
+        isinstance(old, dict)
+        and old.get("method") == "parser"
+        and new.get("method") != "parser"
+    )
 
 
 def _merge_attrs(
@@ -221,3 +237,12 @@ def _counts(changes: Changes, added: str, merged: str) -> str:
 def _show(value: Any) -> str:
     text = json.dumps(value, ensure_ascii=False, sort_keys=True)
     return text if len(text) <= 60 else text[:59] + "…"
+
+
+def _show_provenance(value: Any) -> str:
+    if not isinstance(value, dict):
+        return _show(value)
+    return (
+        f"{value.get('method')} ({value.get('extractor')}, "
+        f"confianza {value.get('confidence')})"
+    )

@@ -40,10 +40,14 @@ kg add grafo.json --json   # resumen para agentes
 | Arista con (`source`, `target`, `type`) nuevo | Se añade |
 | Arista existente | Se combinan `attrs` y `provenance` igual que en nodos; no se duplica |
 | Mismo campo con valor distinto | **Gana el valor nuevo** y se informa como conflicto |
+| `provenance` existente con `method: parser` y nueva con `llm` o `manual` | **Se mantiene la del parser** y se informa como conflicto |
 
-`provenance` se trata como un único valor: la última fuente sustituye a la
-anterior. Conservar varias procedencias es RF-31 y la política de conflictos
-configurable (p. ej. parser antes que LLM) es RF-33, ambos de la v0.2.
+`provenance` se trata como un único valor. La excepción del parser evita que
+enriquecer con un agente (`kg extract` → `kg add`) borre el dato determinista;
+si solo cambiaba la procedencia, el elemento cuenta como «sin cambios». Ojo:
+el resto de campos sí se actualizan, así que la procedencia describe el origen
+del elemento, no de cada campo. Conservar varias procedencias es RF-31 y la
+política de conflictos configurable es RF-33, ambos de la v0.2.
 
 ### Resumen
 
@@ -51,13 +55,15 @@ configurable (p. ej. parser antes que LLM) es RF-33, ambos de la v0.2.
 grafo.json fusionado en .kg/graph.json
   nodos:   2 añadidos, 1 fusionado, 9 sin cambios
   aristas: 4 añadidas, 0 fusionadas, 9 sin cambios
-  1 conflicto (se conserva el valor nuevo):
-    function:size.main · label: "main" → "main()"
+  2 conflictos:
+    function:size.main · label: "main" → "main(file)"
+    function:size.main · provenance: se mantiene parser (python-ast@0.1, confianza 1.0); se descarta llm (claude-code, confianza 0.85)
 ```
 
 Con `--json`, `result` trae `changed`, `nodes` y `edges` (listas `added`,
 `merged` y `unchanged`; las aristas como `source -[type]-> target`),
-`conflicts` (`kind`, `element`, `field`, `old`, `new`) y los `warnings` de la
+`conflicts` (`kind`, `element`, `field`, `old`, `new` y `kept`: `"new"` u
+`"old"`, el valor que se queda) y los `warnings` de la
 validación. Si el documento no es válido, el error lleva los mismos `details`
 que `kg validate`.
 
