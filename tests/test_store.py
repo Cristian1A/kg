@@ -61,7 +61,7 @@ def test_init_creates_empty_valid_store(tmp_path):
 def test_init_fails_if_store_exists_and_keeps_it(kg_dir):
     graph_file = store.graph_path(kg_dir)
     graph_file.write_text("contenido previo", encoding="utf-8")
-    with pytest.raises(StoreExistsError, match="ya existe"):
+    with pytest.raises(StoreExistsError, match="already exists"):
         store.init_store(kg_dir)
     assert graph_file.read_text(encoding="utf-8") == "contenido previo"
 
@@ -73,12 +73,12 @@ def test_init_fails_if_path_is_a_file(tmp_path):
 
 
 def test_init_fails_if_parent_is_missing(tmp_path):
-    with pytest.raises(StoreNotFoundError, match="no existe el directorio"):
+    with pytest.raises(StoreNotFoundError, match="does not exist"):
         store.init_store(tmp_path / "no" / "existe" / ".kg")
     assert not (tmp_path / "no").exists()
 
 
-# --- carga y guardado -----------------------------------------------------------
+# --- load and save -------------------------------------------------------------
 
 
 def test_round_trip_preserves_nodes_and_edges(kg_dir):
@@ -112,7 +112,7 @@ def test_save_is_idempotent(kg_dir):
 
 @pytest.mark.parametrize("seed", range(5))
 def test_same_graph_any_insertion_order_same_bytes(tmp_path, seed):
-    """RNF-08: el archivo no depende del orden de nodos, aristas ni claves."""
+    """RNF-08: the file does not depend on the order of nodes, edges or keys."""
     reference = tmp_path / "ref"
     reference.mkdir()
     store.save_graph(store.document_to_graph(example_document()), reference)
@@ -193,7 +193,7 @@ def test_load_without_store(tmp_path):
 @pytest.mark.parametrize(
     ("content", "code"),
     [
-        ("{ no es json", "invalid_json"),
+        ("{ not json", "invalid_json"),
         ('{"version": "1", "nodes": []}', "required"),
         ('{"version": "2", "nodes": [], "edges": []}', "not_allowed"),
     ],
@@ -212,14 +212,14 @@ def test_load_rejects_duplicate_edges(kg_dir):
         "edges": [edge("module:a", "module:b"), edge("module:a", "module:b")],
     }
     store.graph_path(kg_dir).write_text(json.dumps(document), encoding="utf-8")
-    with pytest.raises(StoreError, match=r"\$\.edges\[1\]: arista duplicada"):
+    with pytest.raises(StoreError, match=r"\$\.edges\[1\]: duplicate edge"):
         store.load_graph(kg_dir)
 
 
 def test_save_invalid_graph_keeps_previous_store(kg_dir):
     before = store.graph_path(kg_dir).read_bytes()
     graph = nx.MultiDiGraph()
-    graph.add_node("module:a")  # sin type ni provenance
+    graph.add_node("module:a")  # no type or provenance
     with pytest.raises(StoreCorruptError) as exc:
         store.save_graph(graph, kg_dir)
     assert {i.path for i in exc.value.report.errors} == {
@@ -236,7 +236,7 @@ def test_save_rejects_duplicate_edges_without_type_key(kg_dir):
         graph.add_node(n, type="Module", provenance=dict(PROV))
     graph.add_edge("module:a", "module:b", type="imports", provenance=dict(PROV))
     graph.add_edge("module:a", "module:b", type="imports", provenance=dict(PROV))
-    with pytest.raises(StoreError, match="arista duplicada"):
+    with pytest.raises(StoreError, match="duplicate edge"):
         store.save_graph(graph, kg_dir)
 
 
@@ -246,7 +246,7 @@ def test_save_rejects_duplicate_edges_without_type_key(kg_dir):
 def test_cli_init(tmp_path, capsys):
     kg_dir = tmp_path / ".kg"
     assert main(["init", "--kg-dir", str(kg_dir)]) == EXIT_OK
-    assert "almacén creado" in capsys.readouterr().out
+    assert "store created" in capsys.readouterr().out
     assert store.graph_path(kg_dir).is_file()
 
 
@@ -275,7 +275,7 @@ def test_cli_init_existing_store_is_usage_error(kg_dir, capsys):
     assert main(["init", "--kg-dir", str(kg_dir)]) == EXIT_USAGE
     captured = capsys.readouterr()
     assert captured.out == ""
-    assert captured.err == f"error: ya existe {kg_dir}; no se ha modificado\n"
+    assert captured.err == f"error: {kg_dir} already exists; nothing was changed\n"
 
 
 def test_cli_init_existing_store_json(kg_dir, capsys):

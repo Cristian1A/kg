@@ -1,7 +1,7 @@
-"""JSON Schema del formato de entrada de `kg` y catálogo estándar (RF-01, RF-02).
+"""JSON Schema of the `kg` input format and standard catalog (RF-01, RF-02).
 
-El esquema vive en `kg.schema.json` como dato del paquete y es la única fuente
-de verdad: los catálogos de tipos se leen de él.
+The schema lives in `kg.schema.json` as package data and is the single source
+of truth: the type catalogs are read from it.
 """
 
 from __future__ import annotations
@@ -19,7 +19,7 @@ SCHEMA_RESOURCE = "kg.schema.json"
 
 
 def schema_path() -> Path:
-    """Ruta del archivo del esquema dentro del paquete instalado."""
+    """Path of the schema file inside the installed package."""
     return Path(str(files(__package__) / SCHEMA_RESOURCE))
 
 
@@ -29,12 +29,12 @@ def _schema_text() -> str:
 
 
 def load_schema() -> dict[str, Any]:
-    """Devuelve una copia del JSON Schema (draft 2020-12)."""
+    """Return a copy of the JSON Schema (draft 2020-12)."""
     return json.loads(_schema_text())
 
 
 def validator() -> Draft202012Validator:
-    """Validador del esquema; el análisis de errores para humanos es de #3."""
+    """Schema validator; human-friendly errors live in `validation`."""
     return Draft202012Validator(load_schema())
 
 
@@ -45,7 +45,7 @@ STANDARD_EDGE_TYPES: frozenset[str] = frozenset(_DEFS["standardEdgeType"]["enum"
 
 @dataclass(frozen=True)
 class CustomType:
-    """Uso de un tipo fuera del catálogo estándar: válido, pero se avisa."""
+    """Use of a type outside the standard catalog: valid, but warned about."""
 
     path: str
     kind: Literal["node", "edge"]
@@ -53,14 +53,14 @@ class CustomType:
 
     @property
     def message(self) -> str:
-        entity = "entidad" if self.kind == "node" else "relación"
-        return f"{self.path}: tipo de {entity} personalizado '{self.type}'"
+        entity = "entity" if self.kind == "node" else "relation"
+        return f"{self.path}: custom {entity} type '{self.type}'"
 
 
 def find_custom_types(document: dict[str, Any]) -> list[CustomType]:
-    """Lista los tipos no estándar de un documento, con su ruta JSON.
+    """List the non-standard types of a document, with their JSON path.
 
-    No valida: los elementos mal formados se ignoran.
+    It does not validate: malformed items are ignored.
     """
     found: list[CustomType] = []
     for kind, key, standard in (

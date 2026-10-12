@@ -1,4 +1,4 @@
-"""Permite ejecutar la CLI con `python -m kg`."""
+"""Allow running the CLI with `python -m kg`."""
 
 import sys
 
