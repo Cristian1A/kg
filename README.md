@@ -10,7 +10,7 @@ JSON that is versioned with git like any other file.
 > **Status: early development (v0.1 MVP in progress).** The schema,
 > validation, the store (with merge, remove and edit), extraction (code,
 > dependencies and tests) and rendering (PNG/SVG and interactive HTML) are in
-> place; agent guidelines and the MVP validation are next.
+> place, with guidelines for agents; the MVP validation on real repos is next.
 > See the [roadmap](#roadmap).
 
 ## Why
@@ -46,11 +46,19 @@ kg --help
 ## Quick start
 
 ```bash
-kg init                  # create .kg/graph.json in the current repo
-kg schema                # print the JSON Schema an agent should follow
-kg validate graph.json   # check a document without touching the store
-kg add graph.json        # validate and merge it into the store
+kg init                            # create .kg/graph.json in the current repo
+kg extract .                       # the parser maps code, tests and dependencies
+kg guide                           # guidelines for the agent that adds the rest
+kg add agent.json --dry-run --json # the agent checks its document against the store
+kg add agent.json                  # merge docs, decisions and concepts
+kg render --html                   # kg-graph.html: search, filter, click for details
 ```
+
+`kg extract` is deterministic and needs no LLM. Documents, design decisions
+and domain concepts come from an external agent (Claude Code, Codex…) that
+follows `kg guide` (also installable as a skill with `kg guide --skill`) and
+the JSON Schema (`kg schema`). [`examples/agent/kg.json`](examples/agent/kg.json)
+is what an agent added for this repo.
 
 A minimal input document:
 
@@ -124,7 +132,8 @@ Details in [docs/schema.md](docs/schema.md), [docs/store.md](docs/store.md),
 | `kg schema` | Print the input JSON Schema | ✅ |
 | `kg validate` | Validate a document with actionable errors | ✅ |
 | `kg init` | Create the `.kg/` store | ✅ |
-| `kg add` | Merge a document into the store by ID | ✅ |
+| `kg add` | Merge a document into the store by ID (`--dry-run` to check first) | ✅ |
+| `kg guide` | Guidelines (and skill) for agents that enrich the graph | ✅ |
 | `kg remove`, `kg edit` | Remove nodes or edges, modify a node | ✅ |
 | `kg extract` | Deterministic extraction of a Python repo | ✅ |
 | `kg render` | PNG/SVG image and interactive offline HTML | ✅ |

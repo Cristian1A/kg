@@ -1,0 +1,775 @@
+{
+  "version": "1",
+  "nodes": [
+    {
+      "id": "document:README.md",
+      "type": "Document",
+      "label": "README",
+      "description": "Project front page: what kg does, install, quick start, data model and roadmap.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "README.md",
+        "lines": [
+          1,
+          149
+        ]
+      }
+    },
+    {
+      "id": "document:docs/requirements.md",
+      "type": "Document",
+      "label": "Functional requirements",
+      "description": "Approved requirements (RF/RNF), use cases, data model, release plan and decisions.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "docs/requirements.md",
+        "lines": [
+          1,
+          280
+        ]
+      }
+    },
+    {
+      "id": "document:docs/schema.md",
+      "type": "Document",
+      "label": "Input schema",
+      "description": "JSON input format: structure, stable IDs, standard catalog, provenance and validation errors.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "docs/schema.md",
+        "lines": [
+          1,
+          118
+        ]
+      }
+    },
+    {
+      "id": "document:docs/store.md",
+      "type": "Document",
+      "label": "The .kg store",
+      "description": "Store format, deterministic order, kg add merge rules, kg remove and kg edit.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "docs/store.md",
+        "lines": [
+          1,
+          196
+        ]
+      }
+    },
+    {
+      "id": "document:docs/extract.md",
+      "type": "Document",
+      "label": "Deterministic extraction",
+      "description": "What kg extract reads and the nodes, IDs and relations it produces, including tests and dependencies.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "docs/extract.md",
+        "lines": [
+          1,
+          230
+        ]
+      }
+    },
+    {
+      "id": "document:docs/render.md",
+      "type": "Document",
+      "label": "Visualization",
+      "description": "kg render: interactive HTML, static PNG/SVG encoding, large graphs and determinism.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "docs/render.md",
+        "lines": [
+          1,
+          139
+        ]
+      }
+    },
+    {
+      "id": "decision:no-embedded-llm",
+      "type": "Decision",
+      "label": "No LLM inside kg",
+      "description": "kg never calls an LLM nor needs API keys; external agents do the reading and send JSON.",
+      "attrs": {
+        "status": "accepted",
+        "requirement": "RF-24"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 1.0,
+        "source": "docs/requirements.md",
+        "lines": [
+          144,
+          144
+        ]
+      }
+    },
+    {
+      "id": "decision:use-networkx",
+      "type": "Decision",
+      "label": "Build on NetworkX",
+      "description": "The graph is an nx.MultiDiGraph; NetworkX is the graph engine.",
+      "attrs": {
+        "status": "accepted",
+        "requirement": "RNF-01"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 1.0,
+        "source": "docs/requirements.md",
+        "lines": [
+          218,
+          218
+        ]
+      }
+    },
+    {
+      "id": "decision:slug-ids",
+      "type": "Decision",
+      "label": "Slug IDs for non-code entities",
+      "description": "Entities with no physical origin use <type>:<slug> IDs.",
+      "attrs": {
+        "status": "accepted",
+        "decision": "PA-02"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 1.0,
+        "source": "docs/requirements.md",
+        "lines": [
+          278,
+          278
+        ]
+      }
+    },
+    {
+      "id": "decision:embed-vis-network",
+      "type": "Decision",
+      "label": "Embed vis-network, not pyvis",
+      "description": "The HTML embeds vis-network 9.1.2 with its own page; pyvis lacks filters, search and the panel and pulls in ipython.",
+      "attrs": {
+        "status": "accepted",
+        "decision": "PA-03"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 1.0,
+        "source": "docs/requirements.md",
+        "lines": [
+          279,
+          279
+        ]
+      }
+    },
+    {
+      "id": "decision:single-file-store",
+      "type": "Decision",
+      "label": "Single-file store",
+      "description": "The store is one graph.json written atomically, so it is never half-written and diffs stay local.",
+      "attrs": {
+        "status": "accepted"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "docs/store.md",
+        "lines": [
+          114,
+          116
+        ]
+      }
+    },
+    {
+      "id": "decision:parser-wins-over-llm",
+      "type": "Decision",
+      "label": "Parser provenance wins",
+      "description": "When merging, a parser provenance is kept over an llm or manual one, so enrichment cannot wipe deterministic data.",
+      "attrs": {
+        "status": "accepted",
+        "requirement": "RF-33 (default)"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 1.0,
+        "source": "docs/store.md",
+        "lines": [
+          43,
+          43
+        ]
+      }
+    },
+    {
+      "id": "decision:three-hue-palette",
+      "type": "Decision",
+      "label": "Three hues for entity families",
+      "description": "Only three hues stay distinguishable across all pairs, also with color-vision deficiencies; shape carries the type.",
+      "attrs": {
+        "status": "accepted"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 1.0,
+        "source": "docs/render.md",
+        "lines": [
+          75,
+          80
+        ]
+      }
+    },
+    {
+      "id": "concept:knowledge-graph",
+      "type": "Concept",
+      "label": "Knowledge graph",
+      "description": "Typed nodes and relations describing a project's code, dependencies, docs, tests and decisions.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "docs/requirements.md",
+        "lines": [
+          19,
+          23
+        ]
+      }
+    },
+    {
+      "id": "concept:stable-id",
+      "type": "Concept",
+      "label": "Stable ID",
+      "description": "An ID derived from the element's nature, so the same element always gets the same ID and merges instead of duplicating.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "docs/requirements.md",
+        "lines": [
+          74,
+          74
+        ]
+      }
+    },
+    {
+      "id": "concept:provenance",
+      "type": "Concept",
+      "label": "Provenance",
+      "description": "Where each node and relation comes from: method, extractor, confidence, source and lines.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "docs/requirements.md",
+        "lines": [
+          75,
+          75
+        ]
+      }
+    },
+    {
+      "id": "concept:merge-by-id",
+      "type": "Concept",
+      "label": "Merge by ID",
+      "description": "Adding an element with an existing ID combines it with the stored one instead of duplicating it.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "docs/store.md",
+        "lines": [
+          33,
+          52
+        ]
+      }
+    },
+    {
+      "id": "concept:determinism",
+      "type": "Concept",
+      "label": "Determinism",
+      "description": "The same input gives the same store and the same files, byte for byte.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "docs/requirements.md",
+        "lines": [
+          225,
+          225
+        ]
+      }
+    },
+    {
+      "id": "issue:render-doc-says-html-pending",
+      "type": "Issue",
+      "label": "render.md says the HTML is still to come",
+      "description": "docs/render.md line 80 says the HTML 'will reuse' style.py, but kg.render.html already does.",
+      "attrs": {
+        "status": "fixed in #11"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/render.md",
+        "lines": [
+          80,
+          80
+        ]
+      }
+    }
+  ],
+  "edges": [
+    {
+      "source": "document:README.md",
+      "target": "module:kg.cli",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.85,
+        "source": "README.md",
+        "lines": [
+          46,
+          105
+        ]
+      }
+    },
+    {
+      "source": "document:README.md",
+      "target": "module:kg.merge",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.85,
+        "source": "README.md",
+        "lines": [
+          84,
+          104
+        ]
+      }
+    },
+    {
+      "source": "document:docs/schema.md",
+      "target": "package:kg.schema",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/schema.md",
+        "lines": [
+          1,
+          118
+        ]
+      }
+    },
+    {
+      "source": "document:docs/schema.md",
+      "target": "module:kg.schema.validation",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/schema.md",
+        "lines": [
+          83,
+          118
+        ]
+      }
+    },
+    {
+      "source": "document:docs/store.md",
+      "target": "module:kg.store",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/store.md",
+        "lines": [
+          107,
+          184
+        ]
+      }
+    },
+    {
+      "source": "document:docs/store.md",
+      "target": "module:kg.merge",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/store.md",
+        "lines": [
+          16,
+          69
+        ]
+      }
+    },
+    {
+      "source": "document:docs/store.md",
+      "target": "module:kg.edit",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/store.md",
+        "lines": [
+          70,
+          106
+        ]
+      }
+    },
+    {
+      "source": "document:docs/extract.md",
+      "target": "module:kg.extract.files",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/extract.md",
+        "lines": [
+          19,
+          54
+        ]
+      }
+    },
+    {
+      "source": "document:docs/extract.md",
+      "target": "module:kg.extract.python",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/extract.md",
+        "lines": [
+          55,
+          128
+        ]
+      }
+    },
+    {
+      "source": "document:docs/extract.md",
+      "target": "module:kg.extract.references",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/extract.md",
+        "lines": [
+          129,
+          181
+        ]
+      }
+    },
+    {
+      "source": "document:docs/extract.md",
+      "target": "module:kg.extract.deps",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/extract.md",
+        "lines": [
+          182,
+          222
+        ]
+      }
+    },
+    {
+      "source": "document:docs/extract.md",
+      "target": "module:kg.analysis",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/extract.md",
+        "lines": [
+          162,
+          181
+        ]
+      }
+    },
+    {
+      "source": "document:docs/render.md",
+      "target": "module:kg.render.html",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/render.md",
+        "lines": [
+          17,
+          55
+        ]
+      }
+    },
+    {
+      "source": "document:docs/render.md",
+      "target": "module:kg.render.static",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/render.md",
+        "lines": [
+          56,
+          131
+        ]
+      }
+    },
+    {
+      "source": "document:docs/render.md",
+      "target": "module:kg.render.style",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/render.md",
+        "lines": [
+          72,
+          81
+        ]
+      }
+    },
+    {
+      "source": "decision:no-embedded-llm",
+      "target": "package:kg",
+      "type": "justifies",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/requirements.md",
+        "lines": [
+          144,
+          144
+        ]
+      }
+    },
+    {
+      "source": "decision:use-networkx",
+      "target": "dependency:networkx",
+      "type": "justifies",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 1.0,
+        "source": "docs/requirements.md",
+        "lines": [
+          218,
+          218
+        ]
+      }
+    },
+    {
+      "source": "decision:slug-ids",
+      "target": "package:kg.schema",
+      "type": "justifies",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.8,
+        "source": "docs/requirements.md",
+        "lines": [
+          278,
+          278
+        ]
+      }
+    },
+    {
+      "source": "decision:embed-vis-network",
+      "target": "module:kg.render.html",
+      "type": "justifies",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 1.0,
+        "source": "docs/requirements.md",
+        "lines": [
+          279,
+          279
+        ]
+      }
+    },
+    {
+      "source": "decision:single-file-store",
+      "target": "module:kg.store",
+      "type": "justifies",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "docs/store.md",
+        "lines": [
+          114,
+          116
+        ]
+      }
+    },
+    {
+      "source": "decision:parser-wins-over-llm",
+      "target": "module:kg.merge",
+      "type": "justifies",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 1.0,
+        "source": "docs/store.md",
+        "lines": [
+          43,
+          43
+        ]
+      }
+    },
+    {
+      "source": "decision:three-hue-palette",
+      "target": "module:kg.render.style",
+      "type": "justifies",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 1.0,
+        "source": "docs/render.md",
+        "lines": [
+          75,
+          80
+        ]
+      }
+    },
+    {
+      "source": "package:kg",
+      "target": "concept:knowledge-graph",
+      "type": "implements",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/requirements.md",
+        "lines": [
+          19,
+          23
+        ]
+      }
+    },
+    {
+      "source": "module:kg.extract.python",
+      "target": "concept:stable-id",
+      "type": "implements",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.85,
+        "source": "docs/extract.md",
+        "lines": [
+          70,
+          102
+        ]
+      }
+    },
+    {
+      "source": "module:kg.schema.validation",
+      "target": "concept:provenance",
+      "type": "implements",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.8,
+        "source": "docs/schema.md",
+        "lines": [
+          69,
+          82
+        ]
+      }
+    },
+    {
+      "source": "function:kg.merge.merge_document",
+      "target": "concept:merge-by-id",
+      "type": "implements",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "docs/store.md",
+        "lines": [
+          33,
+          52
+        ]
+      }
+    },
+    {
+      "source": "function:kg.store.graph_to_document",
+      "target": "concept:determinism",
+      "type": "implements",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/store.md",
+        "lines": [
+          147,
+          165
+        ]
+      }
+    },
+    {
+      "source": "function:kg.render.static.layout",
+      "target": "concept:determinism",
+      "type": "implements",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.85,
+        "source": "docs/render.md",
+        "lines": [
+          106,
+          116
+        ]
+      }
+    },
+    {
+      "source": "issue:render-doc-says-html-pending",
+      "target": "document:docs/render.md",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/render.md",
+        "lines": [
+          80,
+          80
+        ]
+      }
+    }
+  ]
+}

@@ -76,8 +76,8 @@ Why only three hues: in a node graph every pair of colors is on screen at
 once, and with the project palette only three hues stay distinguishable
 across all pairs, also with color-vision deficiencies (validated all-pairs:
 CVD ΔE ≥ 9.2, normal-vision ΔE ≥ 24). Shape and the legend carry the type;
-color never does it alone. The encoding lives in `src/kg/render/style.py` and
-the HTML will reuse it.
+color never does it alone. The encoding lives in `src/kg/render/style.py`,
+shared by the image and the HTML.
 
 ## Large graphs
 

@@ -381,3 +381,24 @@ def test_report_text_limits_listed_conflicts():
     assert "module:m2" not in text
     assert text.endswith("    … and 1 more (see --json)")
     assert "module:m2" in report.to_text()
+
+
+def test_add_dry_run_validates_against_the_store_and_writes_nothing(kg_dir, capsys):
+    add(kg_dir, BASE)
+    before = store.graph_path(kg_dir).read_text(encoding="utf-8")
+    document = doc(
+        [node("concept:c", "Concept", LLM)],
+        [edge("module:a", "concept:c", "implements", LLM)],  # module:a is stored
+    )
+    path = kg_dir.parent / "agent.json"
+    path.write_text(json.dumps(document), encoding="utf-8")
+    argv = ["add", str(path), "--dry-run", "--json", "--kg-dir", str(kg_dir)]
+    assert main(argv) == EXIT_OK
+    result = json.loads(capsys.readouterr().out)["result"]
+    assert result["dry_run"] is True
+    assert result["changed"] is True
+    assert result["nodes"]["added"] == ["concept:c"]
+    assert store.graph_path(kg_dir).read_text(encoding="utf-8") == before
+
+    assert main(["add", str(path), "--dry-run", "--kg-dir", str(kg_dir)]) == EXIT_OK
+    assert "dry run" in capsys.readouterr().out

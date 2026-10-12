@@ -110,17 +110,17 @@ class AddResult:
     merge: MergeReport | None = None
 
 
-def add_to_store(kg_dir: Path, text: str) -> AddResult:
+def add_to_store(kg_dir: Path, text: str, dry_run: bool = False) -> AddResult:
     """Validate a JSON document and merge it into the store (`kg add`).
 
     Edges may point to nodes already in the store. On validation errors nothing
-    is modified; if the merge changes nothing, nothing is written. Lets the
-    `StoreError`s from loading or saving the store through.
+    is modified; if the merge changes nothing, or with `dry_run`, nothing is
+    written. Lets the `StoreError`s from loading or saving the store through.
     """
     graph = store.load_graph(kg_dir)
     report = validate_text(text, known_ids=set(graph.nodes))
     document = json.loads(text) if report.ok else None
-    return _apply(kg_dir, graph, report, document)
+    return _apply(kg_dir, graph, report, document, dry_run)
 
 
 def add_document(kg_dir: Path, document: dict[str, Any]) -> AddResult:
@@ -135,12 +135,13 @@ def _apply(
     graph: nx.MultiDiGraph,
     report: Report,
     document: dict[str, Any] | None,
+    dry_run: bool = False,
 ) -> AddResult:
     result = AddResult(store.graph_path(kg_dir), report)
     if document is None:
         return result
     merged, result.merge = merge_document(graph, document)
-    if result.merge.changed:
+    if result.merge.changed and not dry_run:
         store.save_graph(merged, kg_dir)
     return result
 
