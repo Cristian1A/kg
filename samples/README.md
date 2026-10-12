@@ -10,9 +10,14 @@ the CU-01 flow on at least 3 small Python repos) and for timing `extract` and
 
 ## Test repos
 
-| Repo | Why |
-|------|-----|
-| [alfredodeza/basic-python-cli](https://github.com/alfredodeza/basic-python-cli) | Minimal CLI, very few files |
+Only licensed repos (MIT) are used, since their graphs are published in
+`docs/examples/` (credits there).
+
+| Level | Repo | Why | Commit |
+|-------|------|-----|--------|
+| Easy | [alfredodeza/basic-python-cli](https://github.com/alfredodeza/basic-python-cli) | Minimal CLI, one file | `d0379bb` |
+| Intermediate | [bramvdklinkenberg/my_first_data_project](https://github.com/bramvdklinkenberg/my_first_data_project) | ETL scripts, CI workflows, empty tests | `3d57177` |
+| Complex | [wesleey/python-clean-architecture](https://github.com/wesleey/python-clean-architecture) | Layered backend, 17 test files | `6f58de5` |
 
 Add every new repo you test with here.
 
@@ -20,10 +25,11 @@ Add every new repo you test with here.
 
 ```bash
 git clone --depth 1 https://github.com/alfredodeza/basic-python-cli samples/basic-python-cli
-kg init --kg-dir samples/basic-python-cli/.kg
-kg extract samples/basic-python-cli --kg-dir samples/basic-python-cli/.kg
-kg add agent-graph.json --kg-dir samples/basic-python-cli/.kg
-kg render --html --kg-dir samples/basic-python-cli/.kg -o samples/basic-python-cli.html
+kg init --kg-dir samples/runs/basic-python-cli/.kg
+kg extract samples/basic-python-cli --kg-dir samples/runs/basic-python-cli/.kg
+kg add examples/agent/basic-python-cli.json --kg-dir samples/runs/basic-python-cli/.kg
+kg render --html --kg-dir samples/runs/basic-python-cli/.kg -o samples/runs/basic-python-cli/graph.html
 ```
 
-Subcommands become available as their issues land (`extract` #6, `render` #9…).
+`tests/test_flow.py` checks `examples/agent/<repo>.json` against these clones
+when they are present. Results: `docs/mvp-validation.md`.

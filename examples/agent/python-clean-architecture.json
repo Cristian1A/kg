@@ -1,0 +1,924 @@
+{
+  "version": "1",
+  "nodes": [
+    {
+      "id": "document:README.md",
+      "type": "Document",
+      "label": "README",
+      "description": "Clean Architecture in Python: installation, migrations, the three entry points, a curl example and Docker/PostgreSQL commands.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "README.md",
+        "lines": [
+          1,
+          102
+        ]
+      }
+    },
+    {
+      "id": "decision:clean-architecture",
+      "type": "Decision",
+      "label": "Clean Architecture layers",
+      "description": "Separate concerns into domain, use case, infrastructure and application layers to promote modularity, testing and maintenance.",
+      "attrs": {
+        "status": "accepted",
+        "reference": "Robert C. Martin, Clean Architecture"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 1.0,
+        "source": "README.md",
+        "lines": [
+          7,
+          7
+        ]
+      }
+    },
+    {
+      "id": "concept:domain-layer",
+      "type": "Concept",
+      "label": "Domain layer",
+      "description": "Entities and value objects with no dependencies on other layers.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.85,
+        "source": "README.md",
+        "lines": [
+          7,
+          7
+        ]
+      }
+    },
+    {
+      "id": "concept:interactor-layer",
+      "type": "Concept",
+      "label": "Use case layer",
+      "description": "Use cases, DTOs, validations and the interfaces that outer layers implement.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.85,
+        "source": "README.md",
+        "lines": [
+          7,
+          7
+        ]
+      }
+    },
+    {
+      "id": "concept:infrastructure-layer",
+      "type": "Concept",
+      "label": "Infrastructure layer",
+      "description": "Database models, repositories, settings and loggers that implement the interactor's interfaces.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.85,
+        "source": "README.md",
+        "lines": [
+          7,
+          7
+        ]
+      }
+    },
+    {
+      "id": "concept:application-layer",
+      "type": "Concept",
+      "label": "Application layer",
+      "description": "Delivery mechanisms: an in-memory CLI and two Flask APIs, with controllers, presenters and views.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.85,
+        "source": "README.md",
+        "lines": [
+          7,
+          7
+        ]
+      }
+    },
+    {
+      "id": "decision:swappable-adapters",
+      "type": "Decision",
+      "label": "In-memory and PostgreSQL adapters",
+      "description": "The same use case runs with an in-memory repository (CLI and Flask) or a PostgreSQL repository (Flask), selected by the entry point.",
+      "attrs": {
+        "status": "accepted"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.85,
+        "source": "README.md",
+        "lines": [
+          39,
+          51
+        ]
+      }
+    },
+    {
+      "id": "decision:alembic-migrations",
+      "type": "Decision",
+      "label": "Schema migrations with Alembic",
+      "description": "The database schema is managed with Alembic migrations (alembic upgrade head).",
+      "attrs": {
+        "status": "accepted"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "README.md",
+        "lines": [
+          33,
+          37
+        ]
+      }
+    },
+    {
+      "id": "decision:cerberus-validation",
+      "type": "Decision",
+      "label": "Input validation with Cerberus",
+      "description": "Use cases validate their input DTOs against Cerberus schemas before touching the repository.",
+      "attrs": {
+        "status": "inferred from code"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.75,
+        "source": "src/interactor/validations/base_validator.py",
+        "lines": [
+          1,
+          15
+        ]
+      }
+    },
+    {
+      "id": "decision:frozen-requirements",
+      "type": "Decision",
+      "label": "requirements.txt is a pip freeze",
+      "description": "A pre-commit hook regenerates requirements.txt with pip freeze on every commit, so it pins development tools too.",
+      "attrs": {
+        "status": "accepted"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": ".pre-commit-config.yaml",
+        "lines": [
+          8,
+          15
+        ]
+      }
+    },
+    {
+      "id": "concept:user",
+      "type": "Concept",
+      "label": "User",
+      "description": "The only domain entity: id, first name, last name and email.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "src/domain/entities/user.py",
+        "lines": [
+          6,
+          18
+        ]
+      }
+    },
+    {
+      "id": "concept:create-user",
+      "type": "Concept",
+      "label": "Create a user",
+      "description": "Validate the input, create the user through the repository, log the outcome and return the presenter's response.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "src/interactor/use_cases/create_user.py",
+        "lines": [
+          27,
+          47
+        ]
+      }
+    },
+    {
+      "id": "endpoint:POST /v1/user/",
+      "type": "Endpoint",
+      "label": "POST /v1/user/",
+      "description": "Creates a user from a JSON body with first_name, last_name and email; answers 201.",
+      "attrs": {
+        "method": "POST",
+        "path": "/v1/user/"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "src/app/flask/blueprints/create_user_blueprint.py",
+        "lines": [
+          9,
+          15
+        ]
+      }
+    },
+    {
+      "id": "service:flask-api",
+      "type": "Service",
+      "label": "Flask API (PostgreSQL)",
+      "description": "Flask web API backed by PostgreSQL through SQLAlchemy.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "README.md",
+        "lines": [
+          48,
+          51
+        ]
+      }
+    },
+    {
+      "id": "service:flask-memory-api",
+      "type": "Service",
+      "label": "Flask API (in memory)",
+      "description": "Flask web API backed by an in-memory repository.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "README.md",
+        "lines": [
+          44,
+          47
+        ]
+      }
+    },
+    {
+      "id": "service:cli-memory",
+      "type": "Service",
+      "label": "Interactive CLI (in memory)",
+      "description": "Command-line app that creates users in memory.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "README.md",
+        "lines": [
+          40,
+          43
+        ]
+      }
+    },
+    {
+      "id": "config:docker-compose.yml",
+      "type": "Config",
+      "label": "Docker Compose",
+      "description": "Runs a PostgreSQL container on port 5432 with credentials from the environment.",
+      "attrs": {
+        "format": "docker-compose"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "docker-compose.yml",
+        "lines": [
+          1,
+          15
+        ]
+      }
+    },
+    {
+      "id": "config:.env.example",
+      "type": "Config",
+      "label": "Environment example",
+      "description": "Database user, password, name, host and port used by the app and Docker Compose.",
+      "attrs": {
+        "format": "dotenv"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": ".env.example",
+        "lines": [
+          1,
+          5
+        ]
+      }
+    },
+    {
+      "id": "config:.pre-commit-config.yaml",
+      "type": "Config",
+      "label": "Pre-commit hooks",
+      "description": "flake8 and a hook that freezes requirements.txt on every commit.",
+      "attrs": {
+        "format": "pre-commit"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": ".pre-commit-config.yaml",
+        "lines": [
+          1,
+          15
+        ]
+      }
+    },
+    {
+      "id": "config:alembic.ini",
+      "type": "Config",
+      "label": "Alembic configuration",
+      "description": "Single-database Alembic setup with migration scripts in alembic/.",
+      "attrs": {
+        "format": "ini"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "alembic.ini",
+        "lines": [
+          1,
+          5
+        ]
+      }
+    },
+    {
+      "id": "issue:readme-reference-link",
+      "type": "Issue",
+      "label": "README reference link points to a malformed URL",
+      "description": "The fourth reference mixes a GitHub repository URL with a LinkedIn article path.",
+      "attrs": {
+        "status": "open",
+        "kind": "doc-drift"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "README.md",
+        "lines": [
+          99,
+          99
+        ]
+      }
+    },
+    {
+      "id": "issue:readme-no-test-instructions",
+      "type": "Issue",
+      "label": "README does not explain how to run the tests",
+      "description": "The repo has 17 *_test.py files with pytest, but the README never mentions testing.",
+      "attrs": {
+        "status": "open",
+        "kind": "undocumented"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.85,
+        "source": "README.md",
+        "lines": [
+          1,
+          102
+        ]
+      }
+    }
+  ],
+  "edges": [
+    {
+      "source": "document:README.md",
+      "target": "module:cli_memory_process_handler",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "README.md",
+        "lines": [
+          40,
+          43
+        ]
+      }
+    },
+    {
+      "source": "document:README.md",
+      "target": "module:flask_memory_process_handler",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "README.md",
+        "lines": [
+          44,
+          47
+        ]
+      }
+    },
+    {
+      "source": "document:README.md",
+      "target": "module:flask_process_handler",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "README.md",
+        "lines": [
+          48,
+          51
+        ]
+      }
+    },
+    {
+      "source": "package:src.domain",
+      "target": "concept:domain-layer",
+      "type": "implements",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "README.md",
+        "lines": [
+          7,
+          7
+        ]
+      }
+    },
+    {
+      "source": "decision:clean-architecture",
+      "target": "package:src.domain",
+      "type": "justifies",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "README.md",
+        "lines": [
+          7,
+          7
+        ]
+      }
+    },
+    {
+      "source": "package:src.interactor",
+      "target": "concept:interactor-layer",
+      "type": "implements",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "README.md",
+        "lines": [
+          7,
+          7
+        ]
+      }
+    },
+    {
+      "source": "decision:clean-architecture",
+      "target": "package:src.interactor",
+      "type": "justifies",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "README.md",
+        "lines": [
+          7,
+          7
+        ]
+      }
+    },
+    {
+      "source": "package:src.infra",
+      "target": "concept:infrastructure-layer",
+      "type": "implements",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "README.md",
+        "lines": [
+          7,
+          7
+        ]
+      }
+    },
+    {
+      "source": "decision:clean-architecture",
+      "target": "package:src.infra",
+      "type": "justifies",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "README.md",
+        "lines": [
+          7,
+          7
+        ]
+      }
+    },
+    {
+      "source": "package:src.app",
+      "target": "concept:application-layer",
+      "type": "implements",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "README.md",
+        "lines": [
+          7,
+          7
+        ]
+      }
+    },
+    {
+      "source": "decision:clean-architecture",
+      "target": "package:src.app",
+      "type": "justifies",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "README.md",
+        "lines": [
+          7,
+          7
+        ]
+      }
+    },
+    {
+      "source": "decision:swappable-adapters",
+      "target": "class:src.infra.db.repositories.user_in_memory_repository.UserInMemoryRepository",
+      "type": "justifies",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.85,
+        "source": "README.md",
+        "lines": [
+          39,
+          47
+        ]
+      }
+    },
+    {
+      "source": "decision:swappable-adapters",
+      "target": "class:src.infra.db.repositories.user_repository.UserRepository",
+      "type": "justifies",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.85,
+        "source": "README.md",
+        "lines": [
+          48,
+          51
+        ]
+      }
+    },
+    {
+      "source": "decision:swappable-adapters",
+      "target": "class:src.interactor.interfaces.repositories.user_repository_interface.IUserRepository",
+      "type": "justifies",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.85,
+        "source": "src/interactor/use_cases/create_user.py",
+        "lines": [
+          17,
+          25
+        ]
+      }
+    },
+    {
+      "source": "decision:alembic-migrations",
+      "target": "dependency:alembic",
+      "type": "justifies",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "README.md",
+        "lines": [
+          33,
+          37
+        ]
+      }
+    },
+    {
+      "source": "decision:cerberus-validation",
+      "target": "dependency:cerberus",
+      "type": "justifies",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.75,
+        "source": "src/interactor/validations/base_validator.py",
+        "lines": [
+          1,
+          15
+        ]
+      }
+    },
+    {
+      "source": "decision:frozen-requirements",
+      "target": "config:requirements.txt",
+      "type": "justifies",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": ".pre-commit-config.yaml",
+        "lines": [
+          8,
+          15
+        ]
+      }
+    },
+    {
+      "source": "class:src.domain.entities.user.User",
+      "target": "concept:user",
+      "type": "implements",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "src/domain/entities/user.py",
+        "lines": [
+          6,
+          18
+        ]
+      }
+    },
+    {
+      "source": "class:src.interactor.use_cases.create_user.CreateUserUseCase",
+      "target": "concept:create-user",
+      "type": "implements",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "src/interactor/use_cases/create_user.py",
+        "lines": [
+          15,
+          47
+        ]
+      }
+    },
+    {
+      "source": "document:README.md",
+      "target": "endpoint:POST /v1/user/",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "README.md",
+        "lines": [
+          53,
+          57
+        ]
+      }
+    },
+    {
+      "source": "function:src.app.flask.blueprints.create_user_blueprint.create_user_blueprint",
+      "target": "endpoint:POST /v1/user/",
+      "type": "implements",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "src/app/flask/blueprints/create_user_blueprint.py",
+        "lines": [
+          9,
+          15
+        ]
+      }
+    },
+    {
+      "source": "function:src.app.flask_memory.blueprints.create_user_blueprint.create_user_blueprint",
+      "target": "endpoint:POST /v1/user/",
+      "type": "implements",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "src/app/flask_memory/blueprints/create_user_blueprint.py",
+        "lines": [
+          9,
+          15
+        ]
+      }
+    },
+    {
+      "source": "module:flask_process_handler",
+      "target": "service:flask-api",
+      "type": "implements",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "README.md",
+        "lines": [
+          48,
+          51
+        ]
+      }
+    },
+    {
+      "source": "module:flask_memory_process_handler",
+      "target": "service:flask-memory-api",
+      "type": "implements",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "README.md",
+        "lines": [
+          44,
+          47
+        ]
+      }
+    },
+    {
+      "source": "module:cli_memory_process_handler",
+      "target": "service:cli-memory",
+      "type": "implements",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "README.md",
+        "lines": [
+          40,
+          43
+        ]
+      }
+    },
+    {
+      "source": "service:flask-api",
+      "target": "endpoint:POST /v1/user/",
+      "type": "contains",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "README.md",
+        "lines": [
+          53,
+          57
+        ]
+      }
+    },
+    {
+      "source": "service:flask-memory-api",
+      "target": "endpoint:POST /v1/user/",
+      "type": "contains",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "README.md",
+        "lines": [
+          53,
+          57
+        ]
+      }
+    },
+    {
+      "source": "service:flask-api",
+      "target": "dependency:psycopg2-binary",
+      "type": "depends_on",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.85,
+        "source": "src/infra/db/settings/connection.py",
+        "lines": [
+          1,
+          20
+        ]
+      }
+    },
+    {
+      "source": "service:flask-api",
+      "target": "dependency:sqlalchemy",
+      "type": "depends_on",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "src/infra/db/settings/connection.py",
+        "lines": [
+          1,
+          20
+        ]
+      }
+    },
+    {
+      "source": "config:docker-compose.yml",
+      "target": "service:flask-api",
+      "type": "configures",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.85,
+        "source": "docker-compose.yml",
+        "lines": [
+          1,
+          15
+        ]
+      }
+    },
+    {
+      "source": "config:.env.example",
+      "target": "class:src.infra.db.settings.connection.DBConnectionHandler",
+      "type": "configures",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.8,
+        "source": ".env.example",
+        "lines": [
+          1,
+          5
+        ]
+      }
+    },
+    {
+      "source": "config:.pre-commit-config.yaml",
+      "target": "repo:python-clean-architecture",
+      "type": "configures",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": ".pre-commit-config.yaml",
+        "lines": [
+          1,
+          15
+        ]
+      }
+    },
+    {
+      "source": "config:alembic.ini",
+      "target": "repo:python-clean-architecture",
+      "type": "configures",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "alembic.ini",
+        "lines": [
+          1,
+          5
+        ]
+      }
+    },
+    {
+      "source": "issue:readme-reference-link",
+      "target": "document:README.md",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "README.md",
+        "lines": [
+          99,
+          99
+        ]
+      }
+    },
+    {
+      "source": "issue:readme-no-test-instructions",
+      "target": "document:README.md",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.85,
+        "source": "README.md",
+        "lines": [
+          1,
+          102
+        ]
+      }
+    }
+  ]
+}
