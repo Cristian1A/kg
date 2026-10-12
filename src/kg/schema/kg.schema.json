@@ -1,19 +1,19 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/Cristian1A/kg/schema/v1/kg.schema.json",
-  "title": "kg — documento de entrada del grafo de conocimiento",
-  "description": "Entidades (nodes) y relaciones (edges) de un proyecto con su procedencia. Los tipos del catálogo estándar están en $defs; un tipo personalizado es válido, pero kg emite un aviso.",
+  "title": "kg — knowledge graph input document",
+  "description": "Entities (nodes) and relations (edges) of a project with their provenance. Standard catalog types are in $defs; a custom type is valid, but kg emits a warning.",
   "type": "object",
   "required": ["version", "nodes", "edges"],
   "additionalProperties": false,
   "properties": {
     "$schema": {
       "type": "string",
-      "description": "URI opcional del esquema, para editores."
+      "description": "Optional schema URI, for editors."
     },
     "version": {
       "const": "1",
-      "description": "Versión del formato de entrada."
+      "description": "Input format version."
     },
     "nodes": {
       "type": "array",
@@ -28,11 +28,11 @@
     "id": {
       "type": "string",
       "pattern": "^[a-z][a-z0-9_-]*:\\S.*$",
-      "description": "ID estable `<tipo>:<ruta|nombre cualificado|slug>`; el prefijo es el tipo en minúsculas. Ej.: `file:src/app/main.py`, `function:app.main.run`, `concept:grafo-de-conocimiento`.",
-      "examples": ["file:src/app/main.py", "function:app.main.run", "decision:usar-networkx"]
+      "description": "Stable ID `<type>:<path|qualified name|slug>`; the prefix is the lowercase type. E.g. `file:src/app/main.py`, `function:app.main.run`, `concept:knowledge-graph`.",
+      "examples": ["file:src/app/main.py", "function:app.main.run", "decision:use-networkx"]
     },
     "standardNodeType": {
-      "description": "Catálogo estándar de entidades (DF 3.2).",
+      "description": "Standard entity catalog (docs/requirements.md 3.2).",
       "enum": [
         "Repo", "Package", "Module", "File", "Class", "Function", "Dependency",
         "Test", "Document", "Config", "Service", "Endpoint", "Person", "Issue",
@@ -40,21 +40,21 @@
       ]
     },
     "standardEdgeType": {
-      "description": "Catálogo estándar de relaciones (DF 3.3).",
+      "description": "Standard relation catalog (docs/requirements.md 3.3).",
       "enum": [
         "contains", "imports", "depends_on", "defines", "calls", "documents",
         "tests", "configures", "authored_by", "implements", "justifies"
       ]
     },
     "nodeType": {
-      "description": "Tipo de entidad: uno del catálogo estándar o uno personalizado en PascalCase (válido, con aviso).",
+      "description": "Entity type: one from the standard catalog or a custom one in PascalCase (valid, with a warning).",
       "anyOf": [
         { "$ref": "#/$defs/standardNodeType" },
         { "type": "string", "pattern": "^[A-Z][A-Za-z0-9]*$" }
       ]
     },
     "edgeType": {
-      "description": "Tipo de relación: uno del catálogo estándar o uno personalizado en snake_case (válido, con aviso).",
+      "description": "Relation type: one from the standard catalog or a custom one in snake_case (valid, with a warning).",
       "anyOf": [
         { "$ref": "#/$defs/standardEdgeType" },
         { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" }
@@ -62,23 +62,23 @@
     },
     "attrs": {
       "type": "object",
-      "description": "Atributos libres de la entidad o relación."
+      "description": "Free-form attributes of the entity or relation."
     },
     "provenance": {
       "type": "object",
-      "description": "Origen del dato (DF 3.4).",
+      "description": "Where the data comes from (docs/requirements.md 3.4).",
       "required": ["method", "extractor", "confidence"],
       "additionalProperties": false,
       "properties": {
         "source": {
           "type": "string",
           "minLength": 1,
-          "description": "Archivo o fuente de la que se extrajo, relativo a la raíz del repo.",
+          "description": "File or source it was extracted from, relative to the repo root.",
           "examples": ["src/app/main.py"]
         },
         "lines": {
           "type": "array",
-          "description": "Rango [inicio, fin] de líneas, 1-indexado e inclusivo.",
+          "description": "Line range [start, end], 1-indexed and inclusive.",
           "prefixItems": [
             { "type": "integer", "minimum": 1 },
             { "type": "integer", "minimum": 1 }
@@ -88,25 +88,25 @@
         },
         "method": {
           "enum": ["parser", "llm", "manual"],
-          "description": "Cómo se obtuvo el dato."
+          "description": "How the data was obtained."
         },
         "extractor": {
           "type": "string",
           "minLength": 1,
-          "description": "Herramienta y versión que lo generó.",
+          "description": "Tool and version that produced it.",
           "examples": ["python-ast@0.1", "claude-code"]
         },
         "confidence": {
           "type": "number",
           "minimum": 0,
           "maximum": 1,
-          "description": "1.0 para el parser; 0.0–1.0 para un LLM."
+          "description": "1.0 for the parser; 0.0–1.0 for an LLM."
         },
         "timestamp": {
           "type": "string",
           "format": "date-time",
           "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?(Z|[+-]\\d{2}:\\d{2})$",
-          "description": "Fecha ISO-8601 con zona horaria.",
+          "description": "ISO-8601 date with time zone.",
           "examples": ["2026-10-09T12:00:00Z"]
         }
       }
@@ -118,7 +118,7 @@
       "properties": {
         "id": { "$ref": "#/$defs/id" },
         "type": { "$ref": "#/$defs/nodeType" },
-        "label": { "type": "string", "description": "Nombre legible." },
+        "label": { "type": "string", "description": "Human-readable name." },
         "description": { "type": "string" },
         "attrs": { "$ref": "#/$defs/attrs" },
         "provenance": { "$ref": "#/$defs/provenance" }
@@ -129,8 +129,8 @@
       "required": ["source", "target", "type", "provenance"],
       "additionalProperties": false,
       "properties": {
-        "source": { "$ref": "#/$defs/id", "description": "ID del nodo origen." },
-        "target": { "$ref": "#/$defs/id", "description": "ID del nodo destino." },
+        "source": { "$ref": "#/$defs/id", "description": "ID of the source node." },
+        "target": { "$ref": "#/$defs/id", "description": "ID of the target node." },
         "type": { "$ref": "#/$defs/edgeType" },
         "attrs": { "$ref": "#/$defs/attrs" },
         "provenance": { "$ref": "#/$defs/provenance" }

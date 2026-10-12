@@ -48,7 +48,7 @@ def only_error(report) -> Issue:
     return report.errors[0]
 
 
-# --- Caso normal y bordes ------------------------------------------------------
+# --- Normal and edge cases ------------------------------------------------------
 
 
 def test_valid_document_has_no_issues(valid):
@@ -56,13 +56,13 @@ def test_valid_document_has_no_issues(valid):
     assert report.ok
     assert report.errors == report.warnings == []
     assert (report.nodes, report.edges) == (2, 1)
-    assert report.summary("a.json") == "a.json es válido (2 nodos, 1 arista)"
+    assert report.summary("a.json") == "a.json is valid (2 nodes, 1 edge)"
 
 
 def test_empty_graph_is_valid():
     report = validate_document(document())
     assert report.ok
-    assert report.summary("x") == "x es válido (0 nodos, 0 aristas)"
+    assert report.summary("x") == "x is valid (0 nodes, 0 edges)"
 
 
 @pytest.mark.parametrize("example", EXAMPLES, ids=lambda p: p.name)
@@ -75,7 +75,7 @@ def test_non_object_document(value):
     issue = only_error(validate_document(value))
     assert issue.code == "wrong_type"
     assert issue.path == "$"
-    assert issue.expected == "objeto"
+    assert issue.expected == "object"
 
 
 def test_every_error_is_actionable():
@@ -91,14 +91,14 @@ def test_every_error_is_actionable():
         assert issue.severity == "error"
 
 
-# --- Mensajes de error (RNF-07) -----------------------------------------------
+# --- Error messages (RNF-07) -------------------------------------------------
 
 
 def test_invalid_json_reports_position():
     issue = only_error(validate_text('{"version": "1",\n "nodes": [}'))
     assert issue.code == "invalid_json"
     assert issue.path == "$"
-    assert issue.received == "línea 2, columna 12"
+    assert issue.received == "line 2, column 12"
 
 
 def test_missing_required_field(valid):
@@ -107,7 +107,7 @@ def test_missing_required_field(valid):
     assert issue.code == "required"
     assert issue.path == "$.nodes[0].provenance"
     assert issue.received is None
-    assert issue.expected.startswith("campo `provenance`")
+    assert issue.expected.startswith("field `provenance`")
     assert '"method": "parser"' in issue.suggestion
 
 
@@ -117,7 +117,7 @@ def test_missing_top_level_lists():
         ("required", "$.nodes"),
         ("required", "$.edges"),
     ]
-    assert report.errors[0].suggestion == 'Añade `"nodes": []` aunque esté vacío.'
+    assert report.errors[0].suggestion == 'Add `"nodes": []` even if it is empty.'
 
 
 def test_unknown_field_suggests_close_name(valid):
@@ -126,7 +126,7 @@ def test_unknown_field_suggests_close_name(valid):
     assert issue.code == "unknown_field"
     assert issue.path == "$.nodes[0].lable"
     assert issue.received == '"a"'
-    assert '¿Querías decir "label"?' in issue.suggestion
+    assert 'Did you mean "label"?' in issue.suggestion
     assert "`attrs`" in issue.suggestion
 
 
@@ -145,15 +145,15 @@ def test_enum_value(valid):
     issue = only_error(validate_document(valid))
     assert issue.code == "not_allowed"
     assert issue.received == '"Parser"'
-    assert issue.expected == 'uno de "parser", "llm", "manual"'
-    assert issue.suggestion == 'Usa "parser".'
+    assert issue.expected == 'one of "parser", "llm", "manual"'
+    assert issue.suggestion == 'Use "parser".'
 
 
 def test_version_const(valid):
     valid["version"] = 1
     issue = only_error(validate_document(valid))
     assert (issue.code, issue.path, issue.received) == ("not_allowed", "$.version", "1")
-    assert issue.suggestion == 'Usa "1".'
+    assert issue.suggestion == 'Use "1".'
 
 
 @pytest.mark.parametrize("value", [1.5, -0.1])
@@ -162,23 +162,23 @@ def test_confidence_out_of_range(valid, value):
     issue = only_error(validate_document(valid))
     assert issue.code == "out_of_range"
     assert issue.path == "$.nodes[0].provenance.confidence"
-    assert issue.expected == "un número entre 0 y 1"
+    assert issue.expected == "a number between 0 and 1"
 
 
 def test_wrong_type_shows_received_type(valid):
     valid["nodes"][0]["provenance"]["confidence"] = "alta"
     issue = only_error(validate_document(valid))
     assert issue.code == "wrong_type"
-    assert issue.received == '"alta" (texto)'
-    assert issue.expected == "número"
+    assert issue.received == '"alta" (string)'
+    assert issue.expected == "number"
 
 
 def test_lines_length(valid):
     valid["nodes"][0]["provenance"]["lines"] = [3]
     issue = only_error(validate_document(valid))
     assert issue.code == "wrong_length"
-    assert issue.received == "[3] (1 elemento)"
-    assert issue.expected == "exactamente 2 elementos"
+    assert issue.received == "[3] (1 item)"
+    assert issue.expected == "exactly 2 items"
 
 
 def test_timestamp_format(valid):
@@ -208,8 +208,8 @@ def test_invalid_id_suggests_fixed_id(valid, id_, hint):
 @pytest.mark.parametrize(
     "path, value, suggestion",
     [
-        (("nodes", 0), "file", 'Usa el tipo estándar "File".'),
-        (("edges", 0), "Defines", 'Usa el tipo estándar "defines".'),
+        (("nodes", 0), "file", 'Use the standard type "File".'),
+        (("edges", 0), "Defines", 'Use the standard type "defines".'),
     ],
 )
 def test_invalid_type_name_suggests_standard(valid, path, value, suggestion):
@@ -218,7 +218,7 @@ def test_invalid_type_name_suggests_standard(valid, path, value, suggestion):
     issue = only_error(report)
     assert issue.code == "invalid_type_name"
     assert issue.suggestion.startswith(suggestion)
-    assert report.warnings == []  # no se duplica como tipo personalizado
+    assert report.warnings == []  # not duplicated as a custom type
 
 
 def test_long_values_are_truncated(valid):
@@ -229,16 +229,16 @@ def test_long_values_are_truncated(valid):
 
 
 def test_issue_to_text():
-    issue = Issue("required", "$.a", "falta", None, "campo `a`", "Añádelo.")
+    issue = Issue("required", "$.a", "missing", None, "field `a`", "Add it.")
     assert issue.to_text() == (
-        "error: $.a: falta\n"
-        "  recibido:   (ausente)\n"
-        "  esperado:   campo `a`\n"
-        "  sugerencia: Añádelo."
+        "error: $.a: missing\n"
+        "  received:   (missing)\n"
+        "  expected:   field `a`\n"
+        "  suggestion: Add it."
     )
 
 
-# --- Comprobaciones semánticas (RF-05) y avisos (RF-02) -------------------------
+# --- Semantic checks (RF-05) and warnings (RF-02) ------------------------------
 
 
 def test_duplicate_ids(valid):
@@ -254,7 +254,7 @@ def test_broken_reference_suggests_close_id(valid):
     issue = only_error(validate_document(valid))
     assert issue.code == "broken_reference"
     assert issue.path == "$.edges[0].target"
-    assert '¿Querías decir "function:a.f"?' in issue.suggestion
+    assert 'Did you mean "function:a.f"?' in issue.suggestion
 
 
 def test_broken_references_on_both_ends(valid):
@@ -273,8 +273,8 @@ def test_custom_types_are_warnings_not_errors(valid):
         ("custom_type", "$.edges[1].type"),
     ]
     assert all(w.severity == "warning" for w in report.warnings)
-    assert "1 aviso" not in report.summary("x")
-    assert "2 avisos" in report.summary("x")
+    assert "1 warning" not in report.summary("x")
+    assert "2 warnings" in report.summary("x")
 
 
 def test_id_prefix_mismatch_is_warning(valid):
@@ -320,7 +320,7 @@ def test_cli_valid_file(valid, write, capsys):
     path = write(valid)
     assert main(["validate", path]) == EXIT_OK
     captured = capsys.readouterr()
-    assert captured.out.strip() == f"{path} es válido (2 nodos, 1 arista)"
+    assert captured.out.strip() == f"{path} is valid (2 nodes, 1 edge)"
     assert captured.err == ""
 
 
@@ -338,7 +338,7 @@ def test_cli_errors_exit_1(valid, write, capsys):
     assert main(["validate", path]) == EXIT_VALIDATION
     captured = capsys.readouterr()
     assert captured.out == ""
-    assert captured.err.startswith(f"error: {path} no es válido: 1 error\n")
+    assert captured.err.startswith(f"error: {path} is not valid: 1 error\n")
     assert "error: $.edges[0].target" in captured.err
 
 
@@ -368,10 +368,10 @@ def test_cli_json_errors(valid, write, capsys):
         {
             "code": "required",
             "path": "$.nodes[0].provenance.extractor",
-            "message": "falta un campo obligatorio",
+            "message": "missing required field",
             "received": None,
-            "expected": "campo `extractor`: Herramienta y versión que lo generó.",
-            "suggestion": "Añade el campo `extractor`.",
+            "expected": "field `extractor`: Tool and version that produced it.",
+            "suggestion": "Add the field `extractor`.",
             "severity": "error",
         }
     ]
@@ -379,7 +379,7 @@ def test_cli_json_errors(valid, write, capsys):
 
 def test_cli_invalid_json_exit_1(write, capsys):
     assert main(["validate", write("{nope")]) == EXIT_VALIDATION
-    assert "JSON mal formado" in capsys.readouterr().err
+    assert "malformed JSON" in capsys.readouterr().err
 
 
 def test_cli_invalid_encoding_exit_1(tmp_path, capsys):
@@ -391,18 +391,18 @@ def test_cli_invalid_encoding_exit_1(tmp_path, capsys):
 
 def test_cli_missing_file_is_usage_error(tmp_path, capsys):
     assert main(["validate", str(tmp_path / "no.json")]) == EXIT_USAGE
-    assert "no existe el archivo" in capsys.readouterr().err
+    assert "file not found" in capsys.readouterr().err
 
 
 def test_cli_directory_is_usage_error(tmp_path, capsys):
     assert main(["validate", str(tmp_path)]) == EXIT_USAGE
-    assert "no se puede leer" in capsys.readouterr().err
+    assert "cannot read" in capsys.readouterr().err
 
 
 def test_cli_reads_stdin(valid, monkeypatch, capsys):
     monkeypatch.setattr("sys.stdin", io.StringIO(json.dumps(valid)))
     assert main(["validate", "-"]) == EXIT_OK
-    assert capsys.readouterr().out.startswith("stdin es válido")
+    assert capsys.readouterr().out.startswith("stdin is valid")
 
 
 def test_cli_does_not_touch_store(valid, write, tmp_path, monkeypatch):

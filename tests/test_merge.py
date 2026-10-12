@@ -78,12 +78,12 @@ def test_same_id_combines_attributes_without_duplicating():
     graph, _ = merge_document(nx.MultiDiGraph(), BASE)
     graph, report = merge_document(
         graph,
-        doc([node("module:a", description="Módulo A", attrs={"tested": False})]),
+        doc([node("module:a", description="Module A", attrs={"tested": False})]),
     )
     assert graph.number_of_nodes() == 2
     data = graph.nodes["module:a"]
-    assert data["label"] == "a"  # el documento no lo trae: se conserva
-    assert data["description"] == "Módulo A"
+    assert data["label"] == "a"  # missing from the document: kept
+    assert data["description"] == "Module A"
     assert data["attrs"] == {"public": True, "loc": 10, "tested": False}
     assert report.nodes.merged == ["module:a"]
     assert report.conflicts == []
@@ -111,7 +111,7 @@ def test_parser_provenance_is_kept_over_other_methods(method):
     other = {**LLM, "method": method}
     graph, report = merge_document(graph, doc([node("module:a", provenance=other)]))
     assert graph.nodes["module:a"]["provenance"] == PARSER
-    assert not report.changed  # solo cambiaba la procedencia y se descarta
+    assert not report.changed  # only the provenance differed and it was discarded
     assert report.nodes.unchanged == ["module:a"]
     assert report.conflicts == [
         Conflict("node", "module:a", "provenance", PARSER, other, kept="old")
@@ -223,7 +223,7 @@ def test_add_invalid_document_does_not_modify_store(kg_dir):
         kg_dir,
         doc(
             [node("module:c")],
-            [edge("module:c", "module:zz")],  # ni en el archivo ni en el almacén
+            [edge("module:c", "module:zz")],  # neither in the file nor in the store
         ),
     )
     assert not result.validation.ok
@@ -231,14 +231,14 @@ def test_add_invalid_document_does_not_modify_store(kg_dir):
     assert store.graph_path(kg_dir).read_bytes() == before
     (issue,) = result.validation.errors
     assert issue.code == "broken_reference"
-    assert "ni en el almacén" in issue.message
+    assert "or in the store" in issue.message
 
 
 def test_broken_reference_suggests_id_from_store(kg_dir):
     add(kg_dir, BASE)
     result = add(kg_dir, doc(edges=[edge("module:a", "module:bb")]))
     (issue,) = result.validation.errors
-    assert issue.suggestion.startswith('¿Querías decir "module:b"?')
+    assert issue.suggestion.startswith('Did you mean "module:b"?')
 
 
 def test_add_invalid_json(kg_dir):
@@ -264,14 +264,14 @@ def test_cli_add_summary(kg_dir, tmp_path, capsys):
     argv = ["add", write(tmp_path, BASE), "--kg-dir", str(kg_dir)]
     assert main(argv) == EXIT_OK
     out = capsys.readouterr().out
-    assert "fusionado en" in out
-    assert "nodos:   2 añadidos, 0 fusionados, 0 sin cambios" in out
-    assert "aristas: 1 añadida, 0 fusionadas, 0 sin cambios" in out
+    assert "merged into" in out
+    assert "nodes: 2 added, 0 merged, 0 unchanged" in out
+    assert "edges: 1 added, 0 merged, 0 unchanged" in out
 
     assert main(argv) == EXIT_OK
     out = capsys.readouterr().out
-    assert out.startswith("sin cambios:")
-    assert "nodos:   0 añadidos, 0 fusionados, 2 sin cambios" in out
+    assert out.startswith("no changes:")
+    assert "nodes: 0 added, 0 merged, 2 unchanged" in out
 
 
 def test_cli_add_reports_conflicts(kg_dir, tmp_path, capsys):
@@ -279,7 +279,7 @@ def test_cli_add_reports_conflicts(kg_dir, tmp_path, capsys):
     path = write(tmp_path, doc([node("module:a", label="A")]))
     assert main(["add", path, "--kg-dir", str(kg_dir)]) == EXIT_OK
     out = capsys.readouterr().out
-    assert "1 conflicto:" in out
+    assert "1 conflict:" in out
     assert 'module:a · label: "a" → "A"' in out
 
 
@@ -288,10 +288,10 @@ def test_cli_add_reports_kept_parser_provenance(kg_dir, tmp_path, capsys):
     path = write(tmp_path, doc([node("module:a", provenance=LLM)]))
     assert main(["add", path, "--kg-dir", str(kg_dir)]) == EXIT_OK
     out = capsys.readouterr().out
-    assert out.startswith("sin cambios:")
+    assert out.startswith("no changes:")
     assert (
-        "module:a · provenance: se mantiene parser (python-ast@0.1, confianza 1.0); "
-        "se descarta llm (claude-code, confianza 0.8)"
+        "module:a · provenance: kept parser (python-ast@0.1, confidence 1.0); "
+        "discarded llm (claude-code, confidence 0.8)"
     ) in out
 
 
@@ -323,7 +323,7 @@ def test_cli_add_json(kg_dir, tmp_path, capsys):
 def test_cli_add_from_stdin(kg_dir, monkeypatch, capsys):
     monkeypatch.setattr("sys.stdin", io.StringIO(json.dumps(BASE)))
     assert main(["add", "-", "--kg-dir", str(kg_dir)]) == EXIT_OK
-    assert capsys.readouterr().out.startswith("stdin fusionado en")
+    assert capsys.readouterr().out.startswith("stdin merged into")
 
 
 def test_cli_add_invalid_exit_1(kg_dir, tmp_path, capsys):
@@ -331,8 +331,8 @@ def test_cli_add_invalid_exit_1(kg_dir, tmp_path, capsys):
     path = write(tmp_path, doc([node("module:a", provenance={})]))
     assert main(["add", path, "--kg-dir", str(kg_dir)]) == EXIT_VALIDATION
     err = capsys.readouterr().err
-    assert "no es válido" in err
-    assert err.rstrip().endswith("no se ha modificado el almacén")
+    assert "is not valid" in err
+    assert err.rstrip().endswith("the store was not modified")
     assert store.graph_path(kg_dir).read_bytes() == before
 
 
@@ -353,11 +353,11 @@ def test_cli_add_without_store_is_usage_error(tmp_path, capsys):
 def test_cli_add_missing_file(kg_dir, tmp_path, capsys):
     argv = ["add", str(tmp_path / "no.json"), "--kg-dir", str(kg_dir)]
     assert main(argv) == EXIT_USAGE
-    assert "no existe el archivo" in capsys.readouterr().err
+    assert "file not found" in capsys.readouterr().err
 
 
 def test_cli_add_corrupt_store_exit_1(kg_dir, tmp_path, capsys):
     store.graph_path(kg_dir).write_text("{}", encoding="utf-8")
     path = write(tmp_path, BASE)
     assert main(["add", path, "--kg-dir", str(kg_dir)]) == EXIT_VALIDATION
-    assert "no es un almacén válido" in capsys.readouterr().err
+    assert "is not a valid store" in capsys.readouterr().err

@@ -1,11 +1,11 @@
-"""Fusión básica por ID de un documento en el grafo (RF-21, RF-30, S-03).
+"""Basic merge by ID of a document into the graph (RF-21, RF-30, S-03).
 
-Política del MVP: un nodo con ID existente o una arista con la misma identidad
-(`source`, `target`, `type`) se combinan en vez de duplicarse. Los campos que
-el documento no trae se conservan; si trae un valor distinto, gana el nuevo y
-se registra un conflicto. Excepción: una procedencia `parser` no la sustituye
-otra que no sea `parser`, para no perder el dato determinista al enriquecer con
-un agente. La política configurable es RF-33 (v0.2).
+MVP policy: a node with an existing ID or an edge with the same identity
+(`source`, `target`, `type`) is combined instead of duplicated. Fields missing
+from the document are kept; if it brings a different value, the new one wins
+and a conflict is recorded. Exception: a `parser` provenance is not replaced by
+a non-`parser` one, so enriching with an agent does not lose deterministic
+data. A configurable policy is RF-33 (v0.2).
 """
 
 from __future__ import annotations
@@ -25,7 +25,7 @@ Kind = Literal["node", "edge"]
 
 @dataclass(frozen=True)
 class Conflict:
-    """Valor del documento distinto del existente; `kept` indica cuál se queda."""
+    """Document value that differs from the existing one; `kept` says which stays."""
 
     kind: Kind
     element: str
@@ -38,15 +38,15 @@ class Conflict:
         show = _show_provenance if self.field == "provenance" else _show
         if self.kept == "old":
             return (
-                f"{self.element} · {self.field}: se mantiene {show(self.old)}; "
-                f"se descarta {show(self.new)}"
+                f"{self.element} · {self.field}: kept {show(self.old)}; "
+                f"discarded {show(self.new)}"
             )
         return f"{self.element} · {self.field}: {show(self.old)} → {show(self.new)}"
 
 
 @dataclass
 class Changes:
-    """Elementos del documento según su efecto en el grafo."""
+    """Document elements grouped by their effect on the graph."""
 
     added: list[str] = field(default_factory=list)
     merged: list[str] = field(default_factory=list)
@@ -62,7 +62,7 @@ class Changes:
 
 @dataclass
 class MergeReport:
-    """Resumen de una fusión."""
+    """Summary of a merge."""
 
     nodes: Changes = field(default_factory=Changes)
     edges: Changes = field(default_factory=Changes)
@@ -79,12 +79,12 @@ class MergeReport:
 
     def to_text(self) -> str:
         lines = [
-            f"  nodos:   {_counts(self.nodes, 'añadido', 'fusionado')}",
-            f"  aristas: {_counts(self.edges, 'añadida', 'fusionada')}",
+            f"  nodes: {_counts(self.nodes)}",
+            f"  edges: {_counts(self.edges)}",
         ]
         if self.conflicts:
             n = len(self.conflicts)
-            lines.append(f"  {n} {'conflicto' if n == 1 else 'conflictos'}:")
+            lines.append(f"  {n} {'conflict' if n == 1 else 'conflicts'}:")
             lines += [f"    {c.to_text()}" for c in self.conflicts]
         return "\n".join(lines)
 
@@ -99,7 +99,7 @@ class MergeReport:
 
 @dataclass
 class AddResult:
-    """Resultado de `add_to_store`: `merge` es `None` si el documento no es válido."""
+    """Result of `add_to_store`: `merge` is `None` if the document is not valid."""
 
     graph_path: Path
     validation: Report
@@ -107,11 +107,11 @@ class AddResult:
 
 
 def add_to_store(kg_dir: Path, text: str) -> AddResult:
-    """Valida un documento JSON y lo fusiona en el almacén (`kg add`).
+    """Validate a JSON document and merge it into the store (`kg add`).
 
-    Las aristas pueden apuntar a nodos que ya están en el almacén. Si hay errores
-    de validación no se modifica nada; si la fusión no cambia nada, no se escribe.
-    Deja pasar los `StoreError` de cargar o guardar el almacén.
+    Edges may point to nodes already in the store. On validation errors nothing
+    is modified; if the merge changes nothing, nothing is written. Lets the
+    `StoreError`s from loading or saving the store through.
     """
     graph = store.load_graph(kg_dir)
     report = validate_text(text, known_ids=set(graph.nodes))
@@ -125,16 +125,16 @@ def add_to_store(kg_dir: Path, text: str) -> AddResult:
 
 
 def edge_label(source: str, target: str, type_: str) -> str:
-    """Identidad legible de una arista: `source -[type]-> target`."""
+    """Readable identity of an edge: `source -[type]-> target`."""
     return f"{source} -[{type_}]-> {target}"
 
 
 def merge_document(
     graph: nx.MultiDiGraph, document: dict[str, Any]
 ) -> tuple[nx.MultiDiGraph, MergeReport]:
-    """Devuelve una copia del grafo con el documento fusionado y el resumen.
+    """Return a copy of the graph with the document merged in, and a summary.
 
-    El documento debe estar validado (con los IDs del grafo como conocidos).
+    The document must already be validated (with the graph IDs as known IDs).
     """
     merged = graph.copy()
     report = MergeReport()
@@ -171,7 +171,7 @@ def _merge_into(
     element: str,
     report: MergeReport,
 ) -> bool:
-    """Combina `incoming` en `current` (in situ). Devuelve si algo cambió."""
+    """Merge `incoming` into `current` in place. Return whether anything changed."""
     changed = False
     for name, value in incoming.items():
         if name == "attrs":
@@ -191,7 +191,7 @@ def _merge_into(
 
 
 def _keeps_parser(old: Any, new: dict[str, Any]) -> bool:
-    """La procedencia `parser` prevalece sobre `llm` o `manual` (avance de RF-33)."""
+    """A `parser` provenance wins over `llm` or `manual` (part of RF-33)."""
     return (
         isinstance(old, dict)
         and old.get("method") == "parser"
@@ -206,7 +206,7 @@ def _merge_attrs(
     element: str,
     report: MergeReport,
 ) -> bool:
-    # Fusión por clave de primer nivel; los valores anidados se sustituyen enteros.
+    # Merge per top-level key; nested values are replaced as a whole.
     target = dict(current.get("attrs", {}))
     changed = False
     for key, value in attrs.items():
@@ -223,14 +223,10 @@ def _merge_attrs(
     return changed
 
 
-def _counts(changes: Changes, added: str, merged: str) -> str:
-    def plural(n: int, word: str) -> str:
-        return f"{n} {word if n == 1 else word + 's'}"
-
+def _counts(changes: Changes) -> str:
     return (
-        f"{plural(len(changes.added), added)}, "
-        f"{plural(len(changes.merged), merged)}, "
-        f"{len(changes.unchanged)} sin cambios"
+        f"{len(changes.added)} added, {len(changes.merged)} merged, "
+        f"{len(changes.unchanged)} unchanged"
     )
 
 
@@ -244,5 +240,5 @@ def _show_provenance(value: Any) -> str:
         return _show(value)
     return (
         f"{value.get('method')} ({value.get('extractor')}, "
-        f"confianza {value.get('confidence')})"
+        f"confidence {value.get('confidence')})"
     )

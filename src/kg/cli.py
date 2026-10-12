@@ -1,9 +1,9 @@
-"""Punto de entrada de la CLI `kg`.
+"""Entry point of the `kg` CLI.
 
-Convenciones (docs/requirements.md, sección 5):
-- Opciones globales `--json` y `--kg-dir`, válidas antes o después del subcomando.
-- Con `--json` toda la salida es un único objeto JSON en stdout (RF-22).
-- Códigos de salida: 0 OK, 1 validación, 2 uso, 3 error interno.
+Conventions (docs/requirements.md, section 5):
+- Global options `--json` and `--kg-dir`, valid before or after the subcommand.
+- With `--json` all output is a single JSON object on stdout (RF-22).
+- Exit codes: 0 OK, 1 validation, 2 usage, 3 internal error.
 """
 
 from __future__ import annotations
@@ -29,7 +29,7 @@ DEFAULT_KG_DIR = ".kg"
 
 
 class KgError(Exception):
-    """Error controlado que la CLI convierte en mensaje y código de salida."""
+    """Handled error that the CLI turns into a message and an exit code."""
 
     exit_code = EXIT_INTERNAL
 
@@ -48,12 +48,12 @@ class UsageError(KgError):
 
 
 class NotImplementedYetError(KgError):
-    """Subcomando previsto en el MVP pero aún sin implementar."""
+    """Subcommand planned for the MVP but not implemented yet."""
 
 
 @dataclass
 class Result:
-    """Resultado de un subcomando: `message` para humanos, `data` para `--json`."""
+    """Result of a subcommand: `message` for humans, `data` for `--json`."""
 
     message: str
     data: dict[str, Any] = field(default_factory=dict)
@@ -63,7 +63,7 @@ Handler = Callable[[argparse.Namespace], Result]
 
 
 class _Parser(argparse.ArgumentParser):
-    """ArgumentParser que lanza UsageError en vez de imprimir y salir."""
+    """ArgumentParser that raises UsageError instead of printing and exiting."""
 
     def error(self, message: str) -> NoReturn:
         raise UsageError(f"{self.prog}: {message}")
@@ -72,7 +72,7 @@ class _Parser(argparse.ArgumentParser):
 def _not_implemented(issue: int) -> Handler:
     def handler(args: argparse.Namespace) -> Result:
         raise NotImplementedYetError(
-            f"`kg {args.command}` aún no está implementado (issue #{issue}).",
+            f"`kg {args.command}` is not implemented yet (issue #{issue}).",
             {"issue": issue},
         )
 
@@ -94,7 +94,7 @@ def _init(args: argparse.Namespace) -> Result:
     except store.StoreError as e:
         raise UsageError(e.message, {"path": str(e.path)}) from e
     return Result(
-        f"almacén creado en {path} (formato v{store.FORMAT_VERSION})",
+        f"store created at {path} (format v{store.FORMAT_VERSION})",
         {
             "kg_dir": str(args.kg_dir),
             "graph": str(path),
@@ -119,7 +119,7 @@ def _add(args: argparse.Namespace) -> Result:
     data: dict[str, Any] = {"file": name, "graph": str(result.graph_path)}
     if result.merge is None:
         raise ValidationError(
-            report.to_text(name) + "\nno se ha modificado el almacén",
+            report.to_text(name) + "\nthe store was not modified",
             {**data, **report.to_dict()},
         )
     data |= {
@@ -127,9 +127,9 @@ def _add(args: argparse.Namespace) -> Result:
         "warnings": [asdict(i) for i in report.warnings],
     }
     head = (
-        f"{name} fusionado en {result.graph_path}"
+        f"{name} merged into {result.graph_path}"
         if result.merge.changed
-        else f"sin cambios: {name} ya estaba en {result.graph_path}"
+        else f"no changes: {name} is already in {result.graph_path}"
     )
     lines = [head, result.merge.to_text()]
     lines += [issue.to_text() for issue in report.warnings]
@@ -140,15 +140,15 @@ def _read(path: Path) -> str:
     try:
         return path.read_text(encoding="utf-8")
     except FileNotFoundError as e:
-        raise UsageError(f"no existe el archivo: {path}") from e
+        raise UsageError(f"file not found: {path}") from e
     except UnicodeDecodeError as e:
-        raise ValidationError(f"{path} no está en UTF-8 (byte {e.start})") from e
+        raise ValidationError(f"{path} is not UTF-8 (byte {e.start})") from e
     except OSError as e:
-        raise UsageError(f"no se puede leer {path}: {e.strerror}") from e
+        raise UsageError(f"cannot read {path}: {e.strerror}") from e
 
 
 def _validate(args: argparse.Namespace) -> Result:
-    # No toca el almacén: solo lee el archivo (RF-03).
+    # Does not touch the store: it only reads the file (RF-03).
     name = "stdin" if str(args.file) == "-" else str(args.file)
     try:
         if name == "stdin":
@@ -156,9 +156,9 @@ def _validate(args: argparse.Namespace) -> Result:
         else:
             report = validation.validate_path(args.file)
     except FileNotFoundError as e:
-        raise UsageError(f"no existe el archivo: {args.file}") from e
+        raise UsageError(f"file not found: {args.file}") from e
     except OSError as e:
-        raise UsageError(f"no se puede leer {args.file}: {e.strerror}") from e
+        raise UsageError(f"cannot read {args.file}: {e.strerror}") from e
 
     data = {"file": name, **report.to_dict()}
     if not report.ok:
@@ -167,21 +167,21 @@ def _validate(args: argparse.Namespace) -> Result:
 
 
 def _global_options() -> argparse.ArgumentParser:
-    # default=SUPPRESS para que el valor dado antes del subcomando no se
-    # sobrescriba con el default del subparser; los defaults se aplican en main().
+    # default=SUPPRESS so a value given before the subcommand is not overwritten
+    # by the subparser's default; defaults are applied in main().
     common = argparse.ArgumentParser(add_help=False)
     common.add_argument(
         "--json",
         action="store_true",
         default=argparse.SUPPRESS,
-        help="salida en JSON legible por máquinas",
+        help="machine-readable JSON output",
     )
     common.add_argument(
         "--kg-dir",
         type=Path,
         default=argparse.SUPPRESS,
-        metavar="RUTA",
-        help=f"ruta del almacén del grafo (por defecto: {DEFAULT_KG_DIR})",
+        metavar="PATH",
+        help=f"path of the graph store (default: {DEFAULT_KG_DIR})",
     )
     return common
 
@@ -190,38 +190,34 @@ def build_parser() -> argparse.ArgumentParser:
     common = _global_options()
     parser = _Parser(
         prog="kg",
-        description="Convierte el conocimiento de un proyecto en un grafo consultable.",
+        description="Turn a codebase's knowledge into a queryable knowledge graph.",
         parents=[common],
     )
     parser.add_argument("--version", action="version", version=f"kg {__version__}")
-    sub = parser.add_subparsers(dest="command", metavar="<comando>", required=True)
+    sub = parser.add_subparsers(dest="command", metavar="<command>", required=True)
 
     def add(name: str, help_: str, handler: Handler) -> argparse.ArgumentParser:
         p = sub.add_parser(name, help=help_, description=help_, parents=[common])
         p.set_defaults(handler=handler)
         return p
 
-    add("init", "crea el almacén .kg/ en el repo", _init)
+    add("init", "create the .kg/ store in the repo", _init)
 
-    p = add("extract", "extracción determinista de un repo Python", _not_implemented(6))
+    p = add("extract", "deterministic extraction of a Python repo", _not_implemented(6))
+    p.add_argument("path", nargs="?", type=Path, default=Path("."), help="repo path")
+
+    p = add("add", "add and merge entities and relations", _add)
     p.add_argument(
-        "path", nargs="?", type=Path, default=Path("."), help="ruta del repo"
+        "file", type=Path, help="JSON file conforming to the schema (`-` for stdin)"
     )
 
-    p = add("add", "añade y fusiona entidades y relaciones", _add)
-    p.add_argument(
-        "file", type=Path, help="archivo JSON conforme al esquema (`-` para stdin)"
-    )
+    p = add("schema", "print the JSON Schema of the input format", _schema)
+    p.add_argument("--path", action="store_true", help="print only the file path")
 
-    p = add("schema", "muestra el JSON Schema del formato de entrada", _schema)
-    p.add_argument(
-        "--path", action="store_true", help="muestra solo la ruta del archivo"
-    )
+    p = add("validate", "validate a JSON file against the schema", _validate)
+    p.add_argument("file", type=Path, help="JSON file to validate (`-` for stdin)")
 
-    p = add("validate", "valida un JSON contra el esquema", _validate)
-    p.add_argument("file", type=Path, help="archivo JSON a validar (`-` para stdin)")
-
-    p = add("render", "genera una visualización del grafo", _not_implemented(9))
+    p = add("render", "render a visualization of the graph", _not_implemented(9))
     fmt = p.add_mutually_exclusive_group(required=True)
     for name in ("png", "svg", "html"):
         fmt.add_argument(
@@ -229,9 +225,9 @@ def build_parser() -> argparse.ArgumentParser:
             dest="format",
             action="store_const",
             const=name,
-            help=f"formato {name.upper()}",
+            help=f"{name.upper()} format",
         )
-    p.add_argument("-o", "--output", type=Path, help="archivo de salida")
+    p.add_argument("-o", "--output", type=Path, help="output file")
 
     return parser
 
@@ -258,7 +254,7 @@ def _emit(
 
 
 def main(argv: Sequence[str] | None = None) -> int:
-    """Ejecuta la CLI y devuelve el código de salida."""
+    """Run the CLI and return the exit code."""
     argv = list(sys.argv[1:] if argv is None else argv)
     try:
         args = build_parser().parse_args(argv)
@@ -274,8 +270,8 @@ def main(argv: Sequence[str] | None = None) -> int:
     except KgError as e:
         _emit(args.json, args.command, None, e)
         return e.exit_code
-    except Exception as e:  # noqa: BLE001 — la CLI nunca debe terminar con traceback
-        err = KgError(f"error interno: {e}", {"exception": type(e).__name__})
+    except Exception as e:  # noqa: BLE001 — the CLI must never end with a traceback
+        err = KgError(f"internal error: {e}", {"exception": type(e).__name__})
         _emit(args.json, args.command, None, err)
         return EXIT_INTERNAL
 

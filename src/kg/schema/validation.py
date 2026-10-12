@@ -1,7 +1,7 @@
-"""Validación de documentos de entrada con errores accionables (RF-03–RF-05).
+"""Validation of input documents with actionable errors (RF-03–RF-05).
 
-Cada problema indica ruta JSON, valor recibido, valor esperado y una sugerencia,
-para que un agente pueda corregir el documento en una sola iteración.
+Each issue reports the JSON path, received value, expected value and a
+suggestion, so an agent can fix the document in a single iteration.
 """
 
 from __future__ import annotations
@@ -37,12 +37,12 @@ _PROVENANCE_EXAMPLE = (
     '{"method": "parser", "extractor": "python-ast@0.1", "confidence": 1.0}'
 )
 _JSON_TYPES = {
-    "object": "objeto",
-    "array": "lista",
-    "string": "texto",
-    "integer": "entero",
-    "number": "número",
-    "boolean": "booleano",
+    "object": "object",
+    "array": "array",
+    "string": "string",
+    "integer": "integer",
+    "number": "number",
+    "boolean": "boolean",
     "null": "null",
 }
 _MAX_RECEIVED = 80
@@ -50,7 +50,7 @@ _MAX_RECEIVED = 80
 
 @dataclass(frozen=True)
 class Issue:
-    """Problema de validación. `received` es `None` cuando el valor falta."""
+    """Validation issue. `received` is `None` when the value is missing."""
 
     code: str
     path: str
@@ -61,18 +61,18 @@ class Issue:
     severity: Severity = "error"
 
     def to_text(self) -> str:
-        received = "(ausente)" if self.received is None else self.received
+        received = "(missing)" if self.received is None else self.received
         return (
             f"{self.severity}: {self.path}: {self.message}\n"
-            f"  recibido:   {received}\n"
-            f"  esperado:   {self.expected}\n"
-            f"  sugerencia: {self.suggestion}"
+            f"  received:   {received}\n"
+            f"  expected:   {self.expected}\n"
+            f"  suggestion: {self.suggestion}"
         )
 
 
 @dataclass
 class Report:
-    """Resultado de validar un documento."""
+    """Result of validating a document."""
 
     errors: list[Issue] = field(default_factory=list)
     warnings: list[Issue] = field(default_factory=list)
@@ -85,15 +85,15 @@ class Report:
 
     def summary(self, name: str) -> str:
         if self.ok:
-            nodes = _plural(self.nodes, "nodo", "nodos")
-            edges = _plural(self.edges, "arista", "aristas")
-            head = f"{name} es válido ({nodes}, {edges})"
+            nodes = _plural(self.nodes, "node", "nodes")
+            edges = _plural(self.edges, "edge", "edges")
+            head = f"{name} is valid ({nodes}, {edges})"
         else:
             head = (
-                f"{name} no es válido: {_plural(len(self.errors), 'error', 'errores')}"
+                f"{name} is not valid: {_plural(len(self.errors), 'error', 'errors')}"
             )
         if self.warnings:
-            head += f", {_plural(len(self.warnings), 'aviso', 'avisos')}"
+            head += f", {_plural(len(self.warnings), 'warning', 'warnings')}"
         return head
 
     def to_text(self, name: str) -> str:
@@ -112,7 +112,7 @@ class Report:
 
 
 def validate_text(text: str, known_ids: Collection[str] | None = None) -> Report:
-    """Valida el contenido de un archivo JSON (ver `validate_document`)."""
+    """Validate the contents of a JSON file (see `validate_document`)."""
     try:
         document = json.loads(text)
     except json.JSONDecodeError as e:
@@ -121,11 +121,11 @@ def validate_text(text: str, known_ids: Collection[str] | None = None) -> Report
                 Issue(
                     code="invalid_json",
                     path="$",
-                    message=f"JSON mal formado: {e.msg}",
-                    received=f"línea {e.lineno}, columna {e.colno}",
-                    expected="un documento JSON válido",
-                    suggestion="Corrige la sintaxis en esa posición (comas, comillas, "
-                    "llaves) y vuelve a validar.",
+                    message=f"malformed JSON: {e.msg}",
+                    received=f"line {e.lineno}, column {e.colno}",
+                    expected="a valid JSON document",
+                    suggestion="Fix the syntax at that position (commas, quotes, "
+                    "braces) and validate again.",
                 )
             ]
         )
@@ -133,7 +133,7 @@ def validate_text(text: str, known_ids: Collection[str] | None = None) -> Report
 
 
 def validate_path(path: Path) -> Report:
-    """Lee y valida un archivo. Deja pasar `OSError` para que lo trate la CLI."""
+    """Read and validate a file. Lets `OSError` through for the CLI to handle."""
     try:
         text = path.read_text(encoding="utf-8")
     except UnicodeDecodeError as e:
@@ -142,10 +142,10 @@ def validate_path(path: Path) -> Report:
                 Issue(
                     code="invalid_encoding",
                     path="$",
-                    message="el archivo no está en UTF-8",
+                    message="the file is not UTF-8",
                     received=f"byte {e.start}",
-                    expected="texto UTF-8",
-                    suggestion="Guarda el archivo con codificación UTF-8.",
+                    expected="UTF-8 text",
+                    suggestion="Save the file with UTF-8 encoding.",
                 )
             ]
         )
@@ -155,16 +155,16 @@ def validate_path(path: Path) -> Report:
 def validate_document(
     document: Any, known_ids: Collection[str] | None = None
 ) -> Report:
-    """Valida un documento ya cargado: esquema, IDs duplicados y referencias.
+    """Validate a loaded document: schema, duplicate IDs and references.
 
-    `known_ids` son nodos que existen fuera del documento (p. ej. en el almacén,
-    para `kg add`): las aristas pueden apuntar a ellos.
+    `known_ids` are nodes that exist outside the document (e.g. in the store,
+    for `kg add`): edges may point to them.
     """
     report = Report()
     seen: set[tuple[str, str]] = set()
     for error in validator().iter_errors(document):
         for issue in _translate(error, document):
-            # jsonschema emite un error `required` por campo con la lista completa
+            # jsonschema emits one `required` error per field with the full list
             if (issue.code, issue.path) not in seen:
                 seen.add((issue.code, issue.path))
                 report.errors.append(issue)
@@ -184,7 +184,7 @@ def validate_document(
     return report
 
 
-# --- Comprobaciones semánticas ----------------------------------------------
+# --- Semantic checks -------------------------------------------------------
 
 
 def _items(document: dict[str, Any], key: str) -> list[tuple[int, dict[str, Any]]]:
@@ -207,11 +207,11 @@ def _check_duplicate_ids(
                 Issue(
                     code="duplicate_id",
                     path=f"$.nodes[{i}].id",
-                    message=f"ID duplicado; ya se usa en $.nodes[{first[node_id]}]",
+                    message=f"duplicate ID; already used at $.nodes[{first[node_id]}]",
                     received=_show(node_id),
-                    expected="un ID único en el archivo",
-                    suggestion="Fusiona ambos nodos en uno solo o, si son entidades "
-                    "distintas, dales IDs distintos.",
+                    expected="an ID that is unique in the file",
+                    suggestion="Merge both nodes into one or, if they are different "
+                    "entities, give them different IDs.",
                 )
             )
         else:
@@ -225,12 +225,12 @@ def _check_references(
     known_ids: Collection[str] | None,
     report: Report,
 ) -> None:
-    where, expected = "en el archivo", "el ID de un nodo declarado en `nodes`"
+    where, expected = "in the file", "the ID of a node declared in `nodes`"
     if known_ids is None:
         known_ids = ()
     else:
-        where += " ni en el almacén"
-        expected += " o existente en el almacén"
+        where += " or in the store"
+        expected += " or already in the store"
     candidates = sorted({*ids, *known_ids})
     for i, edge in edges:
         for end in ("source", "target"):
@@ -238,15 +238,15 @@ def _check_references(
             if not isinstance(ref, str) or ref in ids or ref in known_ids:
                 continue
             close = difflib.get_close_matches(ref, candidates, n=1)
-            hint = f"¿Querías decir {_show(close[0])}? " if close else ""
+            hint = f"Did you mean {_show(close[0])}? " if close else ""
             report.errors.append(
                 Issue(
                     code="broken_reference",
                     path=f"$.edges[{i}].{end}",
-                    message=f"la arista apunta a un nodo que no existe {where}",
+                    message=f"the edge points to a node that does not exist {where}",
                     received=_show(ref),
                     expected=expected,
-                    suggestion=f"{hint}Corrige el ID o añade el nodo a `nodes`.",
+                    suggestion=f"{hint}Fix the ID or add the node to `nodes`.",
                 )
             )
 
@@ -254,22 +254,22 @@ def _check_references(
 def _check_custom_types(document: dict[str, Any], report: Report) -> None:
     for custom in find_custom_types(document):
         if not re.match(_CUSTOM_TYPE_PATTERNS[custom.kind], custom.type):
-            continue  # ya se informa como error de esquema
+            continue  # already reported as a schema error
         standard = STANDARD_NODE_TYPES if custom.kind == "node" else STANDARD_EDGE_TYPES
         close = _closest(custom.type, standard)
         hint = (
-            f"Si equivale a {_show(close)}, usa el tipo estándar; si no, mantenlo."
+            f"If it means {_show(close)}, use the standard type; otherwise keep it."
             if close
-            else "Comprueba que ningún tipo estándar encaja; si no, mantenlo."
+            else "Check that no standard type fits; otherwise keep it."
         )
-        entity = "entidad" if custom.kind == "node" else "relación"
+        entity = "entity" if custom.kind == "node" else "relation"
         report.warnings.append(
             Issue(
                 code="custom_type",
                 path=custom.path,
-                message=f"tipo de {entity} personalizado",
+                message=f"custom {entity} type",
                 received=_show(custom.type),
-                expected=f"un tipo del catálogo estándar de {entity}",
+                expected=f"a standard {entity} type",
                 suggestion=hint,
                 severity="warning",
             )
@@ -291,17 +291,17 @@ def _check_id_prefixes(
                 Issue(
                     code="id_prefix_mismatch",
                     path=f"$.nodes[{i}].id",
-                    message=f"el prefijo del ID no coincide con el tipo {_show(type_)}",
+                    message=f"the ID prefix does not match the type {_show(type_)}",
                     received=_show(node_id),
                     expected=f"{type_.lower()}:<…>",
-                    suggestion=f"Usa {_show(f'{type_.lower()}:{rest}')} o revisa el "
-                    "tipo del nodo.",
+                    suggestion=f"Use {_show(f'{type_.lower()}:{rest}')} or check the "
+                    "node type.",
                     severity="warning",
                 )
             )
 
 
-# --- Traducción de errores de jsonschema -------------------------------------
+# --- Translation of jsonschema errors ---------------------------------------
 
 
 def _translate(error: SchemaError, document: Any) -> Iterable[Issue]:
@@ -317,7 +317,7 @@ def _translate(error: SchemaError, document: Any) -> Iterable[Issue]:
             yield Issue(
                 code="required",
                 path=_join(path, name),
-                message="falta un campo obligatorio",
+                message="missing required field",
                 received=None,
                 expected=_describe_property(error.schema, name),
                 suggestion=_required_hint(name),
@@ -328,19 +328,17 @@ def _translate(error: SchemaError, document: Any) -> Iterable[Issue]:
         allowed = list(error.schema.get("properties", {}))
         for name in sorted(set(value) - set(allowed)):
             close = _closest(name, allowed)
-            hint = f"¿Querías decir {_show(close)}? " if close else ""
+            hint = f"Did you mean {_show(close)}? " if close else ""
             where = (
-                ""
-                if "attrs" not in allowed
-                else " Los atributos propios van en `attrs`."
+                "" if "attrs" not in allowed else " Custom attributes go in `attrs`."
             )
             yield Issue(
                 code="unknown_field",
                 path=_join(path, name),
-                message="campo no permitido",
+                message="field not allowed",
                 received=_show(value[name]),
-                expected=f"solo los campos {_show_list(allowed)}",
-                suggestion=f"{hint}Elimina el campo o renómbralo.{where}",
+                expected=f"only the fields {_show_list(allowed)}",
+                suggestion=f"{hint}Remove or rename the field.{where}",
             )
         return
 
@@ -361,30 +359,29 @@ def _type_issue(path: str, value: Any) -> Issue:
     is_node = path.startswith("$.nodes")
     standard = STANDARD_NODE_TYPES if is_node else STANDARD_EDGE_TYPES
     style = (
-        "PascalCase (p. ej. `Requirement`)"
+        "PascalCase (e.g. `Requirement`)"
         if is_node
-        else "snake_case (p. ej. `satisfies`)"
+        else "snake_case (e.g. `satisfies`)"
     )
-    entity = "entidad" if is_node else "relación"
+    entity = "entity" if is_node else "relation"
     if isinstance(value, str):
         close = _closest(value, standard)
-        hint = f"Usa el tipo estándar {_show(close)}." if close else ""
-        hint += f" Un tipo personalizado debe ir en {style}."
+        hint = f"Use the standard type {_show(close)}." if close else ""
+        hint += f" A custom type must be in {style}."
     else:
-        hint = f"Usa un texto: un tipo estándar o uno personalizado en {style}."
+        hint = f"Use a string: a standard type or a custom one in {style}."
     return Issue(
         code="invalid_type_name",
         path=path,
-        message=f"tipo de {entity} no válido",
+        message=f"invalid {entity} type",
         received=_show(value),
-        expected=f"uno de {_show_list(sorted(standard))} "
-        f"o un tipo personalizado en {style}",
+        expected=f"one of {_show_list(sorted(standard))} or a custom type in {style}",
         suggestion=hint.strip(),
     )
 
 
 def _node_type(document: Any, error: SchemaError) -> str | None:
-    """Tipo del nodo al que pertenece un `$.nodes[i].id`, si se conoce."""
+    """Type of the node a `$.nodes[i].id` belongs to, if known."""
     parts = list(error.absolute_path)
     if len(parts) != 3 or parts[0] != "nodes" or parts[2] != "id":
         return None
@@ -400,38 +397,38 @@ def _pattern_issue(
         return Issue(
             code="invalid_timestamp",
             path=path,
-            message="fecha con formato incorrecto",
+            message="badly formatted date",
             received=_show(value),
-            expected="fecha ISO-8601 con zona horaria, p. ej. `2026-10-09T12:00:00Z`",
-            suggestion="Usa el formato `AAAA-MM-DDTHH:MM:SS` seguido de `Z` "
-            "o `+HH:MM`.",
+            expected="ISO-8601 date with time zone, e.g. `2026-10-09T12:00:00Z`",
+            suggestion="Use the format `YYYY-MM-DDTHH:MM:SS` followed by `Z` "
+            "or `+HH:MM`.",
         )
     if pattern == _ID_PATTERN:
-        hint = "Usa `<tipo>:<ruta|nombre cualificado|slug>` con el tipo en minúsculas"
+        hint = "Use `<type>:<path|qualified name|slug>` with a lowercase type"
         prefix, sep, rest = (
             value.partition(":") if isinstance(value, str) else ("", "", "")
         )
         if sep and rest.strip() and prefix:
-            hint += f", p. ej. {_show(f'{prefix.lower()}:{rest}')}"
+            hint += f", e.g. {_show(f'{prefix.lower()}:{rest}')}"
         elif not sep and isinstance(value, str) and value.strip() and node_type:
-            hint += f", p. ej. {_show(f'{node_type.lower()}:{value.strip()}')}"
+            hint += f", e.g. {_show(f'{node_type.lower()}:{value.strip()}')}"
         else:
-            hint += ", p. ej. `file:src/app/main.py` o `concept:mi-concepto`"
+            hint += ", e.g. `file:src/app/main.py` or `concept:my-concept`"
         return Issue(
             code="invalid_id",
             path=path,
-            message="ID con formato incorrecto",
+            message="badly formatted ID",
             received=_show(value),
-            expected="`<tipo>:<identificador>`",
+            expected="`<type>:<identifier>`",
             suggestion=hint + ".",
         )
     return Issue(
         code="pattern",
         path=path,
-        message="el valor no tiene el formato esperado",
+        message="the value does not have the expected format",
         received=_show(value),
-        expected=f"texto que cumpla `{pattern}`",
-        suggestion="Ajusta el valor al formato indicado.",
+        expected=f"a string matching `{pattern}`",
+        suggestion="Adjust the value to the given format.",
     )
 
 
@@ -442,71 +439,71 @@ def _generic_issue(path: str, error: SchemaError) -> Issue:
             names = (
                 expected_value if isinstance(expected_value, list) else [expected_value]
             )
-            expected = " o ".join(_JSON_TYPES.get(n, n) for n in names)
+            expected = " or ".join(_JSON_TYPES.get(n, n) for n in names)
             return Issue(
                 code="wrong_type",
                 path=path,
-                message="tipo de dato incorrecto",
+                message="wrong data type",
                 received=f"{_show(value)} ({_json_type(value)})",
                 expected=expected,
-                suggestion=f"Cambia el valor por un {expected}.",
+                suggestion=f"Change the value to a value of type {expected}.",
             )
         case "enum":
             close = _closest(value, expected_value) if isinstance(value, str) else None
             hint = (
-                f"Usa {_show(close)}." if close else "Usa uno de los valores esperados."
+                f"Use {_show(close)}." if close else "Use one of the expected values."
             )
             return Issue(
                 code="not_allowed",
                 path=path,
-                message="valor no permitido",
+                message="value not allowed",
                 received=_show(value),
-                expected=f"uno de {_show_list(expected_value)}",
+                expected=f"one of {_show_list(expected_value)}",
                 suggestion=hint,
             )
         case "const":
             return Issue(
                 code="not_allowed",
                 path=path,
-                message="valor no permitido",
+                message="value not allowed",
                 received=_show(value),
                 expected=_show(expected_value),
-                suggestion=f"Usa {_show(expected_value)}.",
+                suggestion=f"Use {_show(expected_value)}.",
             )
         case "minimum" | "maximum":
             low, high = _bounds(error.schema)
             return Issue(
                 code="out_of_range",
                 path=path,
-                message="número fuera de rango",
+                message="number out of range",
                 received=_show(value),
-                expected=f"un número entre {low} y {high}",
-                suggestion=f"Usa un valor entre {low} y {high}.",
+                expected=f"a number between {low} and {high}",
+                suggestion=f"Use a value between {low} and {high}.",
             )
         case "minItems" | "maxItems":
             low, high = error.schema.get("minItems", 0), error.schema.get("maxItems")
-            count = _plural(len(value), "elemento", "elementos")
+            count = _plural(len(value), "item", "items")
             expected = (
-                f"exactamente {low} elementos"
+                f"exactly {low} items"
                 if low == high
-                else f"entre {low} y {high or '∞'} elementos"
+                else f"between {low} and {high or '∞'} items"
             )
             return Issue(
                 code="wrong_length",
                 path=path,
-                message="número de elementos incorrecto",
+                message="wrong number of items",
                 received=f"{_show(value)} ({count})",
                 expected=expected,
-                suggestion="Para `lines` usa `[inicio, fin]`, p. ej. `[12, 40]`.",
+                suggestion="For `lines` use `[start, end]`, e.g. `[12, 40]`.",
             )
         case "minLength":
             return Issue(
                 code="empty",
                 path=path,
-                message="texto vacío",
+                message="empty string",
                 received=_show(value),
-                expected="texto no vacío",
-                suggestion="Rellena el campo o elimínalo si es opcional.",
+                expected="a non-empty string",
+                suggestion="Fill in the field or remove it if it is optional.",
             )
     return Issue(
         code=str(kind),
@@ -514,18 +511,18 @@ def _generic_issue(path: str, error: SchemaError) -> Issue:
         message=error.message,
         received=_show(value),
         expected=f"{kind}: {_show(expected_value)}",
-        suggestion="Revisa el valor según `kg schema`.",
+        suggestion="Check the value against `kg schema`.",
     )
 
 
 def _required_hint(name: str) -> str:
     if name == "provenance":
-        return f"Añade `provenance`, p. ej. {_PROVENANCE_EXAMPLE}."
+        return f"Add `provenance`, e.g. {_PROVENANCE_EXAMPLE}."
     if name in {"nodes", "edges"}:
-        return f'Añade `"{name}": []` aunque esté vacío.'
+        return f'Add `"{name}": []` even if it is empty.'
     if name == "version":
-        return 'Añade `"version": "1"`.'
-    return f"Añade el campo `{name}`."
+        return 'Add `"version": "1"`.'
+    return f"Add the field `{name}`."
 
 
 def _describe_property(schema: dict[str, Any], name: str) -> str:
@@ -534,10 +531,10 @@ def _describe_property(schema: dict[str, Any], name: str) -> str:
         ref = prop["$ref"].rsplit("/", 1)[-1]
         prop = {**_DEFS.get(ref, {}), **prop}
     description = prop.get("description")
-    return f"campo `{name}`" + (f": {description}" if description else "")
+    return f"field `{name}`" + (f": {description}" if description else "")
 
 
-# --- Utilidades ---------------------------------------------------------------
+# --- Helpers -----------------------------------------------------------------
 
 
 def _format_path(parts: Iterable[str | int]) -> str:
@@ -566,7 +563,7 @@ _TOP_LEVEL_ORDER = {"version": 0, "nodes": 1, "edges": 2}
 
 
 def _sort_key(parts: Iterable[str | int]) -> list[tuple[int, int, str]]:
-    """Orden del documento: version, nodes, edges; índices en orden numérico."""
+    """Document order: version, nodes, edges; indexes in numeric order."""
     key = []
     for depth, part in enumerate(parts):
         if isinstance(part, int):
@@ -593,12 +590,12 @@ def _bounds(schema: dict[str, Any]) -> tuple[Any, Any]:
 def _json_type(value: Any) -> str:
     for name, py in (
         ("null", type(None)),
-        ("booleano", bool),
-        ("entero", int),
-        ("número", float),
-        ("texto", str),
-        ("lista", list),
-        ("objeto", dict),
+        ("boolean", bool),
+        ("integer", int),
+        ("number", float),
+        ("string", str),
+        ("array", list),
+        ("object", dict),
     ):
         if isinstance(value, py):
             return name
