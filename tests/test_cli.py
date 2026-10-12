@@ -63,7 +63,7 @@ def test_global_option_defaults(monkeypatch, capsys):
         return Result("hecho")
 
     monkeypatch.setattr("kg.cli._not_implemented", lambda issue: handler)
-    assert main(["init"]) == EXIT_OK
+    assert main(["extract"]) == EXIT_OK
     assert seen == {"json": False, "kg_dir": Path(DEFAULT_KG_DIR)}
     assert capsys.readouterr().out.strip() == "hecho"
 
@@ -72,15 +72,14 @@ def test_success_json_output(monkeypatch, capsys):
     monkeypatch.setattr(
         "kg.cli._not_implemented", lambda issue: lambda args: Result("x", {"n": 1})
     )
-    assert main(["init", "--json"]) == EXIT_OK
+    assert main(["extract", "--json"]) == EXIT_OK
     payload = json.loads(capsys.readouterr().out)
-    assert payload == {"ok": True, "command": "init", "result": {"n": 1}}
+    assert payload == {"ok": True, "command": "extract", "result": {"n": 1}}
 
 
 @pytest.mark.parametrize(
     "argv",
     [
-        ["init"],
         ["extract"],
         ["add", "a.json"],
         ["render", "--png"],
@@ -127,7 +126,7 @@ def test_unexpected_exception_is_internal_error(monkeypatch, capsys):
         raise RuntimeError("fallo inesperado")
 
     monkeypatch.setattr("kg.cli._not_implemented", lambda issue: boom)
-    assert main(["init", "--json"]) == EXIT_INTERNAL
+    assert main(["extract", "--json"]) == EXIT_INTERNAL
     payload = json.loads(capsys.readouterr().out)
     assert "fallo inesperado" in payload["error"]["message"]
     assert payload["error"]["details"] == {"exception": "RuntimeError"}

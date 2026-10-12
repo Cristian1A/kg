@@ -16,7 +16,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, NoReturn
 
-from kg import __version__
+from kg import __version__, store
 from kg import schema as kg_schema
 from kg.schema import validation
 
@@ -88,6 +88,21 @@ def _schema(args: argparse.Namespace) -> Result:
     return Result(text, {"path": str(path), "schema": data})
 
 
+def _init(args: argparse.Namespace) -> Result:
+    try:
+        path = store.init_store(args.kg_dir)
+    except store.StoreError as e:
+        raise UsageError(e.message, {"path": str(e.path)}) from e
+    return Result(
+        f"almacén creado en {path} (formato v{store.FORMAT_VERSION})",
+        {
+            "kg_dir": str(args.kg_dir),
+            "graph": str(path),
+            "version": store.FORMAT_VERSION,
+        },
+    )
+
+
 def _validate(args: argparse.Namespace) -> Result:
     # No toca el almacén: solo lee el archivo (RF-03).
     name = "stdin" if str(args.file) == "-" else str(args.file)
@@ -142,7 +157,7 @@ def build_parser() -> argparse.ArgumentParser:
         p.set_defaults(handler=handler)
         return p
 
-    add("init", "crea el almacén .kg/ en el repo", _not_implemented(4))
+    add("init", "crea el almacén .kg/ en el repo", _init)
 
     p = add("extract", "extracción determinista de un repo Python", _not_implemented(6))
     p.add_argument(

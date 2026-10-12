@@ -47,3 +47,4 @@ pytest && ruff check . && ruff format --check .
 
 - `docs/requisitos-funcionales.md` — requisitos funcionales aprobados (RF-xx / RNF-xx).
 - `docs/esquema.md` — formato JSON de entrada: IDs, catálogo estándar, procedencia.
+- `docs/almacen.md` — almacén `.kg/`: formato de `graph.json` y orden determinista.
