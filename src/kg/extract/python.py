@@ -1,9 +1,9 @@
-"""Deterministic extraction of a Python repo's code structure (RF-10).
+"""Deterministic extraction of a Python repo's code structure (RF-10, RF-12).
 
-Produces a schema document with `Repo`, `Package`, `Module`, `File`, `Class`
-and `Function` nodes, `contains`, `defines` and `imports` edges, and external
-imports as `Dependency` nodes. Rules and IDs are documented in
-`docs/extract.md`.
+Produces a schema document with `Repo`, `Package`, `Module`, `File`, `Class`,
+`Function` and `Test` nodes, `contains`, `defines`, `imports` and `tests`
+edges, and external imports as `Dependency` nodes. Rules and IDs are
+documented in `docs/extract.md`.
 """
 
 from __future__ import annotations
@@ -17,6 +17,7 @@ from pathlib import Path
 from typing import Any
 
 from kg.extract.files import python_files
+from kg.extract.references import bindings, from_base, references
 from kg.store import FORMAT_VERSION
 
 EXTRACTOR = "python-ast@0.1"
@@ -54,10 +55,26 @@ class _Module:
     path: str  # file, e.g. `src/kg/cli.py`
     is_package: bool
     search_root: str  # dotted dir that is on `sys.path` for it (`` at the root)
+    is_test: bool = False  # a pytest test file
 
     @property
     def id(self) -> str:
+        if self.is_test:
+            return f"test:{self.name}"
         return f"{'package' if self.is_package else 'module'}:{self.name}"
+
+    @property
+    def package(self) -> list[str]:
+        """Package that relative imports start from."""
+        parts = self.name.split(".")
+        return parts if self.is_package else parts[:-1]
+
+
+@dataclass(frozen=True)
+class _TestDef:
+    node_id: str
+    stmt: ast.FunctionDef | ast.AsyncFunctionDef
+    module: _Module
 
 
 def repo_id(root: Path) -> str:
@@ -79,6 +96,13 @@ class _Builder:
         self.nodes: dict[str, dict[str, Any]] = {}
         self.edges: dict[tuple[str, str, str], dict[str, Any]] = {}
         self.extraction = Extraction({})
+        # Qualified name → ID of every module, class and function in the repo
+        self.entities: dict[str, str] = {}
+        # ID → file, to leave test code out of `tests` targets
+        self.entity_files: dict[str, str] = {}
+        self.trees: dict[str, tuple[_Module, ast.Module]] = {}
+        self.test_defs: list[_TestDef] = []
+        self._bindings: dict[str, dict[str, str]] = {}
 
     def run(self) -> None:
         files = python_files(self.root)
@@ -96,8 +120,10 @@ class _Builder:
             tree = self._parse(path)
             self._module(module, by_name, tree)
             if tree is not None:
-                self._definitions(tree.body, module.name, f"file:{path}", path)
+                self.trees[module.name] = (module, tree)
+                self._definitions(tree.body, module, f"file:{path}")
                 self._imports(tree, module, by_name)
+        self._tests(by_name)
 
         self.extraction.document = {
             "version": FORMAT_VERSION,
@@ -130,8 +156,14 @@ class _Builder:
     ) -> None:
         doc = _summary(tree) if tree is not None else None
         type_ = "Package" if module.is_package else "Module"
+        attrs = None
+        if module.is_test:
+            type_, attrs = "Test", {"kind": "module"}
         label = module.name.rsplit(".", 1)[-1]
-        self._node(module.id, type_, module.path, label=label, description=doc)
+        self._node(
+            module.id, type_, module.path, label=label, description=doc, attrs=attrs
+        )
+        self._entity(module.name, module.id, module.path)
         self._edge(f"file:{module.path}", module.id, "defines", module.path)
         parent = (
             by_name.get(module.name.rsplit(".", 1)[0]) if "." in module.name else None
@@ -156,15 +188,24 @@ class _Builder:
     # --- Classes and functions -------------------------------------------------
 
     def _definitions(
-        self, body: list[ast.stmt], scope: str, parent_id: str, path: str
+        self,
+        body: list[ast.stmt],
+        module: _Module,
+        parent_id: str,
+        scope: str | None = None,
+        test_class: bool = False,
     ) -> None:
+        """Classes and functions of a scope; `scope` is `None` at module level."""
+        path = module.path
         for stmt in _flatten(body):
             if not isinstance(stmt, _Def):
                 continue
-            qualname = f"{scope}.{stmt.name}"
+            qualname = f"{scope or module.name}.{stmt.name}"
             is_class = isinstance(stmt, ast.ClassDef)
-            node_id = f"{'class' if is_class else 'function'}:{qualname}"
-            if node_id in self.nodes:  # redefinition (if/else, overload, setter)
+            kind = _test_kind(stmt, module, scope is None, test_class)
+            prefix = "test" if kind else "class" if is_class else "function"
+            node_id = f"{prefix}:{qualname}"
+            if qualname in self.entities:  # redefinition (if/else, overload, setter)
                 continue
             first = min([stmt.lineno, *(d.lineno for d in stmt.decorator_list)])
             lines = [first, stmt.end_lineno or stmt.lineno]
@@ -175,9 +216,11 @@ class _Builder:
                 attrs["decorators"] = [ast.unparse(d) for d in stmt.decorator_list]
             if is_class and stmt.bases:
                 attrs["bases"] = [ast.unparse(b) for b in stmt.bases]
+            if kind:
+                attrs["kind"] = kind
             self._node(
                 node_id,
-                "Class" if is_class else "Function",
+                "Test" if kind else "Class" if is_class else "Function",
                 path,
                 lines=lines,
                 label=stmt.name,
@@ -185,8 +228,97 @@ class _Builder:
                 attrs=attrs,
             )
             self._edge(parent_id, node_id, "defines", path, lines)
+            self._entity(qualname, node_id, path)
+            if kind == "function" and not isinstance(stmt, ast.ClassDef):
+                self.test_defs.append(_TestDef(node_id, stmt, module))
             if is_class:
-                self._definitions(stmt.body, qualname, node_id, path)
+                self._definitions(
+                    stmt.body, module, node_id, qualname, test_class=kind == "class"
+                )
+
+    # --- Tests -------------------------------------------------------------------
+
+    def _tests(self, by_name: dict[str, _Module]) -> None:
+        """`tests` edges, once every entity of the repo is known (RF-12)."""
+        for (source, target, type_), edge in list(self.edges.items()):
+            module = self._module_of(source)
+            if (
+                type_ == "imports"
+                and module is not None
+                and module.is_test
+                and self._is_code(target)
+            ):
+                self._edge(
+                    source,
+                    target,
+                    "tests",
+                    module.path,
+                    edge["provenance"].get("lines"),
+                )
+        for test in self.test_defs:
+            names = self._module_bindings(test.module)
+            for dotted, line in references(test.stmt, names):
+                target = self._target(dotted, test.module, by_name)
+                if target is not None and self._is_code(target):
+                    self._edge(
+                        test.node_id, target, "tests", test.module.path, [line, line]
+                    )
+
+    def _target(
+        self, dotted: str, module: _Module, by_name: dict[str, _Module]
+    ) -> str | None:
+        """Entity that a referenced name designates, following re-exports."""
+        candidates = [dotted]
+        if module.search_root:  # next to a loose script
+            candidates.append(f"{module.search_root}.{dotted}")
+        for candidate in candidates:
+            first: str | None = None
+            for _ in range(5):  # bounded: re-exports may form cycles
+                parts = candidate.split(".")
+                for i in range(len(parts), 0, -1):  # longest known prefix
+                    prefix = ".".join(parts[:i])
+                    if prefix in self.entities:
+                        break
+                else:
+                    break
+                first = first or self.entities[prefix]
+                rest = parts[i:]
+                owner = by_name.get(prefix)
+                exported = (
+                    self._module_bindings(owner).get(rest[0])
+                    if owner is not None and rest
+                    else None
+                )
+                if exported is None:
+                    return self.entities[prefix]
+                candidate = ".".join([exported, *rest[1:]])
+            if first is not None:  # a cycle, or a re-export of something unknown
+                return first
+        return None
+
+    def _module_bindings(self, module: _Module) -> dict[str, str]:
+        if module.name not in self._bindings:
+            entry = self.trees.get(module.name)
+            self._bindings[module.name] = (
+                bindings(entry[1], module.package) if entry else {}
+            )
+        return self._bindings[module.name]
+
+    def _module_of(self, node_id: str) -> _Module | None:
+        entry = self.trees.get(node_id.split(":", 1)[1])
+        return entry[0] if entry and entry[0].id == node_id else None
+
+    def _is_code(self, node_id: str) -> bool:
+        """Repo code that tests can target: not a test, nor in a test file."""
+        path = self.entity_files.get(node_id)
+        if path is None or node_id.startswith("test:"):
+            return False
+        name = path.rsplit("/", 1)[-1]
+        return not (_is_test_file(path) or name == "conftest.py")
+
+    def _entity(self, qualname: str, node_id: str, path: str) -> None:
+        self.entities.setdefault(qualname, node_id)
+        self.entity_files.setdefault(node_id, path)
 
     # --- Imports -----------------------------------------------------------------
 
@@ -292,22 +424,16 @@ def _module_for(path: str, init_dirs: set[str], root_name: str) -> _Module:
     is_package = _is_init(path)
     if is_package:
         names = names[:-1]
-    return _Module(".".join(names), path, is_package, search_root)
+    return _Module(".".join(names), path, is_package, search_root, _is_test_file(path))
 
 
 def _imported_names(stmt: ast.Import | ast.ImportFrom, module: _Module) -> list[str]:
     """Absolute dotted names a statement may refer to (submodule or attribute)."""
     if isinstance(stmt, ast.Import):
         return [alias.name for alias in stmt.names]
-    base = stmt.module or ""
-    if stmt.level:
-        package = module.name.split(".")
-        if not module.is_package:
-            package = package[:-1]
-        if stmt.level - 1 >= len(package):
-            return []  # beyond the top-level package: an error at runtime
-        package = package[: len(package) - (stmt.level - 1)]
-        base = ".".join([*package, base] if base else package)
+    base = from_base(stmt, module.package)
+    if base is None:
+        return []  # beyond the top-level package: an error at runtime
     # `from a import b` imports the submodule `a.b` if it exists, else `a`;
     # _resolve takes the longest known prefix, so `a.b` covers both.
     return [f"{base}.{a.name}" if a.name != "*" else base for a in stmt.names]
@@ -335,6 +461,31 @@ def _summary(node: ast.Module | _Def) -> str | None:
     if not doc:
         return None
     return " ".join(doc.strip().split("\n\n", 1)[0].split())
+
+
+def _test_kind(
+    stmt: _Def, module: _Module, top_level: bool, in_test_class: bool
+) -> str | None:
+    """`function` or `class` if pytest would collect it as a test, else `None`.
+
+    pytest defaults: `test*` functions at module level or in a test class, and
+    `Test*` classes (or `unittest.TestCase` subclasses) at module level.
+    """
+    if not module.is_test:
+        return None
+    if isinstance(stmt, ast.ClassDef):
+        bases = {ast.unparse(b).rsplit(".", 1)[-1] for b in stmt.bases}
+        is_test = stmt.name.startswith("Test") or "TestCase" in bases
+        return "class" if top_level and is_test else None
+    if stmt.name.startswith("test") and (top_level or in_test_class):
+        return "function"
+    return None
+
+
+def _is_test_file(path: str) -> bool:
+    """pytest's default `python_files`: `test_*.py` and `*_test.py`."""
+    name = path.rsplit("/", 1)[-1]
+    return name.startswith("test_") or name.endswith("_test.py")
 
 
 def _is_public(name: str) -> bool:
