@@ -1,6 +1,6 @@
 """Punto de entrada de la CLI `kg`.
 
-Convenciones (docs/requisitos-funcionales.md, sección 5):
+Convenciones (docs/requirements.md, sección 5):
 - Opciones globales `--json` y `--kg-dir`, válidas antes o después del subcomando.
 - Con `--json` toda la salida es un único objeto JSON en stdout (RF-22).
 - Códigos de salida: 0 OK, 1 validación, 2 uso, 3 error interno.

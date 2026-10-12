@@ -1,12 +1,12 @@
 name: Bug
-description: Algo no funciona como debería
-title: "[ámbito] "
+description: Something does not work as it should
+title: "[scope] "
 labels: ["type:bug"]
 body:
   - type: textarea
-    id: pasos
+    id: steps
     attributes:
-      label: Pasos para reproducir
+      label: Steps to reproduce
       placeholder: |
         1. kg init
         2. kg extract .
@@ -14,21 +14,21 @@ body:
     validations:
       required: true
   - type: textarea
-    id: esperado
+    id: expected
     attributes:
-      label: Resultado esperado
+      label: Expected result
     validations:
       required: true
   - type: textarea
-    id: obtenido
+    id: actual
     attributes:
-      label: Resultado obtenido
-      description: Incluye la salida o el traceback
+      label: Actual result
+      description: Include the output or the traceback
       render: text
     validations:
       required: true
   - type: input
-    id: entorno
+    id: environment
     attributes:
-      label: Entorno
+      label: Environment
       placeholder: kg 0.1.0 · Python 3.12 · Ubuntu 24.04

@@ -1,12 +1,12 @@
-## Qué cambia
+## What changes
 
-## Por qué
+## Why
 
 Closes #
-Requisitos: RF-
+Requirements: RF-
 
 ## Checklist
-- [ ] `pytest` pasa
-- [ ] `ruff check .` sin errores
-- [ ] Tests añadidos/actualizados
-- [ ] Documentación actualizada si aplica
+- [ ] `pytest` passes
+- [ ] `ruff check .` passes
+- [ ] Tests added/updated
+- [ ] Documentation updated if applicable

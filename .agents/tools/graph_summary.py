@@ -1,4 +1,4 @@
-"""Imprime un resumen JSON de un grafo (GraphML) o del grafo de ejemplo del proyecto."""
+"""Print a JSON summary of a graph (GraphML) or of the project's example graph."""
 
 import argparse
 import json
@@ -28,7 +28,7 @@ def summarize(G: nx.Graph) -> dict:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("path", nargs="?", help="Archivo .graphml (opcional)")
+    parser.add_argument("path", nargs="?", help=".graphml file (optional)")
     args = parser.parse_args()
     G = nx.read_graphml(args.path) if args.path else example_graph()
     print(json.dumps(summarize(G), indent=2, ensure_ascii=False))

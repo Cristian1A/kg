@@ -1,41 +1,41 @@
-name: Funcionalidad
-description: Implementar un requisito del documento de requisitos funcionales
-title: "[ámbito] "
+name: Feature
+description: Implement a requirement from the functional requirements document
+title: "[scope] "
 labels: ["type:feature"]
 body:
   - type: input
-    id: requisitos
+    id: requirements
     attributes:
-      label: Requisitos asociados
-      description: IDs de docs/requisitos-funcionales.md
+      label: Related requirements
+      description: IDs from docs/requirements.md
       placeholder: RF-01, RF-02
     validations:
       required: true
   - type: dropdown
-    id: fase
+    id: phase
     attributes:
-      label: Fase
-      options: ["MVP (v0.1)", "v0.2", "Futuro"]
+      label: Phase
+      options: ["MVP (v0.1)", "v0.2", "Future"]
     validations:
       required: true
   - type: textarea
-    id: descripcion
+    id: description
     attributes:
-      label: Descripción
-      description: Qué hay que construir y para qué
+      label: Description
+      description: What needs to be built and why
     validations:
       required: true
   - type: textarea
-    id: aceptacion
+    id: acceptance
     attributes:
-      label: Criterios de aceptación
+      label: Acceptance criteria
       value: |
         - [ ] 
-        - [ ] Tests en tests/ que cubren el caso normal, el caso borde y el caso de error
+        - [ ] Tests in tests/ covering the normal case, the edge case and the error case
     validations:
       required: true
   - type: textarea
-    id: notas
+    id: notes
     attributes:
-      label: Notas técnicas
-      description: Módulos afectados, dependencias, dudas abiertas
+      label: Technical notes
+      description: Affected modules, dependencies, open questions

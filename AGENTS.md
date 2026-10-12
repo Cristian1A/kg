@@ -1,50 +1,50 @@
 # AGENTS.md
 
-Reglas generales para cualquier agente (Claude Code, Codex, Copilot, etc.) que trabaje en este repositorio.
+General rules for any agent (Claude Code, Codex, Copilot, etc.) working in this repository.
 
-## Proyecto
+## Project
 
-**kg**: CLI (para humanos y agentes de IA) que convierte el conocimiento de un proyecto —código, dependencias, docs, tests, decisiones— en un grafo de conocimiento consultable, visualizable y exportable. Python 3.12 + NetworkX. Requisitos en `docs/requisitos-funcionales.md`.
+**kg**: a CLI (for humans and AI agents) that turns a project's knowledge —code, dependencies, docs, tests, decisions— into a knowledge graph that can be queried, visualized and exported. Python 3.12 + NetworkX. Requirements in `docs/requirements.md`.
 
-## Estructura
+## Layout
 
-| Ruta | Contenido |
-|------|-----------|
-| `src/kg/` | Código fuente del paquete y la CLI `kg` |
-| `tests/` | Tests con pytest |
-| `examples/` | JSON de ejemplo válidos contra el esquema (`kg schema`) |
-| `.agents/skills/` | Skills especializadas (leer el `SKILL.md` relevante antes de actuar) |
-| `.agents/tools/` | Scripts auxiliares para agentes |
-| `.mcp.json` | Servidores MCP (tools externas) |
-| `samples/` | Repos de terceros clonados para pruebas manuales (ignorados por git; ver `samples/README.md`) |
-| `env/` | Entorno virtual — **no modificar ni leer** |
-| `lib/`, `graph.html` | Assets JS del prototipo pyvis — no editar a mano |
-| `graph.py`, `di_graph.py`, `tuto.py`, `*.ipynb` | Prototipos de exploración (excluidos de ruff) |
+| Path | Contents |
+|------|----------|
+| `src/kg/` | Package source code and the `kg` CLI |
+| `tests/` | pytest tests |
+| `examples/` | Example JSON files, valid against the schema (`kg schema`) |
+| `.agents/skills/` | Specialized skills (read the relevant `SKILL.md` before acting) |
+| `.agents/tools/` | Helper scripts for agents |
+| `.mcp.json` | MCP servers (external tools) |
+| `samples/` | Third-party repos cloned for manual testing (ignored by git; see `samples/README.md`) |
+| `env/` | Virtual environment — **do not modify or read** |
+| `lib/`, `graph.html` | JS assets of the pyvis prototype — do not edit by hand |
+| `graph.py`, `di_graph.py`, `tuto.py`, `*.ipynb` | Exploration prototypes (excluded from ruff) |
 
-## Entorno
+## Environment
 
 ```bash
 source env/bin/activate
 pip install -e ".[dev]"
-kg --help          # o: python -m kg --help
+kg --help          # or: python -m kg --help
 pytest && ruff check . && ruff format --check .
 ```
 
-## Reglas
+## Rules
 
-1. **Lee la skill adecuada** en `.agents/skills/<nombre>/SKILL.md` antes de tareas de testing, análisis de datos o cambios de arquitectura.
-2. El código nuevo va en `src/kg/`; los scripts sueltos de la raíz son de exploración.
-3. Todo cambio de lógica lleva su test en `tests/`. Ejecuta `pytest` antes de dar algo por terminado.
-4. Usa type hints y docstrings breves. Formato y lint con `ruff`.
-5. No añadas dependencias sin justificarlo; decláralas en `pyproject.toml`.
-6. No hagas commits, pushes ni borrados de archivos sin confirmación del usuario.
-7. No llames a `plt.show()` en código de librería ni en tests (bloquea la ejecución); devuelve la figura o guárdala.
-8. Responde y documenta en español salvo que se pida lo contrario.
-9. Commits, ramas e issues siguen `CONTRIBUTING.md` (Conventional Commits en español, referencia a issue y a RF-xx).
-10. Los secretos viven en `.env` (en `.gitignore`). **Nunca** imprimas, copies ni hagas commit de su contenido; cárgalo con `set -a; source .env; set +a` y usa la variable.
+1. **Read the right skill** in `.agents/skills/<name>/SKILL.md` before testing, data-analysis or architecture tasks.
+2. New code goes in `src/kg/`; loose scripts at the root are for exploration.
+3. Every logic change comes with its test in `tests/`. Run `pytest` before calling something done.
+4. Use type hints and short docstrings. Format and lint with `ruff`.
+5. Do not add dependencies without justification; declare them in `pyproject.toml`.
+6. No commits, pushes or file deletions without the user's confirmation.
+7. Never call `plt.show()` in library code or tests (it blocks execution); return or save the figure.
+8. Everything versioned or published (code, CLI messages, docs, commits, issues, PRs) is in **English**. Reply to the user in the language they write in.
+9. Commits, branches and issues follow `CONTRIBUTING.md` (Conventional Commits, reference to an issue and to RF-xx).
+10. Secrets live in `.env` (in `.gitignore`). **Never** print, copy or commit its contents; load it with `set -a; source .env; set +a` and use the variable.
 
-## Documentación de referencia
+## Reference docs
 
-- `docs/requisitos-funcionales.md` — requisitos funcionales aprobados (RF-xx / RNF-xx).
-- `docs/esquema.md` — formato JSON de entrada: IDs, catálogo estándar, procedencia.
-- `docs/almacen.md` — almacén `.kg/`: formato de `graph.json` y orden determinista.
+- `docs/requirements.md` — approved functional requirements (RF-xx / RNF-xx).
+- `docs/schema.md` — JSON input format: IDs, standard catalog, provenance, validation.
+- `docs/store.md` — the `.kg/` store: `graph.json` format, deterministic ordering and `kg add` merge rules.
