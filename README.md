@@ -111,6 +111,29 @@ graph.json merged into .kg/graph.json
     function:size.main · label: "main" → "main(file)"
 ```
 
+## Examples
+
+We built a graph for each of three public projects, from an easy CLI to a
+layered backend. Each graph combines `kg extract` with the documents,
+decisions and concepts an agent added following `kg guide`. Open the
+interactive pages (offline HTML: search, filters, details on click):
+
+| Level | Project | Interactive graph |
+|-------|---------|-------------------|
+| Easy | [alfredodeza/basic-python-cli](https://github.com/alfredodeza/basic-python-cli) | [basic-python-cli](https://cristian1a.github.io/kg/examples/basic-python-cli.html) |
+| Intermediate | [bramvdklinkenberg/my_first_data_project](https://github.com/bramvdklinkenberg/my_first_data_project) | [my_first_data_project](https://cristian1a.github.io/kg/examples/my_first_data_project.html) |
+| Complex | [wesleey/python-clean-architecture](https://github.com/wesleey/python-clean-architecture) | [python-clean-architecture](https://cristian1a.github.io/kg/examples/python-clean-architecture.html) |
+
+`kg render --png` of `my_first_data_project`: ETL modules (blue), the CI
+workflows, decisions, concepts and TODO items an agent found (orange) and
+the empty test files (green).
+
+![Knowledge graph of my_first_data_project](docs/examples/my_first_data_project.png)
+
+Thanks to the authors of these MIT-licensed projects; credits, commits and
+license texts are in [docs/examples](docs/examples/README.md), and the
+validation report in [docs/mvp-validation.md](docs/mvp-validation.md).
+
 ## Data model
 
 - **Nodes** have a stable ID `<type>:<path|qualified name|slug>`

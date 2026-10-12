@@ -268,9 +268,7 @@ class _Builder:
         self, dotted: str, module: _Module, by_name: dict[str, _Module]
     ) -> str | None:
         """Entity that a referenced name designates, following re-exports."""
-        candidates = [dotted]
-        if module.search_root:  # next to a loose script
-            candidates.append(f"{module.search_root}.{dotted}")
+        candidates = [dotted] + [f"{d}.{dotted}" for d in _script_dirs(module)]
         for candidate in candidates:
             first: str | None = None
             for _ in range(5):  # bounded: re-exports may form cycles
@@ -346,12 +344,13 @@ class _Builder:
     ) -> str | None:
         """ID of the imported module or dependency; `None` for stdlib or unknown."""
         relative = isinstance(stmt, ast.ImportFrom) and stmt.level > 0
-        # (dotted name, parts that must match): a name next to a loose script
-        # is also looked up under the script's directory, which is on sys.path.
+        # (dotted name, parts that must match): an absolute import is also
+        # looked up next to the file, as when it runs as a script.
         candidates = [(name, 1)]
-        if module.search_root and not relative:
-            root_parts = module.search_root.count(".") + 1
-            candidates.append((f"{module.search_root}.{name}", root_parts + 1))
+        if not relative:
+            candidates += [
+                (f"{d}.{name}", d.count(".") + 2) for d in _script_dirs(module)
+            ]
         for candidate, min_parts in candidates:
             parts = candidate.split(".")
             for i in range(len(parts), min_parts - 1, -1):  # longest known prefix
@@ -425,6 +424,15 @@ def _module_for(path: str, init_dirs: set[str], root_name: str) -> _Module:
     if is_package:
         names = names[:-1]
     return _Module(".".join(names), path, is_package, search_root, _is_test_file(path))
+
+
+def _script_dirs(module: _Module) -> list[str]:
+    """Dotted directories that may be on `sys.path` for the file: its search
+    root, and its own directory when it runs as a script (`python etl/job.py`
+    puts `etl/` on the path, so `import utils` is `etl/utils.py`)."""
+    own = ".".join(module.package)
+    dirs = [d for d in (module.search_root, own) if d]
+    return list(dict.fromkeys(dirs))
 
 
 def _imported_names(stmt: ast.Import | ast.ImportFrom, module: _Module) -> list[str]:

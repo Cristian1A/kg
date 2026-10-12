@@ -1,0 +1,1099 @@
+{
+  "version": "1",
+  "nodes": [
+    {
+      "id": "document:README.md",
+      "type": "Document",
+      "label": "README",
+      "description": "Motivation of the project, prerequisites (Azure, secrets, weather API), project structure and the GitHub workflows.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "README.md",
+        "lines": [
+          1,
+          78
+        ]
+      }
+    },
+    {
+      "id": "document:TODO.md",
+      "type": "Document",
+      "label": "TODO list",
+      "description": "Non-prioritized backlog: testing, documentation, error handling, a new data module and data management.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "TODO.md",
+        "lines": [
+          1,
+          15
+        ]
+      }
+    },
+    {
+      "id": "config:.github/workflows/humidity-data-etl-pipeline.yml",
+      "type": "Config",
+      "label": "Humidity data ETL workflow",
+      "description": "Manually triggered job that runs the humidity ETL pipeline against Azure Blob Storage and PostgreSQL.",
+      "attrs": {
+        "format": "github-actions"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": ".github/workflows/humidity-data-etl-pipeline.yml",
+        "lines": [
+          34,
+          35
+        ]
+      }
+    },
+    {
+      "id": "config:.github/workflows/weather-data-etl-pipeline.yml",
+      "type": "Config",
+      "label": "Weather data ETL workflow",
+      "description": "Manually triggered job that runs the weather ETL pipeline and loads the data into the same PostgreSQL database.",
+      "attrs": {
+        "format": "github-actions"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": ".github/workflows/weather-data-etl-pipeline.yml",
+        "lines": [
+          34,
+          35
+        ]
+      }
+    },
+    {
+      "id": "config:.github/workflows/flake8-lint.yml",
+      "type": "Config",
+      "label": "Flake8 lint workflow",
+      "description": "Runs flake8 on the etl package on pushes and pull requests to main; the only automatic workflow.",
+      "attrs": {
+        "format": "github-actions"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": ".github/workflows/flake8-lint.yml",
+        "lines": [
+          1,
+          30
+        ]
+      }
+    },
+    {
+      "id": "config:.github/workflows/codeql-code-analysis.yml",
+      "type": "Config",
+      "label": "CodeQL analysis workflow",
+      "description": "Semantic code analysis to find security vulnerabilities.",
+      "attrs": {
+        "format": "github-actions"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": ".github/workflows/codeql-code-analysis.yml",
+        "lines": [
+          1,
+          40
+        ]
+      }
+    },
+    {
+      "id": "config:.github/workflows/upload-humidity-data.yml",
+      "type": "Config",
+      "label": "CSV upload workflow",
+      "description": "Runs scripts/bash/upload_csv.sh to upload the hygrometer CSV to Azure Storage with the Azure CLI.",
+      "attrs": {
+        "format": "github-actions"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": ".github/workflows/upload-humidity-data.yml",
+        "lines": [
+          1,
+          30
+        ]
+      }
+    },
+    {
+      "id": "decision:azure-postgresql-target",
+      "type": "Decision",
+      "label": "Load into Azure PostgreSQL",
+      "description": "Both pipelines load their data into the same Azure PostgreSQL database; the CSV is staged in Azure Blob Storage.",
+      "attrs": {
+        "status": "accepted"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "README.md",
+        "lines": [
+          19,
+          19
+        ]
+      }
+    },
+    {
+      "id": "decision:manual-pipelines",
+      "type": "Decision",
+      "label": "Pipelines run on demand",
+      "description": "All workflows can be run manually; only the flake8 lint runs automatically on pushes and pull requests.",
+      "attrs": {
+        "status": "accepted"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 1.0,
+        "source": "README.md",
+        "lines": [
+          76,
+          76
+        ]
+      }
+    },
+    {
+      "id": "decision:bash-upload-showcase",
+      "type": "Decision",
+      "label": "Upload with Bash and the Azure CLI",
+      "description": "The upload workflow is not strictly needed; it exists to show Bash and Azure CLI skills.",
+      "attrs": {
+        "status": "accepted"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 1.0,
+        "source": "README.md",
+        "lines": [
+          78,
+          78
+        ]
+      }
+    },
+    {
+      "id": "decision:configuration-from-environment",
+      "type": "Decision",
+      "label": "Configuration from environment variables",
+      "description": "Storage, database and API settings come from environment variables set by the workflows from GitHub secrets.",
+      "attrs": {
+        "status": "accepted"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.85,
+        "source": "etl/constants.py",
+        "lines": [
+          3,
+          23
+        ]
+      }
+    },
+    {
+      "id": "concept:etl-pipeline",
+      "type": "Concept",
+      "label": "ETL pipeline",
+      "description": "Extract data from a source, transform it with pandas and load it into PostgreSQL.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "README.md",
+        "lines": [
+          19,
+          19
+        ]
+      }
+    },
+    {
+      "id": "concept:humidity-reading",
+      "type": "Concept",
+      "label": "Hygrometer reading",
+      "description": "A row of the living-room hygrometer CSV: date, temperature (℃) and relative humidity (%).",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.85,
+        "source": "etl/humidity_data_etl_pipeline.py",
+        "lines": [
+          26,
+          45
+        ]
+      }
+    },
+    {
+      "id": "concept:hourly-weather",
+      "type": "Concept",
+      "label": "Hourly weather observation",
+      "description": "Datetime, humidity and temperature for each hour returned by the Visual Crossing weather API.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.85,
+        "source": "etl/weather_data_etl_pipeline.py",
+        "lines": [
+          27,
+          45
+        ]
+      }
+    },
+    {
+      "id": "issue:todo-unit-tests",
+      "type": "Issue",
+      "label": "Add unit tests",
+      "description": "Open item in TODO.md: add unit tests.",
+      "attrs": {
+        "status": "open"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "TODO.md",
+        "lines": [
+          4,
+          4
+        ]
+      }
+    },
+    {
+      "id": "issue:todo-data-quality-checks",
+      "type": "Issue",
+      "label": "Add data quality checks",
+      "description": "Open item in TODO.md: add data quality checks.",
+      "attrs": {
+        "status": "open"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "TODO.md",
+        "lines": [
+          5,
+          5
+        ]
+      }
+    },
+    {
+      "id": "issue:todo-changelog",
+      "type": "Issue",
+      "label": "Add a CHANGELOG.md",
+      "description": "Open item in TODO.md: add a changelog.md.",
+      "attrs": {
+        "status": "open"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "TODO.md",
+        "lines": [
+          7,
+          7
+        ]
+      }
+    },
+    {
+      "id": "issue:todo-docstrings",
+      "type": "Issue",
+      "label": "Add docstrings to modules",
+      "description": "Open item in TODO.md: add docstrings to modules.",
+      "attrs": {
+        "status": "open"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "TODO.md",
+        "lines": [
+          8,
+          8
+        ]
+      }
+    },
+    {
+      "id": "issue:todo-error-handling",
+      "type": "Issue",
+      "label": "Add (better) error handling",
+      "description": "Open item in TODO.md: add (better) error handling.",
+      "attrs": {
+        "status": "open"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "TODO.md",
+        "lines": [
+          10,
+          10
+        ]
+      }
+    },
+    {
+      "id": "issue:todo-energy-module",
+      "type": "Issue",
+      "label": "Module for electricity and gas consumption",
+      "description": "Open item in TODO.md: module for electricity and gas consumption.",
+      "attrs": {
+        "status": "open"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "TODO.md",
+        "lines": [
+          11,
+          11
+        ]
+      }
+    },
+    {
+      "id": "issue:todo-data-model",
+      "type": "Issue",
+      "label": "Design the data model",
+      "description": "Open item in TODO.md: design the data model.",
+      "attrs": {
+        "status": "open"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "TODO.md",
+        "lines": [
+          13,
+          13
+        ]
+      }
+    },
+    {
+      "id": "issue:todo-data-schema",
+      "type": "Issue",
+      "label": "Design a data schema from the data model",
+      "description": "Open item in TODO.md: design a data schema from the data model.",
+      "attrs": {
+        "status": "open"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "TODO.md",
+        "lines": [
+          14,
+          14
+        ]
+      }
+    },
+    {
+      "id": "issue:todo-analysis-queries",
+      "type": "Issue",
+      "label": "Add SQL queries for basic analysis",
+      "description": "Open item in TODO.md: add sql queries for basic analysis.",
+      "attrs": {
+        "status": "open"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "TODO.md",
+        "lines": [
+          15,
+          15
+        ]
+      }
+    },
+    {
+      "id": "issue:readme-workflow-count",
+      "type": "Issue",
+      "label": "README counts four workflows, lists five",
+      "description": "The Workflows section announces four workflows and then lists five.",
+      "attrs": {
+        "status": "open",
+        "kind": "doc-drift"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "README.md",
+        "lines": [
+          68,
+          74
+        ]
+      }
+    },
+    {
+      "id": "issue:readme-init-imports",
+      "type": "Issue",
+      "label": "README says etl/__init__.py imports the modules",
+      "description": "The README says __init__.py imports the etl modules, but the file is empty.",
+      "attrs": {
+        "status": "open",
+        "kind": "doc-drift"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "README.md",
+        "lines": [
+          58,
+          58
+        ]
+      }
+    }
+  ],
+  "edges": [
+    {
+      "source": "document:README.md",
+      "target": "package:etl",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "README.md",
+        "lines": [
+          57,
+          58
+        ]
+      }
+    },
+    {
+      "source": "document:README.md",
+      "target": "module:etl.constants",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "README.md",
+        "lines": [
+          59,
+          59
+        ]
+      }
+    },
+    {
+      "source": "document:README.md",
+      "target": "module:etl.humidity_data_etl_pipeline",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "README.md",
+        "lines": [
+          60,
+          60
+        ]
+      }
+    },
+    {
+      "source": "document:README.md",
+      "target": "module:etl.utils",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "README.md",
+        "lines": [
+          61,
+          61
+        ]
+      }
+    },
+    {
+      "source": "document:README.md",
+      "target": "module:etl.weather_data_etl_pipeline",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "README.md",
+        "lines": [
+          62,
+          62
+        ]
+      }
+    },
+    {
+      "source": "config:.github/workflows/humidity-data-etl-pipeline.yml",
+      "target": "module:etl.humidity_data_etl_pipeline",
+      "type": "configures",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": ".github/workflows/humidity-data-etl-pipeline.yml",
+        "lines": [
+          34,
+          35
+        ]
+      }
+    },
+    {
+      "source": "config:.github/workflows/weather-data-etl-pipeline.yml",
+      "target": "module:etl.weather_data_etl_pipeline",
+      "type": "configures",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": ".github/workflows/weather-data-etl-pipeline.yml",
+        "lines": [
+          34,
+          35
+        ]
+      }
+    },
+    {
+      "source": "config:.github/workflows/flake8-lint.yml",
+      "target": "package:etl",
+      "type": "configures",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": ".github/workflows/flake8-lint.yml",
+        "lines": [
+          1,
+          30
+        ]
+      }
+    },
+    {
+      "source": "config:.github/workflows/codeql-code-analysis.yml",
+      "target": "repo:my_first_data_project",
+      "type": "configures",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": ".github/workflows/codeql-code-analysis.yml",
+        "lines": [
+          1,
+          40
+        ]
+      }
+    },
+    {
+      "source": "config:.github/workflows/upload-humidity-data.yml",
+      "target": "repo:my_first_data_project",
+      "type": "configures",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": ".github/workflows/upload-humidity-data.yml",
+        "lines": [
+          1,
+          30
+        ]
+      }
+    },
+    {
+      "source": "decision:azure-postgresql-target",
+      "target": "dependency:psycopg2-binary",
+      "type": "justifies",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.85,
+        "source": "README.md",
+        "lines": [
+          19,
+          19
+        ]
+      }
+    },
+    {
+      "source": "decision:azure-postgresql-target",
+      "target": "dependency:azure-storage-blob",
+      "type": "justifies",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.85,
+        "source": "README.md",
+        "lines": [
+          19,
+          19
+        ]
+      }
+    },
+    {
+      "source": "decision:azure-postgresql-target",
+      "target": "module:etl.utils",
+      "type": "justifies",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.85,
+        "source": "README.md",
+        "lines": [
+          19,
+          19
+        ]
+      }
+    },
+    {
+      "source": "decision:manual-pipelines",
+      "target": "config:.github/workflows/humidity-data-etl-pipeline.yml",
+      "type": "justifies",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "README.md",
+        "lines": [
+          76,
+          76
+        ]
+      }
+    },
+    {
+      "source": "decision:manual-pipelines",
+      "target": "config:.github/workflows/weather-data-etl-pipeline.yml",
+      "type": "justifies",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "README.md",
+        "lines": [
+          76,
+          76
+        ]
+      }
+    },
+    {
+      "source": "decision:bash-upload-showcase",
+      "target": "config:.github/workflows/upload-humidity-data.yml",
+      "type": "justifies",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 1.0,
+        "source": "README.md",
+        "lines": [
+          78,
+          78
+        ]
+      }
+    },
+    {
+      "source": "decision:configuration-from-environment",
+      "target": "module:etl.constants",
+      "type": "justifies",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "etl/constants.py",
+        "lines": [
+          3,
+          23
+        ]
+      }
+    },
+    {
+      "source": "module:etl.humidity_data_etl_pipeline",
+      "target": "concept:etl-pipeline",
+      "type": "implements",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "etl/humidity_data_etl_pipeline.py",
+        "lines": [
+          80,
+          87
+        ]
+      }
+    },
+    {
+      "source": "module:etl.weather_data_etl_pipeline",
+      "target": "concept:etl-pipeline",
+      "type": "implements",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "etl/weather_data_etl_pipeline.py",
+        "lines": [
+          80,
+          85
+        ]
+      }
+    },
+    {
+      "source": "function:etl.humidity_data_etl_pipeline.transform_humidity_data",
+      "target": "concept:humidity-reading",
+      "type": "implements",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "etl/humidity_data_etl_pipeline.py",
+        "lines": [
+          26,
+          45
+        ]
+      }
+    },
+    {
+      "source": "function:etl.weather_data_etl_pipeline.transform_weather_data",
+      "target": "concept:hourly-weather",
+      "type": "implements",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "etl/weather_data_etl_pipeline.py",
+        "lines": [
+          27,
+          45
+        ]
+      }
+    },
+    {
+      "source": "document:TODO.md",
+      "target": "issue:todo-unit-tests",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "TODO.md",
+        "lines": [
+          4,
+          4
+        ]
+      }
+    },
+    {
+      "source": "issue:todo-unit-tests",
+      "target": "package:etl.tests",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.75,
+        "source": "TODO.md",
+        "lines": [
+          4,
+          4
+        ]
+      }
+    },
+    {
+      "source": "document:TODO.md",
+      "target": "issue:todo-data-quality-checks",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "TODO.md",
+        "lines": [
+          5,
+          5
+        ]
+      }
+    },
+    {
+      "source": "issue:todo-data-quality-checks",
+      "target": "package:etl",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.75,
+        "source": "TODO.md",
+        "lines": [
+          5,
+          5
+        ]
+      }
+    },
+    {
+      "source": "document:TODO.md",
+      "target": "issue:todo-changelog",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "TODO.md",
+        "lines": [
+          7,
+          7
+        ]
+      }
+    },
+    {
+      "source": "issue:todo-changelog",
+      "target": "repo:my_first_data_project",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.75,
+        "source": "TODO.md",
+        "lines": [
+          7,
+          7
+        ]
+      }
+    },
+    {
+      "source": "document:TODO.md",
+      "target": "issue:todo-docstrings",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "TODO.md",
+        "lines": [
+          8,
+          8
+        ]
+      }
+    },
+    {
+      "source": "issue:todo-docstrings",
+      "target": "package:etl",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.75,
+        "source": "TODO.md",
+        "lines": [
+          8,
+          8
+        ]
+      }
+    },
+    {
+      "source": "document:TODO.md",
+      "target": "issue:todo-error-handling",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "TODO.md",
+        "lines": [
+          10,
+          10
+        ]
+      }
+    },
+    {
+      "source": "issue:todo-error-handling",
+      "target": "package:etl",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.75,
+        "source": "TODO.md",
+        "lines": [
+          10,
+          10
+        ]
+      }
+    },
+    {
+      "source": "document:TODO.md",
+      "target": "issue:todo-energy-module",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "TODO.md",
+        "lines": [
+          11,
+          11
+        ]
+      }
+    },
+    {
+      "source": "issue:todo-energy-module",
+      "target": "package:etl",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.75,
+        "source": "TODO.md",
+        "lines": [
+          11,
+          11
+        ]
+      }
+    },
+    {
+      "source": "document:TODO.md",
+      "target": "issue:todo-data-model",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "TODO.md",
+        "lines": [
+          13,
+          13
+        ]
+      }
+    },
+    {
+      "source": "issue:todo-data-model",
+      "target": "repo:my_first_data_project",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.75,
+        "source": "TODO.md",
+        "lines": [
+          13,
+          13
+        ]
+      }
+    },
+    {
+      "source": "document:TODO.md",
+      "target": "issue:todo-data-schema",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "TODO.md",
+        "lines": [
+          14,
+          14
+        ]
+      }
+    },
+    {
+      "source": "issue:todo-data-schema",
+      "target": "repo:my_first_data_project",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.75,
+        "source": "TODO.md",
+        "lines": [
+          14,
+          14
+        ]
+      }
+    },
+    {
+      "source": "document:TODO.md",
+      "target": "issue:todo-analysis-queries",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "TODO.md",
+        "lines": [
+          15,
+          15
+        ]
+      }
+    },
+    {
+      "source": "issue:todo-analysis-queries",
+      "target": "repo:my_first_data_project",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.75,
+        "source": "TODO.md",
+        "lines": [
+          15,
+          15
+        ]
+      }
+    },
+    {
+      "source": "issue:readme-workflow-count",
+      "target": "document:README.md",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "README.md",
+        "lines": [
+          68,
+          74
+        ]
+      }
+    },
+    {
+      "source": "issue:readme-init-imports",
+      "target": "document:README.md",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "README.md",
+        "lines": [
+          58,
+          58
+        ]
+      }
+    },
+    {
+      "source": "issue:readme-init-imports",
+      "target": "package:etl",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "etl/__init__.py",
+        "lines": [
+          1,
+          1
+        ]
+      }
+    }
+  ]
+}

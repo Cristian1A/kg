@@ -315,3 +315,14 @@ def test_cli_render_dpi(kg_dir, tmp_path):
 def test_cli_render_invalid_dpi(kg_dir):
     argv = ["render", "--png", "--dpi", "0", "--kg-dir", str(kg_dir)]
     assert main(argv) == EXIT_USAGE
+
+
+def test_agent_types_keep_their_labels_in_large_graphs():
+    nodes = [(f"function:m.f{i}", "Function") for i in range(70)]
+    nodes += [("decision:use-x", "Decision"), ("concept:fee", "Concept")]
+    graph = graph_of(nodes)
+    graph.nodes["decision:use-x"]["label"] = "Use X"
+    texts = [t.get_text() for t in draw(graph).axes[0].texts]
+    assert "Use X" in texts
+    assert "fee" in texts
+    assert "f1" not in texts

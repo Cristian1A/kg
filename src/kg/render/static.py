@@ -33,7 +33,11 @@ MAX_NODES = 150
 HIDE_ORDER = ("Function", "Test", "File", "Class")
 # With more nodes than this, only these types are labeled.
 LABEL_ALL_UP_TO = 60
-LABELED_TYPES = frozenset({"Repo", "Package", "Module", "Dependency", "Config"})
+LABELED_TYPES = frozenset(
+    {"Repo", "Package", "Module", "Dependency", "Config"}
+    # What agents add: few nodes, and the point of an enriched graph.
+    | {"Document", "Decision", "Concept", "Service", "Endpoint"}
+)
 # NetworkX needs scipy for spring_layout from this size on.
 _SCIPY_FROM = 500
 _BASE_MARKER = 36.0  # points², a Function node

@@ -1,0 +1,235 @@
+{
+  "version": "1",
+  "nodes": [
+    {
+      "id": "document:README.md",
+      "type": "Document",
+      "label": "README",
+      "description": "Presents a single-file Python CLI with no frameworks or dependencies, its video tutorial and next steps.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "README.md",
+        "lines": [
+          1,
+          18
+        ]
+      }
+    },
+    {
+      "id": "document:video-build-a-simple-cli",
+      "type": "Document",
+      "label": "Video: Build a simple CLI in Python",
+      "description": "YouTube tutorial that builds this CLI step by step.",
+      "attrs": {
+        "url": "https://youtu.be/DrmdOb-EEMw"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "README.md",
+        "lines": [
+          4,
+          6
+        ]
+      }
+    },
+    {
+      "id": "decision:no-external-dependencies",
+      "type": "Decision",
+      "label": "No frameworks or dependencies",
+      "description": "The CLI uses only the standard library (os, sys) so it runs anywhere; argparse or Click are left as next steps.",
+      "attrs": {
+        "status": "accepted"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "README.md",
+        "lines": [
+          2,
+          2
+        ]
+      }
+    },
+    {
+      "id": "decision:single-argument-interface",
+      "type": "Decision",
+      "label": "A single argument, minimal help",
+      "description": "The tool takes one file path and prints a short help text when called without arguments, to stay quick to use from other systems.",
+      "attrs": {
+        "status": "accepted"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "README.md",
+        "lines": [
+          14,
+          15
+        ]
+      }
+    },
+    {
+      "id": "concept:file-size-in-mb",
+      "type": "Concept",
+      "label": "File size in MB",
+      "description": "Size in bytes divided by 1024², rounded down to a whole number.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "size.py",
+        "lines": [
+          5,
+          7
+        ]
+      }
+    },
+    {
+      "id": "endpoint:python size.py <file>",
+      "type": "Endpoint",
+      "label": "python size.py <file>",
+      "description": "Command-line entry point: prints the size of the given file in MB, or a help text without arguments.",
+      "attrs": {
+        "kind": "cli"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "size.py",
+        "lines": [
+          9,
+          17
+        ]
+      }
+    }
+  ],
+  "edges": [
+    {
+      "source": "document:README.md",
+      "target": "module:size",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "README.md",
+        "lines": [
+          1,
+          2
+        ]
+      }
+    },
+    {
+      "source": "document:README.md",
+      "target": "function:size.main",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.8,
+        "source": "README.md",
+        "lines": [
+          8,
+          12
+        ]
+      }
+    },
+    {
+      "source": "document:README.md",
+      "target": "document:video-build-a-simple-cli",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.7,
+        "source": "README.md",
+        "lines": [
+          6,
+          6
+        ]
+      }
+    },
+    {
+      "source": "document:video-build-a-simple-cli",
+      "target": "module:size",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.85,
+        "source": "README.md",
+        "lines": [
+          8,
+          10
+        ]
+      }
+    },
+    {
+      "source": "decision:no-external-dependencies",
+      "target": "module:size",
+      "type": "justifies",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "README.md",
+        "lines": [
+          12,
+          12
+        ]
+      }
+    },
+    {
+      "source": "decision:single-argument-interface",
+      "target": "module:size",
+      "type": "justifies",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.85,
+        "source": "size.py",
+        "lines": [
+          9,
+          17
+        ]
+      }
+    },
+    {
+      "source": "function:size.main",
+      "target": "concept:file-size-in-mb",
+      "type": "implements",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "size.py",
+        "lines": [
+          4,
+          7
+        ]
+      }
+    },
+    {
+      "source": "module:size",
+      "target": "endpoint:python size.py <file>",
+      "type": "implements",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "size.py",
+        "lines": [
+          9,
+          17
+        ]
+      }
+    }
+  ]
+}

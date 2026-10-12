@@ -62,7 +62,8 @@ the same graph gives the same bytes.
   distinguished in the static image; the HTML does that.
 - **Labels**: the node's `label` (or its ID without the prefix), in text
   color. Up to 60 nodes every node is labeled; above that, only `Repo`,
-  `Package`, `Module`, `Dependency` and `Config`.
+  `Package`, `Module`, `Dependency`, `Config` and the types agents add:
+  `Document`, `Decision`, `Concept`, `Service` and `Endpoint`.
 - **Title**: the `Repo` name, plus a line with the counts and what was hidden.
 
 | Family | Color | Types (marker) |
