@@ -1,7 +1,7 @@
 # Visualization: `kg render`
 
-Draws the store's graph. PNG and SVG are static images (RF-50); the
-interactive HTML (`--html`, RF-51–55) is issue #10.
+Draws the store's graph: a static PNG or SVG image (RF-50) or an interactive
+HTML page (RF-51–55).
 
 ```bash
 kg render --png                          # kg-graph.png in the current directory
@@ -10,9 +10,50 @@ kg render --png --types Module,Package,Dependency
 kg render --png --max-nodes 400          # draw more before hiding types
 kg render --png --dpi 300                # bigger PNG, to zoom in (default: 150)
 kg render --png --json                   # {"path", "format", "nodes", "edges", "hidden"}
+kg render --html                         # kg-graph.html: open it in a browser
+kg render --html --types Module,Test,Dependency
 ```
 
-## What is drawn
+## Interactive HTML
+
+`kg render --html` writes **one self-contained file** (about 500 KB): the
+graph as JSON, the page code and vis-network 9.1.2, the engine pyvis uses,
+all inline. It needs no server and no internet; open it from disk.
+
+- **Zoom and pan**: scroll wheel, drag the background, `+`/`−`/`Fit` buttons.
+  Nodes can be dragged.
+- **Legend and filters** (RF-52, RF-53): the sidebar lists every entity type
+  (color by family and shape by type, as in the image) and every relation
+  type (a dash pattern each; `tests` in the tests color), with counts. The
+  checkboxes and `All`/`None` show and hide them. An edge shows when its
+  relation and both of its nodes are visible.
+- **Details on click** (RF-54): a node shows its label, type, ID,
+  description, attributes, provenance (method, extractor, confidence, source
+  and lines) and its incoming and outgoing relations, which link to the
+  other node and to the edge. Empty fields are left out. An edge shows its
+  endpoints, attributes and provenance.
+- **Search** (RF-55): by label or ID, best matches first. Choosing a result
+  centers the node, opens its details and shows its type if it was hidden.
+- **Read-only, with commands**: the page cannot write to the store (it is a
+  file, with no server). For the selected element it shows the matching
+  `kg edit`/`kg remove` command with a copy button; run it in the repo and
+  render again.
+- **Edge labels**: off by default; the toolbar button shows each edge's
+  relation type.
+- **Links to a node**: `kg-graph.html#node=module:app.core` opens with that
+  node selected.
+- **Light and dark**: follows the system setting. The dark colors are the
+  same hues re-stepped for the dark surface, also validated all-pairs.
+
+Above 300 nodes, whole types start unticked (`Function`, then `Test`,
+`File`, `Class`, the same order as the image) so the first layout is quick;
+everything is in the file and one click brings them back. `--types` leaves
+the other types out of the file altogether.
+
+The layout runs in the browser with a fixed seed. The file is deterministic:
+the same graph gives the same bytes.
+
+## What is drawn (PNG and SVG)
 
 - **Nodes**: color by family and marker shape by type, with a legend that
   lists each type present and its count.
@@ -59,8 +100,8 @@ needs `scipy`, which `kg` does not install: install it or draw fewer nodes.
 
 The PNG has a fixed size: `--dpi` makes it larger (300 doubles the default
 150 in each dimension) so it can be zoomed into without pixelation. The SVG
-is vector and stays sharp at any zoom in a browser. Interactive zoom and pan
-come with the HTML (#10).
+is vector and stays sharp at any zoom in a browser. For interactive zoom and pan,
+use the HTML.
 
 ## Determinism (RNF-08)
 
