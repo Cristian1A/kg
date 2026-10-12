@@ -50,3 +50,4 @@ pytest && ruff check . && ruff format --check .
 - `docs/store.md` — the `.kg/` store: `graph.json` format, deterministic ordering, `kg add` merge rules, `kg remove` and `kg edit`.
 - `docs/extract.md` — `kg extract`: which files are read, the nodes, IDs and relations it produces.
 - `docs/render.md` — `kg render`: visual encoding, limits for large graphs, determinism.
+- `kg guide` (source: `src/kg/agents/guide.md`) — how an agent adds documents, decisions and concepts to a graph. Exported as `.agents/skills/kg-graph/SKILL.md`: regenerate it with `kg guide --skill > .agents/skills/kg-graph/SKILL.md` after editing the guide.

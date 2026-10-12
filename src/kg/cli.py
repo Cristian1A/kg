@@ -16,7 +16,7 @@ from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any, NoReturn
 
-from kg import __version__, edit, extract, merge, render, store
+from kg import __version__, agents, edit, extract, merge, render, store
 from kg import schema as kg_schema
 from kg.schema import validation
 
@@ -76,6 +76,14 @@ def _schema(args: argparse.Namespace) -> Result:
     return Result(text, {"path": str(path), "schema": data})
 
 
+def _guide(args: argparse.Namespace) -> Result:
+    path = agents.guide_path()
+    if args.path:
+        return Result(str(path), {"path": str(path)})
+    text = agents.skill_text() if args.skill else agents.load_guide()
+    return Result(text.rstrip("\n"), {"path": str(path), "guide": text})
+
+
 def _init(args: argparse.Namespace) -> Result:
     try:
         path = store.init_store(args.kg_dir)
@@ -94,7 +102,7 @@ def _init(args: argparse.Namespace) -> Result:
 def _add(args: argparse.Namespace) -> Result:
     name = "stdin" if str(args.file) == "-" else str(args.file)
     text = sys.stdin.read() if name == "stdin" else _read(args.file)
-    result = _store_call(merge.add_to_store, args.kg_dir, text)
+    result = _store_call(merge.add_to_store, args.kg_dir, text, args.dry_run)
 
     report = result.validation
     data: dict[str, Any] = {"file": name, "graph": str(result.graph_path)}
@@ -105,13 +113,15 @@ def _add(args: argparse.Namespace) -> Result:
         )
     data |= {
         **result.merge.to_dict(),
+        "dry_run": args.dry_run,
         "warnings": [asdict(i) for i in report.warnings],
     }
-    head = (
-        f"{name} merged into {result.graph_path}"
-        if result.merge.changed
-        else f"no changes: {name} is already in {result.graph_path}"
-    )
+    if not result.merge.changed:
+        head = f"no changes: {name} is already in {result.graph_path}"
+    elif args.dry_run:
+        head = f"dry run, {result.graph_path} was not modified; {name} would merge:"
+    else:
+        head = f"{name} merged into {result.graph_path}"
     lines = [head, result.merge.to_text()]
     lines += [issue.to_text() for issue in report.warnings]
     return Result("\n".join(lines), data)
@@ -379,6 +389,11 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument(
         "file", type=Path, help="JSON file conforming to the schema (`-` for stdin)"
     )
+    p.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="validate against the store and report the merge without saving",
+    )
 
     p = add(
         "remove", "remove nodes (with their edges) or edges from the store", _remove
@@ -413,6 +428,14 @@ def build_parser() -> argparse.ArgumentParser:
         "--unset", action="append", default=[], metavar="KEY", help="remove attrs.KEY"
     )
     p.add_argument("--dry-run", action="store_true", help="show, do not save")
+
+    p = add("guide", "print the guidelines for agents that enrich the graph", _guide)
+    p.add_argument("--path", action="store_true", help="print only the file path")
+    p.add_argument(
+        "--skill",
+        action="store_true",
+        help="as an agent skill (SKILL.md with front matter)",
+    )
 
     p = add("schema", "print the JSON Schema of the input format", _schema)
     p.add_argument("--path", action="store_true", help="print only the file path")
