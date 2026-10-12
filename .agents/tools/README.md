@@ -10,7 +10,7 @@ Helper scripts that agents can run. Each tool must be:
 
 | Tool | Description | Usage |
 |------|-------------|-------|
-| `graph_summary.py` | Summary of an example graph or of a GraphML file | `python .agents/tools/graph_summary.py [file.graphml]` |
+| `graph_summary.py` | Counts by type, density and hubs of a kg store | `python .agents/tools/graph_summary.py [--kg-dir .kg] [--top 10]` |
 
 ## Adding a tool
 1. Create `<name>.py` with `argparse` and a `main()`.

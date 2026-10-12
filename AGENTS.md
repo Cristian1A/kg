@@ -18,8 +18,6 @@ General rules for any agent (Claude Code, Codex, Copilot, etc.) working in this 
 | `.mcp.json` | MCP servers (external tools) |
 | `samples/` | Third-party repos cloned for manual testing (ignored by git; see `samples/README.md`) |
 | `env/` | Virtual environment — **do not modify or read** |
-| `lib/`, `graph.html` | JS assets of the pyvis prototype — do not edit by hand (`kg render --html` uses `src/kg/render/assets/`) |
-| `graph.py`, `di_graph.py`, `tuto.py`, `*.ipynb` | Exploration prototypes (excluded from ruff) |
 
 ## Environment
 
@@ -46,6 +44,7 @@ pytest && ruff check . && ruff format --check .
 ## Reference docs
 
 - `docs/requirements.md` — approved functional requirements (RF-xx / RNF-xx).
+- `docs/discovery.md` — the client interview behind the requirements (the *why*).
 - `docs/schema.md` — JSON input format: IDs, standard catalog, provenance, validation.
 - `docs/store.md` — the `.kg/` store: `graph.json` format, deterministic ordering, `kg add` merge rules, `kg remove` and `kg edit`.
 - `docs/extract.md` — `kg extract`: which files are read, the nodes, IDs and relations it produces.

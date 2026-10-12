@@ -60,12 +60,12 @@ def test_global_option_defaults(monkeypatch, capsys):
 
     def handler(args):
         seen.update(json=args.json, kg_dir=args.kg_dir)
-        return Result("hecho")
+        return Result("done")
 
     monkeypatch.setattr("kg.cli._schema", handler)
     assert main(["schema"]) == EXIT_OK
     assert seen == {"json": False, "kg_dir": Path(DEFAULT_KG_DIR)}
-    assert capsys.readouterr().out.strip() == "hecho"
+    assert capsys.readouterr().out.strip() == "done"
 
 
 def test_success_json_output(monkeypatch, capsys):
@@ -77,7 +77,7 @@ def test_success_json_output(monkeypatch, capsys):
 
 @pytest.mark.parametrize(
     "argv",
-    [[], ["desconocido"], ["validate"], ["render"], ["render", "--png", "--svg"]],
+    [[], ["unknown"], ["validate"], ["render"], ["render", "--png", "--svg"]],
 )
 def test_usage_errors_exit_2(argv, capsys):
     assert main(argv) == EXIT_USAGE
@@ -87,7 +87,7 @@ def test_usage_errors_exit_2(argv, capsys):
 
 
 def test_usage_error_json(capsys):
-    assert main(["--json", "desconocido"]) == EXIT_USAGE
+    assert main(["--json", "unknown"]) == EXIT_USAGE
     payload = json.loads(capsys.readouterr().out)
     assert payload["ok"] is False
     assert payload["command"] is None

@@ -1,4 +1,4 @@
-# Entorno y caches
+# Environments and caches
 env/
 .venv/
 __pycache__/
@@ -8,23 +8,25 @@ __pycache__/
 .ruff_cache/
 .coverage
 htmlcov/
-.ipynb_checkpoints/
 build/
 dist/
 
-# Secretos (NUNCA subir)
+# Secrets (NEVER commit)
 .env
 *.env
 !.env.example
 
-# Archivos desechables locales
+# Local throwaway files
 *.local.txt
 
-# Editor / SO
+# Editor / OS
 .vscode/
 .idea/
 .DS_Store
 
-# Repos de terceros clonados para pruebas manuales (ver samples/README.md)
+# Default output of `kg render`
+kg-graph.*
+
+# Third-party repos cloned for manual testing (see samples/README.md)
 samples/*
 !samples/README.md
