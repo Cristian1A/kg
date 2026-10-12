@@ -62,42 +62,17 @@ def test_global_option_defaults(monkeypatch, capsys):
         seen.update(json=args.json, kg_dir=args.kg_dir)
         return Result("hecho")
 
-    monkeypatch.setattr("kg.cli._not_implemented", lambda issue: handler)
-    assert main(["render", "--html"]) == EXIT_OK
+    monkeypatch.setattr("kg.cli._schema", handler)
+    assert main(["schema"]) == EXIT_OK
     assert seen == {"json": False, "kg_dir": Path(DEFAULT_KG_DIR)}
     assert capsys.readouterr().out.strip() == "hecho"
 
 
 def test_success_json_output(monkeypatch, capsys):
-    monkeypatch.setattr(
-        "kg.cli._not_implemented", lambda issue: lambda args: Result("x", {"n": 1})
-    )
-    assert main(["render", "--html", "--json"]) == EXIT_OK
+    monkeypatch.setattr("kg.cli._schema", lambda args: Result("x", {"n": 1}))
+    assert main(["schema", "--json"]) == EXIT_OK
     payload = json.loads(capsys.readouterr().out)
-    assert payload == {"ok": True, "command": "render", "result": {"n": 1}}
-
-
-@pytest.mark.parametrize(
-    "argv",
-    [
-        ["render", "--html"],
-        ["render", "--html", "-o", "x.html"],
-    ],
-)
-def test_stub_commands_report_not_implemented(argv, capsys):
-    assert main(argv) == EXIT_INTERNAL
-    err = capsys.readouterr().err
-    assert "not implemented yet" in err
-    assert "#" in err
-
-
-def test_stub_command_json_error(capsys):
-    assert main(["render", "--html", "--json"]) == EXIT_INTERNAL
-    payload = json.loads(capsys.readouterr().out)
-    assert payload["ok"] is False
-    assert payload["command"] == "render"
-    assert payload["error"]["code"] == EXIT_INTERNAL
-    assert payload["error"]["details"] == {"issue": 10}
+    assert payload == {"ok": True, "command": "schema", "result": {"n": 1}}
 
 
 @pytest.mark.parametrize(
@@ -124,8 +99,8 @@ def test_unexpected_exception_is_internal_error(monkeypatch, capsys):
     def boom(args):
         raise RuntimeError("unexpected failure")
 
-    monkeypatch.setattr("kg.cli._not_implemented", lambda issue: boom)
-    assert main(["render", "--html", "--json"]) == EXIT_INTERNAL
+    monkeypatch.setattr("kg.cli._schema", boom)
+    assert main(["schema", "--json"]) == EXIT_INTERNAL
     payload = json.loads(capsys.readouterr().out)
     assert "unexpected failure" in payload["error"]["message"]
     assert payload["error"]["details"] == {"exception": "RuntimeError"}

@@ -33,7 +33,7 @@ version = { attr = "kg.__version__" }
 where = ["src"]
 
 [tool.setuptools.package-data]
-kg = ["schema/*.json"]
+kg = ["schema/*.json", "render/assets/*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

@@ -16,6 +16,11 @@ INK = "#0b0b0b"
 INK_MUTED = "#52514e"
 EDGE = "#b9b8b3"
 SURFACE = "#ffffff"
+# Dark theme (HTML only), same roles.
+INK_DARK = "#f0efec"
+INK_MUTED_DARK = "#c3c2b7"
+EDGE_DARK = "#5f5e5a"
+SURFACE_DARK = "#1a1a19"
 
 
 @dataclass(frozen=True)
@@ -23,12 +28,14 @@ class Family:
     name: str
     color: str
     stroke: str  # darker ring, so light fills keep 3:1 against the surface
+    dark: str  # the same hue stepped for the dark surface (validated too)
+    dark_stroke: str
 
 
-CODE = Family("code", "#2a78d6", "#184f95")
-TESTS = Family("tests", "#1baf7a", "#0f6e4c")
-CONTEXT = Family("context", "#eb6834", "#a8441c")
-OTHER = Family("other", "#9a9993", "#5f5e5a")
+CODE = Family("code", "#2a78d6", "#184f95", "#3987e5", "#9ec5f4")
+TESTS = Family("tests", "#1baf7a", "#0f6e4c", "#199e70", "#8fdcbc")
+CONTEXT = Family("context", "#eb6834", "#a8441c", "#d95926", "#f4ab8c")
+OTHER = Family("other", "#9a9993", "#5f5e5a", "#8a8984", "#c3c2b7")
 FAMILIES = (CODE, TESTS, CONTEXT, OTHER)
 
 

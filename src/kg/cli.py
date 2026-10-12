@@ -49,10 +49,6 @@ class UsageError(KgError):
     exit_code = EXIT_USAGE
 
 
-class NotImplementedYetError(KgError):
-    """Subcommand planned for the MVP but not implemented yet."""
-
-
 @dataclass
 class Result:
     """Result of a subcommand: `message` for humans, `data` for `--json`."""
@@ -69,16 +65,6 @@ class _Parser(argparse.ArgumentParser):
 
     def error(self, message: str) -> NoReturn:
         raise UsageError(f"{self.prog}: {message}")
-
-
-def _not_implemented(issue: int) -> Handler:
-    def handler(args: argparse.Namespace) -> Result:
-        raise NotImplementedYetError(
-            f"`kg {args.command}` is not implemented yet (issue #{issue}).",
-            {"issue": issue},
-        )
-
-    return handler
 
 
 def _schema(args: argparse.Namespace) -> Result:
@@ -244,12 +230,12 @@ def _edit_error(e: edit.EditError) -> UsageError:
 
 
 def _render(args: argparse.Namespace) -> Result:
-    if args.format == "html":
-        return _not_implemented(10)(args)
     output: Path = args.output or Path(f"kg-graph.{args.format}")
     if not output.parent.is_dir():
         raise UsageError(f"directory {output.parent} does not exist")
     graph = _store_call(store.load_graph, args.kg_dir)
+    if args.format == "html":
+        return _render_html(args, graph, output)
     try:
         selection = render.render_static(
             graph,
@@ -282,6 +268,31 @@ def _render(args: argparse.Namespace) -> Result:
         "nodes": nodes,
         "edges": edges,
         "hidden": selection.hidden,
+    }
+    return Result("\n".join(lines), data)
+
+
+def _render_html(args: argparse.Namespace, graph: Any, output: Path) -> Result:
+    if args.types is not None:
+        graph = graph.subgraph(
+            n for n, d in graph.nodes(data=True) if d.get("type") in args.types
+        )
+    try:
+        result = render.render_html(graph, output, title=_repo_label(graph))
+    except OSError as e:
+        raise UsageError(f"cannot write {output}: {e.strerror}") from e
+    lines = [f"rendered {result.nodes} nodes and {result.edges} edges to {output}"]
+    if result.hidden:
+        lines.append(
+            f"  {', '.join(result.hidden)} start hidden (more than "
+            f"{render.INITIAL_NODES} nodes); tick them under Entity types"
+        )
+    data = {
+        "path": str(output),
+        "format": "html",
+        "nodes": result.nodes,
+        "edges": result.edges,
+        "hidden": result.hidden,
     }
     return Result("\n".join(lines), data)
 

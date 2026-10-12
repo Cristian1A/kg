@@ -1,0 +1,466 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="generator" content="kg {{KG_VERSION}}">
+<title>{{KG_TITLE}} · kg</title>
+<style>
+:root {
+  color-scheme: light;
+  --surface: {{SURFACE}};
+  --surface-2: #f4f3ef;
+  --border: #dcdbd5;
+  --ink: {{INK}};
+  --ink-muted: {{INK_MUTED}};
+  --accent: #2a78d6;
+  --font: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --surface: {{SURFACE_DARK}};
+    --surface-2: #232321;
+    --border: #3a3936;
+    --ink: {{INK_DARK}};
+    --ink-muted: {{INK_MUTED_DARK}};
+    --accent: #6da7ec;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --surface: {{SURFACE_DARK}};
+  --surface-2: #232321;
+  --border: #3a3936;
+  --ink: {{INK_DARK}};
+  --ink-muted: {{INK_MUTED_DARK}};
+  --accent: #6da7ec;
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; }
+body {
+  background: var(--surface); color: var(--ink); font: 14px/1.4 var(--font);
+  display: grid; grid-template-rows: auto 1fr; grid-template-columns: 280px 1fr auto;
+  grid-template-areas: "head head head" "side main panel";
+}
+header {
+  grid-area: head; display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap;
+  padding: 10px 16px; border-bottom: 1px solid var(--border);
+}
+header h1 { font-size: 18px; margin: 0; font-weight: 600; }
+header .stats { color: var(--ink-muted); font-size: 13px; }
+header .tools { margin-left: auto; display: flex; gap: 6px; }
+button {
+  font: inherit; font-size: 13px; color: var(--ink); background: var(--surface-2);
+  border: 1px solid var(--border); border-radius: 6px; padding: 4px 10px; cursor: pointer;
+}
+button:hover { border-color: var(--accent); }
+button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+aside#side {
+  grid-area: side; overflow-y: auto; padding: 12px 16px; border-right: 1px solid var(--border);
+}
+#search {
+  width: 100%; font: inherit; padding: 6px 8px; color: var(--ink); background: var(--surface);
+  border: 1px solid var(--border); border-radius: 6px;
+}
+#results { list-style: none; margin: 4px 0 0; padding: 0; }
+#results li button {
+  width: 100%; text-align: left; border: 0; background: none; border-radius: 4px;
+  display: flex; gap: 6px; align-items: center; padding: 3px 4px;
+}
+#results li button:hover, #results li button:focus-visible { background: var(--surface-2); }
+#results .id { color: var(--ink-muted); font: 11px var(--mono); overflow: hidden; text-overflow: ellipsis; }
+.hint { color: var(--ink-muted); font-size: 12px; margin: 6px 0 0; }
+fieldset { border: 0; margin: 16px 0 0; padding: 0; }
+legend { font-weight: 600; padding: 0; display: flex; width: 100%; align-items: center; }
+legend .all { margin-left: auto; display: flex; gap: 4px; }
+legend .all button { font-size: 11px; padding: 1px 6px; }
+.filter { display: flex; align-items: center; gap: 6px; padding: 2px 0; cursor: pointer; }
+.filter .count { margin-left: auto; color: var(--ink-muted); font-size: 12px; }
+.filter svg { flex: none; }
+main { grid-area: main; position: relative; min-width: 0; }
+#network { position: absolute; inset: 0; }
+#loading {
+  position: absolute; inset: 0; display: grid; place-items: center; color: var(--ink-muted);
+  pointer-events: none;
+}
+aside#panel {
+  grid-area: panel; width: 360px; overflow-y: auto; padding: 12px 16px;
+  border-left: 1px solid var(--border); display: none;
+}
+aside#panel.open { display: block; }
+#panel h2 { font-size: 16px; margin: 0 0 2px; word-break: break-word; }
+#panel h3 { font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: var(--ink-muted); margin: 16px 0 4px; }
+#panel .close { float: right; }
+#panel .kind { display: flex; align-items: center; gap: 6px; color: var(--ink-muted); }
+#panel code, #panel .mono { font: 12px var(--mono); word-break: break-all; }
+#panel p.description { margin: 8px 0 0; }
+dl { display: grid; grid-template-columns: max-content 1fr; gap: 2px 10px; margin: 0; }
+dt { color: var(--ink-muted); }
+dd { margin: 0; word-break: break-word; }
+#panel ul { list-style: none; margin: 0; padding: 0; }
+#panel li { padding: 2px 0; }
+.link { border: 0; background: none; padding: 0; color: var(--accent); text-align: left; cursor: pointer; }
+.link:hover { text-decoration: underline; }
+.rel { color: var(--ink-muted); font-size: 12px; }
+.command { display: flex; gap: 6px; align-items: flex-start; margin: 4px 0; }
+.command pre {
+  flex: 1; margin: 0; padding: 6px 8px; background: var(--surface-2); border-radius: 6px;
+  font: 12px var(--mono); white-space: pre-wrap; word-break: break-all;
+}
+div.vis-tooltip {
+  position: absolute; visibility: hidden; pointer-events: none; z-index: 5;
+  background: var(--surface); color: var(--ink); border: 1px solid var(--border);
+  border-radius: 6px; padding: 6px 8px; font: 12px var(--font); max-width: 320px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, .15);
+}
+div.vis-tooltip .tip-type { color: var(--ink-muted); }
+div.vis-tooltip .tip-id { font: 11px var(--mono); color: var(--ink-muted); }
+@media (max-width: 800px) {
+  body { grid-template-columns: 1fr; grid-template-rows: auto auto 60vh auto;
+         grid-template-areas: "head" "side" "main" "panel"; }
+  aside#side { border-right: 0; border-bottom: 1px solid var(--border); max-height: 40vh; }
+  aside#panel { width: auto; border-left: 0; border-top: 1px solid var(--border); }
+}
+</style>
+</head>
+<body>
+<header>
+  <h1 id="title">{{KG_TITLE}}</h1>
+  <span class="stats" id="stats"></span>
+  <span class="tools">
+    <button type="button" id="zoom-in" title="Zoom in (or scroll)">+</button>
+    <button type="button" id="zoom-out" title="Zoom out (or scroll)">−</button>
+    <button type="button" id="fit" title="Fit the visible graph">Fit</button>
+    <button type="button" id="labels" aria-pressed="false" title="Show relation types on edges">Edge labels</button>
+  </span>
+</header>
+<aside id="side">
+  <label for="search" class="hint" style="display:block;margin:0 0 4px">Search by name or ID</label>
+  <input id="search" type="search" autocomplete="off" placeholder="e.g. main, module:app.core">
+  <ul id="results" aria-live="polite"></ul>
+  <fieldset id="node-filters"><legend>Entity types <span class="all"><button type="button" data-all="node">All</button><button type="button" data-none="node">None</button></span></legend></fieldset>
+  <fieldset id="edge-filters"><legend>Relations <span class="all"><button type="button" data-all="edge">All</button><button type="button" data-none="edge">None</button></span></legend></fieldset>
+  <p class="hint" id="hidden-note"></p>
+  <p class="hint">Click a node or an edge for its details. Scroll to zoom, drag to pan. Link to a node with <code>#node=ID</code>.</p>
+</aside>
+<main>
+  <div id="network" role="img" aria-label="Knowledge graph"></div>
+  <div id="loading">Laying out the graph…</div>
+</main>
+<aside id="panel" aria-live="polite"></aside>
+<script type="application/json" id="kg-data">{{KG_DATA}}</script>
+<script>{{VIS_JS}}</script>
+<script>
+"use strict";
+(function () {
+  const DATA = JSON.parse(document.getElementById("kg-data").textContent);
+  const byId = new Map(DATA.nodes.map((n) => [n.id, n]));
+  const hiddenTypes = new Set(DATA.hidden);
+  const hiddenRelations = new Set();
+  let edgeLabels = false;
+
+  const dark = () =>
+    document.documentElement.dataset.theme === "dark" ||
+    (document.documentElement.dataset.theme !== "light" &&
+      window.matchMedia("(prefers-color-scheme: dark)").matches);
+  const palette = () => (dark() ? DATA.theme.dark : DATA.theme.light);
+  const familyColors = (family) => {
+    const f = DATA.families[family];
+    return dark() ? { fill: f.dark, stroke: f.dark_stroke } : { fill: f.color, stroke: f.stroke };
+  };
+  const short = (id) => id.slice(id.indexOf(":") + 1);
+  const nameOf = (node) => node.label || short(node.id);
+
+  // --- Elements built with textContent only: the data comes from the repo.
+  function el(tag, attrs, ...children) {
+    const e = document.createElement(tag);
+    for (const [k, v] of Object.entries(attrs || {})) {
+      if (k === "class") e.className = v;
+      else if (k.startsWith("on")) e.addEventListener(k.slice(2), v);
+      else e.setAttribute(k, v);
+    }
+    for (const c of children) {
+      if (c === null || c === undefined) continue;
+      e.append(c instanceof Node ? c : String(c));
+    }
+    return e;
+  }
+
+  const SVG = "http://www.w3.org/2000/svg";
+  function shapeIcon(type, size) {
+    const style = DATA.types[type];
+    const { fill, stroke } = familyColors(style.family);
+    const s = size || 14, h = s / 2, svg = document.createElementNS(SVG, "svg");
+    svg.setAttribute("width", s); svg.setAttribute("height", s);
+    svg.setAttribute("viewBox", `0 0 ${s} ${s}`); svg.setAttribute("aria-hidden", "true");
+    const pts = {
+      square: [[2, 2], [s - 2, 2], [s - 2, s - 2], [2, s - 2]],
+      diamond: [[h, 1], [s - 1, h], [h, s - 1], [1, h]],
+      triangle: [[h, 1], [s - 1, s - 2], [1, s - 2]],
+      triangleDown: [[1, 2], [s - 1, 2], [h, s - 1]],
+      hexagon: [0, 1, 2, 3, 4, 5].map((i) => [h + (h - 1) * Math.cos(Math.PI / 3 * i), h + (h - 1) * Math.sin(Math.PI / 3 * i)]),
+      star: [...Array(10).keys()].map((i) => {
+        const r = i % 2 ? (h - 1) * 0.45 : h - 1, a = -Math.PI / 2 + i * Math.PI / 5;
+        return [h + r * Math.cos(a), h + r * Math.sin(a)];
+      }),
+    }[style.shape];
+    const shape = document.createElementNS(SVG, pts ? "polygon" : "circle");
+    if (pts) shape.setAttribute("points", pts.map((p) => p.join(",")).join(" "));
+    else { shape.setAttribute("cx", h); shape.setAttribute("cy", h); shape.setAttribute("r", style.shape === "dot" && style.size < 0.9 ? h / 2 : h - 1.5); }
+    shape.setAttribute("fill", fill); shape.setAttribute("stroke", stroke);
+    if (style.dashed) shape.setAttribute("stroke-dasharray", "2 1.5");
+    svg.append(shape);
+    return svg;
+  }
+  function lineIcon(relation) {
+    const style = DATA.relations[relation], svg = document.createElementNS(SVG, "svg");
+    svg.setAttribute("width", 22); svg.setAttribute("height", 10); svg.setAttribute("aria-hidden", "true");
+    const line = document.createElementNS(SVG, "line");
+    line.setAttribute("x1", 1); line.setAttribute("y1", 5); line.setAttribute("x2", 21); line.setAttribute("y2", 5);
+    line.setAttribute("stroke", edgeColor(relation)); line.setAttribute("stroke-width", 2);
+    if (style.dashes) line.setAttribute("stroke-dasharray", style.dashes.join(" "));
+    svg.append(line);
+    return svg;
+  }
+  const edgeColor = (relation) => {
+    const family = DATA.relations[relation].family;
+    return family ? familyColors(family).fill : palette().edge;
+  };
+
+  // --- vis data
+  function visNode(n) {
+    const style = DATA.types[n.type], { fill, stroke } = familyColors(style.family);
+    const tip = el("div", {}, el("strong", {}, nameOf(n)), el("div", { class: "tip-type" }, n.type), el("div", { class: "tip-id" }, n.id));
+    return {
+      id: n.id, label: nameOf(n), title: tip, shape: style.shape, size: style.px,
+      color: { background: fill, border: stroke, highlight: { background: fill, border: palette().ink }, hover: { background: fill, border: palette().ink } },
+      shapeProperties: { borderDashes: style.dashed ? [3, 2] : false },
+      font: { color: palette().ink, strokeColor: palette().surface, strokeWidth: 3, size: 12 },
+    };
+  }
+  function visEdge(e, i) {
+    const style = DATA.relations[e.type], color = edgeColor(e.type);
+    return {
+      id: i, from: e.source, to: e.target, kgType: e.type, title: `${e.type}`,
+      label: edgeLabels ? e.type : undefined, dashes: style.dashes || false,
+      color: { color, highlight: palette().ink, hover: palette().ink, opacity: 0.9 },
+      font: { color: palette().ink_muted, strokeColor: palette().surface, strokeWidth: 3, size: 10, align: "middle" },
+    };
+  }
+  const nodes = new vis.DataSet(DATA.nodes.map(visNode));
+  const edges = new vis.DataSet(DATA.edges.map(visEdge));
+  const nodesView = new vis.DataView(nodes, { filter: (n) => !hiddenTypes.has(byId.get(n.id).type) });
+  const edgesView = new vis.DataView(edges, {
+    filter: (e) => !hiddenRelations.has(e.kgType) && nodesView.get(e.from) !== null && nodesView.get(e.to) !== null,
+  });
+
+  const container = document.getElementById("network");
+  const network = new vis.Network(container, { nodes: nodesView, edges: edgesView }, {
+    layout: { randomSeed: 42, improvedLayout: DATA.nodes.length <= 150 },
+    physics: {
+      solver: "forceAtlas2Based",
+      forceAtlas2Based: { gravitationalConstant: -60, springLength: 90, avoidOverlap: 0.4 },
+      stabilization: { iterations: 400, updateInterval: 50 },
+    },
+    interaction: { hover: true, tooltipDelay: 150, keyboard: { enabled: true, bindToWindow: false }, zoomSpeed: 0.6 },
+    edges: { arrows: { to: { enabled: true, scaleFactor: 0.5 } }, smooth: false, width: 1, selectionWidth: 1.5 },
+    nodes: { borderWidth: 1.5, borderWidthSelected: 2.5 },
+  });
+  network.once("stabilizationIterationsDone", () => {
+    network.setOptions({ physics: false });
+    document.getElementById("loading").remove();
+    network.fit();
+  });
+
+  // --- Filters (they are also the legend)
+  function counts(items, key) {
+    const c = new Map();
+    for (const item of items) c.set(item[key], (c.get(item[key]) || 0) + 1);
+    return c;
+  }
+  const typeCounts = counts(DATA.nodes, "type"), relationCounts = counts(DATA.edges, "type");
+  function buildFilters() {
+    for (const [id, kind, names, hidden, icon, total] of [
+      ["node-filters", "node", DATA.type_order, hiddenTypes, shapeIcon, typeCounts],
+      ["edge-filters", "edge", DATA.relation_order, hiddenRelations, lineIcon, relationCounts],
+    ]) {
+      const box = document.getElementById(id);
+      box.querySelectorAll("label").forEach((l) => l.remove());
+      for (const name of names) {
+        const input = el("input", { type: "checkbox", "data-kind": kind, value: name });
+        input.checked = !hidden.has(name);
+        input.addEventListener("change", () => { input.checked ? hidden.delete(name) : hidden.add(name); refresh(); });
+        box.append(el("label", { class: "filter" }, input, icon(name), name, el("span", { class: "count" }, total.get(name) || 0)));
+      }
+    }
+  }
+  document.querySelectorAll("[data-all],[data-none]").forEach((b) => b.addEventListener("click", () => {
+    const kind = b.dataset.all || b.dataset.none, set = kind === "node" ? hiddenTypes : hiddenRelations;
+    const names = kind === "node" ? DATA.type_order : DATA.relation_order;
+    set.clear();
+    if (b.dataset.none) names.forEach((n) => set.add(n));
+    document.querySelectorAll(`input[data-kind="${kind}"]`).forEach((i) => (i.checked = !set.has(i.value)));
+    refresh();
+  }));
+  function refresh() {
+    nodesView.refresh(); edgesView.refresh();
+    const shown = nodesView.length, total = DATA.nodes.length;
+    document.getElementById("stats").textContent =
+      `${total} nodes · ${DATA.edges.length} edges` + (shown < total ? ` · showing ${shown} nodes, ${edgesView.length} edges` : "");
+    const hidden = [...hiddenTypes].filter((t) => typeCounts.has(t));
+    document.getElementById("hidden-note").textContent = hidden.length ? `Hidden types: ${hidden.join(", ")}.` : "";
+  }
+
+  // --- Search
+  const search = document.getElementById("search"), results = document.getElementById("results");
+  function matches(query) {
+    const q = query.trim().toLowerCase();
+    if (!q) return [];
+    const scored = [];
+    for (const n of DATA.nodes) {
+      const name = nameOf(n).toLowerCase(), id = n.id.toLowerCase();
+      const score = name === q || id === q ? 0 : name.startsWith(q) ? 1 : name.includes(q) ? 2 : id.includes(q) ? 3 : -1;
+      if (score >= 0) scored.push([score, n]);
+    }
+    scored.sort((a, b) => a[0] - b[0] || a[1].id.localeCompare(b[1].id));
+    return scored.slice(0, 20).map((s) => s[1]);
+  }
+  search.addEventListener("input", () => {
+    results.replaceChildren(...matches(search.value).map((n) =>
+      el("li", {}, el("button", { type: "button", onclick: () => select(n.id) }, shapeIcon(n.type), el("span", {}, nameOf(n)), el("span", { class: "id" }, n.id)))));
+  });
+  search.addEventListener("keydown", (ev) => {
+    if (ev.key === "Enter") { const first = matches(search.value)[0]; if (first) select(first.id); }
+  });
+
+  // --- Selection and details
+  function select(id) {
+    const n = byId.get(id);
+    if (!n) return;
+    history.replaceState(null, "", `#node=${encodeURIComponent(id)}`);
+    if (hiddenTypes.has(n.type)) {
+      hiddenTypes.delete(n.type);
+      document.querySelector(`input[data-kind="node"][value="${CSS.escape(n.type)}"]`).checked = true;
+      refresh();
+    }
+    network.selectNodes([id]);
+    network.focus(id, { scale: Math.max(network.getScale(), 1.1), animation: { duration: 400 } });
+    showNode(id);
+  }
+  network.on("click", (p) => {
+    if (p.nodes.length) showNode(p.nodes[0]);
+    else if (p.edges.length) showEdge(p.edges[0]);
+    else closePanel();
+  });
+
+  const panel = document.getElementById("panel");
+  function closePanel() {
+    panel.classList.remove("open"); panel.replaceChildren(); network.unselectAll();
+    history.replaceState(null, "", location.pathname + location.search);
+  }
+  function quote(text) { return /^[\w@%+=:,./-]+$/.test(text) ? text : `'${text.replaceAll("'", `'\\''`)}'`; }
+  function format(value) {
+    if (Array.isArray(value)) return value.every((v) => typeof v !== "object") ? value.join(", ") : JSON.stringify(value);
+    if (value !== null && typeof value === "object") return JSON.stringify(value);
+    return String(value);
+  }
+  function table(entries) {
+    const rows = entries.filter(([, v]) => v !== undefined && v !== null && v !== "" && !(Array.isArray(v) && !v.length));
+    if (!rows.length) return null;
+    return el("dl", {}, ...rows.flatMap(([k, v]) => [el("dt", {}, k), el("dd", {}, v instanceof Node ? v : format(v))]));
+  }
+  function provenance(p) {
+    const lines = p.lines ? (p.lines[0] === p.lines[1] ? `line ${p.lines[0]}` : `lines ${p.lines[0]}–${p.lines[1]}`) : null;
+    const confidence = Number.isInteger(p.confidence) ? p.confidence.toFixed(1) : p.confidence;
+    return table([["method", p.method], ["extractor", p.extractor], ["confidence", confidence],
+      ["source", p.source ? (lines ? `${p.source} (${lines})` : p.source) : null], ["timestamp", p.timestamp]]);
+  }
+  function command(text) {
+    const pre = el("pre", {}, text);
+    const copy = el("button", { type: "button", title: "Copy", onclick: async () => {
+      try { await navigator.clipboard.writeText(text); copy.textContent = "Copied"; }
+      catch { const r = document.createRange(); r.selectNodeContents(pre); getSelection().removeAllRanges(); getSelection().addRange(r); copy.textContent = "Selected"; }
+      setTimeout(() => (copy.textContent = "Copy"), 1500);
+    } }, "Copy");
+    return el("div", { class: "command" }, pre, copy);
+  }
+  function section(title, ...content) {
+    const body = content.filter((c) => c);
+    return body.length ? [el("h3", {}, title), ...body] : [];
+  }
+  function relationList(items) {
+    if (!items.length) return null;
+    return el("ul", {}, ...items.map(([edgeIndex, other, text]) => el("li", {},
+      el("span", { class: "rel" }, text, " "),
+      el("button", { type: "button", class: "link", onclick: () => select(other) }, nameOf(byId.get(other))),
+      " ", el("button", { type: "button", class: "link rel", onclick: () => showEdge(edgeIndex), title: "Details of this edge" }, "(edge)"))));
+  }
+  function open(children) {
+    panel.replaceChildren(el("button", { type: "button", class: "close", onclick: closePanel, "aria-label": "Close details" }, "×"), ...children);
+    panel.classList.add("open");
+    network.redraw();
+  }
+  function showNode(id) {
+    const n = byId.get(id);
+    const out = [], incoming = [];
+    DATA.edges.forEach((e, i) => {
+      if (e.source === id) out.push([i, e.target, `${e.type} →`]);
+      if (e.target === id) incoming.push([i, e.source, `← ${e.type}`]);
+    });
+    const cmd = `kg edit ${quote(id)} --label ${quote(nameOf(n))}`;
+    open([
+      el("h2", {}, nameOf(n)),
+      el("div", { class: "kind" }, shapeIcon(n.type), n.type),
+      el("code", {}, n.id),
+      n.description ? el("p", { class: "description" }, n.description) : null,
+      ...section("Attributes", table(Object.entries(n.attrs || {}))),
+      ...section("Provenance", provenance(n.provenance)),
+      ...section(`Outgoing (${out.length})`, relationList(out)),
+      ...section(`Incoming (${incoming.length})`, relationList(incoming)),
+      ...section("Change it in the store", el("p", { class: "hint" }, "This page is read-only. Run in the repo, then render again:"),
+        command(cmd), command(`kg remove ${quote(id)}`)),
+    ]);
+  }
+  function showEdge(index) {
+    const e = DATA.edges[index];
+    open([
+      el("h2", {}, e.type),
+      el("div", { class: "kind" }, lineIcon(e.type), "relation"),
+      table([["from", el("button", { type: "button", class: "link", onclick: () => select(e.source) }, nameOf(byId.get(e.source)))],
+        ["to", el("button", { type: "button", class: "link", onclick: () => select(e.target) }, nameOf(byId.get(e.target)))]]),
+      ...section("Attributes", table(Object.entries(e.attrs || {}))),
+      ...section("Provenance", provenance(e.provenance)),
+      ...section("Change it in the store", el("p", { class: "hint" }, "This page is read-only. Run in the repo, then render again:"),
+        command(`kg remove --edge ${quote(e.source)} ${quote(e.type)} ${quote(e.target)}`)),
+    ]);
+  }
+
+  // --- Toolbar and theme
+  const zoom = (factor) => network.moveTo({ scale: network.getScale() * factor, animation: { duration: 200 } });
+  document.getElementById("zoom-in").addEventListener("click", () => zoom(1.3));
+  document.getElementById("zoom-out").addEventListener("click", () => zoom(1 / 1.3));
+  document.getElementById("fit").addEventListener("click", () => network.fit({ animation: { duration: 300 } }));
+  const labelsButton = document.getElementById("labels");
+  labelsButton.addEventListener("click", () => {
+    edgeLabels = !edgeLabels;
+    labelsButton.setAttribute("aria-pressed", String(edgeLabels));
+    edges.update(DATA.edges.map((e, i) => ({ id: i, label: edgeLabels ? e.type : "" })));
+  });
+  function restyle() {
+    nodes.update(DATA.nodes.map(visNode));
+    edges.update(DATA.edges.map((e, i) => ({ ...visEdge(e, i), label: edgeLabels ? e.type : "" })));
+    buildFilters();
+  }
+  window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", restyle);
+
+  buildFilters();
+  refresh();
+  // Deep link: page.html#node=<id> opens that node (shareable, and testable).
+  const linked = new URLSearchParams(location.hash.slice(1)).get("node");
+  if (linked) network.once("stabilizationIterationsDone", () => setTimeout(() => select(linked), 0));
+})();
+</script>
+</body>
+</html>

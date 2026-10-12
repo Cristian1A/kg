@@ -18,7 +18,7 @@ General rules for any agent (Claude Code, Codex, Copilot, etc.) working in this 
 | `.mcp.json` | MCP servers (external tools) |
 | `samples/` | Third-party repos cloned for manual testing (ignored by git; see `samples/README.md`) |
 | `env/` | Virtual environment — **do not modify or read** |
-| `lib/`, `graph.html` | JS assets of the pyvis prototype — do not edit by hand |
+| `lib/`, `graph.html` | JS assets of the pyvis prototype — do not edit by hand (`kg render --html` uses `src/kg/render/assets/`) |
 | `graph.py`, `di_graph.py`, `tuto.py`, `*.ipynb` | Exploration prototypes (excluded from ruff) |
 
 ## Environment

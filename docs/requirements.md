@@ -276,5 +276,5 @@ Confirmed by the client on 2026-10-07:
 |----|----------|
 | PA-01 | The project and CLI name is **`kg`** for now; it will be reviewed before publishing to PyPI |
 | PA-02 | Entities with no physical origin use `<type>:<slug>` IDs (e.g. `concept:knowledge-graph`, `decision:use-networkx`) |
-| PA-03 | The interactive HTML is generated with **pyvis (vis.js)**, bundled to work offline |
+| PA-03 | The interactive HTML is built on **vis.js** (vis-network, the engine pyvis wraps), bundled to work offline. Updated 2026-10-12 (#10): kg embeds vis-network 9.1.2 with its own page instead of depending on pyvis, whose template lacks filters, search and the details panel, and which pulls in ipython |
 | PA-04 | Out-of-scope list confirmed (section 9) |
