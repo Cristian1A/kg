@@ -28,7 +28,7 @@ _BLOCKS = (ast.If, ast.Try, ast.TryStar, ast.With, ast.AsyncWith, ast.For, ast.W
 
 @dataclass(frozen=True)
 class SkippedFile:
-    """File whose contents could not be extracted; it still gets its `File` node."""
+    """A file, or an entry in it, that could not be extracted (with the reason)."""
 
     path: str
     line: int | None
@@ -60,6 +60,11 @@ class _Module:
         return f"{'package' if self.is_package else 'module'}:{self.name}"
 
 
+def repo_id(root: Path) -> str:
+    """ID of the `Repo` node: `repo:<directory name>`."""
+    return f"repo:{root.resolve().name}"
+
+
 def extract_python(root: Path) -> Extraction:
     """Extract the code structure of the repo at `root` (a directory)."""
     builder = _Builder(root)
@@ -70,7 +75,7 @@ def extract_python(root: Path) -> Extraction:
 class _Builder:
     def __init__(self, root: Path) -> None:
         self.root = root
-        self.repo_id = f"repo:{root.resolve().name}"
+        self.repo_id = repo_id(root)
         self.nodes: dict[str, dict[str, Any]] = {}
         self.edges: dict[tuple[str, str, str], dict[str, Any]] = {}
         self.extraction = Extraction({})
@@ -224,7 +229,7 @@ class _Builder:
         top = name.split(".")[0]
         if relative or top in sys.stdlib_module_names or top == "__future__":
             return None
-        dep_id = f"dependency:{_normalize(top)}"
+        dep_id = f"dependency:{normalize_name(top)}"
         if dep_id not in self.nodes:
             self._node(
                 dep_id, "Dependency", module.path, label=top, attrs={"import_name": top}
@@ -340,7 +345,7 @@ def _is_init(path: str) -> bool:
     return path == "__init__.py" or path.endswith("/__init__.py")
 
 
-def _normalize(name: str) -> str:
+def normalize_name(name: str) -> str:
     """Package name as in PEP 503: lowercase, `-` for runs of `-_.`."""
     return re.sub(r"[-_.]+", "-", name).lower()
 

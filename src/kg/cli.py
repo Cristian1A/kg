@@ -135,7 +135,7 @@ def _extract(args: argparse.Namespace) -> Result:
     root: Path = args.path
     if not root.is_dir():
         raise UsageError(f"not a directory: {root}")
-    extraction = extract.extract_python(root)
+    extraction = extract.extract_repo(root)
     result = _store_call(merge.add_document, args.kg_dir, extraction.document)
     if result.merge is None:  # a bug in the extractor, not the user's fault
         raise KgError(
@@ -145,7 +145,7 @@ def _extract(args: argparse.Namespace) -> Result:
 
     skipped = extraction.skipped
     n_files = len(extraction.files)
-    files = f"{n_files} Python {'file' if n_files == 1 else 'files'}"
+    files = f"{n_files} {'file' if n_files == 1 else 'files'}"
     head = (
         f"extracted {files} from {root} into {result.graph_path}"
         if result.merge.changed

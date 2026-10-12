@@ -8,8 +8,8 @@ The graph lives inside the repo (`.kg/graph.json`), as readable, deterministic
 JSON that is versioned with git like any other file.
 
 > **Status: early development (v0.1 MVP in progress).** The schema,
-> validation, the store and code-structure extraction are in place;
-> dependency and test extraction and rendering are next.
+> validation, the store and the extraction of code structure and
+> dependencies are in place; test extraction and rendering are next.
 > See the [roadmap](#roadmap).
 
 ## Why
@@ -124,7 +124,7 @@ Details in [docs/schema.md](docs/schema.md), [docs/store.md](docs/store.md) and
 | `kg validate` | Validate a document with actionable errors | ✅ |
 | `kg init` | Create the `.kg/` store | ✅ |
 | `kg add` | Merge a document into the store by ID | ✅ |
-| `kg extract` | Deterministic extraction of a Python repo | Code structure ✅, dependencies and tests 🚧 v0.1 |
+| `kg extract` | Deterministic extraction of a Python repo | Code and dependencies ✅, tests 🚧 v0.1 |
 | `kg render` | PNG/SVG image and interactive offline HTML | 🚧 v0.1 |
 | `kg query`, `kg impact` | Neighbors, paths, transitive impact | v0.2 |
 | `kg export` | Mermaid and Graphviz DOT | v0.2 |
