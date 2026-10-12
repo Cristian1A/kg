@@ -382,7 +382,7 @@ def test_cli_extract_twice_does_not_duplicate(repo, kg_dir, capsys):
     argv = ["extract", str(repo), "--kg-dir", str(kg_dir)]
     assert main(argv) == EXIT_OK
     first = store.graph_path(kg_dir).read_text(encoding="utf-8")
-    assert "extracted 8 Python files" in capsys.readouterr().out
+    assert "extracted 8 files" in capsys.readouterr().out
 
     assert main(argv) == EXIT_OK
     assert store.graph_path(kg_dir).read_text(encoding="utf-8") == first
@@ -443,7 +443,7 @@ def test_cli_extract_invalid_document_is_internal_error(
         extraction.document["nodes"].append(dict(extraction.document["nodes"][0]))
         return extraction
 
-    monkeypatch.setattr("kg.extract.extract_python", broken)
+    monkeypatch.setattr("kg.extract.extract_repo", broken)
     assert main(["extract", str(repo), "--kg-dir", str(kg_dir)]) == EXIT_INTERNAL
     assert "the store was not modified" in capsys.readouterr().err
     assert store.load_graph(kg_dir).number_of_nodes() == 0

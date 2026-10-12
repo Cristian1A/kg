@@ -1,7 +1,8 @@
 # Deterministic extraction: `kg extract`
 
-Walks a Python repo with `ast` and merges its code structure into the store
-(RF-10). It does not run or import the code, and calls no LLM (RF-24).
+Walks a Python repo with `ast` and reads its manifests, then merges its code
+structure (RF-10) and its dependencies and configuration (RF-11) into the
+store. It does not run or import the code, and calls no LLM (RF-24).
 
 ```bash
 kg init
@@ -17,7 +18,7 @@ moved, a new docstring) is merged and reported as a conflict.
 
 ## Files that are read
 
-Only `.py` files.
+**Code**: `.py` files, chosen as follows.
 
 - **Inside a git work tree**, git decides: tracked and untracked files that
   are not ignored (`git ls-files --cached --others --exclude-standard`), so
@@ -32,12 +33,15 @@ Only `.py` files.
   `.ruff_cache/`, `node_modules/` and any directory containing `pyvenv.cfg`
   (a virtual environment, whatever its name).
 
+**Manifests**: `pyproject.toml` at the root, `requirements*.txt` at the root
+(`requirements.txt` first) and `requirements/*.txt`.
+
 A file that cannot be parsed (syntax error, null bytes) is **reported and
 skipped**: it keeps its `File` and `Module` nodes, but its classes, functions
 and imports are not extracted. Extraction goes on with the rest.
 
 ```text
-extracted 12 Python files from . into .kg/graph.json
+extracted 14 files from . into .kg/graph.json
   nodes: 3 added, 1 merged, 140 unchanged
   edges: 4 added, 0 merged, 160 unchanged
   skipped 1:
@@ -76,7 +80,8 @@ All with `provenance` `method: parser`, `extractor: python-ast@0.1`,
 | `Module` | `module:<name>` | Description from its docstring |
 | `Class` | `class:<module>.<Class>` | Nested classes: `class:m.Outer.Inner` |
 | `Function` | `function:<module>.<name>` | Methods: `function:m.Class.method` |
-| `Dependency` | `dependency:<import name>` | Normalized as in PEP 503 (`yaml_lib` → `yaml-lib`) |
+| `Dependency` | `dependency:<name>` | See *Dependencies and configuration* |
+| `Config` | `config:<path>` | `pyproject.toml`, each requirements file |
 
 `Class` and `Function` have `provenance.lines` (`[first, last]`, starting at
 the first decorator), a `description` (first paragraph of the docstring) and
@@ -102,6 +107,8 @@ scope (`if`/`else`, `@overload`, a property setter), the first one is kept.
 | `defines` | `File` → its `Module`/`Package`, and its top-level `Class`es and `Function`s |
 | `defines` | `Class` → its methods and nested classes |
 | `imports` | `Module`/`Package` → `Module`/`Package` (internal) or `Dependency` (external) |
+| `depends_on` | `Repo` → every declared `Dependency` |
+| `configures` | `Config` → `Repo` |
 
 `imports` covers every `import` in the file, including those inside functions
 and `if TYPE_CHECKING:`. One edge per imported target; its `lines` are those
@@ -114,14 +121,52 @@ of the first statement. Resolution:
 - A name next to a script outside any package (e.g. `import helpers` in
   `tests/test_x.py`) is also looked up in that script's directory.
 - Anything else is external: the standard library (`sys.stdlib_module_names`)
-  is ignored and the rest becomes a `Dependency`. Its ID uses the **import
-  name**, which is not always the distribution name (`yaml` vs. `PyYAML`);
-  reconciling them is RF-32 (v0.2).
+  is ignored and the rest becomes a `Dependency` (see below).
+
+## Dependencies and configuration
+
+`Dependency` IDs use the package name normalized as in PEP 503 (lowercase,
+`-` for runs of `-_.`): `NetworkX`, `networkx` and `import networkx` are all
+`dependency:networkx`. **The same dependency yields a single node**, however
+many manifests declare or modules import it.
+
+Sources, in priority order:
+
+1. `pyproject.toml`: `[project.dependencies]` (group `main`),
+   `[project.optional-dependencies]` and `[dependency-groups]` (PEP 735;
+   `{include-group = …}` entries are ignored). Groups in alphabetical order.
+2. Requirements files, in the order above. Blank lines, comments, options
+   (`-r`, `-e`, `--index-url`…), URLs and local paths are ignored; a line
+   ending in `\` continues on the next one.
+
+The first declaration gives the node its `label`, `provenance` and `spec`;
+`Dependency` `attrs`:
+
+| Attribute | Value |
+|-----------|-------|
+| `spec` | Version constraint or `@ url` of the first declaration, if any |
+| `extras` | Extras requested (`requests[socks]` → `["socks"]`) |
+| `markers` | Environment markers (`python_version < '3.13'`) |
+| `groups` | pyproject groups that declare it (`main`, `dev`…) |
+| `declared_in` | Every manifest that declares it, in priority order |
+| `import_name` | Name used in `import`, if the code imports it |
+
+A dependency that is imported but not declared only has `import_name`. The
+import name is not always the distribution name (`yaml` vs. `PyYAML`), in
+which case two nodes appear; reconciling them is RF-32 (v0.2).
+
+`Config` `attrs`: `format` (`pyproject` or `requirements`) and, for the
+pyproject, `name`, `version`, `requires_python` and `tools` (the
+`[tool.*]` tables, e.g. `["pytest", "ruff"]`).
+
+An invalid `pyproject.toml`, a field of the wrong type or an entry that is not
+a PEP 508 requirement is reported as skipped (with its line in requirements
+files); the rest is still extracted. Poetry's `[tool.poetry.dependencies]` and
+`setup.py`/`setup.cfg` are not read.
 
 ## Not yet
 
-- `Dependency` and `Config` from `pyproject.toml` and `requirements*.txt`
-  (RF-11, #7) and `Test` nodes with `tests` relations (RF-12, #8).
+- `Test` nodes with `tests` relations (RF-12, #8).
 - Removing entities of deleted files and processing only changed files
   (RF-72, v0.2): today a deleted file's nodes stay in the store.
 - `calls` relations (RF-13, v0.2).
