@@ -447,3 +447,25 @@ def test_cli_extract_invalid_document_is_internal_error(
     assert main(["extract", str(repo), "--kg-dir", str(kg_dir)]) == EXIT_INTERNAL
     assert "the store was not modified" in capsys.readouterr().err
     assert store.load_graph(kg_dir).number_of_nodes() == 0
+
+
+def test_scripts_inside_a_package_import_their_siblings(tmp_path):
+    """`./etl/job.py` run as a script imports `etl/utils.py` as `utils`."""
+    write(
+        tmp_path,
+        {
+            "etl/__init__.py": "",
+            "etl/utils.py": "def connect():\n    pass\n",
+            "etl/job.py": "import json\nfrom utils import connect\nimport pandas\n",
+            "etl/tests/__init__.py": "",
+            "etl/tests/test_job.py": "from utils import connect\n\n\n"
+            "def test_connect():\n    connect()\n",
+        },
+    )
+    extraction = extract_python(tmp_path)
+    imports = edges(extraction, "imports")
+    assert ("module:etl.job", "module:etl.utils") in imports
+    assert ("module:etl.job", "dependency:pandas") in imports
+    assert ("module:etl.job", "dependency:utils") not in imports
+    # Not a sibling of etl/tests/test_job.py: stays external
+    assert ("test:etl.tests.test_job", "dependency:utils") in imports
