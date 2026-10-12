@@ -12,6 +12,7 @@ src/kg/
 ├── __main__.py    # python -m kg
 ├── cli.py         # argparse: subcommands, --json, --kg-dir, exit codes
 ├── graphs.py      # graph building (pure functions returning nx.Graph/DiGraph)
+├── analysis.py    # queries over the stored graph (untested code…)
 ├── schema/        # JSON Schema and validation                       (#2, #3)
 ├── store.py       # .kg/ store (deterministic read/write)              (#4)
 ├── merge.py       # merge by ID and `kg add`                          (#5)

@@ -105,7 +105,7 @@ def test_extracts_standard_node_types_with_stable_ids(repo):
         "module:app.core": "Module",
         "module:app.util": "Module",
         "module:app.db.models": "Module",
-        "module:tests.test_core": "Module",
+        "test:tests.test_core": "Test",
         "module:tests.helpers": "Module",
         "module:script": "Module",
         "class:app.core.Engine": "Class",
@@ -204,7 +204,7 @@ def test_contains_edges(repo):
     assert ("package:app", "module:app.core") in contains
     assert ("package:app", "package:app.db") in contains
     assert ("package:app.db", "module:app.db.models") in contains
-    assert ("repo:proj", "module:tests.test_core") in contains
+    assert ("repo:proj", "test:tests.test_core") in contains
     assert ("repo:proj", "module:script") in contains
 
 
@@ -228,9 +228,9 @@ def test_imports_internal_and_external(repo):
         ("module:app.core", "dependency:yaml-lib"),
         ("module:app.core", "dependency:requests"),
         ("package:app.db", "module:app.db.models"),
-        ("module:tests.test_core", "module:app.core"),
+        ("test:tests.test_core", "module:app.core"),
         # next to the test file, which is on sys.path
-        ("module:tests.test_core", "module:tests.helpers"),
+        ("test:tests.test_core", "module:tests.helpers"),
         ("module:script", "package:app"),
     }
 
