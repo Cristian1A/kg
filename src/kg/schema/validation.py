@@ -9,7 +9,7 @@ from __future__ import annotations
 import difflib
 import json
 import re
-from collections.abc import Iterable, Sequence
+from collections.abc import Collection, Iterable, Sequence
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any, Literal
@@ -111,8 +111,8 @@ class Report:
         }
 
 
-def validate_text(text: str) -> Report:
-    """Valida el contenido de un archivo JSON."""
+def validate_text(text: str, known_ids: Collection[str] | None = None) -> Report:
+    """Valida el contenido de un archivo JSON (ver `validate_document`)."""
     try:
         document = json.loads(text)
     except json.JSONDecodeError as e:
@@ -129,7 +129,7 @@ def validate_text(text: str) -> Report:
                 )
             ]
         )
-    return validate_document(document)
+    return validate_document(document, known_ids)
 
 
 def validate_path(path: Path) -> Report:
@@ -152,8 +152,14 @@ def validate_path(path: Path) -> Report:
     return validate_text(text)
 
 
-def validate_document(document: Any) -> Report:
-    """Valida un documento ya cargado: esquema, IDs duplicados y referencias."""
+def validate_document(
+    document: Any, known_ids: Collection[str] | None = None
+) -> Report:
+    """Valida un documento ya cargado: esquema, IDs duplicados y referencias.
+
+    `known_ids` son nodos que existen fuera del documento (p. ej. en el almacén,
+    para `kg add`): las aristas pueden apuntar a ellos.
+    """
     report = Report()
     seen: set[tuple[str, str]] = set()
     for error in validator().iter_errors(document):
@@ -170,7 +176,7 @@ def validate_document(document: Any) -> Report:
     report.nodes, report.edges = len(nodes), len(edges)
 
     ids = _check_duplicate_ids(nodes, report)
-    _check_references(edges, ids, report)
+    _check_references(edges, ids, known_ids, report)
     _check_custom_types(document, report)
     _check_id_prefixes(nodes, report)
     report.errors.sort(key=lambda i: _sort_key(_parse_path(i.path)))
@@ -214,22 +220,32 @@ def _check_duplicate_ids(
 
 
 def _check_references(
-    edges: Sequence[tuple[int, dict[str, Any]]], ids: dict[str, int], report: Report
+    edges: Sequence[tuple[int, dict[str, Any]]],
+    ids: dict[str, int],
+    known_ids: Collection[str] | None,
+    report: Report,
 ) -> None:
+    where, expected = "en el archivo", "el ID de un nodo declarado en `nodes`"
+    if known_ids is None:
+        known_ids = ()
+    else:
+        where += " ni en el almacén"
+        expected += " o existente en el almacén"
+    candidates = sorted({*ids, *known_ids})
     for i, edge in edges:
         for end in ("source", "target"):
             ref = edge.get(end)
-            if not isinstance(ref, str) or ref in ids:
+            if not isinstance(ref, str) or ref in ids or ref in known_ids:
                 continue
-            close = difflib.get_close_matches(ref, list(ids), n=1)
+            close = difflib.get_close_matches(ref, candidates, n=1)
             hint = f"¿Querías decir {_show(close[0])}? " if close else ""
             report.errors.append(
                 Issue(
                     code="broken_reference",
                     path=f"$.edges[{i}].{end}",
-                    message="la arista apunta a un nodo que no existe en el archivo",
+                    message=f"la arista apunta a un nodo que no existe {where}",
                     received=_show(ref),
-                    expected="el ID de un nodo declarado en `nodes`",
+                    expected=expected,
                     suggestion=f"{hint}Corrige el ID o añade el nodo a `nodes`.",
                 )
             )
