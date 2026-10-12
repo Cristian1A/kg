@@ -1,18 +1,18 @@
-# Tools para agentes
+# Agent tools
 
-Scripts auxiliares que los agentes pueden ejecutar. Cada tool debe ser:
+Helper scripts that agents can run. Each tool must be:
 
-- **Autocontenida**: un archivo, ejecutable con `python .agents/tools/<tool>.py`.
-- **No interactiva**: argumentos por CLI, salida por stdout (preferible JSON).
-- **Segura**: sin efectos destructivos; si escribe archivos, que sea en una ruta indicada por argumento.
+- **Self-contained**: one file, runnable with `python .agents/tools/<tool>.py`.
+- **Non-interactive**: arguments via CLI, output to stdout (JSON preferred).
+- **Safe**: no destructive side effects; if it writes files, only to a path given as an argument.
 
-## Tools disponibles
+## Available tools
 
-| Tool | Descripción | Uso |
-|------|-------------|-----|
-| `graph_summary.py` | Resumen de un grafo de ejemplo o de un archivo GraphML | `python .agents/tools/graph_summary.py [archivo.graphml]` |
+| Tool | Description | Usage |
+|------|-------------|-------|
+| `graph_summary.py` | Summary of an example graph or of a GraphML file | `python .agents/tools/graph_summary.py [file.graphml]` |
 
-## Añadir una tool
-1. Crear `<nombre>.py` con `argparse` y un `main()`.
-2. Documentarla en la tabla de arriba.
-3. Las tools externas (APIs, bases de datos, navegador) van en `.mcp.json`, no aquí.
+## Adding a tool
+1. Create `<name>.py` with `argparse` and a `main()`.
+2. Document it in the table above.
+3. External tools (APIs, databases, browser) go in `.mcp.json`, not here.

@@ -1,27 +1,27 @@
 ---
 name: data-analysis
-description: Analizar grafos con NetworkX (métricas, caminos, comunidades) y visualizarlos. Úsala cuando se pida explorar, medir o graficar un grafo.
+description: Analyze graphs with NetworkX (metrics, paths, communities) and visualize them. Use it when asked to explore, measure or plot a graph.
 ---
 
-# Análisis de datos con grafos
+# Graph data analysis
 
-## Flujo
-1. **Cargar/construir** el grafo (`nx.Graph` no dirigido, `nx.DiGraph` dirigido). Guarda atributos en nodos (`type`, `age`...) y aristas (`relation`).
-2. **Inspeccionar**: `G.number_of_nodes()`, `G.number_of_edges()`, `nx.is_directed(G)`, `nx.is_weakly_connected(G)`.
-3. **Medir** según la pregunta:
-   - Centralidad: `nx.degree_centrality`, `nx.betweenness_centrality`, `nx.pagerank`.
-   - Caminos: `nx.shortest_path`, `nx.has_path`, `nx.descendants`.
-   - Estructura: `nx.connected_components` / `nx.weakly_connected_components`, `nx.community.louvain_communities(G, seed=42)`.
-4. **Tabular** resultados (dict → lista ordenada, o pandas si está instalado).
-5. **Visualizar**: matplotlib para estático, pyvis para HTML interactivo.
+## Flow
+1. **Load/build** the graph (`nx.Graph` undirected, `nx.DiGraph` directed). Store attributes on nodes (`type`, `age`...) and edges (`relation`).
+2. **Inspect**: `G.number_of_nodes()`, `G.number_of_edges()`, `nx.is_directed(G)`, `nx.is_weakly_connected(G)`.
+3. **Measure** according to the question:
+   - Centrality: `nx.degree_centrality`, `nx.betweenness_centrality`, `nx.pagerank`.
+   - Paths: `nx.shortest_path`, `nx.has_path`, `nx.descendants`.
+   - Structure: `nx.connected_components` / `nx.weakly_connected_components`, `nx.community.louvain_communities(G, seed=42)`.
+4. **Tabulate** results (dict → sorted list, or pandas if installed).
+5. **Visualize**: matplotlib for static output, pyvis for interactive HTML.
 
-## Reglas
-- Fija `seed` en todo lo aleatorio para reproducibilidad.
-- Filtra por atributos con comprensiones: `[n for n, d in G.nodes(data=True) if d.get("type") == "person"]`.
-- Para grafos grandes (>10k nodos) evita `betweenness_centrality` exacta; usa `k=` para muestreo.
-- Explica los resultados en lenguaje claro, no solo números.
+## Rules
+- Fix `seed` for anything random, for reproducibility.
+- Filter by attributes with comprehensions: `[n for n, d in G.nodes(data=True) if d.get("type") == "person"]`.
+- For large graphs (>10k nodes) avoid exact `betweenness_centrality`; sample with `k=`.
+- Explain results in plain language, not just numbers.
 
-## Visualización
+## Visualization
 ```python
 pos = nx.spring_layout(G, seed=42)
 nx.draw(G, pos, with_labels=True, node_size=2000, arrows=G.is_directed())

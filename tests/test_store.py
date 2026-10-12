@@ -14,7 +14,7 @@ from kg.store import (
     StoreNotFoundError,
 )
 
-EXAMPLE = Path(__file__).parents[1] / "examples" / "repo-basico.json"
+EXAMPLE = Path(__file__).parents[1] / "examples" / "basic-repo.json"
 
 PROV = {"method": "parser", "extractor": "python-ast@0.1", "confidence": 1.0}
 

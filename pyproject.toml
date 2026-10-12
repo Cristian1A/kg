@@ -5,14 +5,14 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "kg"
 dynamic = ["version"]
-description = "Convierte el conocimiento de un proyecto en un grafo consultable"
-readme = "AGENTS.md"
+description = "Turn a codebase's knowledge into a queryable knowledge graph"
+readme = "README.md"
 license = "MIT"
 requires-python = ">=3.12"
 dependencies = [
     "networkx>=3.7",
     "matplotlib>=3.11",
-    # Validación con JSON Schema draft 2020-12 y rutas de error (RF-01, RF-04)
+    # JSON Schema draft 2020-12 validation with error paths (RF-01, RF-04)
     "jsonschema>=4.18",
 ]
 
@@ -42,7 +42,7 @@ pythonpath = ["src"]
 [tool.ruff]
 line-length = 88
 target-version = "py312"
-# Los scripts de la raíz son prototipos de exploración
+# Root scripts are exploration prototypes
 extend-exclude = ["env", "lib", "graph.py", "di_graph.py", "tuto.py", "*.ipynb"]
 
 [tool.ruff.lint]

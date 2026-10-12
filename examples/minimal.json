@@ -1,0 +1,11 @@
+{
+  "version": "1",
+  "nodes": [
+    {
+      "id": "concept:knowledge-graph",
+      "type": "Concept",
+      "provenance": { "method": "manual", "extractor": "person", "confidence": 1.0 }
+    }
+  ],
+  "edges": []
+}

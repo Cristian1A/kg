@@ -3,7 +3,7 @@
 El almacén es un único `graph.json` que cumple el esquema de entrada (`kg schema`),
 así que `kg validate .kg/graph.json` sirve para revisarlo. El orden de nodos,
 aristas y claves es fijo: el mismo grafo produce el mismo archivo byte a byte.
-Formato documentado en `docs/almacen.md`.
+Formato documentado en `docs/store.md`.
 """
 
 from __future__ import annotations

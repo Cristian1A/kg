@@ -1,28 +1,29 @@
 # samples/
 
-Directorio de pruebas manuales de `kg` sobre repos de terceros. Los repos
-clonados aquí **no se suben** (`samples/*` está en `.gitignore`); solo se
-versiona este README.
+Directory for manual testing of `kg` on third-party repos. Repos cloned here
+are **not committed** (`samples/*` is in `.gitignore`); only this README is
+versioned.
 
-Sirve para el criterio de aceptación 1 del MVP (sección 8 del DF: flujo
-CU-01 sobre al menos 3 repos pequeños de Python) y para medir `extract` y
-`render` (RNF-06). Seguimiento en la issue #12.
+It serves MVP acceptance criterion 1 (section 8 of `docs/requirements.md`:
+the CU-01 flow on at least 3 small Python repos) and for timing `extract` and
+`render` (RNF-06). Tracked in issue #12.
 
-## Repos de prueba
+## Test repos
 
-| Repo | Motivo |
-|------|--------|
-| [alfredodeza/basic-python-cli](https://github.com/alfredodeza/basic-python-cli) | CLI mínima, muy pocos archivos |
+| Repo | Why |
+|------|-----|
+| [alfredodeza/basic-python-cli](https://github.com/alfredodeza/basic-python-cli) | Minimal CLI, very few files |
 
-Añade aquí cada repo nuevo que uses para probar.
+Add every new repo you test with here.
 
-## Uso
+## Usage
 
 ```bash
 git clone --depth 1 https://github.com/alfredodeza/basic-python-cli samples/basic-python-cli
 kg init --kg-dir samples/basic-python-cli/.kg
 kg extract samples/basic-python-cli --kg-dir samples/basic-python-cli/.kg
+kg add agent-graph.json --kg-dir samples/basic-python-cli/.kg
 kg render --html --kg-dir samples/basic-python-cli/.kg -o samples/basic-python-cli.html
 ```
 
-Los subcomandos se irán habilitando según avancen sus issues (#4, #6, #9…).
+Subcommands become available as their issues land (`extract` #6, `render` #9…).

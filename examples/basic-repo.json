@@ -17,7 +17,7 @@
       "id": "function:kg.cli.main",
       "type": "Function",
       "label": "main",
-      "description": "Ejecuta la CLI y devuelve el código de salida.",
+      "description": "Run the CLI and return the exit code.",
       "attrs": { "public": true },
       "provenance": {
         "source": "src/kg/cli.py",
@@ -34,11 +34,11 @@
       "provenance": { "source": "pyproject.toml", "method": "parser", "extractor": "pyproject@0.1", "confidence": 1.0 }
     },
     {
-      "id": "decision:usar-networkx",
+      "id": "decision:use-networkx",
       "type": "Decision",
-      "label": "Usar NetworkX como motor del grafo",
+      "label": "Use NetworkX as the graph engine",
       "provenance": {
-        "source": "docs/requisitos-funcionales.md",
+        "source": "docs/requirements.md",
         "method": "llm",
         "extractor": "claude-code",
         "confidence": 0.9,
@@ -48,9 +48,9 @@
     {
       "id": "requirement:rf-22",
       "type": "Requirement",
-      "label": "RF-22: todos los comandos admiten --json",
+      "label": "RF-22: every command accepts --json",
       "provenance": {
-        "source": "docs/requisitos-funcionales.md",
+        "source": "docs/requirements.md",
         "method": "llm",
         "extractor": "claude-code",
         "confidence": 0.95,
@@ -78,7 +78,7 @@
       "provenance": { "source": "pyproject.toml", "method": "parser", "extractor": "pyproject@0.1", "confidence": 1.0 }
     },
     {
-      "source": "decision:usar-networkx",
+      "source": "decision:use-networkx",
       "target": "dependency:networkx",
       "type": "justifies",
       "provenance": { "method": "llm", "extractor": "claude-code", "confidence": 0.9 }
