@@ -124,6 +124,7 @@ Details in [docs/schema.md](docs/schema.md), [docs/store.md](docs/store.md),
 | `kg validate` | Validate a document with actionable errors | ✅ |
 | `kg init` | Create the `.kg/` store | ✅ |
 | `kg add` | Merge a document into the store by ID | ✅ |
+| `kg remove`, `kg edit` | Remove nodes or edges, modify a node | ✅ |
 | `kg extract` | Deterministic extraction of a Python repo | ✅ |
 | `kg render` | PNG/SVG image and interactive offline HTML | PNG/SVG ✅, HTML 🚧 v0.1 |
 | `kg query`, `kg impact` | Neighbors, paths, transitive impact | v0.2 |

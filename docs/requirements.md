@@ -184,6 +184,8 @@ Priorities:
 | RF-72 | **Incremental update**: `kg extract` only reprocesses files modified according to git and removes entities from deleted files | v0.2 |
 | RF-73 | Optional **post-commit hook** that triggers the incremental update | v0.2 |
 | RF-74 | `kg log`, `kg diff <v1> <v2>` (nodes and relations added, removed or modified) and `kg checkout <version>`, based on the store's git history | v0.2 |
+| RF-75 | `kg remove` deletes nodes (with their edges) and individual edges from the store, all or nothing, with `--dry-run` | MVP (added 2026-10-12, #28) |
+| RF-76 | `kg edit` modifies a node (ID, type, label, description, attributes); renaming rewrites its edges; the result is validated before saving | MVP (added 2026-10-12, #28) |
 
 ---
 
@@ -194,6 +196,8 @@ kg init                         Create the .kg/ store in the repo
 kg extract <path>               Deterministic extraction (Python)
 kg add <file.json>              Add and merge entities and relations
 kg validate <file.json>         Validate against the schema without applying changes
+kg remove <id>… | --edge s t d  Remove nodes or edges from the store
+kg edit <id> [--label …]        Modify a node of the store
 kg query ...                    Nodes, neighbors, paths and filters       (v0.2)
 kg impact <node>                Transitive dependents                     (v0.2)
 kg render --png|--svg|--html    Visualization
@@ -227,7 +231,7 @@ Exit codes: `0` OK, `1` validation error, `2` usage error, `>2` internal error.
 
 | Version | Content |
 |---------|---------|
-| **v0.1 (MVP)** | Schema and validation (RF-01–05), Python extractor (RF-10–12), agent guidelines and `add` (RF-20–22, 24), basic merge by ID (RF-30), PNG/SVG/HTML render (RF-50–55), `.kg/` store (RF-70–71) |
+| **v0.1 (MVP)** | Schema and validation (RF-01–05), Python extractor (RF-10–12), agent guidelines and `add` (RF-20–22, 24), basic merge by ID (RF-30), PNG/SVG/HTML render (RF-50–55), `.kg/` store (RF-70–71), removing and editing (RF-75–76) |
 | **v0.2** | Multiple provenance and advanced deduplication (RF-31–33), queries and impact (RF-40–42), Mermaid/DOT export (RF-60–61), incremental updates, hook and versioning (RF-72–74), MCP server (RF-23), `calls` (RF-13), Dockerfile |
 | **Future** | Audience-specific views, Neo4j, git blame/authors, other languages, PyPI |
 
