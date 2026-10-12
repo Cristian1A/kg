@@ -161,7 +161,7 @@ _DELETE = object()
 def test_invalid_documents_are_rejected(doc, path, value):
     broken = copy.deepcopy(doc)
     _set(broken, path, value)
-    assert errors(broken), f"debería fallar: {path} = {value!r}"
+    assert errors(broken), f"should fail: {path} = {value!r}"
 
 
 def test_cli_schema_prints_schema(capsys):

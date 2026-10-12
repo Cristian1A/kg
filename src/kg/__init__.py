@@ -1,3 +1,3 @@
-"""kg: convierte el conocimiento de un proyecto en un grafo consultable."""
+"""kg: turn a codebase's knowledge into a queryable knowledge graph."""
 
 __version__ = "0.1.0.dev0"

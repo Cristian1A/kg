@@ -1,9 +1,9 @@
-"""Almacén `.kg/` del grafo: lectura y escritura deterministas (RF-70, RF-71, RNF-08).
+"""The graph's `.kg/` store: deterministic read and write (RF-70, RF-71, RNF-08).
 
-El almacén es un único `graph.json` que cumple el esquema de entrada (`kg schema`),
-así que `kg validate .kg/graph.json` sirve para revisarlo. El orden de nodos,
-aristas y claves es fijo: el mismo grafo produce el mismo archivo byte a byte.
-Formato documentado en `docs/store.md`.
+The store is a single `graph.json` that conforms to the input schema
+(`kg schema`), so `kg validate .kg/graph.json` can check it. The order of nodes,
+edges and keys is fixed: the same graph produces the same file byte for byte.
+Format documented in `docs/store.md`.
 """
 
 from __future__ import annotations
@@ -23,13 +23,13 @@ from kg.schema.validation import Report, validate_document, validate_path
 GRAPH_FILE = "graph.json"
 FORMAT_VERSION: str = load_schema()["properties"]["version"]["const"]
 
-# Orden de los campos en el archivo: primero la identidad, luego el contenido.
+# Field order in the file: identity first, then content.
 _NODE_FIELDS = ("type", "label", "description", "attrs", "provenance")
 _EDGE_FIELDS = ("type", "attrs", "provenance")
 
 
 class StoreError(Exception):
-    """Error del almacén; `path` es la ruta afectada."""
+    """Store error; `path` is the affected path."""
 
     def __init__(self, message: str, path: Path) -> None:
         super().__init__(message)
@@ -38,15 +38,15 @@ class StoreError(Exception):
 
 
 class StoreExistsError(StoreError):
-    """`kg init` sobre una ruta que ya existe."""
+    """`kg init` on a path that already exists."""
 
 
 class StoreNotFoundError(StoreError):
-    """No hay almacén (o le falta `graph.json`) en la ruta indicada."""
+    """There is no store (or it lacks `graph.json`) at the given path."""
 
 
 class StoreCorruptError(StoreError):
-    """El contenido del almacén no cumple el esquema; `report` tiene el detalle."""
+    """The store does not conform to the schema; `report` has the details."""
 
     def __init__(self, message: str, path: Path, report: Report) -> None:
         super().__init__(message, path)
@@ -54,33 +54,33 @@ class StoreCorruptError(StoreError):
 
 
 def graph_path(kg_dir: Path) -> Path:
-    """Ruta del archivo del grafo dentro del almacén."""
+    """Path of the graph file inside the store."""
     return kg_dir / GRAPH_FILE
 
 
 def init_store(kg_dir: Path) -> Path:
-    """Crea el almacén con un grafo vacío y devuelve la ruta de `graph.json`."""
+    """Create the store with an empty graph and return the path of `graph.json`."""
     if kg_dir.exists():
-        raise StoreExistsError(f"ya existe {kg_dir}; no se ha modificado", kg_dir)
+        raise StoreExistsError(f"{kg_dir} already exists; nothing was changed", kg_dir)
     if not kg_dir.parent.is_dir():
         raise StoreNotFoundError(
-            f"no existe el directorio {kg_dir.parent} donde crear el almacén", kg_dir
+            f"directory {kg_dir.parent} does not exist; cannot create the store", kg_dir
         )
     kg_dir.mkdir()
     return save_graph(nx.MultiDiGraph(), kg_dir)
 
 
 def load_graph(kg_dir: Path) -> nx.MultiDiGraph:
-    """Lee el grafo del almacén, validándolo contra el esquema."""
+    """Read the graph from the store, validating it against the schema."""
     path = graph_path(kg_dir)
     if not path.is_file():
         raise StoreNotFoundError(
-            f"no hay almacén en {kg_dir}; créalo con `kg init`", path
+            f"no store at {kg_dir}; create one with `kg init`", path
         )
     report = validate_path(path)
     if not report.ok:
         raise StoreCorruptError(
-            f"{path} no es un almacén válido; revísalo con `kg validate {path}`",
+            f"{path} is not a valid store; check it with `kg validate {path}`",
             path,
             report,
         )
@@ -88,29 +88,31 @@ def load_graph(kg_dir: Path) -> nx.MultiDiGraph:
 
 
 def save_graph(graph: nx.MultiDiGraph, kg_dir: Path) -> Path:
-    """Escribe el grafo de forma atómica; nunca deja un almacén inválido."""
+    """Write the graph atomically; never leaves an invalid store behind."""
     path = graph_path(kg_dir)
     document = graph_to_document(graph)
     report = validate_document(document)
     if not report.ok:
         raise StoreCorruptError(
-            "el grafo no cumple el esquema; no se ha escrito el almacén", path, report
+            "the graph does not conform to the schema; the store was not written",
+            path,
+            report,
         )
-    document_to_graph(document, path)  # rechaza aristas duplicadas
+    document_to_graph(document, path)  # rejects duplicate edges
     _write_atomic(path, dumps(document))
     return path
 
 
-# --- Conversión documento <-> grafo -------------------------------------------
+# --- Document <-> graph conversion -------------------------------------------
 
 
 def document_to_graph(
     document: dict[str, Any], path: Path | None = None
 ) -> nx.MultiDiGraph:
-    """Construye el grafo a partir de un documento ya validado.
+    """Build the graph from an already validated document.
 
-    La identidad de una arista es `(source, target, type)` y `type` es su clave en
-    el `MultiDiGraph`; dos aristas con la misma identidad son un error.
+    An edge's identity is `(source, target, type)` and `type` is its key in the
+    `MultiDiGraph`; two edges with the same identity are an error.
     """
     graph = nx.MultiDiGraph(version=document["version"])
     for node in document["nodes"]:
@@ -119,7 +121,7 @@ def document_to_graph(
         source, target, type_ = edge["source"], edge["target"], edge["type"]
         if graph.has_edge(source, target, key=type_):
             raise StoreError(
-                f"$.edges[{i}]: arista duplicada {source} -[{type_}]-> {target}",
+                f"$.edges[{i}]: duplicate edge {source} -[{type_}]-> {target}",
                 path or Path("-"),
             )
         graph.add_edge(source, target, key=type_, **_pick(edge, _EDGE_FIELDS))
@@ -127,10 +129,10 @@ def document_to_graph(
 
 
 def graph_to_document(graph: nx.MultiDiGraph) -> dict[str, Any]:
-    """Documento canónico del grafo: nodos por ID y aristas por (source, target, type).
+    """Canonical document of the graph: nodes by ID, edges by (source, target, type).
 
-    Los campos siguen un orden fijo y las claves de `attrs` y `provenance` van
-    ordenadas, de modo que el resultado no depende del orden de inserción.
+    Fields follow a fixed order and the keys of `attrs` and `provenance` are
+    sorted, so the result does not depend on insertion order.
     """
     nodes = [
         {"id": node_id, **_fields(data, _NODE_FIELDS)}
@@ -145,11 +147,11 @@ def graph_to_document(graph: nx.MultiDiGraph) -> dict[str, Any]:
 
 
 def dumps(document: dict[str, Any]) -> str:
-    """Serializa un documento canónico: UTF-8 legible, 2 espacios y salto final."""
+    """Serialize a canonical document: readable UTF-8, 2 spaces, trailing newline."""
     return json.dumps(document, ensure_ascii=False, indent=2) + "\n"
 
 
-# --- Utilidades ---------------------------------------------------------------
+# --- Helpers -----------------------------------------------------------------
 
 
 def _pick(data: dict[str, Any], fields: Iterable[str]) -> dict[str, Any]:
@@ -157,12 +159,12 @@ def _pick(data: dict[str, Any], fields: Iterable[str]) -> dict[str, Any]:
 
 
 def _fields(data: dict[str, Any], fields: Iterable[str]) -> dict[str, Any]:
-    """Campos en el orden de `fields`, con sus valores en forma canónica."""
+    """Fields in the order of `fields`, with their values in canonical form."""
     return {f: _canonical(v) for f, v in _pick(data, fields).items()}
 
 
 def _canonical(value: Any) -> Any:
-    """Copia con las claves de los objetos anidados ordenadas; las listas no."""
+    """Copy with nested object keys sorted; lists keep their order."""
     if isinstance(value, dict):
         return {k: _canonical(value[k]) for k in sorted(value)}
     if isinstance(value, list):
@@ -175,7 +177,7 @@ def _edge_sort_key(edge: dict[str, Any]) -> tuple[str, str, str]:
 
 
 def _write_atomic(path: Path, text: str) -> None:
-    # mkstemp crea el archivo con 0600; se conservan los permisos del existente.
+    # mkstemp creates the file with 0600; keep the existing file's permissions.
     mode = path.stat().st_mode & 0o777 if path.exists() else 0o644
     fd, tmp = tempfile.mkstemp(prefix=f".{path.name}.", dir=path.parent)
     try:

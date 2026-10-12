@@ -87,7 +87,7 @@ def test_success_json_output(monkeypatch, capsys):
 def test_stub_commands_report_not_implemented(argv, capsys):
     assert main(argv) == EXIT_INTERNAL
     err = capsys.readouterr().err
-    assert "aún no está implementado" in err
+    assert "not implemented yet" in err
     assert "#" in err
 
 
@@ -122,12 +122,12 @@ def test_usage_error_json(capsys):
 
 def test_unexpected_exception_is_internal_error(monkeypatch, capsys):
     def boom(args):
-        raise RuntimeError("fallo inesperado")
+        raise RuntimeError("unexpected failure")
 
     monkeypatch.setattr("kg.cli._not_implemented", lambda issue: boom)
     assert main(["extract", "--json"]) == EXIT_INTERNAL
     payload = json.loads(capsys.readouterr().out)
-    assert "fallo inesperado" in payload["error"]["message"]
+    assert "unexpected failure" in payload["error"]["message"]
     assert payload["error"]["details"] == {"exception": "RuntimeError"}
 
 
