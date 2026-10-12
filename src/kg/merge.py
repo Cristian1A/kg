@@ -18,7 +18,7 @@ from typing import Any, Literal
 import networkx as nx
 
 from kg import store
-from kg.schema.validation import Report, validate_text
+from kg.schema.validation import Report, validate_document, validate_text
 
 Kind = Literal["node", "edge"]
 
@@ -77,15 +77,19 @@ class MergeReport:
             or self.edges.merged
         )
 
-    def to_text(self) -> str:
+    def to_text(self, max_conflicts: int | None = None) -> str:
+        """Readable summary; lists at most `max_conflicts` conflicts if given."""
         lines = [
             f"  nodes: {_counts(self.nodes)}",
             f"  edges: {_counts(self.edges)}",
         ]
         if self.conflicts:
             n = len(self.conflicts)
+            shown = self.conflicts[:max_conflicts]
             lines.append(f"  {n} {'conflict' if n == 1 else 'conflicts'}:")
-            lines += [f"    {c.to_text()}" for c in self.conflicts]
+            lines += [f"    {c.to_text()}" for c in shown]
+            if len(shown) < n:
+                lines.append(f"    … and {n - len(shown)} more (see --json)")
         return "\n".join(lines)
 
     def to_dict(self) -> dict[str, Any]:
@@ -115,10 +119,27 @@ def add_to_store(kg_dir: Path, text: str) -> AddResult:
     """
     graph = store.load_graph(kg_dir)
     report = validate_text(text, known_ids=set(graph.nodes))
+    document = json.loads(text) if report.ok else None
+    return _apply(kg_dir, graph, report, document)
+
+
+def add_document(kg_dir: Path, document: dict[str, Any]) -> AddResult:
+    """Like `add_to_store`, for an already loaded document (e.g. `kg extract`)."""
+    graph = store.load_graph(kg_dir)
+    report = validate_document(document, known_ids=set(graph.nodes))
+    return _apply(kg_dir, graph, report, document if report.ok else None)
+
+
+def _apply(
+    kg_dir: Path,
+    graph: nx.MultiDiGraph,
+    report: Report,
+    document: dict[str, Any] | None,
+) -> AddResult:
     result = AddResult(store.graph_path(kg_dir), report)
-    if not report.ok:
+    if document is None:
         return result
-    merged, result.merge = merge_document(graph, json.loads(text))
+    merged, result.merge = merge_document(graph, document)
     if result.merge.changed:
         store.save_graph(merged, kg_dir)
     return result

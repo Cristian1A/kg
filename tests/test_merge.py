@@ -6,7 +6,13 @@ import pytest
 
 from kg import store
 from kg.cli import EXIT_OK, EXIT_USAGE, EXIT_VALIDATION, main
-from kg.merge import Conflict, add_to_store, edge_label, merge_document
+from kg.merge import (
+    Conflict,
+    MergeReport,
+    add_to_store,
+    edge_label,
+    merge_document,
+)
 
 PARSER = {"method": "parser", "extractor": "python-ast@0.1", "confidence": 1.0}
 LLM = {"method": "llm", "extractor": "claude-code", "confidence": 0.8}
@@ -361,3 +367,17 @@ def test_cli_add_corrupt_store_exit_1(kg_dir, tmp_path, capsys):
     path = write(tmp_path, BASE)
     assert main(["add", path, "--kg-dir", str(kg_dir)]) == EXIT_VALIDATION
     assert "is not a valid store" in capsys.readouterr().err
+
+
+def test_report_text_limits_listed_conflicts():
+    report = MergeReport(
+        conflicts=[
+            Conflict("node", f"module:m{i}", "label", "a", "b") for i in range(3)
+        ]
+    )
+    text = report.to_text(max_conflicts=2)
+    assert "  3 conflicts:" in text
+    assert "module:m1 · label" in text
+    assert "module:m2" not in text
+    assert text.endswith("    … and 1 more (see --json)")
+    assert "module:m2" in report.to_text()
