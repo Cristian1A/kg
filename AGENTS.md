@@ -47,6 +47,6 @@ pytest && ruff check . && ruff format --check .
 
 - `docs/requirements.md` — approved functional requirements (RF-xx / RNF-xx).
 - `docs/schema.md` — JSON input format: IDs, standard catalog, provenance, validation.
-- `docs/store.md` — the `.kg/` store: `graph.json` format, deterministic ordering and `kg add` merge rules.
+- `docs/store.md` — the `.kg/` store: `graph.json` format, deterministic ordering, `kg add` merge rules, `kg remove` and `kg edit`.
 - `docs/extract.md` — `kg extract`: which files are read, the nodes, IDs and relations it produces.
 - `docs/render.md` — `kg render`: visual encoding, limits for large graphs, determinism.

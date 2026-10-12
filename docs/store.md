@@ -67,6 +67,43 @@ With `--json`, `result` contains `changed`, `nodes` and `edges` (lists
 `"old"`, the value that stays) and the validation `warnings`. If the document
 is not valid, the error carries the same `details` as `kg validate`.
 
+## Removing and editing: `kg remove`, `kg edit`
+
+The store only grows with `kg add` and `kg extract`; these commands delete and
+modify elements without editing `graph.json` by hand (RF-75, RF-76).
+
+```bash
+kg remove dependency:os entrypoint:size        # nodes, with all their edges
+kg remove --edge file:size.py contains module:size
+kg remove dependency:os --dry-run              # show what would go, write nothing
+
+kg edit concept:size --label "Tamaño en MB" --description ""   # "" removes it
+kg edit concept:size --set unit=MB --set precision=0 --unset old_key
+kg edit concept:size --type Requirement
+kg edit tutorial:build-a-cli --id tutorial:cli-sencillo        # edges follow
+```
+
+- **All or nothing**: if an ID, edge or attribute does not exist, nothing is
+  changed (exit code `2`) and the error suggests the closest one
+  (`Did you mean ID "module:size"?`).
+- **Validated**: the result goes through the same validation as any store
+  write; an invalid new ID is rejected (exit code `1`) and the file is left
+  as it was.
+- `--set KEY=VALUE` parses `VALUE` as JSON when it can (`3`, `true`,
+  `["a"]`, `"quoted"`), otherwise keeps it as text. `--label`/`--description`
+  with an empty string remove the field.
+- `--id` renames the node and rewrites its edges. `--type` may leave an ID
+  whose prefix no longer matches; that is a warning, as in `kg validate`.
+- `provenance` is not changed: it records where the element came from.
+- Edits are not protected from later merges: `kg extract` brings the parser's
+  values back for elements it produces (e.g. a function's label), and a
+  removed element that the parser still finds is added again. Remove or edit
+  what the extractor does not produce, or what you also changed in the code.
+- `--dry-run` reports without saving; `--json` returns `graph`, `dry_run`,
+  `saved` and, for `remove`, `nodes` and `edges` (as `source -[type]-> target`);
+  for `edit`, `id`, `changed`, `changes` (`field`, `old`, `new`) and
+  `edges_rewritten`.
+
 ## Layout
 
 ```

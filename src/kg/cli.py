@@ -16,7 +16,7 @@ from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any, NoReturn
 
-from kg import __version__, extract, merge, render, store
+from kg import __version__, edit, extract, merge, render, store
 from kg import schema as kg_schema
 from kg.schema import validation
 
@@ -178,6 +178,71 @@ def _store_call(func: Callable[..., Any], *args: Any) -> Any:
         raise UsageError(e.message, {"path": str(e.path)}) from e
 
 
+def _remove(args: argparse.Namespace) -> Result:
+    if not args.ids and not args.edges:
+        raise UsageError("kg remove: give node IDs and/or --edge SOURCE TYPE TARGET")
+    graph = _store_call(store.load_graph, args.kg_dir)
+    edges = [tuple(e) for e in args.edges]
+    try:
+        result, report = edit.remove(graph, args.ids, edges)
+    except edit.EditError as e:
+        raise _edit_error(e) from e
+    return _save_edit(args, result, report.to_text(), report.to_dict(), "remove")
+
+
+def _edit(args: argparse.Namespace) -> Result:
+    texts = {
+        name: value
+        for name, value in (("label", args.label), ("description", args.description))
+        if value is not None
+    }
+    graph = _store_call(store.load_graph, args.kg_dir)
+    try:
+        result, report = edit.edit_node(
+            graph,
+            args.id,
+            new_id=args.new_id,
+            type_=args.type,
+            texts=texts,
+            set_attrs=dict(args.set),
+            unset_attrs=args.unset,
+        )
+    except edit.EditError as e:
+        raise _edit_error(e) from e
+    changed = report.changed
+    return _save_edit(
+        args, result if changed else None, report.to_text(), report.to_dict(), "edit"
+    )
+
+
+def _save_edit(
+    args: argparse.Namespace,
+    graph: Any,
+    summary: str,
+    data: dict[str, Any],
+    verb: str,
+) -> Result:
+    """Save unless `--dry-run` (or nothing changed) and build the result."""
+    path = store.graph_path(args.kg_dir)
+    if graph is None:
+        head = f"no changes in {path}"
+    elif args.dry_run:
+        head = f"dry run, {path} was not modified; it would {verb}:"
+    else:
+        _store_call(store.save_graph, graph, args.kg_dir)
+        head = f"{path} updated:"
+    saved = graph is not None and not args.dry_run
+    return Result(
+        f"{head}\n{summary}",
+        {"graph": str(path), "dry_run": args.dry_run, "saved": saved, **data},
+    )
+
+
+def _edit_error(e: edit.EditError) -> UsageError:
+    message = e.message + (f"\n  suggestion: {e.suggestion}" if e.suggestion else "")
+    return UsageError(message, {"suggestion": e.suggestion})
+
+
 def _render(args: argparse.Namespace) -> Result:
     if args.format == "html":
         return _not_implemented(10)(args)
@@ -304,6 +369,40 @@ def build_parser() -> argparse.ArgumentParser:
         "file", type=Path, help="JSON file conforming to the schema (`-` for stdin)"
     )
 
+    p = add(
+        "remove", "remove nodes (with their edges) or edges from the store", _remove
+    )
+    p.add_argument("ids", nargs="*", metavar="ID", help="IDs of the nodes to remove")
+    p.add_argument(
+        "--edge",
+        dest="edges",
+        nargs=3,
+        action="append",
+        default=[],
+        metavar=("SOURCE", "TYPE", "TARGET"),
+        help="an edge to remove (repeatable)",
+    )
+    p.add_argument("--dry-run", action="store_true", help="show, do not save")
+
+    p = add("edit", "modify a node of the store", _edit)
+    p.add_argument("id", metavar="ID", help="ID of the node")
+    p.add_argument("--id", dest="new_id", metavar="NEW_ID", help="rename the node")
+    p.add_argument("--type", help="change its entity type")
+    p.add_argument("--label", help="set the label (empty string: remove it)")
+    p.add_argument("--description", help="set the description (empty: remove it)")
+    p.add_argument(
+        "--set",
+        type=_key_value,
+        action="append",
+        default=[],
+        metavar="KEY=VALUE",
+        help="set attrs.KEY; VALUE is JSON if it parses, else text (repeatable)",
+    )
+    p.add_argument(
+        "--unset", action="append", default=[], metavar="KEY", help="remove attrs.KEY"
+    )
+    p.add_argument("--dry-run", action="store_true", help="show, do not save")
+
     p = add("schema", "print the JSON Schema of the input format", _schema)
     p.add_argument("--path", action="store_true", help="print only the file path")
 
@@ -347,6 +446,13 @@ def build_parser() -> argparse.ArgumentParser:
     )
 
     return parser
+
+
+def _key_value(value: str) -> tuple[str, Any]:
+    key, sep, raw = value.partition("=")
+    if not sep or not key.strip():
+        raise argparse.ArgumentTypeError(f"expected KEY=VALUE, got {value!r}")
+    return key.strip(), edit.parse_value(raw)
 
 
 def _type_list(value: str) -> list[str]:
