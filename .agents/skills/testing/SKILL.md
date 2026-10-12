@@ -20,19 +20,29 @@ description: Write and run pytest tests for the project's graph code. Use it whe
 ## Example
 
 ```python
-import networkx as nx
-from kg.graphs import build_tech_graph
+from kg import store
+from kg.analysis import untested
+
+PROV = {"method": "parser", "extractor": "python-ast@0.1", "confidence": 1.0}
 
 
-def test_shortest_path_cris_to_pandas():
-    G = build_tech_graph()
-    assert nx.shortest_path(G, "Cris", "pandas") == ["Cris", "Python", "pandas"]
+def test_function_without_tests_is_listed():
+    graph = store.document_to_graph(
+        {
+            "version": "1",
+            "nodes": [
+                {"id": "function:app.run", "type": "Function", "provenance": PROV}
+            ],
+            "edges": [],
+        }
+    )
+    assert untested(graph) == ["function:app.run"]
 ```
 
 ## Commands
 ```bash
 pytest                      # all tests
-pytest -k shortest -x -q    # filter and stop at the first failure
+pytest -k untested -x -q    # filter and stop at the first failure
 pytest --cov=kg
 ```
 

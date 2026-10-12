@@ -42,8 +42,7 @@ pythonpath = ["src"]
 [tool.ruff]
 line-length = 88
 target-version = "py312"
-# Root scripts are exploration prototypes
-extend-exclude = ["env", "lib", "graph.py", "di_graph.py", "tuto.py", "*.ipynb"]
+extend-exclude = ["env"]
 
 [tool.ruff.lint]
 select = ["E", "F", "W", "I", "UP", "B", "BLE"]

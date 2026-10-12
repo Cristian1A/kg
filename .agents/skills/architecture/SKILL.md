@@ -11,13 +11,14 @@ src/kg/
 ├── __init__.py    # __version__
 ├── __main__.py    # python -m kg
 ├── cli.py         # argparse: subcommands, --json, --kg-dir, exit codes
-├── graphs.py      # graph building (pure functions returning nx.Graph/DiGraph)
-├── analysis.py    # queries over the stored graph (untested code…)
-├── schema/        # JSON Schema and validation                       (#2, #3)
+├── schema/        # JSON Schema and validation                        (#2, #3)
 ├── store.py       # .kg/ store (deterministic read/write)              (#4)
-├── merge.py       # merge by ID and `kg add`                          (#5)
-├── extract/       # deterministic extractors (python, deps, tests)    (#6–#8)
-└── render/        # PNG/SVG with matplotlib, HTML with pyvis          (#9, #10)
+├── merge.py       # merge by ID, `kg add`                              (#5)
+├── edit.py        # `kg remove`, `kg edit`                             (#28)
+├── extract/       # deterministic extractors (code, deps, tests)       (#6–#8)
+├── analysis.py    # queries over the stored graph (untested code…)     (#8)
+├── render/        # PNG/SVG with matplotlib, HTML with vis-network     (#9, #10)
+└── agents/        # `kg guide`: guidelines and skill for agents        (#11)
 ```
 
 ## CLI
@@ -31,8 +32,8 @@ src/kg/
 - **Separate building, analysis and visualization.** A function that computes does not draw.
 - Pure functions that take and return graphs; no global state.
 - Plotting functions return the figure (`matplotlib.figure.Figure`) instead of calling `plt.show()`.
-- One-way dependencies: `render` and `analysis` → `graphs`/`store`; never the other way round.
-- Root scripts (`graph.py`, `di_graph.py`, `tuto.py`) are prototypes (excluded from ruff): when consolidating them, move the logic into `src/` and leave the script as a thin entry point.
+- One-way dependencies: `render`, `analysis`, `edit` and `merge` → `store`/`schema`; never the other way round.
+- No loose scripts at the root: new code goes in `src/kg/`, helper scripts for agents in `.agents/tools/`.
 
 ## When adding a module
 1. Create the file in `src/kg/`.

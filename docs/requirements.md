@@ -5,7 +5,7 @@
 | Document version | 1.1 (English translation of 1.0) |
 | Date | 2026-10-06 |
 | Status | Approved by the client (2026-10-07) |
-| Source | Requirements interview (`respuestas_usuario.txt`, blocks 1–4) |
+| Source | Requirements interview, blocks 1–4 (summary: [discovery.md](discovery.md)) |
 
 > **Note on IDs.** Requirement and decision IDs keep their original Spanish
 > prefixes so that existing issues, PRs and commits stay traceable:
