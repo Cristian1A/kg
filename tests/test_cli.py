@@ -63,7 +63,7 @@ def test_global_option_defaults(monkeypatch, capsys):
         return Result("hecho")
 
     monkeypatch.setattr("kg.cli._not_implemented", lambda issue: handler)
-    assert main(["render", "--png"]) == EXIT_OK
+    assert main(["render", "--html"]) == EXIT_OK
     assert seen == {"json": False, "kg_dir": Path(DEFAULT_KG_DIR)}
     assert capsys.readouterr().out.strip() == "hecho"
 
@@ -72,7 +72,7 @@ def test_success_json_output(monkeypatch, capsys):
     monkeypatch.setattr(
         "kg.cli._not_implemented", lambda issue: lambda args: Result("x", {"n": 1})
     )
-    assert main(["render", "--png", "--json"]) == EXIT_OK
+    assert main(["render", "--html", "--json"]) == EXIT_OK
     payload = json.loads(capsys.readouterr().out)
     assert payload == {"ok": True, "command": "render", "result": {"n": 1}}
 
@@ -80,8 +80,8 @@ def test_success_json_output(monkeypatch, capsys):
 @pytest.mark.parametrize(
     "argv",
     [
-        ["render", "--png"],
         ["render", "--html"],
+        ["render", "--html", "-o", "x.html"],
     ],
 )
 def test_stub_commands_report_not_implemented(argv, capsys):
@@ -92,12 +92,12 @@ def test_stub_commands_report_not_implemented(argv, capsys):
 
 
 def test_stub_command_json_error(capsys):
-    assert main(["render", "--png", "--json"]) == EXIT_INTERNAL
+    assert main(["render", "--html", "--json"]) == EXIT_INTERNAL
     payload = json.loads(capsys.readouterr().out)
     assert payload["ok"] is False
     assert payload["command"] == "render"
     assert payload["error"]["code"] == EXIT_INTERNAL
-    assert payload["error"]["details"] == {"issue": 9}
+    assert payload["error"]["details"] == {"issue": 10}
 
 
 @pytest.mark.parametrize(
@@ -125,7 +125,7 @@ def test_unexpected_exception_is_internal_error(monkeypatch, capsys):
         raise RuntimeError("unexpected failure")
 
     monkeypatch.setattr("kg.cli._not_implemented", lambda issue: boom)
-    assert main(["render", "--png", "--json"]) == EXIT_INTERNAL
+    assert main(["render", "--html", "--json"]) == EXIT_INTERNAL
     payload = json.loads(capsys.readouterr().out)
     assert "unexpected failure" in payload["error"]["message"]
     assert payload["error"]["details"] == {"exception": "RuntimeError"}
