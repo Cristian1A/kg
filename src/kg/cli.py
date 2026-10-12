@@ -16,7 +16,7 @@ from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any, NoReturn
 
-from kg import __version__, merge, store
+from kg import __version__, extract, merge, store
 from kg import schema as kg_schema
 from kg.schema import validation
 
@@ -26,6 +26,8 @@ EXIT_USAGE = 2
 EXIT_INTERNAL = 3
 
 DEFAULT_KG_DIR = ".kg"
+# Conflicts listed in text output; `--json` has all of them.
+MAX_CONFLICTS_SHOWN = 10
 
 
 class KgError(Exception):
@@ -106,14 +108,7 @@ def _init(args: argparse.Namespace) -> Result:
 def _add(args: argparse.Namespace) -> Result:
     name = "stdin" if str(args.file) == "-" else str(args.file)
     text = sys.stdin.read() if name == "stdin" else _read(args.file)
-    try:
-        result = merge.add_to_store(args.kg_dir, text)
-    except store.StoreCorruptError as e:
-        raise ValidationError(
-            e.message, {"path": str(e.path), **e.report.to_dict()}
-        ) from e
-    except store.StoreError as e:
-        raise UsageError(e.message, {"path": str(e.path)}) from e
+    result = _store_call(merge.add_to_store, args.kg_dir, text)
 
     report = result.validation
     data: dict[str, Any] = {"file": name, "graph": str(result.graph_path)}
@@ -134,6 +129,53 @@ def _add(args: argparse.Namespace) -> Result:
     lines = [head, result.merge.to_text()]
     lines += [issue.to_text() for issue in report.warnings]
     return Result("\n".join(lines), data)
+
+
+def _extract(args: argparse.Namespace) -> Result:
+    root: Path = args.path
+    if not root.is_dir():
+        raise UsageError(f"not a directory: {root}")
+    extraction = extract.extract_python(root)
+    result = _store_call(merge.add_document, args.kg_dir, extraction.document)
+    if result.merge is None:  # a bug in the extractor, not the user's fault
+        raise KgError(
+            "the extractor produced an invalid document; the store was not modified",
+            result.validation.to_dict(),
+        )
+
+    skipped = extraction.skipped
+    n_files = len(extraction.files)
+    files = f"{n_files} Python {'file' if n_files == 1 else 'files'}"
+    head = (
+        f"extracted {files} from {root} into {result.graph_path}"
+        if result.merge.changed
+        else f"no changes: {files} from {root} already in {result.graph_path}"
+    )
+    lines = [head, result.merge.to_text(max_conflicts=MAX_CONFLICTS_SHOWN)]
+    if skipped:
+        lines.append(f"  skipped {len(skipped)}:")
+        lines += [f"    {s.to_text()}" for s in skipped]
+    data: dict[str, Any] = {
+        "path": str(root),
+        "graph": str(result.graph_path),
+        "files": n_files,
+        "skipped": [asdict(s) for s in skipped],
+        **result.merge.to_dict(),
+        "warnings": [asdict(i) for i in result.validation.warnings],
+    }
+    return Result("\n".join(lines), data)
+
+
+def _store_call(func: Callable[..., Any], *args: Any) -> Any:
+    """Call a store operation, mapping `StoreError`s to CLI errors."""
+    try:
+        return func(*args)
+    except store.StoreCorruptError as e:
+        raise ValidationError(
+            e.message, {"path": str(e.path), **e.report.to_dict()}
+        ) from e
+    except store.StoreError as e:
+        raise UsageError(e.message, {"path": str(e.path)}) from e
 
 
 def _read(path: Path) -> str:
@@ -203,7 +245,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     add("init", "create the .kg/ store in the repo", _init)
 
-    p = add("extract", "deterministic extraction of a Python repo", _not_implemented(6))
+    p = add("extract", "deterministic extraction of a Python repo", _extract)
     p.add_argument("path", nargs="?", type=Path, default=Path("."), help="repo path")
 
     p = add("add", "add and merge entities and relations", _add)
