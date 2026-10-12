@@ -45,8 +45,9 @@ python -c "import json; [print(n['id']) for n in json.load(open('.kg/graph.json'
 ```
 
 Never re-create what the parser produces: no `module:`, `class:`,
-`function:`, `file:`, `test:`, `dependency:` or `config:` nodes of your own.
-Point your edges at them. If the parser got something wrong, say so to the
+`function:`, `file:`, `test:` or `dependency:` nodes of your own, and no
+`config:` node for `pyproject.toml` or `requirements*.txt`. Point your edges
+at them. If the parser got something wrong, say so to the
 user instead of overriding it: `kg add` keeps the parser's provenance and the
 next `kg extract` restores its values.
 
@@ -62,6 +63,7 @@ itself. At least:
 | A domain idea the code implements (an order, a fee, "size in MB") | `Concept` | `concept:<slug>` | `Function/Class -[implements]-> Concept` |
 | An HTTP route, CLI command or job | `Endpoint` | `endpoint:<METHOD> <path>` or `endpoint:<command>` | `Function -[implements]-> Endpoint`; `Service -[contains]-> Endpoint` |
 | A deployable unit (an API, a worker) | `Service` | `service:<slug>` | `Service -[contains]-> Endpoint`, `Service -[depends_on]-> Dependency` |
+| Configuration the parser does not read (CI workflows, `docker-compose.yml`, `.env.example`, tool configs) | `Config` | `config:<path>` | `Config -[configures]-> Repo/Service/Module` it sets up or runs |
 | A tracked task or bug the docs mention | `Issue` | `issue:<number or slug>` | `Issue -[documents]->` what it is about |
 | An author named in the docs | `Person` | `person:<slug>` | `Module/Document -[authored_by]-> Person` |
 
