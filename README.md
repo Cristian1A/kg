@@ -8,8 +8,8 @@ The graph lives inside the repo (`.kg/graph.json`), as readable, deterministic
 JSON that is versioned with git like any other file.
 
 > **Status: early development (v0.1 MVP in progress).** The schema,
-> validation, the store and extraction (code, dependencies and tests) are
-> in place; rendering is next.
+> validation, the store, extraction (code, dependencies and tests) and
+> static rendering are in place; the interactive HTML is next.
 > See the [roadmap](#roadmap).
 
 ## Why
@@ -113,8 +113,8 @@ graph.json merged into .kg/graph.json
 - The graph is an `nx.MultiDiGraph`; an edge is identified by
   (`source`, `target`, `type`).
 
-Details in [docs/schema.md](docs/schema.md), [docs/store.md](docs/store.md) and
-[docs/extract.md](docs/extract.md).
+Details in [docs/schema.md](docs/schema.md), [docs/store.md](docs/store.md),
+[docs/extract.md](docs/extract.md) and [docs/render.md](docs/render.md).
 
 ## Roadmap
 
@@ -125,7 +125,7 @@ Details in [docs/schema.md](docs/schema.md), [docs/store.md](docs/store.md) and
 | `kg init` | Create the `.kg/` store | ✅ |
 | `kg add` | Merge a document into the store by ID | ✅ |
 | `kg extract` | Deterministic extraction of a Python repo | ✅ |
-| `kg render` | PNG/SVG image and interactive offline HTML | 🚧 v0.1 |
+| `kg render` | PNG/SVG image and interactive offline HTML | PNG/SVG ✅, HTML 🚧 v0.1 |
 | `kg query`, `kg impact` | Neighbors, paths, transitive impact | v0.2 |
 | `kg export` | Mermaid and Graphviz DOT | v0.2 |
 | MCP server | Expose the operations as agent tools | v0.2 |

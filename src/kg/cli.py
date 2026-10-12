@@ -16,7 +16,7 @@ from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any, NoReturn
 
-from kg import __version__, extract, merge, store
+from kg import __version__, extract, merge, render, store
 from kg import schema as kg_schema
 from kg.schema import validation
 
@@ -178,6 +178,57 @@ def _store_call(func: Callable[..., Any], *args: Any) -> Any:
         raise UsageError(e.message, {"path": str(e.path)}) from e
 
 
+def _render(args: argparse.Namespace) -> Result:
+    if args.format == "html":
+        return _not_implemented(10)(args)
+    output: Path = args.output or Path(f"kg-graph.{args.format}")
+    if not output.parent.is_dir():
+        raise UsageError(f"directory {output.parent} does not exist")
+    graph = _store_call(store.load_graph, args.kg_dir)
+    try:
+        selection = render.render_static(
+            graph,
+            output,
+            args.format,
+            types=args.types,
+            max_nodes=args.max_nodes,
+            dpi=args.dpi,
+            title=_repo_label(graph),
+        )
+    except render.RenderError as e:
+        raise UsageError(str(e)) from e
+    except OSError as e:
+        raise UsageError(f"cannot write {output}: {e.strerror}") from e
+
+    shown = selection.graph
+    nodes, edges = shown.number_of_nodes(), shown.number_of_edges()
+    lines = [f"rendered {nodes} nodes and {edges} edges to {output}"]
+    if selection.hidden:
+        hidden = ", ".join(f"{n} {t}" for t, n in selection.hidden.items())
+        lines.append(f"  hidden: {hidden}")
+        if args.types is None:
+            lines.append(
+                f"  (more than {args.max_nodes} nodes; choose them with --types "
+                "or raise --max-nodes)"
+            )
+    data = {
+        "path": str(output),
+        "format": args.format,
+        "nodes": nodes,
+        "edges": edges,
+        "hidden": selection.hidden,
+    }
+    return Result("\n".join(lines), data)
+
+
+def _repo_label(graph: Any) -> str | None:
+    """Title of the image: the name of the (first) Repo node."""
+    repos = sorted(n for n, d in graph.nodes(data=True) if d.get("type") == "Repo")
+    if not repos:
+        return None
+    return graph.nodes[repos[0]].get("label") or repos[0].split(":", 1)[-1]
+
+
 def _read(path: Path) -> str:
     try:
         return path.read_text(encoding="utf-8")
@@ -259,7 +310,7 @@ def build_parser() -> argparse.ArgumentParser:
     p = add("validate", "validate a JSON file against the schema", _validate)
     p.add_argument("file", type=Path, help="JSON file to validate (`-` for stdin)")
 
-    p = add("render", "render a visualization of the graph", _not_implemented(9))
+    p = add("render", "render a visualization of the graph", _render)
     fmt = p.add_mutually_exclusive_group(required=True)
     for name in ("png", "svg", "html"):
         fmt.add_argument(
@@ -269,9 +320,50 @@ def build_parser() -> argparse.ArgumentParser:
             const=name,
             help=f"{name.upper()} format",
         )
-    p.add_argument("-o", "--output", type=Path, help="output file")
+    p.add_argument(
+        "-o", "--output", type=Path, help="output file (default: kg-graph.<format>)"
+    )
+    p.add_argument(
+        "--types",
+        type=_type_list,
+        metavar="T1,T2",
+        help="entity types to draw, comma-separated (default: all)",
+    )
+    p.add_argument(
+        "--dpi",
+        type=_positive_int,
+        default=render.DPI,
+        metavar="N",
+        help=f"PNG resolution in dots per inch (default: {render.DPI}); "
+        "raise it to zoom into the image",
+    )
+    p.add_argument(
+        "--max-nodes",
+        type=_positive_int,
+        default=render.MAX_NODES,
+        metavar="N",
+        help="PNG/SVG: hide the most numerous types (Function, Test, File, Class) "
+        f"until at most N nodes remain (default: {render.MAX_NODES})",
+    )
 
     return parser
+
+
+def _type_list(value: str) -> list[str]:
+    types = [t.strip() for t in value.split(",") if t.strip()]
+    if not types:
+        raise argparse.ArgumentTypeError("expected at least one type, e.g. Module")
+    return types
+
+
+def _positive_int(value: str) -> int:
+    try:
+        number = int(value)
+    except ValueError:
+        number = 0
+    if number < 1:
+        raise argparse.ArgumentTypeError(f"expected a positive integer, got {value!r}")
+    return number
 
 
 def _emit(
