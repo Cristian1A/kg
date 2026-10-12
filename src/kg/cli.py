@@ -18,6 +18,7 @@ from typing import Any, NoReturn
 
 from kg import __version__
 from kg import schema as kg_schema
+from kg.schema import validation
 
 EXIT_OK = 0
 EXIT_VALIDATION = 1
@@ -87,6 +88,25 @@ def _schema(args: argparse.Namespace) -> Result:
     return Result(text, {"path": str(path), "schema": data})
 
 
+def _validate(args: argparse.Namespace) -> Result:
+    # No toca el almacén: solo lee el archivo (RF-03).
+    name = "stdin" if str(args.file) == "-" else str(args.file)
+    try:
+        if name == "stdin":
+            report = validation.validate_text(sys.stdin.read())
+        else:
+            report = validation.validate_path(args.file)
+    except FileNotFoundError as e:
+        raise UsageError(f"no existe el archivo: {args.file}") from e
+    except OSError as e:
+        raise UsageError(f"no se puede leer {args.file}: {e.strerror}") from e
+
+    data = {"file": name, **report.to_dict()}
+    if not report.ok:
+        raise ValidationError(report.to_text(name), data)
+    return Result(report.to_text(name), data)
+
+
 def _global_options() -> argparse.ArgumentParser:
     # default=SUPPRESS para que el valor dado antes del subcomando no se
     # sobrescriba con el default del subparser; los defaults se aplican en main().
@@ -137,8 +157,8 @@ def build_parser() -> argparse.ArgumentParser:
         "--path", action="store_true", help="muestra solo la ruta del archivo"
     )
 
-    p = add("validate", "valida un JSON contra el esquema", _not_implemented(3))
-    p.add_argument("file", type=Path, help="archivo JSON a validar")
+    p = add("validate", "valida un JSON contra el esquema", _validate)
+    p.add_argument("file", type=Path, help="archivo JSON a validar (`-` para stdin)")
 
     p = add("render", "genera una visualización del grafo", _not_implemented(9))
     fmt = p.add_mutually_exclusive_group(required=True)
