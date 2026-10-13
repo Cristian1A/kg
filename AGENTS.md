@@ -45,6 +45,7 @@ pytest && ruff check . && ruff format --check .
 
 - `docs/requirements.md` — approved functional requirements (RF-xx / RNF-xx).
 - `docs/discovery.md` — the client interview behind the requirements (the *why*).
+- `docs/roadmap.md` — action plan for v0.2 and v0.3: order of the issues, dependencies, exit criteria.
 - `docs/schema.md` — JSON input format: IDs, standard catalog, provenance, validation.
 - `docs/store.md` — the `.kg/` store: `graph.json` format, deterministic ordering, `kg add` merge rules, `kg remove` and `kg edit`.
 - `docs/extract.md` — `kg extract`: which files are read, the nodes, IDs and relations it produces.

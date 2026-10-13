@@ -2,9 +2,9 @@
 
 | Field | Value |
 |-------|-------|
-| Document version | 1.1 (English translation of 1.0) |
-| Date | 2026-10-06 |
-| Status | Approved by the client (2026-10-07) |
+| Document version | 1.2 (draft) |
+| Date | 2026-10-13 |
+| Status | 1.1 approved by the client (2026-10-07). **1.2 pending approval** (#43): re-scopes v0.2 and adds v0.3, see the [change log](#11-change-log) |
 | Source | Requirements interview, blocks 1–4 (summary: [discovery.md](discovery.md)) |
 
 > **Note on IDs.** Requirement and decision IDs keep their original Spanish
@@ -112,7 +112,8 @@ An exploratory project intended as a publishable side project (MIT license). Fir
 
 Priorities:
 - **MVP**: v0.1.
-- **v0.2**: next iteration.
+- **v0.2**: evidence phase. A short, bounded iteration to measure whether the graph helps (see section 7 and [roadmap.md](roadmap.md)).
+- **v0.3**: iteration after v0.2. Its scope is reviewed with the v0.2 results.
 - **Future**: improvement with no date.
 
 ### 4.1 Schema and validation
@@ -130,7 +131,7 @@ Priorities:
 | RF-10 | `kg extract <path>` deterministically analyzes a Python repo and produces `Repo`, `Package/Module`, `File`, `Class`, `Function` and `Test` nodes, with `contains`, `defines` and `imports` relations | MVP |
 | RF-11 | Extracts `Dependency` and `Config` from `pyproject.toml` and `requirements*.txt` | MVP |
 | RF-12 | Detects tests (pytest convention) and creates `tests` relations to the code they import or call | MVP |
-| RF-13 | Extracts `calls` relations between functions (static analysis, no completeness guarantee) | v0.2 |
+| RF-13 | Extracts `calls` relations between functions (static analysis, no completeness guarantee) | v0.3 (moves to v0.2 if the benchmark shows `kg impact` needs it) |
 | RF-14 | Extracts `Person` and `authored_by` from git history | Future |
 | RF-15 | Extractors for JS/TS and other ecosystems | Future |
 
@@ -140,16 +141,16 @@ Priorities:
 | RF-20 | **Guidelines/skill** for agents are provided: how to walk a repo or a text, which entities and relations to look for at minimum (standard catalog), how to assign stable IDs, how to fill in provenance and confidence, and how to validate and iterate with `kg validate` | MVP |
 | RF-21 | `kg add <json>` adds the entities and relations of a valid JSON to the store | MVP |
 | RF-22 | Every command accepts `--json` to produce machine-readable output | MVP |
-| RF-23 | **MCP server** that exposes the main operations (validate, add, query, impact, render, export) as tools | v0.2 |
+| RF-23 | **MCP server** that exposes the main operations (validate, add, query, impact, render, export) as tools | v0.3 |
 | RF-24 | `kg` does **not** call any LLM nor require API keys | MVP (constraint) |
 
 ### 4.4 Merging and deduplication
 | ID | Requirement | Priority |
 |----|-------------|----------|
 | RF-30 | **Basic merge by ID**: adding an entity with an existing ID combines its attributes instead of duplicating it | MVP (required by RF-21) |
-| RF-31 | **Multiple provenance**: an entity or relation confirmed by several sources keeps all of its provenances | v0.2 |
-| RF-32 | **Advanced deduplication**: detects equivalent entities with different IDs (e.g. `pandas` in the docs and `Dependency:pandas` in the code) through normalization or aliases, and merges them or proposes merging them | v0.2 |
-| RF-33 | Configurable conflict policy when two sources disagree on an attribute (by default the parser wins over the LLM) | v0.2 |
+| RF-31 | **Multiple provenance**: an entity or relation confirmed by several sources keeps all of its provenances | v0.3 |
+| RF-32 | **Advanced deduplication**: detects equivalent entities with different IDs (e.g. `pandas` in the docs and `Dependency:pandas` in the code) through normalization or aliases, and merges them or proposes merging them | v0.3 |
+| RF-33 | Configurable conflict policy when two sources disagree on an attribute (by default the parser wins over the LLM) | v0.3 |
 
 ### 4.5 Queries and analysis
 | ID | Requirement | Priority |
@@ -157,6 +158,8 @@ Priorities:
 | RF-40 | `kg query` can: get a node and its attributes, incoming and outgoing neighbors, filter by type or attribute, and find paths between two nodes | v0.2 |
 | RF-41 | `kg impact <node>` lists transitive dependents (everything that directly or indirectly depends on the node), with their depth | v0.2 |
 | RF-42 | Predefined queries supporting the use cases: untested code (CU-02) and undocumented code or documents referencing non-existent entities (CU-03) | v0.2 |
+| RF-43 | **Coverage limits**: `kg query` and `kg impact` state the limits of their answer when they apply: files skipped by the last extraction, relation types the parser does not produce (e.g. dynamic calls) and a stale graph (RF-77). An empty result reads "no relation found in the graph", never "no dependency". Possible effects are reported as possible, with the relation path and provenance | v0.2 (added 2026-10-13) |
+| RF-44 | **Topic views**: named sets of entity and relation types (documentation, tests, development, decisions) that `query`, `impact` and `render` can be restricted to. The v0.2 benchmark uses the type filters of RF-40; named views are only added if the benchmark shows that focused graphs help | v0.3 (added 2026-10-13) |
 
 ### 4.6 Visualization
 | ID | Requirement | Priority |
@@ -172,8 +175,8 @@ Priorities:
 ### 4.7 Export
 | ID | Requirement | Priority |
 |----|-------------|----------|
-| RF-60 | `kg export --format mermaid` | v0.2 |
-| RF-61 | `kg export --format dot` (Graphviz) | v0.2 |
+| RF-60 | `kg export --format mermaid` | v0.3 |
+| RF-61 | `kg export --format dot` (Graphviz) | v0.3 |
 | RF-62 | Export to Neo4j/Cypher | Future |
 
 ### 4.8 Storage, versioning and updates
@@ -181,11 +184,13 @@ Priorities:
 |----|-------------|----------|
 | RF-70 | `kg init` creates the `.kg/` store inside the analyzed repo | MVP |
 | RF-71 | The store uses **readable JSON with deterministic ordering**, so git diffs are clean and reviewable in PRs. Versioning is delegated to the repo's git | MVP |
-| RF-72 | **Incremental update**: `kg extract` only reprocesses files modified according to git and removes entities from deleted files | v0.2 |
-| RF-73 | Optional **post-commit hook** that triggers the incremental update | v0.2 |
-| RF-74 | `kg log`, `kg diff <v1> <v2>` (nodes and relations added, removed or modified) and `kg checkout <version>`, based on the store's git history | v0.2 |
+| RF-72 | **Consistent update**: a new `kg extract` leaves the graph faithful to the code. Derived elements (`method: parser`) that the extraction no longer produces are removed (deleted, renamed or moved code); `llm`/`manual` knowledge is kept, and agent edges whose endpoints disappeared are reported, not deleted. A failed extraction leaves the store unchanged. Reworded 2026-10-13: a full rebuild of the parser layer is acceptable; processing only changed files is RF-78 | v0.2 |
+| RF-73 | Optional **post-commit hook** that triggers the update (RF-72, or RF-78 once available) | v0.3 |
+| RF-74 | `kg log`, `kg diff <v1> <v2>` (nodes and relations added, removed or modified) and `kg checkout <version>`, based on the store's git history | v0.3 |
 | RF-75 | `kg remove` deletes nodes (with their edges) and individual edges from the store, all or nothing, with `--dry-run` | MVP (added 2026-10-12, #28) |
 | RF-76 | `kg edit` modifies a node (ID, type, label, description, attributes); renaming rewrites its edges; the result is validated before saving | MVP (added 2026-10-12, #28) |
+| RF-77 | **Stale graph detection**: the store records what the last extraction saw (git commit, dirty working tree, time). `kg validate --kg-dir`, `kg query` and `kg impact` warn when the repo has changed since, naming the commit or the changed files. Without git (S-01) only the time is recorded | v0.2 (added 2026-10-13) |
+| RF-78 | **Incremental extraction**: `kg extract` only reprocesses the files git reports as changed, with the same result as a full update (RF-72). An optimization, needed only if full updates become slow (RNF-06) | v0.3 (added 2026-10-13; split from RF-72) |
 
 ---
 
@@ -201,8 +206,8 @@ kg edit <id> [--label …]        Modify a node of the store
 kg query ...                    Nodes, neighbors, paths and filters       (v0.2)
 kg impact <node>                Transitive dependents                     (v0.2)
 kg render --png|--svg|--html    Visualization
-kg export --format mermaid|dot  Export                                    (v0.2)
-kg log | diff | checkout        History and version comparison            (v0.2)
+kg export --format mermaid|dot  Export                                    (v0.3)
+kg log | diff | checkout        History and version comparison            (v0.3)
 
 Global options: --json (machine-readable output), --kg-dir <path>
 ```
@@ -217,13 +222,14 @@ Exit codes: `0` OK, `1` validation error, `2` usage error, `>2` internal error.
 |----|-------------|
 | RNF-01 | **Language**: Python ≥ 3.12, built on NetworkX |
 | RNF-02 | **Platform**: Linux. macOS and Windows are not officially supported |
-| RNF-03 | **Distribution**: local install (`pip install -e .`). Must be dockerizable (Dockerfile in v0.2). PyPI is left for the future |
+| RNF-03 | **Distribution**: local install. The README documents both the user install (`pip install git+https://github.com/Cristian1A/kg.git`, or `pipx`) and the development one (`pip install -e ".[dev]"`), v0.2. Must be dockerizable (Dockerfile in v0.3). PyPI is left for the future |
 | RNF-04 | **Privacy**: works 100 % offline; the tool does not send code or data to any service |
 | RNF-05 | **License**: MIT |
-| RNF-06 | **Performance**: no fixed target in the MVP. `extract` and `render` times will be measured on the test repos and a target set for v0.2 (rough reference: a repo with fewer than 100 files in under 10 s) |
-| RNF-07 | **Quality**: pytest tests, including specific tests for validation messages (RF-04). Linting with ruff |
+| RNF-06 | **Performance**: no fixed target in the MVP; measured in [mvp-validation.md](mvp-validation.md). Target for v0.2 (stretch): CLI start-up under 0.5 s, and `extract` and `render` under 5 s for a repo of 100 files |
+| RNF-07 | **Quality**: pytest tests, including specific tests for validation messages (RF-04). Linting with ruff. From v0.2, **CI** runs the tests and the linter on every push and pull request, and installs kg in a clean environment for a smoke test |
 | RNF-08 | **Determinism**: the same input produces the same store, byte for byte, and the same visualization layout (fixed seed) |
 | RNF-09 | **Scalability**: designed for small repos in the MVP. No decision should prevent scaling to medium or large repos |
+| RNF-10 | **Measured value** (added 2026-10-13): whether the graph improves an agent's answers is measured with a reproducible benchmark (questions over code vs. over the graph: accuracy, traceability, tokens, time). The benchmark calls an LLM, so it lives **outside the `kg` package** with its own optional dependencies; `kg` still calls no LLM (RF-24). v0.2 |
 
 ---
 
@@ -232,12 +238,19 @@ Exit codes: `0` OK, `1` validation error, `2` usage error, `>2` internal error.
 | Version | Content |
 |---------|---------|
 | **v0.1 (MVP)** | Schema and validation (RF-01–05), Python extractor (RF-10–12), agent guidelines and `add` (RF-20–22, 24), basic merge by ID (RF-30), PNG/SVG/HTML render (RF-50–55), `.kg/` store (RF-70–71), removing and editing (RF-75–76) |
-| **v0.2** | Multiple provenance and advanced deduplication (RF-31–33), queries and impact (RF-40–42), Mermaid/DOT export (RF-60–61), incremental updates, hook and versioning (RF-72–74), MCP server (RF-23), `calls` (RF-13), Dockerfile |
+| **v0.2 — evidence** | Find out whether kg solves a problem, in a bounded phase (about two weeks of work). Queries and impact (RF-40–43), a graph consistent with the code and stale-graph detection (RF-72, RF-77), CI and user install (RNF-03, RNF-07), the benchmark (RNF-10) and a reproducible demo. Stretch: start-up time (RNF-06) |
+| **v0.3** | Scope reviewed with the v0.2 results. Candidates: MCP server (RF-23), `calls` (RF-13), topic views (RF-44), multiple provenance and advanced deduplication (RF-31–33), Mermaid/DOT export (RF-60–61), hook, history and incremental extraction (RF-73, RF-74, RF-78), Dockerfile |
 | **Future** | Audience-specific views, Neo4j, git blame/authors, other languages, PyPI |
+
+The action plan (order, dependencies, issues and exit criteria) is in [roadmap.md](roadmap.md).
 
 ---
 
-## 8. MVP acceptance criteria
+## 8. Acceptance criteria
+
+### 8.1 MVP
+
+Met on 2026-10-12; see [mvp-validation.md](mvp-validation.md).
 
 The MVP is considered a **success** if:
 
@@ -250,6 +263,16 @@ The MVP is considered a **success** if:
 4. The HTML lets you find a node with the search box, filter it by type and see its provenance.
 5. Running `kg extract` twice in a row does not create duplicate nodes (RF-30).
 
+### 8.2 v0.2
+
+v0.2 is **done** when:
+
+1. The benchmark (RNF-10, #39) has been run with 15–30 questions on several repos, and its report is published. **Any outcome counts**: if the graph does not improve the answers, the report says where and why, and v0.3 is redesigned with that evidence. The report includes the per-topic and two-commit variants, and states its sample-size limits.
+2. `kg query` and `kg impact` give the structured part of the three reference questions (section 8.1) on the example repos, with the relations and provenance that justify each result and their coverage limits (RF-40–43).
+3. After modifying, deleting, renaming or moving code, a new `kg extract` leaves no stale derived elements and keeps agent knowledge (RF-72). Querying a graph that is older than the repo produces a warning (RF-77).
+4. CI is green on `main`, and a new user can install kg and run the demo (#40) from the published instructions alone (RNF-03, RNF-07).
+5. The phase stays within its time box (about two weeks of work). If it runs over, the stretch items and the extra benchmark variants are cut, not the time box extended.
+
 ---
 
 ## 9. Out of scope
@@ -261,6 +284,10 @@ Confirmed by the client on 2026-10-07:
 - Real-time *watch* mode (updates are triggered manually or by a hook).
 - Deep semantic code analysis: types, data flow and dynamic runtime analysis.
 - A graph database as primary storage. Neo4j only as a future export format.
+
+> **Pending (#41).** Publishing a hosted app (e.g. Streamlit) to present the
+> results would be a project-site decision, not a feature of `kg`. It needs an
+> explicit exception to "a web server or graph hosting" before it is accepted.
 
 ---
 
@@ -278,3 +305,14 @@ Confirmed by the client on 2026-10-07:
 | PA-02 | Entities with no physical origin use `<type>:<slug>` IDs (e.g. `concept:knowledge-graph`, `decision:use-networkx`) |
 | PA-03 | The interactive HTML is built on **vis.js** (vis-network, the engine pyvis wraps), bundled to work offline. Updated 2026-10-12 (#10): kg embeds vis-network 9.1.2 with its own page instead of depending on pyvis, whose template lacks filters, search and the details panel, and which pulls in ipython |
 | PA-04 | Out-of-scope list confirmed (section 9) |
+| PA-05 | **Proposed (1.2, pending approval).** v0.2 is a short evidence phase (benchmark, queries, a reliable graph, a demo). The remaining v0.2 items move to v0.3, whose scope is reviewed with the benchmark results. Origin: external feedback, 2026-10-13 |
+
+---
+
+## 11. Change log
+
+| Version | Date | Changes |
+|---------|------|---------|
+| 1.0 | 2026-10-06 | First version, in Spanish. Approved on 2026-10-07 |
+| 1.1 | 2026-10-12 | English translation. RF-75 and RF-76 added (#28); PA-03 updated (#10); link to discovery.md (#33) |
+| 1.2 (draft) | 2026-10-13 | v0.2 re-scoped to the evidence phase (#43). New: RF-43, RF-44, RF-77, RF-78, RNF-10, section 8.2, PA-05. Reworded: RF-72 (consistent update; incremental extraction split into RF-78), RNF-03 (user install), RNF-06 (v0.2 targets), RNF-07 (CI). Moved to v0.3: RF-13, RF-23, RF-31–33, RF-60–61, RF-73–74, Dockerfile |

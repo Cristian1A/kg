@@ -161,10 +161,14 @@ Details in [docs/schema.md](docs/schema.md), [docs/store.md](docs/store.md),
 | `kg extract` | Deterministic extraction of a Python repo | ✅ |
 | `kg render` | PNG/SVG image and interactive offline HTML | ✅ |
 | `kg query`, `kg impact` | Neighbors, paths, transitive impact | v0.2 |
-| `kg export` | Mermaid and Graphviz DOT | v0.2 |
-| MCP server | Expose the operations as agent tools | v0.2 |
+| Benchmark | Measure whether the graph improves an agent's answers | v0.2 |
+| `kg export` | Mermaid and Graphviz DOT | v0.3 |
+| MCP server | Expose the operations as agent tools | v0.3 |
 
-Full requirements: [docs/requirements.md](docs/requirements.md).
+v0.2 is a short evidence phase: queries, a graph that stays consistent with
+the code, and a benchmark of an agent with and without the graph. The order of
+v0.3 depends on its results. Plan: [docs/roadmap.md](docs/roadmap.md). Full
+requirements: [docs/requirements.md](docs/requirements.md).
 
 ## Contributing
 
