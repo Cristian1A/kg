@@ -5,7 +5,7 @@ MVP policy: a node with an existing ID or an edge with the same identity
 from the document are kept; if it brings a different value, the new one wins
 and a conflict is recorded. Exception: a `parser` provenance is not replaced by
 a non-`parser` one, so enriching with an agent does not lose deterministic
-data. A configurable policy is RF-33 (v0.2).
+data. A configurable policy is RF-33 (v0.3).
 """
 
 from __future__ import annotations

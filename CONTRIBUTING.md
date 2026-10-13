@@ -69,8 +69,9 @@ Requirement IDs (`RF-xx`, `RNF-xx`) keep their original Spanish prefixes; see th
 | Group | Labels |
 |-------|--------|
 | Type | `type:feature`, `type:bug`, `type:docs`, `type:chore` |
-| Priority (release phase) | `prio:mvp`, `prio:v0.2`, `prio:futuro` |
+| Priority (release phase) | `prio:mvp`, `prio:v0.2`, `prio:v0.3`, `prio:futuro` |
 | Scope | `area:schema`, `area:extract`, `area:store`, `area:merge`, `area:query`, `area:render`, `area:export`, `area:cli`, `area:mcp`, `area:agents` |
 | Status | `status:blocked`, `good first issue` |
 
-Milestones: `v0.1 (MVP)`, `v0.2`.
+Milestones: `v0.1 (MVP)`, `v0.2`, `v0.3`. The plan for each one is in
+[docs/roadmap.md](docs/roadmap.md).

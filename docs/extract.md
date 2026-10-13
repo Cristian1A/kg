@@ -159,7 +159,7 @@ This is a **static heuristic**, so it does not see:
 - fixtures (`def test_x(engine): engine.start()`) or values returned by
   functions;
 - code reached indirectly: a test that calls `main()` does not test what
-  `main()` calls (that needs `calls`, RF-13, v0.2);
+  `main()` calls (that needs `calls`, RF-13, v0.3);
 - dynamic access (`getattr`, `importlib`), `monkeypatch` targets given as
   strings, or other test runners' conventions.
 
@@ -209,7 +209,7 @@ The first declaration gives the node its `label`, `provenance` and `spec`;
 
 A dependency that is imported but not declared only has `import_name`. The
 import name is not always the distribution name (`yaml` vs. `PyYAML`), in
-which case two nodes appear; reconciling them is RF-32 (v0.2).
+which case two nodes appear; reconciling them is RF-32 (v0.3).
 
 `Config` `attrs`: `format` (`pyproject` or `requirements`) and, for the
 pyproject, `name`, `version`, `requires_python` and `tools` (the
@@ -222,9 +222,10 @@ files); the rest is still extracted. Poetry's `[tool.poetry.dependencies]` and
 
 ## Not yet
 
-- Removing entities of deleted files and processing only changed files
-  (RF-72, v0.2): today a deleted file's nodes stay in the store.
+- Removing entities of deleted, renamed or moved code (RF-72, v0.2, #37):
+  today a deleted file's nodes stay in the store. Processing only the files
+  that changed is RF-78 (v0.3).
   This also applies to stores extracted before test detection: test files
   keep their old `module:`/`function:` nodes next to the new `test:` ones.
   Recreate the store (`rm -r .kg && kg init && kg extract`) to drop them.
-- `calls` relations (RF-13, v0.2).
+- `calls` relations (RF-13, v0.3).

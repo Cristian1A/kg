@@ -47,8 +47,8 @@ enrichment by an agent (`kg extract` → `kg add`) from wiping out the
 deterministic data; if only the provenance differed, the element counts as
 "unchanged". Note that other fields are still updated, so provenance
 describes the origin of the element, not of each field. Keeping several
-provenances is RF-31 and a configurable conflict policy is RF-33, both in
-v0.2.
+provenances is RF-31 and a configurable conflict policy is RF-33, both
+planned for v0.3.
 
 ### Summary
 
