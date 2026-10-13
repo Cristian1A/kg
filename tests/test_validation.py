@@ -13,6 +13,8 @@ from kg.schema.validation import (
 )
 
 EXAMPLES = sorted((Path(__file__).parents[1] / "examples").glob("*.json"))
+# What agents added to real repos; edges point to extracted nodes outside them
+AGENT_EXAMPLES = sorted((Path(__file__).parents[1] / "examples/agent").glob("*.json"))
 
 PROV = {"method": "parser", "extractor": "python-ast@0.1", "confidence": 1.0}
 
@@ -285,6 +287,50 @@ def test_id_prefix_mismatch_is_warning(valid):
     warning = report.warnings[0]
     assert (warning.code, warning.path) == ("id_prefix_mismatch", "$.nodes[1].id")
     assert '"function:a.f"' in warning.suggestion
+
+
+LLM = {"method": "llm", "extractor": "claude-code", "confidence": 0.8}
+
+
+@pytest.mark.parametrize(
+    ("extra", "warned"),
+    [
+        ({}, True),
+        ({"description": "   "}, True),
+        ({"description": "Why the CLI has no dependencies."}, False),
+    ],
+)
+def test_agent_nodes_need_a_description(extra, warned):
+    report = validate_document(
+        document([{"id": "decision:x", "type": "Decision", "provenance": LLM, **extra}])
+    )
+    assert report.ok  # a warning, not an error
+    codes = [(w.code, w.path) for w in report.warnings]
+    assert codes == ([("missing_description", "$.nodes[0].description")] * warned)
+
+
+def test_parser_and_manual_nodes_need_no_description(valid):
+    manual = {"method": "manual", "extractor": "me", "confidence": 1.0}
+    valid["nodes"].append({"id": "concept:x", "type": "Concept", "provenance": manual})
+    assert validate_document(valid).warnings == []
+
+
+@pytest.mark.parametrize("example", EXAMPLES + AGENT_EXAMPLES, ids=lambda p: p.name)
+def test_examples_describe_every_agent_node(example):
+    codes = [w.code for w in validate_path(example).warnings]
+    assert "missing_description" not in codes
+
+
+def test_cli_add_warns_about_missing_descriptions(tmp_path, capsys):
+    kg_dir = tmp_path / ".kg"
+    assert main(["init", "--kg-dir", str(kg_dir)]) == EXIT_OK
+    path = tmp_path / "agent.json"
+    nodes = [{"id": "concept:x", "type": "Concept", "provenance": LLM}]
+    path.write_text(json.dumps(document(nodes)), encoding="utf-8")
+    capsys.readouterr()
+    assert main(["add", str(path), "--kg-dir", str(kg_dir), "--json"]) == EXIT_OK
+    result = json.loads(capsys.readouterr().out)["result"]
+    assert [w["code"] for w in result["warnings"]] == ["missing_description"]
 
 
 def test_issues_follow_document_order():
