@@ -1,0 +1,70 @@
+[
+  {
+    "id": "bpc-decisions",
+    "repo": "basic-python-cli",
+    "topic": "decisions",
+    "question": "Which design choices does the project make for its CLI, and why?",
+    "expect": {
+      "keywords": [
+        ["no external dependenc", "without external dependenc", "standard library", "no dependenc"],
+        ["single argument", "one argument"]
+      ]
+    },
+    "reference": "No frameworks or external dependencies (only the standard library), and a single argument, so it is quick and easy to run from other systems (README)."
+  },
+  {
+    "id": "bpc-tests",
+    "repo": "basic-python-cli",
+    "topic": "tests",
+    "question": "Which functions of the project are covered by tests? Return an empty list if none are.",
+    "expect": {"items": [], "normalize": "module"},
+    "reference": "None: the repo has no tests."
+  },
+  {
+    "id": "mfdp-impact",
+    "repo": "my_first_data_project",
+    "topic": "development",
+    "question": "If the signature of get_postgres_connection in etl/utils.py changed, which other modules of the project would need to change? List the modules.",
+    "expect": {
+      "items": ["etl.humidity_data_etl_pipeline", "etl.weather_data_etl_pipeline"],
+      "normalize": "module"
+    },
+    "reference": "Both pipelines import and call it: etl/humidity_data_etl_pipeline.py:84 and etl/weather_data_etl_pipeline.py:82."
+  },
+  {
+    "id": "mfdp-dependencies",
+    "repo": "my_first_data_project",
+    "topic": "development",
+    "question": "Which third-party packages does etl/utils.py use? List them by import name.",
+    "expect": {"items": ["azure", "psycopg2"], "normalize": "package"},
+    "reference": "azure (azure.identity, azure.storage.blob) and psycopg2 (etl/utils.py:13-15)."
+  },
+  {
+    "id": "pca-sqlalchemy",
+    "repo": "python-clean-architecture",
+    "topic": "development",
+    "question": "Which non-test modules import SQLAlchemy? List the modules.",
+    "expect": {
+      "items": [
+        "alembic.env",
+        "alembic.versions.994aa7956c93_added_users_table",
+        "src.infra.db.models.users_db_model",
+        "src.infra.db.repositories.user_repository",
+        "src.infra.db.settings.base",
+        "src.infra.db.settings.connection"
+      ],
+      "normalize": "module"
+    },
+    "reference": "The six files with `import sqlalchemy` or `from sqlalchemy` outside *_test.py files."
+  },
+  {
+    "id": "pca-architecture",
+    "repo": "python-clean-architecture",
+    "topic": "decisions",
+    "question": "Which architectural style does the project follow, and in which package are its use cases?",
+    "expect": {
+      "keywords": [["clean architecture"], ["src.interactor", "src/interactor", "interactor"]]
+    },
+    "reference": "Clean Architecture (README); the use cases live in src/interactor/use_cases."
+  }
+]

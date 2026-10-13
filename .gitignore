@@ -30,3 +30,6 @@ kg-graph.*
 # Third-party repos cloned for manual testing (see samples/README.md)
 samples/*
 !samples/README.md
+
+# Benchmark: cloned repos and their stores (see bench/README.md)
+bench/.cache/

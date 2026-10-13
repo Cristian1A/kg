@@ -22,6 +22,11 @@ dev = [
     "pytest-cov",
     "ruff",
 ]
+# Only for the benchmark in bench/ (#39), which calls a model; kg itself does
+# not (RF-24)
+bench = [
+    "anthropic>=1.13",
+]
 
 [project.scripts]
 kg = "kg.cli:main"

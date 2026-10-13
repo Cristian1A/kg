@@ -12,6 +12,7 @@ General rules for any agent (Claude Code, Codex, Copilot, etc.) working in this 
 |------|----------|
 | `src/kg/` | Package source code and the `kg` CLI |
 | `tests/` | pytest tests |
+| `bench/` | Benchmark: an agent answers questions from the code vs. from the graph (calls an LLM; see `bench/README.md`) |
 | `examples/` | Example JSON files, valid against the schema (`kg schema`) |
 | `.agents/skills/` | Specialized skills (read the relevant `SKILL.md` before acting) |
 | `.agents/tools/` | Helper scripts for agents |
