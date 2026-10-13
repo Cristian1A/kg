@@ -44,6 +44,9 @@ def test_guide_covers_the_whole_standard_catalog():
         "Every node you create has a `description`",  # issue #36
         "missing_description",
         "Describe the main extracted nodes that lack one",
+        "kg query untested",  # issue #38: answering with the query commands
+        "kg impact <id>",
+        "possible",
     ],
 )
 def test_guide_covers_the_required_topics(topic):

@@ -46,11 +46,12 @@ kg render --html -o kg-graph.html         # review the result
 
 ## Read the store before writing
 
-Reuse the IDs that exist. Look them up in `.kg/graph.json` (or the HTML's
-search box) instead of guessing:
+Reuse the IDs that exist. Look them up instead of guessing:
 
 ```bash
-python -c "import json; [print(n['id']) for n in json.load(open('.kg/graph.json'))['nodes']]"
+kg query find size                     # by name, ID or description
+kg query find --type Module            # every module
+kg query node module:size              # a node and what it is linked to
 ```
 
 If `kg status` lists changed files, run `kg extract .` before reading or
@@ -86,7 +87,7 @@ itself. At least:
 These are what the three reference questions need:
 
 - **Which tests are missing?** `kg extract` already links tests to code with
-  `tests` edges; `kg.analysis.untested()` lists code with none. You add
+  `tests` edges; `kg query untested` lists code with none. You add
   nothing for it, but read the list critically: code reached only through
   fixtures or other functions also shows up.
 - **Is the documentation in line with the code?** Needs `Document` nodes and
@@ -98,6 +99,31 @@ These are what the three reference questions need:
   and constraints of each module are visible. New requirements can be added
   as a custom type: `Requirement` (`requirement:<slug>`), linked to the
   modules that would change with a custom `affects` relation.
+
+## Answering questions with the graph
+
+Once the graph is built, use it to answer questions about the repo, and back
+every claim with the IDs and edges the commands return:
+
+| Question | Command |
+|----------|---------|
+| What is X, and what is it linked to? | `kg query node <id>` (`--depth 2` for more) |
+| Where is X? Which nodes are about Y? | `kg query find <text>`, `--type`, `--attr` |
+| How are X and Y related? | `kg query path <x> <y>` |
+| Which tests are missing? | `kg query untested` |
+| Which code has no documentation? | `kg query undocumented` |
+| What may break if X changes? | `kg impact <id>` (`--depth`, `--relation`) |
+
+- Add `--json` to read results reliably; every result carries its `path` of
+  edges, each with its provenance `method` and `confidence`.
+- `kg impact` lists **possible** effects. Say "may be affected", quote the
+  path that justifies each one, and give less weight to paths through
+  low-confidence `llm` edges.
+- Read the `note:` lines (`limits` in JSON) before answering: a stale graph,
+  files that could not be read or relation types the graph lacks (no `calls`
+  edges, for instance) mean the answer may be incomplete. Say so.
+- An empty result means "nothing in the graph", not "nothing in the code".
+  Check the code when it matters.
 
 ## Standard catalog and custom types
 

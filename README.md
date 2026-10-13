@@ -76,6 +76,8 @@ kg guide                           # guidelines for the agent that adds the rest
 kg add agent.json --dry-run --json # the agent checks its document against the store
 kg add agent.json                  # merge docs, decisions and concepts
 kg render --html                   # kg-graph.html: search, filter, click for details
+kg query node module:app.core      # a node and its neighbors; also find, path
+kg impact function:app.core.run    # what a change may affect, with the edges why
 kg status                          # later: has the code changed since the extract?
 ```
 
@@ -188,7 +190,7 @@ Details in [docs/schema.md](docs/schema.md), [docs/store.md](docs/store.md),
 | `kg extract` | Deterministic extraction of a Python repo; reruns follow code changes | ✅ |
 | `kg status` | Whether the graph is up to date with the code | ✅ |
 | `kg render` | PNG/SVG image and interactive offline HTML | ✅ |
-| `kg query`, `kg impact` | Neighbors, paths, transitive impact | v0.2 |
+| `kg query`, `kg impact` | Find nodes, neighbors, paths, untested/undocumented code, impact of a change | ✅ |
 | Benchmark | Measure whether the graph improves an agent's answers | v0.2 |
 | `kg export` | Mermaid and Graphviz DOT | v0.3 |
 | MCP server | Expose the operations as agent tools | v0.3 |

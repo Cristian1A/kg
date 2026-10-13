@@ -174,21 +174,11 @@ This is a **static heuristic**, so it does not see:
 - dynamic access (`getattr`, `importlib`), `monkeypatch` targets given as
   strings, or other test runners' conventions.
 
-**Code without tests** (CU-02) is the code with no incoming `tests` edge.
-`kg query` is v0.2; for now, from Python:
-
-```python
-from pathlib import Path
-from kg import store
-from kg.analysis import untested
-
-untested(store.load_graph(Path(".kg")))  # public Function and Class IDs
-```
-
-It leaves out code in test files and `conftest.py`; `include_private=True`
-adds `_private` names and `types=["Module", "Package"]` checks modules
-instead. Given the limits above, a result means "no test refers to it
-directly", not "never runs under tests".
+**Code without tests** (CU-02) is the code with no incoming `tests` edge:
+`kg query untested` lists it (see [query.md](query.md)). It leaves out code in
+test files and `conftest.py`; `--include-private` adds `_private` names and
+`--type Module,Package` checks modules instead. Given the limits above, a
+result means "no test refers to it directly", not "never runs under tests".
 
 ## Dependencies and configuration
 

@@ -16,7 +16,17 @@ from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any, NoReturn
 
-from kg import __version__, agents, edit, extract, merge, render, store, update
+from kg import (
+    __version__,
+    agents,
+    analysis,
+    edit,
+    extract,
+    merge,
+    render,
+    store,
+    update,
+)
 from kg import schema as kg_schema
 from kg.schema import validation
 
@@ -404,6 +414,278 @@ def _validate(args: argparse.Namespace) -> Result:
     return Result(report.to_text(name), data)
 
 
+# --- Queries (RF-40–RF-43) ------------------------------------------------------
+
+
+def _query_node(args: argparse.Namespace) -> Result:
+    graph = _store_call(store.load_graph, args.kg_dir)
+    fields = _query_call(analysis.node_fields, graph, args.id)
+    hits = analysis.neighbors(
+        graph,
+        args.id,
+        direction=args.direction,
+        relations=args.relation,
+        types=args.type,
+        depth=args.depth,
+    )
+    lines = [f"{args.id} ({fields.get('type')})"]
+    for name in ("label", "description"):
+        if fields.get(name):
+            lines.append(f"  {name}: {fields[name]}")
+    for key, value in sorted((fields.get("attrs") or {}).items()):
+        lines.append(f"  attrs.{key}: {json.dumps(value, ensure_ascii=False)}")
+    if prov := fields.get("provenance"):
+        lines.append(f"  provenance: {_provenance_text(prov)}")
+    if hits:
+        lines.append(f"{_plural(len(hits), 'neighbor')}:")
+        lines += [_neighbor_text(args.id, hit) for hit in hits]
+    else:
+        lines.append("no neighbors in the graph with these options")
+    limits = _limits(args, graph)
+    lines += _limits_text(limits)
+    data = {
+        "node": fields,
+        "neighbors": [h.to_dict() for h in hits],
+        "limits": limits,
+    }
+    return Result("\n".join(lines), data)
+
+
+def _query_find(args: argparse.Namespace) -> Result:
+    if not (args.text or args.type or args.attr):
+        raise UsageError("kg query find: give TEXT, --type or --attr")
+    graph = _store_call(store.load_graph, args.kg_dir)
+    ids = analysis.find(graph, args.text, args.type, dict(args.attr))
+    lines = [_node_text(graph, node_id) for node_id in ids]
+    if not ids:
+        lines = ["no node in the graph matches"]
+    nodes = [_node_summary(graph, node_id) for node_id in ids]
+    return Result("\n".join(lines), {"nodes": nodes})
+
+
+def _query_path(args: argparse.Namespace) -> Result:
+    graph = _store_call(store.load_graph, args.kg_dir)
+    found = _query_call(
+        analysis.shortest_path, graph, args.source, args.target, args.relation
+    )
+    limits = _limits(args, graph)
+    if found is None:
+        lines = [f"no path between {args.source} and {args.target} in the graph"]
+        data: dict[str, Any] = {"found": False, "direction": None, "path": []}
+    else:
+        direction, steps = found
+        how = {
+            "forward": "",
+            "backward": " (edges point back)",
+            "mixed": " (edges in both directions)",
+        }
+        lines = [f"path of {_plural(len(steps), 'edge')}{how[direction]}:"]
+        lines += [f"  {step.label}  [{_step_source(step)}]" for step in steps]
+        data = {
+            "found": True,
+            "direction": direction,
+            "path": [s.to_dict() for s in steps],
+        }
+    lines += _limits_text(limits)
+    data |= {"source": args.source, "target": args.target, "limits": limits}
+    return Result("\n".join(lines), data)
+
+
+def _query_untested(args: argparse.Namespace) -> Result:
+    graph = _store_call(store.load_graph, args.kg_dir)
+    types = args.type or analysis.CODE_TYPES
+    ids = analysis.untested(graph, types, args.include_private)
+    return _id_list(
+        args,
+        graph,
+        ids,
+        f"{_plural(len(ids), 'element')} with no `tests` edge:",
+        "every element of these types has a `tests` edge",
+        ["tests"],
+    )
+
+
+def _query_undocumented(args: argparse.Namespace) -> Result:
+    graph = _store_call(store.load_graph, args.kg_dir)
+    types = args.type or analysis.DOCUMENTABLE_TYPES
+    ids = analysis.undocumented(graph, types, args.include_private)
+    return _id_list(
+        args,
+        graph,
+        ids,
+        f"{_plural(len(ids), 'element')} that no document points to:",
+        "every element of these types has a `documents` edge",
+        ["documents"],
+    )
+
+
+def _id_list(
+    args: argparse.Namespace,
+    graph: Any,
+    ids: list[str],
+    head: str,
+    empty: str,
+    relations: list[str],
+) -> Result:
+    limits = _limits(args, graph, relations)
+    lines = [head, *(f"  {_node_text(graph, i)}" for i in ids)] if ids else [empty]
+    lines += _limits_text(limits)
+    nodes = [_node_summary(graph, i) for i in ids]
+    return Result("\n".join(lines), {"nodes": nodes, "limits": limits})
+
+
+def _impact(args: argparse.Namespace) -> Result:
+    graph = _store_call(store.load_graph, args.kg_dir)
+    relations = args.relation or analysis.IMPACT_RELATIONS
+    hits = _query_call(
+        analysis.impact,
+        graph,
+        args.id,
+        args.depth,
+        relations,
+        not args.no_containment,
+    )
+    limits = _limits(args, graph, relations)
+    if hits:
+        lines = [
+            f"a change in {args.id} may affect {_plural(len(hits), 'element')} "
+            "(possible effects, not certain ones):"
+        ]
+        for hit in hits:
+            kind = "direct" if hit.depth == 1 else f"depth {hit.depth}"
+            lines.append(f"  {_node_text(graph, hit.id)}  [{kind}]")
+            lines += [
+                f"      {step.label}  [{_step_source(step)}]" for step in hit.path
+            ]
+    else:
+        lines = [
+            f"no relation found in the graph through which {args.id} affects others"
+        ]
+    lines += _limits_text(limits)
+    data = {
+        "id": args.id,
+        "depth": args.depth,
+        "relations": sorted(relations),
+        "containment": not args.no_containment,
+        "results": [h.to_dict() for h in hits],
+        "limits": limits,
+    }
+    return Result("\n".join(lines), data)
+
+
+def _query_call(func: Callable[..., Any], *args: Any) -> Any:
+    """Run an analysis query, mapping an unknown ID to a usage error."""
+    try:
+        return func(*args)
+    except analysis.QueryError as e:
+        message = e.message + (
+            f"\n  suggestion: {e.suggestion}" if e.suggestion else ""
+        )
+        raise UsageError(message, {"suggestion": e.suggestion}) from e
+
+
+def _limits(
+    args: argparse.Namespace, graph: Any, relations: Sequence[str] = ()
+) -> list[dict[str, Any]]:
+    """What the answer may miss (RF-43): a stale graph, unread files, and
+    relation types the graph has no edges of."""
+    limits: list[dict[str, Any]] = []
+    root = args.kg_dir.resolve().parent  # the store lives in its repo (RF-70)
+    try:
+        state = update.staleness(graph, root)
+    except update.RepoMismatchError:
+        limits.append(
+            {
+                "code": "freshness_unknown",
+                "message": "could not check whether the graph is up to date: the "
+                "store is not inside its repo; run `kg status <repo>`",
+            }
+        )
+    else:
+        changed = state.modified + state.added + state.deleted
+        if changed:
+            limits.append(
+                {
+                    "code": "stale_graph",
+                    "message": f"the code changed since the last `kg extract` "
+                    f"({_plural(len(changed), 'file')}; see `kg status`): "
+                    "the graph may not match it",
+                    "files": changed,
+                }
+            )
+    unread = analysis.unread_files(graph)
+    if unread:
+        limits.append(
+            {
+                "code": "unread_files",
+                "message": f"{_plural(len(unread), 'file')} could not be fully "
+                "extracted; their contents may be missing",
+                "files": unread,
+            }
+        )
+    missing = analysis.missing_relations(graph, relations)
+    if missing:
+        names = ", ".join(f"`{r}`" for r in missing)
+        extra = (
+            " (`kg extract` does not produce `calls`, RF-13)"
+            if "calls" in missing
+            else ""
+        )
+        limits.append(
+            {
+                "code": "missing_relations",
+                "message": f"the graph has no {names} edges; whatever depends "
+                f"on them is not in this answer{extra}",
+                "relations": missing,
+            }
+        )
+    return limits
+
+
+def _limits_text(limits: list[dict[str, Any]]) -> list[str]:
+    return [f"note: {limit['message']}" for limit in limits]
+
+
+def _node_summary(graph: Any, node_id: str) -> dict[str, Any]:
+    data = graph.nodes[node_id]
+    return {"id": node_id, "type": data.get("type"), "label": data.get("label")}
+
+
+def _node_text(graph: Any, node_id: str) -> str:
+    data = graph.nodes[node_id]
+    return f"{node_id} ({data.get('type')})"
+
+
+def _neighbor_text(origin: str, hit: analysis.Hit) -> str:
+    if hit.depth == 1:
+        step = hit.path[0]
+        arrow = f"-[{step.type}]->" if step.source == origin else f"<-[{step.type}]-"
+        return f"  {arrow} {hit.id} ({hit.type})  [{_step_source(step)}]"
+    via = "; ".join(step.label for step in hit.path)
+    return f"  depth {hit.depth}: {hit.id} ({hit.type})  via {via}"
+
+
+def _step_source(step: analysis.Step) -> str:
+    if step.confidence is None:
+        return str(step.method)
+    return f"{step.method}, {step.confidence:g}"
+
+
+def _provenance_text(provenance: dict[str, Any]) -> str:
+    text = f"{provenance.get('method')} ({provenance.get('extractor')}"
+    if "confidence" in provenance:
+        text += f", confidence {provenance['confidence']:g}"
+    text += ")"
+    if source := provenance.get("source"):
+        lines = provenance.get("lines")
+        text += f" from {source}" + (f":{lines[0]}-{lines[1]}" if lines else "")
+    return text
+
+
+def _plural(n: int, word: str) -> str:
+    return f"{n} {word}{'' if n == 1 else 's'}"
+
+
 def _global_options() -> argparse.ArgumentParser:
     # default=SUPPRESS so a value given before the subcommand is not overwritten
     # by the subparser's default; defaults are applied in main().
@@ -546,7 +828,96 @@ def build_parser() -> argparse.ArgumentParser:
         f"until at most N nodes remain (default: {render.MAX_NODES})",
     )
 
+    help_ = "look up nodes, neighbors and paths in the graph"
+    p = sub.add_parser("query", help=help_, description=help_, parents=[common])
+    queries = p.add_subparsers(dest="query", metavar="<query>", required=True)
+
+    def query(name: str, help_: str, handler: Handler) -> argparse.ArgumentParser:
+        q = queries.add_parser(name, help=help_, description=help_, parents=[common])
+        q.set_defaults(handler=handler)
+        return q
+
+    q = query("node", "a node, its attributes and its neighbors", _query_node)
+    q.add_argument("id", metavar="ID", help="ID of the node")
+    q.add_argument(
+        "--direction",
+        choices=("out", "in", "both"),
+        default="both",
+        help="edges to follow (default: both)",
+    )
+    _relation_option(q, "relation types to follow (default: all)")
+    _type_option(q, "entity types to list (others are still walked through)")
+    q.add_argument(
+        "--depth",
+        type=_positive_int,
+        default=1,
+        metavar="N",
+        help="how many edges away (default: 1)",
+    )
+
+    q = query(
+        "find", "find nodes by name, ID, description, type or attribute", _query_find
+    )
+    q.add_argument("text", nargs="?", help="text in the label, ID or description")
+    _type_option(q, "entity types to return")
+    q.add_argument(
+        "--attr",
+        type=_key_value,
+        action="append",
+        default=[],
+        metavar="KEY=VALUE",
+        help="attrs.KEY equals VALUE (JSON if it parses, else text; repeatable)",
+    )
+
+    q = query("path", "the shortest chain of edges between two nodes", _query_path)
+    q.add_argument("source", metavar="FROM", help="ID of the first node")
+    q.add_argument("target", metavar="TO", help="ID of the second node")
+    _relation_option(q, "relation types the path may use (default: all)")
+
+    q = query("untested", "code with no `tests` edge (CU-02)", _query_untested)
+    _type_option(q, f"types to check (default: {','.join(analysis.CODE_TYPES)})")
+    q.add_argument(
+        "--include-private", action="store_true", help="also `_private` names"
+    )
+
+    q = query(
+        "undocumented", "code that no document points to (CU-03)", _query_undocumented
+    )
+    _type_option(
+        q, f"types to check (default: {','.join(analysis.DOCUMENTABLE_TYPES)})"
+    )
+    q.add_argument(
+        "--include-private", action="store_true", help="also `_private` names"
+    )
+
+    p = add("impact", "what a change in a node may affect", _impact)
+    p.add_argument("id", metavar="ID", help="ID of the node that changes")
+    p.add_argument(
+        "--depth",
+        type=_positive_int,
+        metavar="N",
+        help="at most N edges away (default: no limit)",
+    )
+    _relation_option(
+        p,
+        "relations that propagate a change, walked backwards "
+        f"(default: {','.join(analysis.IMPACT_RELATIONS)})",
+    )
+    p.add_argument(
+        "--no-containment",
+        action="store_true",
+        help="do not reach the module or class that defines a changed element",
+    )
+
     return parser
+
+
+def _relation_option(p: argparse.ArgumentParser, help_: str) -> None:
+    p.add_argument("--relation", type=_type_list, metavar="R1,R2", help=help_)
+
+
+def _type_option(p: argparse.ArgumentParser, help_: str) -> None:
+    p.add_argument("--type", type=_type_list, metavar="T1,T2", help=help_)
 
 
 def _key_value(value: str) -> tuple[str, Any]:
