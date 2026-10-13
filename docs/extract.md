@@ -9,12 +9,18 @@ kg init
 kg extract                    # the current directory
 kg extract path/to/repo       # another repo; the store is still --kg-dir
 kg extract . --json           # summary for agents
+kg extract --dry-run          # what would be added, merged and removed
+kg status                     # has the code changed since the last extract?
 ```
 
-The extracted document goes through the same validation and merge as
-`kg add` (see [store.md](store.md)): running `kg extract` twice leaves the
-store byte for byte identical, and an element that changed (a function that
-moved, a new docstring) is merged and reported as a conflict.
+Each run **replaces the parser's layer** of the graph (RF-72). The new
+extraction is validated and merged like `kg add`, and the elements the parser
+produced before but no longer finds (deleted, renamed or moved code) are
+removed. What agents and people added is kept. The rules are in
+[store.md](store.md#updating-after-code-changes-kg-extract). Running
+`kg extract` twice leaves the store byte for byte identical, and an element
+that changed (a function that moved, a new docstring) is merged and reported
+as a conflict.
 
 ## Files that are read
 
@@ -75,13 +81,13 @@ All with `provenance` `method: parser`, `extractor: python-ast@0.1`,
 | Type | ID | Notes |
 |------|----|-------|
 | `Repo` | `repo:<dir name>` | `source: "."` |
-| `File` | `file:<path>` | `label`: file name |
+| `File` | `file:<path>` | `label`: file name; `attrs.digest`: content hash |
 | `Package` | `package:<name>` | A directory with `__init__.py`; description from its docstring |
 | `Module` | `module:<name>` | Description from its docstring |
 | `Class` | `class:<module>.<Class>` | Nested classes: `class:m.Outer.Inner` |
 | `Function` | `function:<module>.<name>` | Methods: `function:m.Class.method` |
 | `Dependency` | `dependency:<name>` | See *Dependencies and configuration* |
-| `Config` | `config:<path>` | `pyproject.toml`, each requirements file |
+| `Config` | `config:<path>` | `pyproject.toml`, each requirements file; `attrs.digest` |
 | `Test` | `test:<name>` | Test file, class or function; see *Tests* |
 
 `Class` and `Function` have `provenance.lines` (`[first, last]`, starting at
@@ -95,6 +101,11 @@ the first decorator), a `description` (first paragraph of the docstring) and
 | `decorators` | both | Source of each decorator, if any |
 | `bases` | `Class` | Source of each base class, if any |
 | `kind` | `Test` | `module`, `class` or `function` |
+
+`attrs.digest` is `sha256:` plus the first 16 hex digits of the SHA-256 of
+the file's bytes. `kg status` compares it with the files on disk (RF-77). A
+file that cannot be parsed keeps the digest of its last good extraction, so it
+keeps showing as modified until it is fixed.
 
 Definitions inside module-level `if`/`try`/`with`/loops are included;
 functions nested in functions are not. If a name is defined twice in the same
@@ -222,10 +233,6 @@ files); the rest is still extracted. Poetry's `[tool.poetry.dependencies]` and
 
 ## Not yet
 
-- Removing entities of deleted, renamed or moved code (RF-72, v0.2, #37):
-  today a deleted file's nodes stay in the store. Processing only the files
-  that changed is RF-78 (v0.3).
-  This also applies to stores extracted before test detection: test files
-  keep their old `module:`/`function:` nodes next to the new `test:` ones.
-  Recreate the store (`rm -r .kg && kg init && kg extract`) to drop them.
+- Processing only the files that changed (RF-78, v0.3): every run reads the
+  whole repo, about 1 s for 100 files.
 - `calls` relations (RF-13, v0.3).

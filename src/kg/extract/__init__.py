@@ -5,7 +5,14 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
-from kg.extract.deps import extract_dependencies
+from kg.extract.deps import (
+    PYPROJECT,
+    PYPROJECT_EXTRACTOR,
+    REQUIREMENTS_EXTRACTOR,
+    extract_dependencies,
+    requirement_files,
+)
+from kg.extract.files import DIGEST, file_digest, python_files
 from kg.extract.python import (
     EXTRACTOR,
     Extraction,
@@ -16,14 +23,23 @@ from kg.extract.python import (
 from kg.store import FORMAT_VERSION
 
 __all__ = [
+    "DIGEST",
     "EXTRACTOR",
+    "EXTRACTORS",
     "Extraction",
     "SkippedFile",
     "combine",
     "extract_dependencies",
     "extract_python",
     "extract_repo",
+    "input_digests",
 ]
+
+# Names (without `@version`) of the extractors behind `kg extract`: what they
+# produced is derived data that a new extraction replaces (RF-72).
+EXTRACTORS = frozenset(
+    e.split("@", 1)[0] for e in (EXTRACTOR, PYPROJECT_EXTRACTOR, REQUIREMENTS_EXTRACTOR)
+)
 
 
 def extract_repo(root: Path) -> Extraction:
@@ -69,3 +85,11 @@ def _join(
             current["attrs"] = value | current["attrs"]
         else:
             current.setdefault(name, value)
+
+
+def input_digests(root: Path) -> dict[str, str | None]:
+    """Every file `kg extract` would read at `root`, with its content digest."""
+    paths = python_files(root) + requirement_files(root)
+    if (root / PYPROJECT).is_file():
+        paths.append(PYPROJECT)
+    return {path: file_digest(root / path) for path in sorted(paths)}

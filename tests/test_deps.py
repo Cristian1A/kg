@@ -7,6 +7,7 @@ from kg import store
 from kg.cli import EXIT_OK, main
 from kg.extract import combine, extract_dependencies, extract_repo
 from kg.extract.deps import Requirement, parse_requirement, requirement_files
+from kg.extract.files import file_digest
 from kg.schema.validation import validate_document
 
 REPO = "repo:proj"
@@ -120,7 +121,9 @@ def test_parse_requirement_rejects_invalid(text):
 def test_config_nodes_and_configures_edges(repo):
     extraction = extract_dependencies(repo, REPO)
     found = nodes(extraction)
-    assert found["config:pyproject.toml"]["attrs"] == {
+    attrs = found["config:pyproject.toml"]["attrs"]
+    assert attrs.pop("digest") == file_digest(repo / "pyproject.toml")
+    assert attrs == {
         "format": "pyproject",
         "name": "proj",
         "version": "0.1.0",
@@ -247,10 +250,9 @@ def test_no_manifests(tmp_path):
 def test_pyproject_without_project_table(tmp_path):
     write(tmp_path, {"pyproject.toml": "[tool.black]\nline-length = 100\n"})
     found = nodes(extract_dependencies(tmp_path, REPO))
-    assert found["config:pyproject.toml"]["attrs"] == {
-        "format": "pyproject",
-        "tools": ["black"],
-    }
+    attrs = found["config:pyproject.toml"]["attrs"]
+    assert attrs.pop("digest").startswith("sha256:")
+    assert attrs == {"format": "pyproject", "tools": ["black"]}
     assert len(found) == 1
 
 

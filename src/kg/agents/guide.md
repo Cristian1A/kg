@@ -14,6 +14,7 @@ Print this guide with `kg guide`, and the JSON Schema with `kg schema`.
 ```bash
 kg init                                   # once: creates .kg/
 kg extract .                              # the parser's part (rerun when code changes)
+kg status                                 # is the graph up to date with the code?
 kg render --html -o kg-graph.html         # look at what is already there
 # ... write draft.json (see below) ...
 kg add draft.json --dry-run --json        # validate against the store, change nothing
@@ -43,6 +44,12 @@ search box) instead of guessing:
 ```bash
 python -c "import json; [print(n['id']) for n in json.load(open('.kg/graph.json'))['nodes']]"
 ```
+
+If `kg status` lists changed files, run `kg extract .` before reading or
+answering from the graph. It removes what the code no longer has; if an
+element you linked to is gone, it is kept and reported. Send your edges again
+with the new ID (`kg add`), then `kg remove <old ID>`; if the knowledge no
+longer applies, only remove it.
 
 Never re-create what the parser produces: no `module:`, `class:`,
 `function:`, `file:`, `test:` or `dependency:` nodes of your own, and no

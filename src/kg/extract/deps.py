@@ -14,6 +14,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
+from kg.extract.files import DIGEST, file_digest
 from kg.extract.python import Extraction, SkippedFile, normalize_name
 from kg.store import FORMAT_VERSION
 
@@ -89,6 +90,8 @@ def extract_dependencies(root: Path, repo_id: str) -> Extraction:
             "type": "Config",
             "label": path.rsplit("/", 1)[-1],
         }
+        digest = file_digest(root / path)
+        attrs = {**(attrs or {}), **({DIGEST: digest} if digest else {})}
         if attrs:
             node["attrs"] = attrs
         nodes.append(node | {"provenance": prov})

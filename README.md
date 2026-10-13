@@ -76,9 +76,12 @@ kg guide                           # guidelines for the agent that adds the rest
 kg add agent.json --dry-run --json # the agent checks its document against the store
 kg add agent.json                  # merge docs, decisions and concepts
 kg render --html                   # kg-graph.html: search, filter, click for details
+kg status                          # later: has the code changed since the extract?
 ```
 
-`kg extract` is deterministic and needs no LLM. Documents, design decisions
+`kg extract` is deterministic and needs no LLM. Run it again after changing
+the code: it updates what the parser found and removes what is gone, without
+touching what the agent added. Documents, design decisions
 and domain concepts come from an external agent (Claude Code, Codex…) that
 follows `kg guide` (also installable as a skill with `kg guide --skill`) and
 the JSON Schema (`kg schema`). [`examples/agent/kg.json`](examples/agent/kg.json)
@@ -182,7 +185,8 @@ Details in [docs/schema.md](docs/schema.md), [docs/store.md](docs/store.md),
 | `kg add` | Merge a document into the store by ID (`--dry-run` to check first) | ✅ |
 | `kg guide` | Guidelines (and skill) for agents that enrich the graph | ✅ |
 | `kg remove`, `kg edit` | Remove nodes or edges, modify a node | ✅ |
-| `kg extract` | Deterministic extraction of a Python repo | ✅ |
+| `kg extract` | Deterministic extraction of a Python repo; reruns follow code changes | ✅ |
+| `kg status` | Whether the graph is up to date with the code | ✅ |
 | `kg render` | PNG/SVG image and interactive offline HTML | ✅ |
 | `kg query`, `kg impact` | Neighbors, paths, transitive impact | v0.2 |
 | Benchmark | Measure whether the graph improves an agent's answers | v0.2 |

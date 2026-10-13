@@ -16,6 +16,7 @@ src/kg/
 ├── merge.py       # merge by ID, `kg add`                              (#5)
 ├── edit.py        # `kg remove`, `kg edit`                             (#28)
 ├── extract/       # deterministic extractors (code, deps, tests)       (#6–#8)
+├── update.py      # `kg extract` replaces the parser layer; `kg status` (#37)
 ├── analysis.py    # queries over the stored graph (untested code…)     (#8)
 ├── render/        # PNG/SVG with matplotlib, HTML with vis-network     (#9, #10)
 └── agents/        # `kg guide`: guidelines and skill for agents        (#11)
