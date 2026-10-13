@@ -283,6 +283,32 @@ def test_null_bytes_are_reported(tmp_path):
     assert "null bytes" in skipped[0].message
 
 
+def test_invalid_utf8_is_reported(tmp_path):
+    (tmp_path / "bad.py").write_bytes(b'x = "\xff\xfe"\n')
+    write(tmp_path, {"good.py": "def g():\n    pass\n"})
+    extraction = extract_python(tmp_path)
+    assert [s.path for s in extraction.skipped] == ["bad.py"]
+    assert "utf-8" in extraction.skipped[0].message
+    assert "function:good.g" in nodes(extraction)
+
+
+def test_declared_source_encoding_is_honoured(tmp_path):
+    source = '# -*- coding: latin-1 -*-\nNAME = "caf\xe9"\n\n\ndef f():\n    pass\n'
+    (tmp_path / "latin.py").write_bytes(source.encode("latin-1"))
+    extraction = extract_python(tmp_path)
+    assert extraction.skipped == []
+    assert "function:latin.f" in nodes(extraction)
+
+
+def test_broken_and_looping_symlinks_are_ignored(tmp_path):
+    write(tmp_path, {"app.py": "def run():\n    pass\n"})
+    (tmp_path / "dangling.py").symlink_to(tmp_path / "missing.py")
+    (tmp_path / "loop").symlink_to(tmp_path, target_is_directory=True)
+    extraction = extract_python(tmp_path)
+    assert extraction.files == ["app.py"]
+    assert extraction.skipped == []
+
+
 def test_syntax_warnings_are_silenced(tmp_path, capfd):
     write(tmp_path, {"w.py": 'PATTERN = "\\d"\n'})
     extract_python(tmp_path)

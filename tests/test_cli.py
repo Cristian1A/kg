@@ -86,6 +86,27 @@ def test_usage_errors_exit_2(argv, capsys):
     assert captured.err.startswith("error: ")
 
 
+@pytest.mark.parametrize(
+    "argv",
+    [
+        ["extract", "."],
+        ["add", "doc.json"],
+        ["render", "--html"],
+        ["remove", "module:a"],
+        ["edit", "module:a", "--label", "A"],
+    ],
+)
+def test_commands_without_store_ask_for_init(argv, tmp_path, monkeypatch, capsys):
+    monkeypatch.chdir(tmp_path)
+    (tmp_path / "doc.json").write_text(
+        '{"version": "1", "nodes": [], "edges": []}', encoding="utf-8"
+    )
+    assert main([*argv, "--kg-dir", "missing/.kg"]) == EXIT_USAGE
+    captured = capsys.readouterr()
+    assert "kg init" in captured.err
+    assert not (tmp_path / "missing").exists()
+
+
 def test_usage_error_json(capsys):
     assert main(["--json", "unknown"]) == EXIT_USAGE
     payload = json.loads(capsys.readouterr().out)
