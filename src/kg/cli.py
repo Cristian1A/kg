@@ -16,7 +16,7 @@ from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any, NoReturn
 
-from kg import __version__, agents, edit, extract, merge, render, store
+from kg import __version__, agents, edit, extract, merge, render, store, update
 from kg import schema as kg_schema
 from kg.schema import validation
 
@@ -132,7 +132,7 @@ def _extract(args: argparse.Namespace) -> Result:
     if not root.is_dir():
         raise UsageError(f"not a directory: {root}")
     extraction = extract.extract_repo(root)
-    result = _store_call(merge.add_document, args.kg_dir, extraction.document)
+    result = _store_call(update.update_store, args.kg_dir, extraction, args.dry_run)
     if result.merge is None:  # a bug in the extractor, not the user's fault
         raise KgError(
             "the extractor produced an invalid document; the store was not modified",
@@ -142,12 +142,18 @@ def _extract(args: argparse.Namespace) -> Result:
     skipped = extraction.skipped
     n_files = len(extraction.files)
     files = f"{n_files} {'file' if n_files == 1 else 'files'}"
-    head = (
-        f"extracted {files} from {root} into {result.graph_path}"
-        if result.merge.changed
-        else f"no changes: {files} from {root} already in {result.graph_path}"
-    )
+    if not result.changed:
+        head = f"no changes: {files} from {root} already in {result.graph_path}"
+    elif args.dry_run:
+        head = (
+            f"dry run, {result.graph_path} was not modified; "
+            f"{files} from {root} would change:"
+        )
+    else:
+        head = f"extracted {files} from {root} into {result.graph_path}"
     lines = [head, result.merge.to_text(max_conflicts=MAX_CONFLICTS_SHOWN)]
+    if removed := result.removed.to_text():
+        lines.append(removed)
     if skipped:
         lines.append(f"  skipped {len(skipped)}:")
         lines += [f"    {s.to_text()}" for s in skipped]
@@ -157,9 +163,62 @@ def _extract(args: argparse.Namespace) -> Result:
         "files": n_files,
         "skipped": [asdict(s) for s in skipped],
         **result.merge.to_dict(),
+        "changed": result.changed,
+        "removed": result.removed.to_dict(),
+        "dry_run": args.dry_run,
         "warnings": [asdict(i) for i in result.validation.warnings],
     }
     return Result("\n".join(lines), data)
+
+
+def _status(args: argparse.Namespace) -> Result:
+    root: Path = args.path
+    if not root.is_dir():
+        raise UsageError(f"not a directory: {root}")
+    graph = _store_call(store.load_graph, args.kg_dir)
+    try:
+        state = update.staleness(graph, root)
+    except update.RepoMismatchError as e:
+        raise UsageError(str(e)) from e
+
+    counts = _method_counts(graph)
+    summary = ", ".join(f"{n} {method}" for method, n in counts.items())
+    lines = [
+        f"{store.graph_path(args.kg_dir)}: {graph.number_of_nodes()} nodes, "
+        f"{graph.number_of_edges()} edges" + (f" ({summary})" if summary else "")
+    ]
+    if not state.stale:
+        lines.append(f"up to date with {root}")
+    else:
+        lines.append(f"stale: {root} changed since the last `kg extract`")
+        for name in ("modified", "added", "deleted", "unknown"):
+            paths = getattr(state, name)
+            if paths:
+                lines.append(f"  {name} ({len(paths)}): {', '.join(paths)}")
+        if state.unknown:
+            lines.append(
+                "  (unknown: no digest recorded; the file could not be read, or it "
+                "was extracted before kg recorded digests)"
+            )
+        lines.append(f"run `kg extract {root}` to update the graph")
+    data = {
+        "path": str(root),
+        "graph": str(store.graph_path(args.kg_dir)),
+        "nodes": graph.number_of_nodes(),
+        "edges": graph.number_of_edges(),
+        "methods": counts,
+        **state.to_dict(),
+    }
+    return Result("\n".join(lines), data)
+
+
+def _method_counts(graph: Any) -> dict[str, int]:
+    """Nodes by provenance method (`parser`, `llm`, `manual`)."""
+    counts: dict[str, int] = {}
+    for _, data in graph.nodes(data=True):
+        method = (data.get("provenance") or {}).get("method", "unknown")
+        counts[method] = counts.get(method, 0) + 1
+    return dict(sorted(counts.items()))
 
 
 def _store_call(func: Callable[..., Any], *args: Any) -> Any:
@@ -383,6 +442,14 @@ def build_parser() -> argparse.ArgumentParser:
     add("init", "create the .kg/ store in the repo", _init)
 
     p = add("extract", "deterministic extraction of a Python repo", _extract)
+    p.add_argument("path", nargs="?", type=Path, default=Path("."), help="repo path")
+    p.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="report what would be added, merged and removed without saving",
+    )
+
+    p = add("status", "whether the graph is up to date with the repo", _status)
     p.add_argument("path", nargs="?", type=Path, default=Path("."), help="repo path")
 
     p = add("add", "add and merge entities and relations", _add)

@@ -1,4 +1,5 @@
 import json
+import re
 import shutil
 import subprocess
 import textwrap
@@ -8,7 +9,7 @@ import pytest
 from kg import store
 from kg.cli import EXIT_INTERNAL, EXIT_OK, EXIT_USAGE, main
 from kg.extract import EXTRACTOR, extract_python
-from kg.extract.files import python_files
+from kg.extract.files import file_digest, python_files
 from kg.schema.validation import validate_document
 
 PARSER = {"method": "parser", "extractor": EXTRACTOR, "confidence": 1.0}
@@ -281,6 +282,17 @@ def test_null_bytes_are_reported(tmp_path):
     skipped = extract_python(tmp_path).skipped
     assert [(s.path, s.line) for s in skipped] == [("bin.py", None)]
     assert "null bytes" in skipped[0].message
+
+
+def test_files_record_a_content_digest(tmp_path):
+    write(tmp_path, {"a.py": "x = 1\n", "b.py": "x = 1\n", "c.py": "x = 2\n"})
+    found = nodes(extract_python(tmp_path))
+    digests = {
+        p: found[f"file:{p}"]["attrs"]["digest"] for p in ("a.py", "b.py", "c.py")
+    }
+    assert digests["a.py"] == digests["b.py"] == file_digest(tmp_path / "a.py")
+    assert digests["c.py"] != digests["a.py"]
+    assert re.fullmatch(r"sha256:[0-9a-f]{16}", digests["a.py"])
 
 
 def test_invalid_utf8_is_reported(tmp_path):

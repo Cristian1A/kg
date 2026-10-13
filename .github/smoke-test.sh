@@ -42,6 +42,7 @@ kg guide > /dev/null
 kg validate "$examples/minimal.json"
 kg init
 kg extract .
+kg status . | grep -q "up to date"
 kg add "$examples/minimal.json"
 kg validate .kg/graph.json
 kg render --html -o graph.html

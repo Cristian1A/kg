@@ -9,6 +9,7 @@ matcher. Virtual environments and tool caches are always skipped.
 from __future__ import annotations
 
 import fnmatch
+import hashlib
 import os
 import subprocess
 from dataclasses import dataclass
@@ -46,6 +47,23 @@ def python_files(root: Path) -> list[str]:
         and not _in_excluded_dir(root, path)
         and (root / path).is_file()
     )
+
+
+# Key in `attrs` of `File` and `Config` nodes
+DIGEST = "digest"
+
+
+def file_digest(path: Path) -> str | None:
+    """Short content hash of a file (`sha256:` + 16 hex digits), `None` if unreadable.
+
+    Stored as `attrs.digest` on `File` and `Config` nodes so `kg status` can tell
+    which files changed since the last extraction (RF-77).
+    """
+    try:
+        data = path.read_bytes()
+    except OSError:
+        return None
+    return f"sha256:{hashlib.sha256(data).hexdigest()[:16]}"
 
 
 def _git_files(root: Path) -> list[str] | None:

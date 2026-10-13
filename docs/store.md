@@ -67,10 +67,88 @@ With `--json`, `result` contains `changed`, `nodes` and `edges` (lists
 `"old"`, the value that stays) and the validation `warnings`. If the document
 is not valid, the error carries the same `details` as `kg validate`.
 
+## Updating after code changes: `kg extract`
+
+`kg extract` (see [extract.md](extract.md)) owns the **derived layer**: the
+nodes and edges whose provenance is `method: parser` with one of its
+extractors (`python-ast`, `pyproject`, `requirements`, any version). Every run
+replaces that layer, so the graph follows the code (RF-72):
+
+1. The repo is extracted. If extraction fails, the store is not touched.
+2. Derived elements that the new extraction does not produce are removed:
+   deleted functions, classes and files, and the edges that no longer exist.
+   A renamed or moved element gets a new ID (IDs come from paths and qualified
+   names), so a rename or a move is a removal plus an addition.
+3. The new extraction is validated and merged as in `kg add`.
+4. The store is written once, atomically, and only if something changed.
+
+What is **never removed**:
+
+| Element | Why |
+|---------|-----|
+| `llm` and `manual` nodes and edges | Knowledge from agents and people |
+| `parser` elements of other extractors | They belong to another tool |
+| Elements of a file that was skipped this time (syntax error, unreadable) | The file could not be read; they are removed once it can be, if they are gone |
+| A derived node that an agent or manual edge still uses | Removing it would break that edge. It is kept and reported until the edge is fixed |
+
+```text
+extracted 4 files from . into .kg/graph.json
+  nodes: 5 added, 1 merged, 5 unchanged
+  edges: 8 added, 0 merged, 7 unchanged
+  removed: 3 nodes, 6 edges the code no longer has
+  kept 1 node the code no longer has, because agent edges use them (re-add the edges to the new ID with `kg add`, then `kg remove` the old node):
+    function:app.util.old
+      function:app.util.old -[implements]-> concept:legacy
+```
+
+To resolve a kept node, add the agent's edges again pointing at the new
+element (`kg add` with `function:app.tools.old` as the source), then
+`kg remove function:app.util.old`, which also drops its old edges. If the
+knowledge no longer applies, `kg remove` alone is enough. (`kg edit --id`
+does not help here: the new ID already exists after the extraction.)
+
+If the store also holds the derived `Repo` node of **another** repo (another
+directory name), nothing is removed and a warning says so. This happens when
+the repo directory is renamed: remove the old `repo:` node with `kg remove`
+and extract again.
+
+`--dry-run` reports what would be added, merged and removed without writing.
+`--json` adds `changed`, `dry_run` and `removed` (`nodes`, `edges`,
+`orphans` with their agent `edges`, `kept_skipped`, `other_repos`) to the
+fields of `kg add`. A new `attrs.digest` is not reported as a conflict.
+
+## Is the graph up to date? `kg status`
+
+```bash
+kg status            # the repo in the current directory
+kg status path/repo  # another one; the store is still --kg-dir
+kg status --json
+```
+
+```text
+.kg/graph.json: 13 nodes, 16 edges (1 llm, 12 parser)
+stale: . changed since the last `kg extract`
+  modified (1): app/core.py
+  added (2): app/new.py, app/tools.py
+  deleted (1): app/util.py
+run `kg extract .` to update the graph
+```
+
+`kg status` compares the `attrs.digest` of the `File` and `Config` nodes with
+the files `kg extract` would read now (RF-77). It needs neither git nor a
+commit: a committed `.kg/graph.json` stays up to date as long as the code has
+not changed since it was extracted. Files with no recorded digest (extracted
+before kg recorded digests, or never read successfully) are listed as
+`unknown`. It is read-only, and returns `0` whether the graph is stale or
+not; `--json` has `stale`, `modified`, `added`, `deleted`, `unknown`,
+`nodes`, `edges` and `methods` (nodes by provenance method). If the store
+holds another repo, it fails with exit code `2`.
+
 ## Removing and editing: `kg remove`, `kg edit`
 
-The store only grows with `kg add` and `kg extract`; these commands delete and
-modify elements without editing `graph.json` by hand (RF-75, RF-76).
+`kg add` only adds and `kg extract` only removes what the parser no longer
+finds; these commands delete and modify any element without editing
+`graph.json` by hand (RF-75, RF-76).
 
 ```bash
 kg remove dependency:os entrypoint:size        # nodes, with all their edges
@@ -99,6 +177,8 @@ kg edit tutorial:build-a-cli --id tutorial:cli-sencillo        # edges follow
   values back for elements it produces (e.g. a function's label), and a
   removed element that the parser still finds is added again. Remove or edit
   what the extractor does not produce, or what you also changed in the code.
+  A derived node renamed with `--id` to an ID the parser does not produce is
+  removed by the next `kg extract`, unless agent edges use it.
 - `--dry-run` reports without saving; `--json` returns `graph`, `dry_run`,
   `saved` and, for `remove`, `nodes` and `edges` (as `source -[type]-> target`);
   for `edit`, `id`, `changed`, `changes` (`field`, `old`, `new`) and

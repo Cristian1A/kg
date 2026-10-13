@@ -189,7 +189,7 @@ Priorities:
 | RF-74 | `kg log`, `kg diff <v1> <v2>` (nodes and relations added, removed or modified) and `kg checkout <version>`, based on the store's git history | v0.3 |
 | RF-75 | `kg remove` deletes nodes (with their edges) and individual edges from the store, all or nothing, with `--dry-run` | MVP (added 2026-10-12, #28) |
 | RF-76 | `kg edit` modifies a node (ID, type, label, description, attributes); renaming rewrites its edges; the result is validated before saving | MVP (added 2026-10-12, #28) |
-| RF-77 | **Stale graph detection**: the store records what the last extraction saw (git commit, dirty working tree, time). `kg validate --kg-dir`, `kg query` and `kg impact` warn when the repo has changed since, naming the commit or the changed files. Without git (S-01) only the time is recorded | v0.2 (added 2026-10-13) |
+| RF-77 | **Stale graph detection**: the graph records a content digest of every file the extraction read. `kg status` lists the files modified, added or deleted since, and `kg query`/`kg impact` warn when there are any. It works with or without git, and a committed `graph.json` does not count as a change. Reworded 2026-10-13 (#37): comparing git commits would flag a committed graph as stale forever | v0.2 (added 2026-10-13) |
 | RF-78 | **Incremental extraction**: `kg extract` only reprocesses the files git reports as changed, with the same result as a full update (RF-72). An optimization, needed only if full updates become slow (RNF-06) | v0.3 (added 2026-10-13; split from RF-72) |
 
 ---
@@ -199,6 +199,7 @@ Priorities:
 ```
 kg init                         Create the .kg/ store in the repo
 kg extract <path>               Deterministic extraction (Python)
+kg status [path]                Whether the graph is up to date with the code
 kg add <file.json>              Add and merge entities and relations
 kg validate <file.json>         Validate against the schema without applying changes
 kg remove <id>… | --edge s t d  Remove nodes or edges from the store
@@ -315,4 +316,4 @@ Confirmed by the client on 2026-10-07:
 |---------|------|---------|
 | 1.0 | 2026-10-06 | First version, in Spanish. Approved on 2026-10-07 |
 | 1.1 | 2026-10-12 | English translation. RF-75 and RF-76 added (#28); PA-03 updated (#10); link to discovery.md (#33) |
-| 1.2 (draft) | 2026-10-13 | v0.2 re-scoped to the evidence phase (#43). New: RF-43, RF-44, RF-77, RF-78, RNF-10, section 8.2, PA-05. Reworded: RF-72 (consistent update; incremental extraction split into RF-78), RNF-03 (user install), RNF-06 (v0.2 targets), RNF-07 (CI). Moved to v0.3: RF-13, RF-23, RF-31–33, RF-60–61, RF-73–74, Dockerfile |
+| 1.2 (draft) | 2026-10-13 | v0.2 re-scoped to the evidence phase (#43). New: RF-43, RF-44, RF-77, RF-78, RNF-10, section 8.2, PA-05. Reworded: RF-72 (consistent update; incremental extraction split into RF-78), RNF-03 (user install), RNF-06 (v0.2 targets), RNF-07 (CI). Moved to v0.3: RF-13, RF-23, RF-31–33, RF-60–61, RF-73–74, Dockerfile. Later (#37): RF-77 detects changes with content digests and `kg status` instead of git commits |

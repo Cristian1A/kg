@@ -16,7 +16,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
-from kg.extract.files import python_files
+from kg.extract.files import DIGEST, file_digest, python_files
 from kg.extract.references import bindings, from_base, references
 from kg.store import FORMAT_VERSION
 
@@ -112,12 +112,22 @@ class _Builder:
         modules = self._modules(files)
         by_name = {m.name: m for m in modules.values()}
         for path in files:
-            self._node(f"file:{path}", "File", path, label=path.rsplit("/", 1)[-1])
+            digest = file_digest(self.root / path)
+            self._node(
+                f"file:{path}",
+                "File",
+                path,
+                label=path.rsplit("/", 1)[-1],
+                attrs={DIGEST: digest} if digest else None,
+            )
             self._edge(self.repo_id, f"file:{path}", "contains", path)
             module = modules.get(path)
             if module is None:
                 continue
             tree = self._parse(path)
+            if tree is None:
+                # Keep the previous digest, so `kg status` still reports the file
+                self.nodes[f"file:{path}"].pop("attrs", None)
             self._module(module, by_name, tree)
             if tree is not None:
                 self.trees[module.name] = (module, tree)
