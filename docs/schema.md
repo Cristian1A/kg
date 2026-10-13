@@ -113,6 +113,7 @@ With `--json`, errors are in `error.details.errors` and warnings in
 | `broken_reference` | error | Edge to a node that is not in the file (RF-05); with `kg add`, not in the store either |
 | `custom_type` | warning | Type outside the standard catalog (RF-02) |
 | `id_prefix_mismatch` | warning | The ID prefix does not match the node's `type` |
+| `missing_description` | warning | A node with `method: llm` has no `description` (#36): agents describe every node they create |
 
 Exit codes: `0` valid (even with warnings), `1` there are errors, `2` the
 file does not exist or cannot be read.

@@ -29,8 +29,9 @@ kg render --html -o kg-graph.html         # review the result
 - Every error has `path`, `received`, `expected` and `suggestion`. Fix exactly
   what it says and run again; a typo in an ID comes with
   `Did you mean "..."?`.
-- Warnings (`custom_type`, `id_prefix_mismatch`) do not block. Read them and
-  keep the custom type only if no standard type fits.
+- Warnings (`custom_type`, `id_prefix_mismatch`, `missing_description`) do
+  not block, but read them: keep a custom type only if no standard type fits,
+  and add the description `missing_description` asks for.
 - Adding the same document twice changes nothing. Send corrections as a new
   version of the same elements (same IDs); use `kg edit` and `kg remove` to
   change or delete what is already stored.
@@ -49,7 +50,8 @@ Never re-create what the parser produces: no `module:`, `class:`,
 `config:` node for `pyproject.toml` or `requirements*.txt`. Point your edges
 at them. If the parser got something wrong, say so to the
 user instead of overriding it: `kg add` keeps the parser's provenance and the
-next `kg extract` restores its values.
+next `kg extract` restores its values. The one exception is adding a
+description to extracted code that has none (see *Descriptions*).
 
 ## What to look for (minimum)
 
@@ -121,9 +123,38 @@ graph, and translate titles you quote from documents only if the user asks.
 IDs and type names stay as above (ASCII, English slugs).
 
 - `label`: short, a few words, what a person would call it.
-- `description`: one or two sentences with the substance.
+- `description`: one or two sentences with the substance (see below).
 - `attrs`: facts worth querying (`{"status": "accepted", "date": "2025-03"}`
   for a Decision), not prose.
+
+## Descriptions
+
+Descriptions are what make the graph fast to search and understand: a node
+with only an ID and a label sends the reader, person or agent, back to the
+source files. The HTML search also matches them.
+
+**Every node you create has a `description`**: one or two sentences, in the
+graph's language, saying what the element is and why it matters. Do not
+repeat the label. `kg add` warns with `missing_description` when an `llm`
+node has none.
+
+**Describe the main extracted nodes that lack one.** The parser takes
+descriptions from docstrings, so code without docstrings has none. For the
+packages, modules and important classes without a description (not every
+function), send the existing ID with its type, your description and your
+provenance:
+
+```json
+{ "id": "module:size", "type": "Module",
+  "description": "Command-line entry point: prints the size of a file in MB.",
+  "provenance": { "method": "llm", "extractor": "claude-code", "confidence": 0.85, "source": "size.py", "lines": [1, 12] } }
+```
+
+- The node keeps the parser's provenance: `--dry-run` reports it as a
+  conflict with `kept` set to the old value. That is expected.
+- If the code later gets a docstring, the next `kg extract` replaces your
+  description with it.
+- Leave nodes that already have a description alone.
 
 ## Provenance
 
@@ -179,6 +210,12 @@ external dependencies on purpose:
       "label": "File size in MB",
       "description": "Size in bytes divided by 1024², rounded down.",
       "provenance": { "method": "llm", "extractor": "claude-code", "confidence": 0.85, "source": "size.py", "lines": [4, 7] }
+    },
+    {
+      "id": "module:size",
+      "type": "Module",
+      "description": "Command-line entry point: prints the size of a file in MB.",
+      "provenance": { "method": "llm", "extractor": "claude-code", "confidence": 0.85, "source": "size.py", "lines": [1, 12] }
     }
   ],
   "edges": [
@@ -199,7 +236,8 @@ external dependencies on purpose:
 ```
 
 `module:size` and `function:size.main` come from `kg extract`; the document
-only adds the three new nodes and the edges that connect them.
+adds three new nodes, the edges that connect them and a description for
+`module:size`, which has no docstring.
 
 ## Checklist before `kg add`
 
@@ -207,6 +245,8 @@ only adds the three new nodes and the edges that connect them.
 - [ ] No node duplicates something the parser extracts; edges use its IDs.
 - [ ] Every node and edge has `method: llm`, your `extractor`, a calibrated
       `confidence`, and `source`/`lines` when it comes from a file.
+- [ ] Every node you create has a `description`, and the main extracted
+      nodes without one got one.
 - [ ] All labels and descriptions are in one language.
 - [ ] Custom types only where no standard type fits.
 - [ ] Every `Document` has at least one `documents` edge; every `Decision` at

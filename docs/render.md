@@ -32,8 +32,10 @@ all inline. It needs no server and no internet; open it from disk.
   and lines) and its incoming and outgoing relations, which link to the
   other node and to the edge. Empty fields are left out. An edge shows its
   endpoints, attributes and provenance.
-- **Search** (RF-55): by label or ID, best matches first. Choosing a result
-  centers the node, opens its details and shows its type if it was hidden.
+- **Search** (RF-55): by label, ID or description, best matches first. Names
+  and IDs rank above descriptions, which let you find knowledge by meaning.
+  Choosing a result centers the node, opens its details and shows its type if
+  it was hidden.
 - **Read-only, with commands**: the page cannot write to the store (it is a
   file, with no server). For the selected element it shows the matching
   `kg edit`/`kg remove` command with a copy button; run it in the repo and

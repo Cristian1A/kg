@@ -326,6 +326,28 @@ def test_cli_add_json(kg_dir, tmp_path, capsys):
     assert [w["code"] for w in result["warnings"]] == ["custom_type"]
 
 
+def test_agent_describes_an_extracted_node():
+    # The guide's way to describe extracted code with no docstring (#36)
+    graph = store.document_to_graph(BASE)
+    described = {
+        "id": "module:a",
+        "type": "Module",
+        "description": "Entry point of the CLI.",
+        "provenance": LLM,
+    }
+    merged, report = merge_document(graph, doc([described]))
+    data = merged.nodes["module:a"]
+    assert data["description"] == "Entry point of the CLI."
+    assert data["provenance"] == PARSER  # the parser's provenance is kept
+    assert [(c.field, c.kept) for c in report.conflicts] == [("provenance", "old")]
+
+    # A docstring added later wins: kg extract brings the parser's description
+    docstring = node("module:a", "Module", description="Run the CLI.")
+    merged, _ = merge_document(merged, doc([docstring]))
+    assert merged.nodes["module:a"]["description"] == "Run the CLI."
+    assert merged.nodes["module:a"]["provenance"] == PARSER
+
+
 def test_cli_add_from_stdin(kg_dir, monkeypatch, capsys):
     monkeypatch.setattr("sys.stdin", io.StringIO(json.dumps(BASE)))
     assert main(["add", "-", "--kg-dir", str(kg_dir)]) == EXIT_OK

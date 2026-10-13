@@ -179,6 +179,7 @@ def validate_document(
     _check_references(edges, ids, known_ids, report)
     _check_custom_types(document, report)
     _check_id_prefixes(nodes, report)
+    _check_descriptions(nodes, report)
     report.errors.sort(key=lambda i: _sort_key(_parse_path(i.path)))
     report.warnings.sort(key=lambda i: _sort_key(_parse_path(i.path)))
     return report
@@ -299,6 +300,31 @@ def _check_id_prefixes(
                     severity="warning",
                 )
             )
+
+
+def _check_descriptions(
+    nodes: Sequence[tuple[int, dict[str, Any]]], report: Report
+) -> None:
+    """Nodes created by an agent must say what they are (#36)."""
+    for i, node in nodes:
+        provenance = node.get("provenance")
+        if not isinstance(provenance, dict) or provenance.get("method") != "llm":
+            continue
+        description = node.get("description")
+        if isinstance(description, str) and description.strip():
+            continue
+        report.warnings.append(
+            Issue(
+                code="missing_description",
+                path=f"$.nodes[{i}].description",
+                message="a node created by an agent has no description",
+                received=None if description is None else _show(description),
+                expected="one or two sentences: what it is and why it matters",
+                suggestion="Add a description in the graph's language; do not "
+                "repeat the label.",
+                severity="warning",
+            )
+        )
 
 
 # --- Translation of jsonschema errors ---------------------------------------

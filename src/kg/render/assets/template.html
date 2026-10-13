@@ -137,7 +137,7 @@ div.vis-tooltip .tip-id { font: 11px var(--mono); color: var(--ink-muted); }
   </span>
 </header>
 <aside id="side">
-  <label for="search" class="hint" style="display:block;margin:0 0 4px">Search by name or ID</label>
+  <label for="search" class="hint" style="display:block;margin:0 0 4px">Search by name, ID or description</label>
   <input id="search" type="search" autocomplete="off" placeholder="e.g. main, module:app.core">
   <ul id="results" aria-live="polite"></ul>
   <fieldset id="node-filters"><legend>Entity types <span class="all"><button type="button" data-all="node">All</button><button type="button" data-none="node">None</button></span></legend></fieldset>
@@ -320,8 +320,9 @@ div.vis-tooltip .tip-id { font: 11px var(--mono); color: var(--ink-muted); }
     if (!q) return [];
     const scored = [];
     for (const n of DATA.nodes) {
-      const name = nameOf(n).toLowerCase(), id = n.id.toLowerCase();
-      const score = name === q || id === q ? 0 : name.startsWith(q) ? 1 : name.includes(q) ? 2 : id.includes(q) ? 3 : -1;
+      const name = nameOf(n).toLowerCase(), id = n.id.toLowerCase(), text = (n.description || "").toLowerCase();
+      // Names and IDs first; descriptions find knowledge by meaning (#36)
+      const score = name === q || id === q ? 0 : name.startsWith(q) ? 1 : name.includes(q) ? 2 : id.includes(q) ? 3 : text.includes(q) ? 4 : -1;
       if (score >= 0) scored.push([score, n]);
     }
     scored.sort((a, b) => a[0] - b[0] || a[1].id.localeCompare(b[1].id));

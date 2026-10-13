@@ -41,6 +41,9 @@ def test_guide_covers_the_whole_standard_catalog():
         "Which tests are missing?",  # the reference questions
         "Is the documentation in line with the code?",
         "How can the project be extended",
+        "Every node you create has a `description`",  # issue #36
+        "missing_description",
+        "Describe the main extracted nodes that lack one",
     ],
 )
 def test_guide_covers_the_required_topics(topic):
@@ -56,6 +59,15 @@ def test_guide_example_is_valid_and_uses_llm_provenance():
     for item in [*example["nodes"], *example["edges"]]:
         assert item["provenance"]["method"] == "llm"
         assert "source" in item["provenance"]
+
+
+def test_guide_description_snippet_enriches_an_extracted_node():
+    blocks = re.findall(r"```json\n(.*?)```", agents.load_guide(), re.S)
+    [snippet] = [json.loads(b) for b in blocks if b.lstrip().startswith('{ "id"')]
+    report = validate_document({"version": "1", "nodes": [snippet], "edges": []})
+    assert report.ok and report.warnings == []
+    assert snippet["provenance"]["method"] == "llm"
+    assert snippet["id"] == "module:size"  # an ID `kg extract` creates
 
 
 def test_skill_file_is_the_exported_guide():

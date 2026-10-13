@@ -161,36 +161,66 @@ def test_empty_graph(tmp_path):
     assert embedded_data((tmp_path / "g.html").read_text("utf-8"))["nodes"] == []
 
 
-@pytest.mark.skipif(
-    not shutil.which("google-chrome") and not shutil.which("chromium"),
-    reason="no headless Chrome",
-)
-def test_page_runs_in_a_browser(graph, tmp_path):
-    path = tmp_path / "g.html"
-    render_html(graph, path, title="demo")
-    chrome = shutil.which("google-chrome") or shutil.which("chromium")
+CHROME = shutil.which("google-chrome") or shutil.which("chromium")
+needs_chrome = pytest.mark.skipif(CHROME is None, reason="no headless Chrome")
+
+
+def dump_dom(path, tmp_path, fragment=""):
+    """DOM of the page after it ran in headless Chrome."""
     proc = subprocess.run(
         [
-            chrome,
+            CHROME,
             "--headless=new",
             "--disable-gpu",
             "--no-first-run",
             f"--user-data-dir={tmp_path / 'profile'}",
             "--virtual-time-budget=8000",
             "--dump-dom",
-            f"{path.as_uri()}#node=function:size.main",
+            f"{path.as_uri()}{fragment}",
         ],
         capture_output=True,
         text=True,
         timeout=60,
     )
-    dom = proc.stdout
+    return proc.stdout
+
+
+@needs_chrome
+def test_page_runs_in_a_browser(graph, tmp_path):
+    path = tmp_path / "g.html"
+    render_html(graph, path, title="demo")
+    dom = dump_dom(path, tmp_path, "#node=function:size.main")
     assert '<span class="stats" id="stats">7 nodes · 6 edges</span>' in dom
     assert dom.count('class="filter"') == 7 + 6  # entity types + relations
     # The deep link opened the details panel of the node
     assert 'id="panel" aria-live="polite" class="open"' in dom
     assert "Imprime el tamaño" in dom
     assert "kg remove function:size.main" in dom
+
+
+@needs_chrome
+@pytest.mark.parametrize(
+    ("query", "found"),
+    [
+        ("tamaño", ["function:size.main"]),  # only in the description
+        ("main", ["function:size.main", "test:test_size.test_main"]),
+        ("nothing like this", []),
+    ],
+)
+def test_search_matches_names_ids_and_descriptions(graph, tmp_path, query, found):
+    path = tmp_path / "g.html"
+    render_html(graph, path, title="demo")
+    # Type into the search box once the page's own script has run
+    typing = (
+        "<script>addEventListener('load', () => {"
+        "const s = document.getElementById('search');"
+        f"s.value = {json.dumps(query)};"
+        "s.dispatchEvent(new Event('input'));});</script></body>"
+    )
+    page = path.read_text(encoding="utf-8")
+    path.write_text(page.replace("</body>", typing, 1), encoding="utf-8")
+    results = dump_dom(path, tmp_path).split('id="results"', 1)[1].split("</ul>")[0]
+    assert re.findall(r'class="id">([^<]+)<', results) == found
 
 
 # --- CLI -----------------------------------------------------------------------

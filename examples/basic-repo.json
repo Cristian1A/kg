@@ -37,6 +37,7 @@
       "id": "decision:use-networkx",
       "type": "Decision",
       "label": "Use NetworkX as the graph engine",
+      "description": "kg builds and queries its graph with NetworkX instead of a graph database, so it stays a local, dependency-light CLI.",
       "provenance": {
         "source": "docs/requirements.md",
         "method": "llm",
@@ -49,6 +50,7 @@
       "id": "requirement:rf-22",
       "type": "Requirement",
       "label": "RF-22: every command accepts --json",
+      "description": "Every command can print machine-readable JSON so agents can rely on its output.",
       "provenance": {
         "source": "docs/requirements.md",
         "method": "llm",
