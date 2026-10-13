@@ -1,5 +1,7 @@
 # kg — turn a codebase into a knowledge graph
 
+[![CI](https://github.com/Cristian1A/kg/actions/workflows/ci.yml/badge.svg)](https://github.com/Cristian1A/kg/actions/workflows/ci.yml)
+
 `kg` is a command-line tool, for humans and AI agents, that turns what a
 software project knows about itself — code, dependencies, docs, tests, design
 decisions — into a **knowledge graph** you can query, visualize and export.
@@ -33,7 +35,29 @@ JSON that is versioned with git like any other file.
 
 ## Install
 
-Requires Python ≥ 3.12 (Linux). Not on PyPI yet:
+Requires Python ≥ 3.12 (Linux). Not on PyPI yet, so install it from GitHub.
+
+**To use it**, with [pipx](https://pipx.pypa.io/) (an isolated environment, and
+`kg` on your `PATH`):
+
+```bash
+pipx install git+https://github.com/Cristian1A/kg.git
+kg --help
+```
+
+or with pip inside a virtual environment:
+
+```bash
+python -m venv .venv && source .venv/bin/activate
+pip install git+https://github.com/Cristian1A/kg.git
+```
+
+Static images (`kg render --png`/`--svg`) of 500 nodes or more also need
+`scipy` (`pipx inject kg scipy`, or `pip install scipy`); see
+[docs/render.md](docs/render.md).
+
+**To work on it**, clone the repo and install it in editable mode with the
+development tools:
 
 ```bash
 git clone https://github.com/Cristian1A/kg.git
@@ -178,7 +202,11 @@ follow in this repo.
 
 ```bash
 pytest && ruff check . && ruff format --check .
+.github/smoke-test.sh   # the full flow with the installed kg
 ```
+
+CI runs the same checks on every push and pull request, plus a clean,
+non-editable install with the smoke test.
 
 ## License
 

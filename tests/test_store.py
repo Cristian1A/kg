@@ -193,6 +193,7 @@ def test_load_without_store(tmp_path):
 @pytest.mark.parametrize(
     ("content", "code"),
     [
+        ("", "invalid_json"),
         ("{ not json", "invalid_json"),
         ('{"version": "1", "nodes": []}', "required"),
         ('{"version": "2", "nodes": [], "edges": []}', "not_allowed"),
