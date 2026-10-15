@@ -177,7 +177,8 @@ validation report is in [docs/mvp-validation.md](docs/mvp-validation.md).
 - **Standard catalog** of entity types (`Repo`, `Module`, `File`, `Function`,
   `Dependency`, `Test`, `Document`, `Decision`, `Concept`…) and relation types
   (`contains`, `imports`, `defines`, `calls`, `documents`, `tests`,
-  `justifies`…). Custom types are allowed and produce a warning.
+  `justifies`…). Custom types are allowed: one that looks like a standard
+  type gets a warning that names it, any other a note.
 - The graph is an `nx.MultiDiGraph`; an edge is identified by
   (`source`, `target`, `type`).
 

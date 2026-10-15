@@ -126,6 +126,7 @@ def _add(args: argparse.Namespace) -> Result:
         **result.merge.to_dict(),
         "dry_run": args.dry_run,
         "warnings": [asdict(i) for i in report.warnings],
+        "notes": [asdict(i) for i in report.notes],
     }
     if not result.merge.changed:
         head = f"no changes: {name} is already in {result.graph_path}"
@@ -134,7 +135,7 @@ def _add(args: argparse.Namespace) -> Result:
     else:
         head = f"{name} merged into {result.graph_path}"
     lines = [head, result.merge.to_text()]
-    lines += [issue.to_text() for issue in report.warnings]
+    lines += report.advice_lines()
     return Result("\n".join(lines), data)
 
 
@@ -178,6 +179,7 @@ def _extract(args: argparse.Namespace) -> Result:
         "removed": result.removed.to_dict(),
         "dry_run": args.dry_run,
         "warnings": [asdict(i) for i in result.validation.warnings],
+        "notes": [asdict(i) for i in result.validation.notes],
     }
     return Result("\n".join(lines), data)
 

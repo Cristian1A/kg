@@ -38,8 +38,10 @@ kg render --html -o kg-graph.html         # review the result
   what it says and run again; a typo in an ID comes with
   `Did you mean "..."?`.
 - Warnings (`custom_type`, `id_prefix_mismatch`, `missing_description`) do
-  not block, but read them: keep a custom type only if no standard type fits,
-  and add the description `missing_description` asks for.
+  not block, but read them: a `custom_type` warning names the standard type
+  yours seems to mean (use it if they mean the same), and add the description
+  `missing_description` asks for. A `note` lists the custom types no standard
+  type fits: they are fine.
 - Adding the same document twice changes nothing. Send corrections as a new
   version of the same elements (same IDs); use `kg edit` and `kg remove` to
   change or delete what is already stored.
