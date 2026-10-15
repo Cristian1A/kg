@@ -16,5 +16,11 @@
     "url": "https://github.com/wesleey/python-clean-architecture",
     "commit": "6f58de5",
     "agent": "examples/agent/python-clean-architecture.json"
+  },
+  {
+    "name": "kg",
+    "url": "https://github.com/Cristian1A/kg",
+    "commit": "1a342c4",
+    "agent": "examples/agent/kg.json"
   }
 ]

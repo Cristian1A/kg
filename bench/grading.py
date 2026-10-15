@@ -37,7 +37,8 @@ def normalize(name: str, kind: str) -> str:
     `module`: `etl/utils.py`, `module:etl.utils` and `etl.utils` all become
     `etl.utils`. `package`: the top-level import name (`azure-storage-blob`
     and `azure.identity` become `azure`; `psycopg2-binary` becomes
-    `psycopg2`).
+    `psycopg2`). `file`: the file name (`config:.github/workflows/ci.yml`
+    and `ci.yml` are the same).
     """
     text = name.strip().strip("`'\"").lower()
     text = re.sub(r"^[a-z_]+:", "", text)  # a graph ID prefix
@@ -45,6 +46,8 @@ def normalize(name: str, kind: str) -> str:
     if kind == "module":
         text = text.removesuffix(".py").replace("/", ".")
         return text.removesuffix(".__init__")
+    if kind == "file":
+        return text.rsplit("/", 1)[-1]
     if kind == "package":
         text = text.replace("-binary", "")
         return re.split(r"[.\-\[ <>=]", text)[0]
@@ -98,9 +101,10 @@ def verifiable(evidence: str, repo: Path, graph: nx.MultiDiGraph | None) -> bool
     """Whether a piece of evidence points to something that exists.
 
     Accepted: a graph node ID, a graph edge (`a -[type]-> b`), or a repo file
-    path with optional `:line` or `:start-end` within the file.
+    path with optional `:line` or `:start-end` within the file. A trailing
+    note in parentheses is ignored (`a -[imports]-> b (a test)`).
     """
-    text = evidence.strip().strip("`")
+    text = re.sub(r"\s+\([^()]*\)$", "", evidence.strip()).strip("`")
     if graph is not None:
         if text in graph:
             return True

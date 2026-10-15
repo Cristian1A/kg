@@ -66,6 +66,8 @@ def test_repos_are_pinned_to_a_commit():
         ("psycopg2-binary", "package", "psycopg2"),
         ("dependency:requests", "package", "requests"),
         ("requests>=2", "package", "requests"),
+        ("config:.github/workflows/ci.yml", "file", "ci.yml"),
+        ("docs/store.md:12", "file", "store.md"),
     ],
 )
 def test_normalize(name, kind, expected):
@@ -104,6 +106,9 @@ def test_traceability(repo):
     assert verifiable("module:app.core", repo, graph)
     assert verifiable("module:app.core -[imports]-> dependency:requests", repo, graph)
     assert not verifiable("module:app.core -[imports]-> module:nope", repo, graph)
+    assert verifiable("module:app.core (the only importer)", repo, graph)
+    assert verifiable("app/core.py:1 (import)", repo, graph)
+    assert not verifiable("(module:app.core)", repo, graph)
     assert traceability(["app/core.py", "made/up.py"], repo, graph) == 0.5
     assert traceability([], repo, graph) is None
 
@@ -427,9 +432,10 @@ def test_report_separates_quality_and_cost(tmp_path):
     assert "not to be statistically conclusive" in text
 
 
-def test_reference_answers_score_full_marks():
+@pytest.mark.parametrize("path", sorted((ROOT / "questions").glob("*.json")))
+def test_reference_answers_score_full_marks(path):
     """The reference answers themselves pass the grader (a sanity check)."""
-    for q in load_questions(ROOT / "questions/pilot.json"):
+    for q in load_questions(path):
         expect = q["expect"]
         if "items" in expect:
             answer = {"answer": q["reference"], "items": expect["items"]}

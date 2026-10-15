@@ -88,6 +88,10 @@ calls at 25 and stores the `submit_answer` input. `--usage` maps each run
 directory name to the `total_tokens`, `seconds` and `model` that the subagent
 notification reports.
 
+A short bootstrap prompt is enough: tell the subagent to `cat` its
+`prompt.md` once and follow it. Claude Code runs at most 20 subagents at a
+time, so a larger session goes in batches.
+
 Differences from `bench.run`:
 
 - The confinement is by instruction, not by sandbox: check `calls.jsonl` (and
