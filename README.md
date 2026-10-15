@@ -9,11 +9,11 @@ decisions — into a **knowledge graph** you can query, visualize and export.
 The graph lives inside the repo (`.kg/graph.json`), as readable, deterministic
 JSON that is versioned with git like any other file.
 
-> **Status: early development (v0.1 MVP in progress).** The schema,
-> validation, the store (with merge, remove and edit), extraction (code,
-> dependencies and tests) and rendering (PNG/SVG and interactive HTML) are in
-> place, with guidelines for agents; the MVP validation on real repos is next.
-> See the [roadmap](#roadmap).
+> **Status: v0.2, the evidence phase.** The MVP (schema, store, extraction,
+> rendering, agent guide) is done, and `kg query` / `kg impact` answer
+> questions over the graph. A benchmark measured whether the graph helps an
+> agent: on small repos it is as accurate as reading the code, but neither better
+> nor cheaper ([report](docs/benchmark.md)). See the [roadmap](#roadmap).
 
 ## Why
 
@@ -191,13 +191,15 @@ Details in [docs/schema.md](docs/schema.md), [docs/store.md](docs/store.md),
 | `kg status` | Whether the graph is up to date with the code | ✅ |
 | `kg render` | PNG/SVG image and interactive offline HTML | ✅ |
 | `kg query`, `kg impact` | Find nodes, neighbors, paths, untested/undocumented code, impact of a change | ✅ |
-| Benchmark | Measure whether the graph improves an agent's answers | v0.2 |
+| Benchmark | Measure whether the graph improves an agent's answers ([report](docs/benchmark.md)) | ✅ |
 | `kg export` | Mermaid and Graphviz DOT | v0.3 |
 | MCP server | Expose the operations as agent tools | v0.3 |
 
 v0.2 is a short evidence phase: queries, a graph that stays consistent with
-the code, and a benchmark of an agent with and without the graph. The order of
-v0.3 depends on its results. Plan: [docs/roadmap.md](docs/roadmap.md). Full
+the code, and a benchmark of an agent with and without the graph. Its
+[report](docs/benchmark.md) sets the order of v0.3: first a benchmark on a
+large repo, then keeping the graph fresh and checking documents against
+code. Plan: [docs/roadmap.md](docs/roadmap.md). Full
 requirements: [docs/requirements.md](docs/requirements.md).
 
 ## Contributing

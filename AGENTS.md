@@ -12,6 +12,7 @@ General rules for any agent (Claude Code, Codex, Copilot, etc.) working in this 
 |------|----------|
 | `src/kg/` | Package source code and the `kg` CLI |
 | `tests/` | pytest tests |
+| `bench/` | Benchmark: an agent answers questions from the code vs. from the graph (calls an LLM; see `bench/README.md`) |
 | `examples/` | Example JSON files, valid against the schema (`kg schema`) |
 | `.agents/skills/` | Specialized skills (read the relevant `SKILL.md` before acting) |
 | `.agents/tools/` | Helper scripts for agents |
@@ -51,4 +52,5 @@ pytest && ruff check . && ruff format --check .
 - `docs/extract.md` — `kg extract`: which files are read, the nodes, IDs and relations it produces.
 - `docs/query.md` — `kg query` and `kg impact`: lookups, paths, impact rules, coverage limits, JSON output.
 - `docs/render.md` — `kg render`: visual encoding, limits for large graphs, determinism.
+- `docs/benchmark.md` — the v0.2 benchmark report: does the graph help an agent, and what it means for v0.3.
 - `kg guide` (source: `src/kg/agents/guide.md`) — how an agent adds documents, decisions and concepts to a graph. Exported as `.agents/skills/kg-graph/SKILL.md`: regenerate it with `kg guide --skill > .agents/skills/kg-graph/SKILL.md` after editing the guide.

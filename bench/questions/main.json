@@ -1,0 +1,230 @@
+[
+  {
+    "id": "pca-impact-user",
+    "repo": "python-clean-architecture",
+    "topic": "development",
+    "question": "If the User entity in src/domain/entities/user.py changed, which non-test modules could be affected, directly or transitively through imports? List the modules.",
+    "expect": {
+      "items": [
+        "cli_memory_process_handler",
+        "flask_memory_process_handler",
+        "flask_process_handler",
+        "src.app.cli_memory.controllers.create_user_controller",
+        "src.app.cli_memory.presenters.create_user_presenter",
+        "src.app.flask.blueprints.create_user_blueprint",
+        "src.app.flask.controllers.create_user_controller",
+        "src.app.flask.create_flask_app",
+        "src.app.flask.presenters.create_user_presenter",
+        "src.app.flask_memory.blueprints.create_user_blueprint",
+        "src.app.flask_memory.controllers.create_user_controller",
+        "src.app.flask_memory.create_flask_memory_app",
+        "src.app.flask_memory.presenters.create_user_presenter",
+        "src.infra.db.repositories.user_in_memory_repository",
+        "src.infra.db.repositories.user_repository",
+        "src.interactor.dtos.create_user_dto",
+        "src.interactor.interfaces.presenters.create_user_presenter_interface",
+        "src.interactor.interfaces.repositories.user_repository_interface",
+        "src.interactor.use_cases.create_user"
+      ],
+      "normalize": "module"
+    },
+    "reference": "19 modules: the five direct importers (both user repositories, the DTO, the repository interface and the use case), then everything that imports them up to the three process handlers. Checked with an AST import graph independent of kg."
+  },
+  {
+    "id": "pca-untested",
+    "repo": "python-clean-architecture",
+    "topic": "tests",
+    "question": "Which non-test modules under src/ are not imported by any test module (files ending in _test.py)? Leave out packages (__init__.py) and conftest.py. List the modules.",
+    "expect": {
+      "items": [
+        "src.app.cli_memory.controllers.exit_controller",
+        "src.app.cli_memory.interfaces.cli_memory_controller_interface",
+        "src.app.cli_memory.views.create_user_view",
+        "src.app.flask.blueprints.create_user_blueprint",
+        "src.app.flask.interfaces.flask_controller_interface",
+        "src.app.flask_memory.blueprints.create_user_blueprint",
+        "src.app.flask_memory.interfaces.flask_memory_controller_interface",
+        "src.domain.value_objects",
+        "src.infra.db.models.users_db_model",
+        "src.infra.db.settings.base"
+      ],
+      "normalize": "module"
+    },
+    "reference": "10 modules: the exit controller, the three controller interfaces, the CLI view, both blueprints, the value objects, the DB model and the declarative base. Checked with an AST import graph independent of kg."
+  },
+  {
+    "id": "pca-flask-deps",
+    "repo": "python-clean-architecture",
+    "topic": "development",
+    "question": "Which third-party packages does the PostgreSQL Flask API started by flask_process_handler.py depend on, directly or through the project modules it imports? List them by import name.",
+    "expect": {
+      "items": ["cerberus", "dotenv", "flask", "sqlalchemy", "werkzeug"],
+      "normalize": "package"
+    },
+    "reference": "flask and werkzeug (app factory, blueprint), sqlalchemy (repository, model, connection), dotenv (configs.config, through the connection) and cerberus (the validator used by the use case)."
+  },
+  {
+    "id": "pca-entrypoints",
+    "repo": "python-clean-architecture",
+    "topic": "documentation",
+    "question": "Which scripts does the README tell you to run to start the project's applications? List them as modules.",
+    "expect": {
+      "items": ["cli_memory_process_handler", "flask_memory_process_handler", "flask_process_handler"],
+      "normalize": "module"
+    },
+    "reference": "README, Usage: cli_memory_process_handler.py (in-memory CLI), flask_memory_process_handler.py (in-memory Flask API) and flask_process_handler.py (PostgreSQL Flask API)."
+  },
+  {
+    "id": "pca-repo-impl",
+    "repo": "python-clean-architecture",
+    "topic": "development",
+    "question": "Which classes subclass the repository interface IUserRepository? List the modules that define them.",
+    "expect": {"items": ["src.infra.db.repositories.user_repository"], "normalize": "module"},
+    "reference": "Only UserRepository in src/infra/db/repositories/user_repository.py. UserInMemoryRepository has the same methods but does not subclass IUserRepository (a trap)."
+  },
+  {
+    "id": "pca-presenter-impl",
+    "repo": "python-clean-architecture",
+    "topic": "development",
+    "question": "Which classes implement the presenter interface ICreateUserPresenter? List the modules that define them.",
+    "expect": {
+      "items": [
+        "src.app.cli_memory.presenters.create_user_presenter",
+        "src.app.flask.presenters.create_user_presenter",
+        "src.app.flask_memory.presenters.create_user_presenter"
+      ],
+      "normalize": "module"
+    },
+    "reference": "Three classes, all named CreateUserPresenter, one per app: cli_memory, flask and flask_memory."
+  },
+  {
+    "id": "pca-path",
+    "repo": "python-clean-architecture",
+    "topic": "development",
+    "question": "Through which chain of imports does flask_process_handler.py reach src/infra/db/settings/connection.py? List every module on the shortest import chain, from flask_process_handler to the connection module.",
+    "expect": {
+      "items": [
+        "flask_process_handler",
+        "src.app.flask.create_flask_app",
+        "src.app.flask.blueprints.create_user_blueprint",
+        "src.app.flask.controllers.create_user_controller",
+        "src.infra.db.repositories.user_repository",
+        "src.infra.db.settings.connection"
+      ],
+      "normalize": "module"
+    },
+    "reference": "flask_process_handler -> create_flask_app -> create_user_blueprint -> flask create_user_controller -> user_repository -> connection; the only shortest chain (5 imports). Order is not graded."
+  },
+  {
+    "id": "mfdp-tests-empty",
+    "repo": "my_first_data_project",
+    "topic": "tests",
+    "question": "Which functions of the ETL pipelines are covered by tests? Return an empty list if none are.",
+    "expect": {"items": [], "normalize": "module"},
+    "reference": "None: etl/tests/ has three test_*.py files, but all of them are empty (0 bytes), and TODO.md still lists unit tests."
+  },
+  {
+    "id": "mfdp-auto-workflows",
+    "repo": "my_first_data_project",
+    "topic": "documentation",
+    "question": "Which GitHub Actions workflows run without being triggered by hand (on a push, a pull request or a schedule)? List the workflow files.",
+    "expect": {"items": ["flake8-lint.yml", "codeql-code-analysis.yml"], "normalize": "file"},
+    "reference": "flake8-lint.yml (push to main and pull requests) and codeql-code-analysis.yml (weekly cron, '00 01 * * 1'). The README footnote says flake8 is the only automatic one: the docs are out of date."
+  },
+  {
+    "id": "mfdp-constants-impact",
+    "repo": "my_first_data_project",
+    "topic": "development",
+    "question": "If a name defined in etl/constants.py were renamed, which other modules of the project would need to change? List the modules.",
+    "expect": {
+      "items": ["etl.utils", "etl.humidity_data_etl_pipeline", "etl.weather_data_etl_pipeline"],
+      "normalize": "module"
+    },
+    "reference": "The three modules that import constants as a sibling script (`from constants import ...`): utils, humidity_data_etl_pipeline and weather_data_etl_pipeline."
+  },
+  {
+    "id": "kg-impact-validation",
+    "repo": "kg",
+    "topic": "development",
+    "question": "If src/kg/schema/validation.py changed, which modules of the kg package could be affected, directly or transitively through imports? Leave out tests. List the modules.",
+    "expect": {
+      "items": [
+        "kg.__main__",
+        "kg.cli",
+        "kg.edit",
+        "kg.extract",
+        "kg.extract.deps",
+        "kg.extract.python",
+        "kg.merge",
+        "kg.store",
+        "kg.update"
+      ],
+      "normalize": "module"
+    },
+    "reference": "Direct importers: store, merge, update and cli. Through store: extract, extract.python, extract.deps; through merge: edit; through cli: __main__. Checked with an AST import graph independent of kg."
+  },
+  {
+    "id": "kg-cli-deps",
+    "repo": "kg",
+    "topic": "development",
+    "question": "Which third-party packages does the kg command line (kg.cli) depend on, directly or through the kg modules it imports? List them by import name.",
+    "expect": {"items": ["jsonschema", "matplotlib", "networkx"], "normalize": "package"},
+    "reference": "networkx (store, merge, edit, update, analysis, render), jsonschema (schema, validation) and matplotlib (render.static)."
+  },
+  {
+    "id": "kg-path",
+    "repo": "kg",
+    "topic": "development",
+    "question": "Through which chain of imports does kg.cli reach kg.extract.references? List every module on the shortest import chain, from kg.cli to kg.extract.references.",
+    "expect": {
+      "items": ["kg.cli", "kg.extract", "kg.extract.python", "kg.extract.references"],
+      "normalize": "module"
+    },
+    "reference": "kg.cli -> kg.extract (the package) -> kg.extract.python -> kg.extract.references; the only shortest chain. Order is not graded."
+  },
+  {
+    "id": "kg-tests-update",
+    "repo": "kg",
+    "topic": "tests",
+    "question": "Which test modules import kg.update directly? List the test modules.",
+    "expect": {"items": ["tests.test_update", "tests.test_query"], "normalize": "module"},
+    "reference": "tests/test_update.py and tests/test_query.py (`from kg.update import ...`)."
+  },
+  {
+    "id": "kg-decision-html",
+    "repo": "kg",
+    "topic": "decisions",
+    "question": "Why does kg build its interactive HTML on vis-network directly instead of using pyvis?",
+    "expect": {
+      "keywords": [
+        ["filter"],
+        ["search"],
+        ["panel"],
+        ["ipython"]
+      ]
+    },
+    "reference": "requirements.md PA-03 and render.md: pyvis's template lacks filters, search and the details panel, and it pulls in ipython; kg embeds vis-network 9.1.2 with its own page."
+  },
+  {
+    "id": "kg-decision-llm",
+    "repo": "kg",
+    "topic": "decisions",
+    "question": "Does kg call a language model itself? If not, who reads the documents and decisions that end up in the graph, and how do they get there?",
+    "expect": {
+      "keywords": [
+        ["api key", "api-key"],
+        ["agent"],
+        ["json"]
+      ]
+    },
+    "reference": "No: kg never calls an LLM nor needs API keys (RF-24). An external agent reads the documents and decisions and sends them as JSON (kg add), following kg guide."
+  },
+  {
+    "id": "kg-docs-merge",
+    "repo": "kg",
+    "topic": "documentation",
+    "question": "Which documentation file describes the rules `kg add` follows when it merges new nodes into the store? List the file.",
+    "expect": {"items": ["store.md"], "normalize": "file"},
+    "reference": "docs/store.md (the kg add merge rules section)."
+  }
+]

@@ -1,0 +1,33 @@
+[
+  {
+    "name": "basic-python-cli",
+    "url": "https://github.com/alfredodeza/basic-python-cli",
+    "commit": "d0379bb",
+    "agent": "examples/agent/basic-python-cli.json"
+  },
+  {
+    "name": "my_first_data_project",
+    "url": "https://github.com/bramvdklinkenberg/my_first_data_project",
+    "commit": "3d57177",
+    "agent": "examples/agent/my_first_data_project.json"
+  },
+  {
+    "name": "python-clean-architecture",
+    "url": "https://github.com/wesleey/python-clean-architecture",
+    "commit": "6f58de5",
+    "agent": "examples/agent/python-clean-architecture.json"
+  },
+  {
+    "name": "kg",
+    "url": "https://github.com/Cristian1A/kg",
+    "commit": "1a342c4",
+    "agent": "examples/agent/kg.json"
+  },
+  {
+    "name": "kg-stale",
+    "url": "https://github.com/Cristian1A/kg",
+    "commit": "1a342c4",
+    "graph_commit": "ebd078d",
+    "agent": "examples/agent/kg.json"
+  }
+]
