@@ -271,7 +271,7 @@ v0.2 is **done** when:
 1. The benchmark (RNF-10, #39) has been run with 15–30 questions on several repos, and its report is published. **Any outcome counts**: if the graph does not improve the answers, the report says where and why, and v0.3 is redesigned with that evidence. The report includes the per-topic and two-commit variants, and states its sample-size limits.
 2. `kg query` and `kg impact` give the structured part of the three reference questions (section 8.1) on the example repos, with the relations and provenance that justify each result and their coverage limits (RF-40–43).
 3. After modifying, deleting, renaming or moving code, a new `kg extract` leaves no stale derived elements and keeps agent knowledge (RF-72). Querying a graph that is older than the repo produces a warning (RF-77).
-4. CI is green on `main`, and a new user can install kg and run the demo (#40) from the published instructions alone (RNF-03, RNF-07).
+4. CI is green on `main`, and a new user can install kg, rebuild an example graph and ask it questions from the published instructions alone: the README's *Ask the graph* and [docs/examples](examples/README.md) (RNF-03, RNF-07).
 5. The phase stays within its time box (about two weeks of work). If it runs over, the stretch items and the extra benchmark variants are cut, not the time box extended.
 
 ---
@@ -316,4 +316,4 @@ Confirmed by the client on 2026-10-07:
 |---------|------|---------|
 | 1.0 | 2026-10-06 | First version, in Spanish. Approved on 2026-10-07 |
 | 1.1 | 2026-10-12 | English translation. RF-75 and RF-76 added (#28); PA-03 updated (#10); link to discovery.md (#33) |
-| 1.2 (draft) | 2026-10-13 | v0.2 re-scoped to the evidence phase (#43). New: RF-43, RF-44, RF-77, RF-78, RNF-10, section 8.2, PA-05. Reworded: RF-72 (consistent update; incremental extraction split into RF-78), RNF-03 (user install), RNF-06 (v0.2 targets), RNF-07 (CI). Moved to v0.3: RF-13, RF-23, RF-31–33, RF-60–61, RF-73–74, Dockerfile. Later (#37): RF-77 detects changes with content digests and `kg status` instead of git commits |
+| 1.2 (draft) | 2026-10-13 | v0.2 re-scoped to the evidence phase (#43). New: RF-43, RF-44, RF-77, RF-78, RNF-10, section 8.2, PA-05. Reworded: RF-72 (consistent update; incremental extraction split into RF-78), RNF-03 (user install), RNF-06 (v0.2 targets), RNF-07 (CI). Moved to v0.3: RF-13, RF-23, RF-31–33, RF-60–61, RF-73–74, Dockerfile. Later (#37): RF-77 detects changes with content digests and `kg status` instead of git commits. Later (#40): exit criterion 4 uses the README's *Ask the graph* and the published examples instead of a separate demo |

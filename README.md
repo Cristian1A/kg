@@ -173,6 +173,66 @@ The images of the other four projects, with the types each one shows, are in
 projects. Credits, commits and license texts are in the same file, and the
 validation report is in [docs/mvp-validation.md](docs/mvp-validation.md).
 
+### Ask the graph
+
+Build the graph of `python-clean-architecture` and ask it three questions. No
+LLM is needed: the agent layer is the one committed in
+[`examples/agent/`](examples/agent/).
+
+```bash
+git clone https://github.com/wesleey/python-clean-architecture
+cd python-clean-architecture     # keep the folder name: it is the repo's ID
+git checkout 6f58de5             # the commit the example was built from
+kg init && kg extract .
+curl -sL https://raw.githubusercontent.com/Cristian1A/kg/main/examples/agent/python-clean-architecture.json | kg add -
+```
+
+**What could break if the `User` entity changes?** The modules that import it,
+and the ones that reach it through other imports, each with the chain why:
+
+```text
+$ kg impact module:src.domain.entities.user --type Module --brief
+a change in module:src.domain.entities.user may affect 19 elements (possible effects, not certain ones):
+  <-[imports]- module:src.infra.db.repositories.user_in_memory_repository
+  <-[imports]- module:src.infra.db.repositories.user_repository
+  …
+  module:src.app.flask.create_flask_app (depth 4, via module:src.app.flask.create_flask_app -[imports]-> module:src.app.flask.blueprints.create_user_blueprint)
+  module:flask_process_handler (depth 5, via module:flask_process_handler -[imports]-> module:src.app.flask.create_flask_app)
+left out by --type: Test 13
+```
+
+**Which modules does no test import?**
+
+```text
+$ kg query untested --type Module
+16 elements with no `tests` edge:
+  …
+  module:src.app.cli_memory.controllers.exit_controller (Module)
+  module:src.domain.value_objects (Module)
+  module:src.infra.db.models.users_db_model (Module)
+  …
+```
+
+**Why is the code split into layers?** A decision the agent found in the
+README, with where it comes from and what it justifies:
+
+```text
+$ kg query node decision:clean-architecture --brief
+decision:clean-architecture (Decision)
+  Separate concerns into domain, use case, infrastructure and application layers to promote modularity, testing and maintenance.
+  reference: "Robert C. Martin, Clean Architecture"
+  status: "accepted"
+  at: README.md:7-7
+  -[justifies]-> package:src.app [llm, 0.9]
+  -[justifies]-> package:src.domain [llm, 0.9]
+  …
+```
+
+Every answer can be checked: the parser's edges come from the code, the
+agent's from the lines it cites. Add `--json` for agents. More queries are in
+[docs/query.md](docs/query.md); the [benchmark](docs/benchmark.md) measures
+how well an agent answers with them.
+
 ## Data model
 
 - **Nodes** have a stable ID `<type>:<path|qualified name|slug>`
