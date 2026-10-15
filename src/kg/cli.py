@@ -11,6 +11,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+from collections import Counter
 from collections.abc import Callable, Sequence
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
@@ -491,6 +492,13 @@ def _query_path(args: argparse.Namespace) -> Result:
     return Result("\n".join(lines), data)
 
 
+# What `untested` and `tested` count as tested (see `analysis.coverage`)
+TESTED_CRITERION = (
+    "tested: a `tests` edge points to it, because a test module imports it or "
+    "a test function refers to it; a static heuristic that misses indirect use"
+)
+
+
 def _query_untested(args: argparse.Namespace) -> Result:
     graph = _store_call(store.load_graph, args.kg_dir)
     types = args.type or analysis.CODE_TYPES
@@ -502,7 +510,29 @@ def _query_untested(args: argparse.Namespace) -> Result:
         f"{_plural(len(ids), 'element')} with no `tests` edge:",
         "every element of these types has a `tests` edge",
         ["tests"],
+        criterion=TESTED_CRITERION,
     )
+
+
+def _query_tested(args: argparse.Namespace) -> Result:
+    graph = _store_call(store.load_graph, args.kg_dir)
+    types = args.type or analysis.CODE_TYPES
+    found = analysis.tested(graph, types, args.include_private)
+    limits = _limits(args, graph, ["tests"])
+    if found:
+        lines = [
+            f"{_plural(len(found), 'element')} with a `tests` edge:",
+            f"  ({TESTED_CRITERION})",
+        ]
+        for node_id, tests in found.items():
+            lines.append(f"  {_node_text(graph, node_id)}")
+            lines += [f"      <-[tests]- {t}" for t in tests]
+    else:
+        lines = ["no element of these types has a `tests` edge"]
+    lines += _limits_text(limits)
+    nodes = [{**_node_summary(graph, i), "tests": t} for i, t in found.items()]
+    data = {"nodes": nodes, "criterion": TESTED_CRITERION, "limits": limits}
+    return Result("\n".join(lines), data)
 
 
 def _query_undocumented(args: argparse.Namespace) -> Result:
@@ -526,18 +556,23 @@ def _id_list(
     head: str,
     empty: str,
     relations: list[str],
+    criterion: str | None = None,
 ) -> Result:
     limits = _limits(args, graph, relations)
     lines = [head, *(f"  {_node_text(graph, i)}" for i in ids)] if ids else [empty]
+    if criterion:
+        lines.insert(1, f"  ({criterion})")
     lines += _limits_text(limits)
-    nodes = [_node_summary(graph, i) for i in ids]
-    return Result("\n".join(lines), {"nodes": nodes, "limits": limits})
+    data: dict[str, Any] = {"nodes": [_node_summary(graph, i) for i in ids]}
+    if criterion:
+        data["criterion"] = criterion
+    return Result("\n".join(lines), data | {"limits": limits})
 
 
 def _impact(args: argparse.Namespace) -> Result:
     graph = _store_call(store.load_graph, args.kg_dir)
     relations = args.relation or analysis.IMPACT_RELATIONS
-    hits = _query_call(
+    reached = _query_call(
         analysis.impact,
         graph,
         args.id,
@@ -545,6 +580,8 @@ def _impact(args: argparse.Namespace) -> Result:
         relations,
         not args.no_containment,
     )
+    hits = [h for h in reached if not args.type or h.type in args.type]
+    omitted = dict(sorted(Counter(h.type for h in reached if h not in hits).items()))
     limits = _limits(args, graph, relations)
     if hits:
         lines = [
@@ -561,13 +598,18 @@ def _impact(args: argparse.Namespace) -> Result:
         lines = [
             f"no relation found in the graph through which {args.id} affects others"
         ]
+    if omitted:
+        counts = ", ".join(f"{t} {n}" for t, n in omitted.items())
+        lines.append(f"left out by --type: {counts}")
     lines += _limits_text(limits)
     data = {
         "id": args.id,
         "depth": args.depth,
         "relations": sorted(relations),
         "containment": not args.no_containment,
+        "types": args.type,
         "results": [h.to_dict() for h in hits],
+        "omitted": omitted,
         "limits": limits,
     }
     return Result("\n".join(lines), data)
@@ -880,6 +922,12 @@ def build_parser() -> argparse.ArgumentParser:
         "--include-private", action="store_true", help="also `_private` names"
     )
 
+    q = query("tested", "code with a `tests` edge, and its tests", _query_tested)
+    _type_option(q, f"types to check (default: {','.join(analysis.CODE_TYPES)})")
+    q.add_argument(
+        "--include-private", action="store_true", help="also `_private` names"
+    )
+
     q = query(
         "undocumented", "code that no document points to (CU-03)", _query_undocumented
     )
@@ -908,6 +956,7 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="do not reach the module or class that defines a changed element",
     )
+    _type_option(p, "entity types to list (others are still walked through)")
 
     return parser
 
