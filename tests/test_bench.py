@@ -397,6 +397,27 @@ def test_hybrid_reads_only_what_the_graph_cited(repo):
     assert [t["name"] for t in TOOLS["hybrid"]] == ["kg", "read_file", "submit_answer"]
 
 
+@pytest.mark.parametrize(
+    "args",
+    [["status"], ["query", "node", "function:app.core.run"]],
+    ids=["status", "stale-limit"],
+)
+def test_hybrid_reads_the_files_a_stale_graph_reports(repo, args):
+    (repo / "app/new.py").write_text("def added():\n    return 2\n")
+    core = repo / "app/core.py"
+    core.write_text(core.read_text() + "\n\ndef changed():\n    return 3\n")
+    cited = Citations()
+    read = {"path": "app/new.py", "start_line": None, "end_line": None}
+    with pytest.raises(ToolError, match="not been cited"):
+        run_tool("hybrid", repo, "read_file", read, citations=cited)
+    run_tool("hybrid", repo, "kg", {"args": args}, citations=cited)
+    # Added and modified files are read whole, even where a node cites lines
+    assert cited.ranges["app/new.py"] is None and cited.ranges["app/core.py"] is None
+    assert "return 2" in run_tool("hybrid", repo, "read_file", read, citations=cited)
+    whole = {**read, "path": "app/core.py"}
+    assert "return 3" in run_tool("hybrid", repo, "read_file", whole, citations=cited)
+
+
 def test_cards_strategy_adds_brief_and_still_cites(repo):
     cited = Citations()
     out = run_tool(
