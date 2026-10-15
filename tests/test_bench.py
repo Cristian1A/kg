@@ -10,7 +10,7 @@ from bench import report, subagent
 from bench.agent import run_question
 from bench.grading import grade, normalize, traceability, verifiable
 from bench.run import ROOT, load_questions, load_repos
-from bench.tools import TOOLS, ToolError, run_tool
+from bench.tools import TOOLS, Citations, ToolError, run_tool
 from bench.topics import TOPIC_TYPES, build_topic_stores, topic_graph
 from kg import store
 from kg.extract import extract_repo
@@ -333,6 +333,70 @@ def test_topic_strategy_queries_its_topic_store(repo):
         run_tool("code", repo, "read_file", {"path": ".kg-tests/graph.json"})
 
 
+# --- Hybrid strategy --------------------------------------------------------------
+
+
+def test_citations_come_from_provenance_not_node_ids():
+    cited = Citations()
+    cited.add_from(
+        json.dumps(
+            {
+                "result": {
+                    "node": {
+                        "provenance": {
+                            "method": "parser",
+                            "source": "app/core.py",
+                            "lines": [4, 5],
+                        }
+                    },
+                    "path": [
+                        {
+                            "source": "module:app.core",
+                            "target": "module:app.util",
+                            "type": "imports",
+                        }
+                    ],
+                    "neighbors": [
+                        {"provenance": {"method": "parser", "source": "app/util.py"}}
+                    ],
+                }
+            }
+        )
+    )
+    cited.add_from("not json")
+    assert cited.ranges == {"app/core.py": [[4, 5]], "app/util.py": None}
+    assert cited.window("app/core.py", None, None) == (4, 5)
+    assert cited.window("app/core.py", 4, 4) == (4, 4)
+    assert cited.window("app/util.py", None, None) == (1, None)
+    with pytest.raises(ToolError, match="lines 4-5"):
+        cited.window("app/core.py", 1, 9)
+    with pytest.raises(ToolError, match="not been cited"):
+        cited.window("README.md", None, None)
+
+
+def test_hybrid_reads_only_what_the_graph_cited(repo):
+    cited = Citations()
+    args = {"path": "app/core.py", "start_line": None, "end_line": None}
+    with pytest.raises(ToolError, match="not been cited"):
+        run_tool("hybrid", repo, "read_file", args, citations=cited)
+    run_tool(
+        "hybrid",
+        repo,
+        "kg",
+        {"args": ["query", "node", "function:app.core.run"]},
+        citations=cited,
+    )
+    assert cited.ranges["app/core.py"] == [[4, 5]]
+    out = run_tool("hybrid", repo, "read_file", args, citations=cited)
+    assert out.splitlines()[0].strip().startswith("4") and "return 1" in out
+    assert "import requests" not in out  # line 1 was not cited
+    with pytest.raises(ToolError):
+        run_tool(
+            "hybrid", repo, "search", {"pattern": "x", "glob": ""}, citations=cited
+        )
+    assert [t["name"] for t in TOOLS["hybrid"]] == ["kg", "read_file", "submit_answer"]
+
+
 # --- Subagent runner --------------------------------------------------------------
 
 SUB_QUESTION = {
@@ -400,6 +464,38 @@ def test_subagent_submits_once_and_is_graded(session):
     assert graph["usage"] == {"total_tokens": None}
 
 
+def test_subagent_records_context_and_replays_old_logs(repo, tmp_path):
+    runs = subagent.prepare_session(
+        [SUB_QUESTION], ["hybrid"], {"demo": repo}, tmp_path / "h"
+    )
+    run_dir = runs[0]
+    blocked = subagent.call(
+        run_dir,
+        "read_file",
+        '{"path": "app/core.py", "start_line": null, "end_line": null}',
+    )
+    assert blocked.startswith("Error:")
+    node = subagent.call(
+        run_dir, "kg", '{"args": ["query", "node", "function:app.core.run"]}'
+    )
+    read = subagent.call(
+        run_dir,
+        "read_file",
+        '{"path": "app/core.py", "start_line": null, "end_line": null}',
+    )
+    assert "return 1" in read  # the citation survived between calls
+    calls = [
+        json.loads(line) for line in (run_dir / "calls.jsonl").read_text().splitlines()
+    ]
+    assert [c["chars"] for c in calls] == [len(blocked), len(node), len(read)]
+    meta = json.loads((run_dir / "run.json").read_text())
+    total = subagent.context_chars(meta, calls)
+    assert total == len(blocked) + len(node) + len(read)
+    # A log from before `chars` was recorded is replayed to the same total
+    old = [{k: v for k, v in c.items() if k != "chars"} for c in calls]
+    assert subagent.context_chars(meta, old) == total
+
+
 def test_subagent_turns_are_capped(session, monkeypatch):
     _, runs = session
     monkeypatch.setattr(subagent, "MAX_TURNS", 2)
@@ -427,9 +523,10 @@ def test_report_reads_subagent_records(tmp_path):
     path.write_text(json.dumps(rec))
     text = report.markdown(report.load([path]))
     assert (
-        "| q1 | tests | graph | answered | 1.00 | – | – | – | 5000 | 3 | 20.0 |" in text
+        "| q1 | tests | graph | answered | 1.00 | – | – | – | 5000 | – | 3 | 20.0 |"
+        in text
     )
-    assert "| graph | 1 | 1 | 1.00 | – | – | – | 5000 |" in text
+    assert "| graph | 1 | 1 | 1.00 | – | – | – | 5000 | – |" in text
 
 
 # --- Report -----------------------------------------------------------------------

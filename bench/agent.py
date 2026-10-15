@@ -13,7 +13,7 @@ from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any
 
-from bench.tools import STRATEGY_HINTS, TOOLS, ToolError, run_tool
+from bench.tools import STRATEGY_HINTS, TOOLS, Citations, ToolError, run_tool
 
 SYSTEM = """You answer questions about a software repository named {repo}.
 
@@ -57,6 +57,7 @@ class Run:
     turns: int = 0
     tool_calls: int = 0
     tool_errors: int = 0
+    context_chars: int = 0  # characters of every tool result
     seconds: float = 0.0
     usage: Usage = field(default_factory=Usage)
 
@@ -77,6 +78,7 @@ def run_question(
     run = Run(question["id"], strategy, model, effort)
     system = SYSTEM.format(repo=question["repo"], hint=STRATEGY_HINTS[strategy])
     messages: list[dict[str, Any]] = [{"role": "user", "content": question["question"]}]
+    cited = Citations()
     started = time.monotonic()
     try:
         while run.turns < max_turns:
@@ -114,7 +116,9 @@ def run_question(
                 {
                     "role": "user",
                     "content": [
-                        _execute(run, strategy, repo, c, question.get("topic", ""))
+                        _execute(
+                            run, strategy, repo, c, question.get("topic", ""), cited
+                        )
                         for c in calls
                     ],
                 }
@@ -126,13 +130,21 @@ def run_question(
 
 
 def _execute(
-    run: Run, strategy: str, repo: Path, call: Any, topic: str = ""
+    run: Run,
+    strategy: str,
+    repo: Path,
+    call: Any,
+    topic: str = "",
+    cited: Citations | None = None,
 ) -> dict[str, Any]:
     run.tool_calls += 1
     result: dict[str, Any] = {"type": "tool_result", "tool_use_id": call.id}
     try:
-        result["content"] = run_tool(strategy, repo, call.name, dict(call.input), topic)
+        result["content"] = run_tool(
+            strategy, repo, call.name, dict(call.input), topic, cited
+        )
     except ToolError as e:
         run.tool_errors += 1
         result |= {"content": f"Error: {e}", "is_error": True}
+    run.context_chars += len(result["content"])
     return result

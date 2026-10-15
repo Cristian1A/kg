@@ -160,6 +160,74 @@ code on repos of this size. Our recommendation:
    `calls` relations** (RF-13): question 4 found no need, although no
    function-level question tested it.
 
+## Update: context and graph-guided reading (#52, step 1)
+
+The v0.2 runs could not show how much context each strategy loads: subagent
+token totals include about 28 000 tokens of the coding agent's own prompt.
+Every tool call now records the size of its result, so each answer reports
+`context_chars`, the characters of every tool result it loaded. Earlier runs
+were replayed where the tools have not changed since (code, the graph with
+#49, stale). The first graph runs and the pilot graph runs came before #49,
+so they cannot be replayed.
+
+The new `hybrid` strategy is how kg is meant to be used: query the graph,
+then read only what it cites. `read_file` opens only the files and line
+ranges in the provenance of the nodes the graph returned in that run.
+
+| Run | Questions | Score | Answered | Context (chars, mean / median) | Calls | Seconds |
+|-----|-----------|-------|----------|--------------------------------|-------|---------|
+| Main, code | 17 | 0.94 (1.00 corrected) | 17/17 | 11 974 / 7 385 | 5.5 | 30 |
+| Main, graph (#49) | 17 | 0.98 | 17/17 | 14 640 / 11 998 | 6.1 | 41 |
+| Main, hybrid | 17 | **1.00** | 17/17 | 14 888 / 9 758 | 7.1 | 44 |
+| Pilot, code | 6 | 1.00 | 6/6 | 2 930 / 1 773 | 4.2 | 21 |
+| Pilot, hybrid | 6 | 1.00 | 6/6 | 5 423 / 3 788 | 5.7 | 39 |
+| Stale, code | 6 | 1.00 | 6/6 | 8 460 / 2 862 | 4.8 | 30 |
+| Stale, graph | 6 | 0.63 | 6/6 | 9 161 / 6 470 | 5.7 | 44 |
+| Stale, hybrid | 6 | 0.65 | 5/6 | 35 647 / 39 874 | 16.0 | 63 |
+
+**What the hybrid strategy fixes.** It scores 1.00 on the main questions.
+On `mfdp-auto-workflows`, where the graph alone repeated the README, it read
+the workflow files the graph cites and found the CodeQL cron. On the stale
+graph, `kgs-cli-imports` went from 0.89 to 1.00: the graph cites
+`src/kg/cli.py`, and reading it shows the two imports the graph lacks.
+
+**Where the context goes.** Reading what the graph cites is cheap: `read_file`
+is 3.8% of the hybrid context, about 500 characters a read. **The other 96% is
+the graph's own output**:
+
+| Command | Share of the hybrid context | Mean characters a call |
+|---------|-----------------------------|------------------------|
+| `query node` | 36% | 2 430 |
+| `query find` | 27% | 3 361 |
+| `impact` (with and without `--type`) | 24% | 6 000–20 000 |
+| `read_file` | 4% | 504 |
+
+The JSON is about three times the size of the text output for the same node
+(1 786 against 626 characters), mostly provenance repeated on every edge. So
+the graph loads more context than reading the code, not less. It loses on
+lookups (`pca-presenter-impl`: 31 897 against 1 438), and wins on paths and
+documents (`pca-path`: 2 849 against 22 022; `kg-docs-merge`: 11 031 against
+25 291).
+
+**Two things the hybrid runs found:**
+- **The agent layer can cite stale lines.** On `kg-decision-html` the decision
+  cites `docs/requirements.md:279`, which at the benchmark commit is the
+  heading "## 9. Out of scope": the store was built with an older agent layer.
+  Only a strategy that reads what the graph cites can notice this, which is
+  what step 2's quoted claims are for.
+- **A stale graph hides the new files.** The citation rule only opens files a
+  node cites, so a file added after the graph (`src/kg/update.py`) cannot be
+  read even though `kg status` names it. Letting the files `kg status` lists
+  as changed or added be read would let the hybrid strategy recover from a
+  stale graph.
+
+**What this means for step 2.** The lever is the size of the graph's answers,
+not reading less code: node cards with the provenance once, neighbor counts
+instead of lists, and a compact output for `find` and `impact`. If that cuts
+the graph's output by about two thirds, as the text format suggests, the
+hybrid strategy would load about half the context of reading the code, with
+the same score.
+
 ## Limits of this evidence
 
 - **Sample size.** 29 questions, one run each. A difference of one question

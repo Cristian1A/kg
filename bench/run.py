@@ -26,7 +26,7 @@ ROOT = Path(__file__).resolve().parent
 REPO_ROOT = ROOT.parent
 CACHE = ROOT / ".cache" / "repos"
 DEFAULT_MODEL = "claude-opus-5-5"
-STRATEGIES = ("code", "graph", "topic")
+STRATEGIES = ("code", "graph", "topic", "hybrid")
 
 
 def load_questions(path: Path) -> list[dict[str, Any]]:
@@ -180,6 +180,7 @@ def _dry_run(
         "code": ("list_files", {"glob": "*.md"}),
         "graph": ("kg", {"args": ["query", "find", "--type", "Repo"]}),
         "topic": ("kg", {"args": ["status"]}),
+        "hybrid": ("kg", {"args": ["query", "find", "--type", "Repo"]}),
     }
     for name, path in paths.items():
         for strategy in strategies:
