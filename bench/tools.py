@@ -4,6 +4,8 @@
 - `graph`: run `kg query` / `kg impact` / `kg status` on the repo's store.
 - `topic`: the same, on the store of the question's topic (`.kg-<topic>`,
   see `bench.topics`).
+- `hybrid`: `kg`, plus `read_file` limited to the files and line ranges the
+  graph has cited so far in the run (`Citations`).
 
 Both get `submit_answer`, which ends the run. Tool definitions are strict
 JSON Schemas and their order is fixed, so the prompt prefix caches well.
@@ -12,6 +14,7 @@ JSON Schemas and their order is fixed, so the prompt prefix caches well.
 from __future__ import annotations
 
 import fnmatch
+import json
 import re
 import subprocess
 from collections.abc import Callable
@@ -109,7 +112,20 @@ GRAPH_TOOLS = [
     SUBMIT,
 ]
 
-TOOLS = {"code": CODE_TOOLS, "graph": GRAPH_TOOLS, "topic": GRAPH_TOOLS}
+READ_CITED = {
+    **CODE_TOOLS[1],
+    "description": f"Read lines of a file the graph has cited, at most {MAX_LINES} "
+    "lines per call. Only the files in the `source` of a node the `kg` tool "
+    "returned (e.g. with `kg query node <id>`) can be read, and only within its "
+    "`lines` when it gives them; null reads the whole cited range.",
+}
+
+TOOLS = {
+    "code": CODE_TOOLS,
+    "graph": GRAPH_TOOLS,
+    "topic": GRAPH_TOOLS,
+    "hybrid": [GRAPH_TOOLS[0], READ_CITED, SUBMIT],
+}
 
 STRATEGY_HINTS = {
     "code": "You can list, read and search the repository's files. Cite evidence "
@@ -120,6 +136,72 @@ STRATEGY_HINTS = {
     "tool output.",
 }
 STRATEGY_HINTS["topic"] = STRATEGY_HINTS["graph"]
+STRATEGY_HINTS["hybrid"] = (
+    "You can query the repository's knowledge graph, built by kg from its code "
+    "and documents, with the `kg` tool, and read the files it cites with "
+    "`read_file`: only the `source` file and `lines` of the nodes it returns "
+    "(`kg query node <id>` shows them). Cite evidence as graph node IDs, edges "
+    "(`source -[type]-> target`) or `path:line`."
+)
+
+
+class Citations:
+    """Files and line ranges the graph has cited in a run: what `hybrid` reads.
+
+    `ranges` maps a repo path to `[start, end]` pairs; `None` means the whole
+    file (a node with a `source` and no `lines`, such as a module).
+    """
+
+    def __init__(self, ranges: dict[str, list[list[int]] | None] | None = None):
+        self.ranges: dict[str, list[list[int]] | None] = dict(ranges or {})
+
+    def add_from(self, output: str) -> None:
+        """Record every `source` (with its `lines`) in a `kg --json` output."""
+        try:
+            data = json.loads(output)
+        except json.JSONDecodeError:
+            return
+        stack = [data]
+        while stack:
+            item = stack.pop()
+            if isinstance(item, list):
+                stack.extend(item)
+            elif isinstance(item, dict):
+                source = item.get("source")
+                # A provenance block; a path step's `source` is a node ID
+                if isinstance(source, str) and (
+                    "method" in item or "extractor" in item
+                ):
+                    self._add(source, item.get("lines"))
+                stack.extend(item.values())
+
+    def _add(self, path: str, lines: Any) -> None:
+        if not (isinstance(lines, list) and len(lines) == 2):
+            self.ranges[path] = None
+        elif self.ranges.get(path, []) is not None:
+            pair = [int(lines[0]), int(lines[1])]
+            if pair not in self.ranges.setdefault(path, []):
+                self.ranges[path].append(pair)
+
+    def window(
+        self, path: str, start: int | None, end: int | None
+    ) -> tuple[int, int | None]:
+        """The lines `read_file` may return, or a `ToolError` that says why not."""
+        if path not in self.ranges:
+            raise ToolError(
+                f"{path} has not been cited by the graph; query a node whose "
+                "`source` is that file first (`kg query node <id>`)"
+            )
+        allowed = self.ranges[path]
+        if allowed is None:
+            return start or 1, end
+        for low, high in allowed:
+            if start is None and end is None:
+                return low, high
+            if low <= (start or low) and (end or high) <= high:
+                return start or low, end or high
+        cited = ", ".join(f"{low}-{high}" for low, high in sorted(allowed))
+        raise ToolError(f"outside what the graph cited for {path}: lines {cited}")
 
 
 class ToolError(Exception):
@@ -127,18 +209,37 @@ class ToolError(Exception):
 
 
 def run_tool(
-    strategy: str, repo: Path, name: str, args: dict[str, Any], topic: str = ""
+    strategy: str,
+    repo: Path,
+    name: str,
+    args: dict[str, Any],
+    topic: str = "",
+    citations: Citations | None = None,
 ) -> str:
     """Run one tool call of `strategy` on `repo` and return its text result.
 
-    `topic` picks the store of the `topic` strategy.
+    `topic` picks the store of the `topic` strategy; `citations` holds what
+    the graph has cited so far in a `hybrid` run, and is updated.
     """
     kg_dir = repo / (f".kg-{topic}" if strategy == "topic" else ".kg")
-    handlers: dict[str, Callable[[Path, dict[str, Any]], str]] = (
-        {"list_files": list_files, "read_file": read_file, "search": search}
-        if strategy == "code"
-        else {"kg": lambda repo, args: run_kg(repo, args, kg_dir)}
-    )
+    cited = citations if citations is not None else Citations()
+
+    def kg(repo: Path, args: dict[str, Any]) -> str:
+        output = run_kg(repo, args, kg_dir)
+        if strategy == "hybrid":
+            cited.add_from(output)
+        return output
+
+    def read_cited(repo: Path, args: dict[str, Any]) -> str:
+        start, end = cited.window(
+            args["path"], args.get("start_line"), args.get("end_line")
+        )
+        return read_file(repo, {**args, "start_line": start, "end_line": end})
+
+    handlers: dict[str, Callable[[Path, dict[str, Any]], str]] = {
+        "code": {"list_files": list_files, "read_file": read_file, "search": search},
+        "hybrid": {"kg": kg, "read_file": read_cited},
+    }.get(strategy, {"kg": kg})
     if name not in handlers:
         raise ToolError(f"unknown tool {name!r} for strategy {strategy!r}")
     return _clip(handlers[name](repo, args))

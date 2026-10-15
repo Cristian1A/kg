@@ -61,6 +61,7 @@ def summary(records: list[dict[str, Any]]) -> list[dict[str, Any]]:
                 "input_tokens": _mean(tokens(r)[0] for r in runs),
                 "output_tokens": _mean(tokens(r)[1] for r in runs),
                 "total_tokens": _mean(total_tokens(r) for r in runs),
+                "context_chars": _mean(r.get("context_chars") for r in runs),
                 "seconds": _mean(r["seconds"] for r in runs),
                 "turns": _mean(r["turns"] for r in runs),
             }
@@ -80,7 +81,7 @@ def markdown(records: list[dict[str, Any]]) -> str:
             f"| {r['question']} | {r['topic']} | {r['strategy']} | {r['outcome']} | "
             f"{r['grade']['score']:.2f} | {_fmt(r['traceability'])} | "
             f"{_int(tin)} | {_int(tout)} | {_int(total_tokens(r))} | "
-            f"{r['turns']} | {r['seconds']} |"
+            f"{_int(r.get('context_chars'))} | {r['turns']} | {r['seconds']} |"
         )
     lines += [
         "",
@@ -93,7 +94,7 @@ def markdown(records: list[dict[str, Any]]) -> str:
             f"| {s['strategy']} | {s['runs']} | {s['answered']} | {s['score']:.2f} | "
             f"{_fmt(s['traceability'])} | {_int(s['input_tokens'])} | "
             f"{_int(s['output_tokens'])} | {_int(s['total_tokens'])} | "
-            f"{s['turns']:.1f} | {s['seconds']:.1f} |"
+            f"{_int(s['context_chars'])} | {s['turns']:.1f} | {s['seconds']:.1f} |"
         )
     n = len({r["question"] for r in records})
     lines += [
@@ -118,6 +119,7 @@ _METRICS = (
     "Input tok.",
     "Output tok.",
     "Total tok.",
+    "Context",
     "Turns",
     "Seconds",
 )

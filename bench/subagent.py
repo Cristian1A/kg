@@ -40,7 +40,7 @@ from bench.run import (
     load_repos,
     prepare,
 )
-from bench.tools import STRATEGY_HINTS, TOOLS, ToolError, run_tool
+from bench.tools import STRATEGY_HINTS, TOOLS, Citations, ToolError, run_tool
 
 SESSIONS = CACHE.parent / "subagent"
 MAX_TURNS = 25
@@ -146,12 +146,24 @@ def call(run_dir: Path, tool: str, raw: str) -> str:
             (run_dir / "answer.json").write_text(json.dumps(answer, indent=2) + "\n")
             result = "Answer submitted. Reply `submitted`."
         else:
-            result = run_tool(
-                meta["strategy"], Path(meta["repo_path"]), tool, args, meta["topic"]
+            cited_file = run_dir / "citations.json"
+            cited = Citations(
+                json.loads(cited_file.read_text()) if cited_file.exists() else None
             )
+            result = run_tool(
+                meta["strategy"],
+                Path(meta["repo_path"]),
+                tool,
+                args,
+                meta["topic"],
+                cited,
+            )
+            if meta["strategy"] == "hybrid":
+                cited_file.write_text(json.dumps(cited.ranges) + "\n")
     except ToolError as e:
         entry["error"] = str(e)
         result = f"Error: {e}"
+    entry["chars"] = len(result)
     with log.open("a", encoding="utf-8") as f:
         f.write(json.dumps(entry, ensure_ascii=False) + "\n")
     return result
@@ -195,6 +207,7 @@ def collect(
                 "turns": len(calls),
                 "tool_calls": sum(c["tool"] != "submit_answer" for c in calls),
                 "tool_errors": sum("error" in c for c in calls),
+                "context_chars": context_chars(meta, calls),
                 "seconds": own.get("seconds", round(span, 2)),
                 "usage": {"total_tokens": own.get("total_tokens")},
                 "repo": meta["repo"],
@@ -207,6 +220,37 @@ def collect(
             }
         )
     return records
+
+
+def context_chars(meta: dict[str, Any], calls: list[dict[str, Any]]) -> int:
+    """Characters of every tool result of a run: the context it loaded.
+
+    Runs logged before `chars` was recorded are replayed: the tools are
+    deterministic over a pinned repo and its store.
+    """
+    if all("chars" in c for c in calls):
+        return sum(c["chars"] for c in calls)
+    cited, total = Citations(), 0
+    for c in calls:
+        if "chars" in c:
+            total += c["chars"]
+        elif c["tool"] == "submit_answer" or "args" not in c:
+            total += len(f"Error: {c['error']}") if "error" in c else 0
+        else:
+            try:
+                total += len(
+                    run_tool(
+                        meta["strategy"],
+                        Path(meta["repo_path"]),
+                        c["tool"],
+                        c["args"],
+                        meta.get("topic", ""),
+                        cited,
+                    )
+                )
+            except ToolError as e:
+                total += len(f"Error: {e}")
+    return total
 
 
 def main(argv: list[str] | None = None) -> int:
