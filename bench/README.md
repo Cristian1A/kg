@@ -18,6 +18,7 @@ system prompt and turn limit:
 | `code` (baseline) | `list_files`, `read_file`, `search` over the repo | `path:line` |
 | `graph` | `kg` (read-only `kg query`, `kg impact`, `kg status`) over the repo's store | node IDs and edges |
 | `topic` | the same `kg` tool, over a store of the question's topic (`bench/topics.py`) | node IDs and edges |
+| `hybrid` | `kg`, plus `read_file` limited to the files and line ranges the graph has cited in the run | node IDs, edges and `path:line` |
 
 All end by calling `submit_answer` with `answer`, `items` and `evidence`.
 
@@ -38,7 +39,8 @@ All end by calling `submit_answer` with `answer`, `items` and `evidence`.
     `etl.utils` are the same module);
   - `keywords`: groups of alternatives the answer must mention; the score is
     the share of groups found.
-- **Metrics** per run: score, traceability (share of `evidence` that exists in
+- **Metrics** per run: the characters of every tool result (`context_chars`,
+  the context the answer loaded), score, traceability (share of `evidence` that exists in
   the repo or the graph), input and output tokens (cache reads and writes
   included), turns, tool calls, wall time, and the outcome (`answered`,
   `max_turns`, `refusal`, `max_tokens`). Quality and cost are reported
@@ -141,3 +143,6 @@ The report, with the answers to the v0.2 exit questions, is
 | `results/20261015T094923Z-subagent-graph-49.jsonl` | `questions/main.json`, `graph`, with `kg query tested` and `kg impact --type` (#49) |
 | `results/20261015T095721Z-subagent-topic.jsonl` | `questions/main.json`, `topic` |
 | `results/20261015T095733Z-subagent-stale.jsonl` | `questions/stale.json`, `code` and `graph` |
+| `results/20261015T154218Z-subagent-hybrid-pilot.jsonl` | `questions/pilot.json`, `hybrid` (#52) |
+| `results/20261015T154220Z-subagent-hybrid.jsonl` | `questions/main.json`, `hybrid` (#52) |
+| `results/20261015T154222Z-subagent-hybrid-stale.jsonl` | `questions/stale.json`, `hybrid` (#52) |
