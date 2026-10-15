@@ -6,7 +6,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from bench import report
+from bench import report, subagent
 from bench.agent import run_question
 from bench.grading import grade, normalize, traceability, verifiable
 from bench.run import ROOT, load_questions, load_repos
@@ -290,6 +290,105 @@ def test_agent_is_reminded_to_submit(repo):
     run = run_question(client, QUESTION, "code", repo, "m", "low")
     assert run.outcome == "answered"
     assert "submit_answer" in client.requests[1]["messages"][-1]["content"]
+
+
+# --- Subagent runner --------------------------------------------------------------
+
+SUB_QUESTION = {
+    **QUESTION,
+    "topic": "development",
+    "expect": {"items": ["app.core"], "normalize": "module"},
+    "reference": "Only app.core imports it.",
+}
+
+
+@pytest.fixture
+def session(repo, tmp_path):
+    runs = subagent.prepare_session(
+        [SUB_QUESTION], ["code", "graph"], {"demo": repo}, tmp_path / "session"
+    )
+    return tmp_path / "session", {r.name: r for r in runs}
+
+
+def test_subagent_prompt_names_only_the_strategy_tools(session):
+    _, runs = session
+    code = (runs["q.code"] / "prompt.md").read_text()
+    graph = (runs["q.graph"] / "prompt.md").read_text()
+    assert "`read_file`" in code and "`kg`" not in code
+    assert "`kg`" in graph and "`read_file`" not in graph
+    assert "Which modules import requests?" in code
+    assert SUB_QUESTION["reference"] not in code  # the reference is not leaked
+    assert "bench.subagent call" in code and str(runs["q.code"].name) in code
+
+
+def test_subagent_call_runs_the_strategy_tools_and_logs_them(session):
+    _, runs = session
+    out = subagent.call(runs["q.code"], "search", '{"pattern": "requests", "glob": ""}')
+    assert "app/core.py:1" in out
+    out = subagent.call(runs["q.code"], "kg", '{"args": ["status"]}')
+    assert out.startswith("Error:")  # a graph tool is not a code tool
+    assert subagent.call(runs["q.code"], "read_file", "{oops").startswith("Error:")
+    calls = (runs["q.code"] / "calls.jsonl").read_text().splitlines()
+    assert [json.loads(c)["tool"] for c in calls] == ["search", "kg", "read_file"]
+    assert sum("error" in json.loads(c) for c in calls) == 2
+
+
+def test_subagent_submits_once_and_is_graded(session):
+    root, runs = session
+    answer = {
+        "answer": "Only app.core.",
+        "items": ["app/core.py"],
+        "evidence": ["app/core.py:1"],
+    }
+    assert "submitted" in subagent.call(
+        runs["q.code"], "submit_answer", json.dumps(answer)
+    )
+    again = subagent.call(runs["q.code"], "submit_answer", json.dumps(answer))
+    assert "already submitted" in again
+    bad = subagent.call(runs["q.graph"], "submit_answer", '{"answer": "x"}')
+    assert bad.startswith("Error:")
+    usage = {"q.code": {"total_tokens": 1234, "seconds": 9.5}}
+    records = {
+        r["strategy"]: r for r in subagent.collect(root, {"q": SUB_QUESTION}, usage)
+    }
+    code, graph = records["code"], records["graph"]
+    assert code["outcome"] == "answered" and code["grade"]["score"] == 1.0
+    assert code["traceability"] == 1.0 and code["usage"] == {"total_tokens": 1234}
+    assert code["seconds"] == 9.5 and code["turns"] == 1 and code["tool_calls"] == 0
+    assert graph["outcome"] == "no_answer" and graph["tool_errors"] == 1
+    assert graph["usage"] == {"total_tokens": None}
+
+
+def test_subagent_turns_are_capped(session, monkeypatch):
+    _, runs = session
+    monkeypatch.setattr(subagent, "MAX_TURNS", 2)
+    for _ in range(2):
+        subagent.call(runs["q.graph"], "kg", '{"args": ["status"]}')
+    out = subagent.call(
+        runs["q.graph"], "submit_answer", '{"answer": "", "items": [], "evidence": []}'
+    )
+    assert "limit" in out and not (runs["q.graph"] / "answer.json").exists()
+
+
+def test_report_reads_subagent_records(tmp_path):
+    rec = {
+        "question": "q1",
+        "topic": "tests",
+        "strategy": "graph",
+        "outcome": "answered",
+        "grade": {"score": 1.0},
+        "traceability": None,
+        "usage": {"total_tokens": 5000},
+        "turns": 3,
+        "seconds": 20.0,
+    }
+    path = tmp_path / "r.jsonl"
+    path.write_text(json.dumps(rec))
+    text = report.markdown(report.load([path]))
+    assert (
+        "| q1 | tests | graph | answered | 1.00 | – | – | – | 5000 | 3 | 20.0 |" in text
+    )
+    assert "| graph | 1 | 1 | 1.00 | – | – | – | 5000 |" in text
 
 
 # --- Report -----------------------------------------------------------------------

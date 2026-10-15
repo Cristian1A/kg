@@ -69,6 +69,33 @@ report relies on.
 **Cost.** Every run calls the model. The pilot (6 questions × 2 strategies)
 is small; measure its cost before scaling to 15–30 questions.
 
+## Running it with subagents (no API key)
+
+`bench.subagent` runs the same questions with the same confined tools, but
+the agent is a subagent started by a coding agent (for example Claude Code's
+Agent tool), so no API key is needed:
+
+```bash
+python -m bench.subagent prepare              # one prompt per question and strategy
+# give each run directory's prompt.md to a fresh subagent
+python -m bench.subagent collect bench/.cache/subagent/<session> --usage usage.json
+python -m bench.report bench/results/<session>-subagent.jsonl
+```
+
+Each subagent's only tool is `python -m bench.subagent call <run dir> <tool>
+<json>`, which runs the strategy's tool, logs it in `calls.jsonl`, caps the
+calls at 25 and stores the `submit_answer` input. `--usage` maps each run
+directory name to the `total_tokens`, `seconds` and `model` that the subagent
+notification reports.
+
+Differences from `bench.run`:
+
+- The confinement is by instruction, not by sandbox: check `calls.jsonl` (and
+  the subagent's transcript) to confirm it used only its tools.
+- Only the total tokens are known, and they include the coding agent's own
+  system prompt and tool definitions. Compare the strategies with each other,
+  not with `bench.run` results. Effort is whatever the coding agent uses.
+
 ## Limits
 
 - 15–30 questions guide decisions; they are not statistically conclusive,

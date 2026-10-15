@@ -24,11 +24,25 @@ def load(paths: list[Path]) -> list[dict[str, Any]]:
     return records
 
 
-def tokens(record: dict[str, Any]) -> tuple[int, int]:
-    """Input tokens (cached reads and writes included) and output tokens."""
+def tokens(record: dict[str, Any]) -> tuple[int | None, int | None]:
+    """Input tokens (cached reads and writes included) and output tokens.
+
+    `None` when unknown: a subagent run (`bench.subagent`) only records its
+    total.
+    """
     u = record["usage"]
+    if "input_tokens" not in u:
+        return None, None
     read = u["input_tokens"] + u["cache_read_input_tokens"]
     return read + u["cache_creation_input_tokens"], u["output_tokens"]
+
+
+def total_tokens(record: dict[str, Any]) -> int | None:
+    """Input plus output tokens, or a subagent's reported total."""
+    tin, tout = tokens(record)
+    if tin is not None:
+        return tin + tout
+    return record["usage"].get("total_tokens")
 
 
 def summary(records: list[dict[str, Any]]) -> list[dict[str, Any]]:
@@ -46,6 +60,7 @@ def summary(records: list[dict[str, Any]]) -> list[dict[str, Any]]:
                 "traceability": _mean(traced) if traced else None,
                 "input_tokens": _mean(tokens(r)[0] for r in runs),
                 "output_tokens": _mean(tokens(r)[1] for r in runs),
+                "total_tokens": _mean(total_tokens(r) for r in runs),
                 "seconds": _mean(r["seconds"] for r in runs),
                 "turns": _mean(r["turns"] for r in runs),
             }
@@ -63,7 +78,8 @@ def markdown(records: list[dict[str, Any]]) -> str:
         tin, tout = tokens(r)
         lines.append(
             f"| {r['question']} | {r['topic']} | {r['strategy']} | {r['outcome']} | "
-            f"{r['grade']['score']:.2f} | {_fmt(r['traceability'])} | {tin} | {tout} | "
+            f"{r['grade']['score']:.2f} | {_fmt(r['traceability'])} | "
+            f"{_int(tin)} | {_int(tout)} | {_int(total_tokens(r))} | "
             f"{r['turns']} | {r['seconds']} |"
         )
     lines += [
@@ -75,8 +91,9 @@ def markdown(records: list[dict[str, Any]]) -> str:
     for s in summary(records):
         lines.append(
             f"| {s['strategy']} | {s['runs']} | {s['answered']} | {s['score']:.2f} | "
-            f"{_fmt(s['traceability'])} | {s['input_tokens']:.0f} | "
-            f"{s['output_tokens']:.0f} | {s['turns']:.1f} | {s['seconds']:.1f} |"
+            f"{_fmt(s['traceability'])} | {_int(s['input_tokens'])} | "
+            f"{_int(s['output_tokens'])} | {_int(s['total_tokens'])} | "
+            f"{s['turns']:.1f} | {s['seconds']:.1f} |"
         )
     n = len({r["question"] for r in records})
     lines += [
@@ -100,6 +117,7 @@ _METRICS = (
     "Traceability",
     "Input tok.",
     "Output tok.",
+    "Total tok.",
     "Turns",
     "Seconds",
 )
@@ -109,9 +127,14 @@ def _header(*names: str) -> str:
     return f"| {' | '.join(names)} |\n|{'---|' * len(names)}"
 
 
-def _mean(values: Any) -> float:
-    values = list(values)
-    return statistics.fmean(values) if values else 0.0
+def _mean(values: Any) -> float | None:
+    """Mean of the known values; `None` if every value is unknown."""
+    values = [v for v in values if v is not None]
+    return statistics.fmean(values) if values else None
+
+
+def _int(value: float | None) -> str:
+    return "–" if value is None else f"{value:.0f}"
 
 
 def _fmt(value: float | None) -> str:
