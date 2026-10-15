@@ -212,6 +212,18 @@ def test_impact_options(graph):
     assert ids(custom) == ["requirement:fast"]
 
 
+def test_impact_types_filter_the_results_not_the_walk(graph):
+    hits = analysis.impact(graph, "function:app.util.helper", types=["Module"])
+    assert [(h.id, h.depth) for h in hits] == [
+        ("module:app.util", 1),
+        ("module:app.core", 2),
+    ]
+    assert len(hits[1].path) == 3  # the path is kept
+    # A Document is reached through modules that are not listed
+    docs = analysis.impact(graph, "function:app.util.helper", types=["Document"])
+    assert ids(docs) == ["document:README.md"]
+
+
 def test_impact_never_returns_repo_or_file_nodes(graph):
     hits = analysis.impact(graph, "module:app.util", relations=["contains", "defines"])
     assert not [h for h in hits if h.type in ("Repo", "File")]
@@ -232,6 +244,18 @@ def test_impact_is_deterministic(graph):
 
 
 # --- Predefined queries and limits --------------------------------------------------
+
+
+def test_tested_and_untested_partition_the_code(graph):
+    assert analysis.tested(graph) == {
+        "function:app.util.helper": ["test:tests.test_util.test_helper"]
+    }
+    every = analysis.coverage(graph)
+    untested = analysis.untested(graph)
+    assert set(untested) | set(analysis.tested(graph)) == set(every)
+    assert not set(untested) & set(analysis.tested(graph))
+    assert "function:app.util._hidden" not in every
+    assert "function:app.util._hidden" in analysis.coverage(graph, include_private=True)
 
 
 def test_undocumented(graph):
@@ -350,6 +374,56 @@ def test_cli_untested_and_undocumented(repo, capsys):
     ]
     _, out = run(repo, capsys, "query", "undocumented", "--type", "Package")
     assert [n["id"] for n in out["result"]["nodes"]] == ["package:app"]
+
+
+def test_cli_impact_type_filter_reports_what_it_left_out(repo, capsys):
+    _, out = run(
+        repo, capsys, "impact", "function:app.util.helper", "--type", "Package"
+    )
+    result = out["result"]
+    assert result["results"] == []
+    assert result["types"] == ["Package"]
+    assert result["omitted"] == {"Module": 2}
+    _, out = run(repo, capsys, "impact", "function:app.util.helper")
+    assert out["result"]["omitted"] == {} and out["result"]["types"] is None
+    capsys.readouterr()
+    main(
+        [
+            "impact",
+            "function:app.util.helper",
+            "--type",
+            "Package",
+            "--kg-dir",
+            str(repo / ".kg"),
+        ]
+    )
+    assert "left out by --type: Module 2" in capsys.readouterr().out
+
+
+def test_cli_tested_lists_the_tests_and_states_the_criterion(repo, capsys):
+    (repo / "tests").mkdir()
+    (repo / "tests/test_util.py").write_text(
+        "from app.util import helper\n\n\ndef test_helper():\n    assert helper()\n"
+    )
+    update_store(repo / ".kg", extract_repo(repo))
+    _, out = run(repo, capsys, "query", "tested", "--type", "Module,Function")
+    nodes = {n["id"]: n["tests"] for n in out["result"]["nodes"]}
+    assert nodes == {
+        "function:app.util.helper": ["test:tests.test_util.test_helper"],
+        "module:app.util": ["test:tests.test_util"],
+    }
+    assert "a test module imports it" in out["result"]["criterion"]
+    _, out = run(repo, capsys, "query", "untested", "--type", "Module,Function")
+    assert [n["id"] for n in out["result"]["nodes"]] == [
+        "function:app.core.run",
+        "module:app.core",
+    ]
+    assert out["result"]["criterion"]
+    capsys.readouterr()
+    main(["query", "tested", "--kg-dir", str(repo / ".kg")])
+    text = capsys.readouterr().out
+    assert "<-[tests]- test:tests.test_util.test_helper" in text
+    assert "tested: a `tests` edge points to it" in text
 
 
 @pytest.mark.parametrize(
