@@ -426,6 +426,91 @@ def test_cli_tested_lists_the_tests_and_states_the_criterion(repo, capsys):
     assert "tested: a `tests` edge points to it" in text
 
 
+def test_cli_brief_node_is_a_card(repo, capsys):
+    _, full = run(repo, capsys, "query", "node", "function:app.util.helper")
+    _, brief = run(repo, capsys, "query", "node", "function:app.util.helper", "--brief")
+    card = brief["result"]["node"]
+    assert card["provenance"] == {
+        "method": "parser",
+        "source": "app/util.py",
+        "lines": [1, 2],
+    }
+    assert card["attrs"]["signature"] == "()"
+    assert brief["result"]["neighbors"] == ["<-[defines]- file:app/util.py"]
+    assert brief["result"]["more"] == {}
+    assert len(json.dumps(brief)) < len(json.dumps(full))
+    capsys.readouterr()
+    main(
+        [
+            "query",
+            "node",
+            "function:app.util.helper",
+            "--brief",
+            "--kg-dir",
+            str(repo / ".kg"),
+        ]
+    )
+    text = capsys.readouterr().out
+    assert "at: app/util.py:1-2" in text and "[parser" not in text
+
+
+def test_cli_brief_lists_are_capped_and_counted(repo, capsys, monkeypatch):
+    import kg.cli
+
+    monkeypatch.setattr(kg.cli, "BRIEF_LIMIT", 1)
+    _, found = run(repo, capsys, "query", "find", "app", "--brief")
+    assert len(found["result"]["nodes"]) == 1 and found["result"]["total"] > 1
+    _, impact = run(repo, capsys, "impact", "function:app.util.helper", "--brief")
+    result = impact["result"]
+    assert result["total"] == 2 and len(result["results"]) == 1
+    assert result["more"] == {"Module": 1}
+    assert result["results"][0].startswith("module:app.util")
+    _, path = run(
+        repo, capsys, "query", "path", "module:app.core", "module:app.util", "--brief"
+    )
+    assert path["result"]["path"] == ["module:app.core -[imports]-> module:app.util"]
+
+
+def test_cli_brief_marks_edges_that_are_not_the_parsers(repo, capsys, tmp_path):
+    agent = tmp_path / "agent.json"
+    agent.write_text(
+        json.dumps(
+            {
+                "version": "1",
+                "nodes": [
+                    {
+                        "id": "decision:keep",
+                        "type": "Decision",
+                        "description": "Keep it small.",
+                        "provenance": {
+                            "method": "llm",
+                            "extractor": "t",
+                            "confidence": 0.8,
+                        },
+                    }
+                ],
+                "edges": [
+                    {
+                        "source": "decision:keep",
+                        "target": "module:app.util",
+                        "type": "justifies",
+                        "provenance": {
+                            "method": "llm",
+                            "extractor": "t",
+                            "confidence": 0.8,
+                        },
+                    }
+                ],
+            }
+        )
+    )
+    main(["add", str(agent), "--kg-dir", str(repo / ".kg")])
+    _, out = run(repo, capsys, "query", "node", "module:app.util", "--brief")
+    assert "<-[justifies]- decision:keep [llm, 0.8]" in out["result"]["neighbors"]
+    _, card = run(repo, capsys, "query", "node", "decision:keep", "--brief")
+    assert card["result"]["node"]["provenance"] == {"method": "llm", "confidence": 0.8}
+
+
 @pytest.mark.parametrize(
     "argv",
     [

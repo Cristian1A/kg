@@ -443,6 +443,8 @@ def _query_node(args: argparse.Namespace) -> Result:
     else:
         lines.append("no neighbors in the graph with these options")
     limits = _limits(args, graph)
+    if args.brief:
+        return _brief_node(args.id, fields, hits, limits)
     lines += _limits_text(limits)
     data = {
         "node": fields,
@@ -460,6 +462,13 @@ def _query_find(args: argparse.Namespace) -> Result:
     lines = [_node_text(graph, node_id) for node_id in ids]
     if not ids:
         lines = ["no node in the graph matches"]
+    if args.brief:
+        shown = ids[:BRIEF_LIMIT]
+        lines = [f"{i} ({graph.nodes[i].get('type')})" for i in shown]
+        lines = lines or ["no node in the graph matches"]
+        if len(ids) > len(shown):
+            lines.append(f"… {len(ids) - len(shown)} more; narrow with --type")
+        return Result("\n".join(lines), {"nodes": shown, "total": len(ids)})
     nodes = [_node_summary(graph, node_id) for node_id in ids]
     return Result("\n".join(lines), {"nodes": nodes})
 
@@ -487,6 +496,8 @@ def _query_path(args: argparse.Namespace) -> Result:
             "direction": direction,
             "path": [s.to_dict() for s in steps],
         }
+    if args.brief:
+        data["path"] = [step.label for step in found[1]] if found else []
     lines += _limits_text(limits)
     data |= {"source": args.source, "target": args.target, "limits": limits}
     return Result("\n".join(lines), data)
@@ -583,6 +594,8 @@ def _impact(args: argparse.Namespace) -> Result:
     hits = [h for h in reached if not args.type or h.type in args.type]
     omitted = dict(sorted(Counter(h.type for h in reached if h not in hits).items()))
     limits = _limits(args, graph, relations)
+    if args.brief:
+        return _brief_impact(args, relations, hits, omitted, limits)
     if hits:
         lines = [
             f"a change in {args.id} may affect {_plural(len(hits), 'element')} "
@@ -613,6 +626,113 @@ def _impact(args: argparse.Namespace) -> Result:
         "limits": limits,
     }
     return Result("\n".join(lines), data)
+
+
+# --- Brief output (--brief) --------------------------------------------------------
+
+# At most this many neighbors, matches or results in a brief answer
+BRIEF_LIMIT = 30
+
+
+def _brief_provenance(provenance: dict[str, Any]) -> dict[str, Any]:
+    """Where a node comes from, once: method, file and lines; confidence if < 1."""
+    keep = {k: provenance[k] for k in ("method", "source", "lines") if k in provenance}
+    if provenance.get("confidence", 1) < 1:
+        keep["confidence"] = provenance["confidence"]
+    return keep
+
+
+def _brief_hit(origin: str, hit: analysis.Hit) -> str:
+    """One line per neighbor or result: the edge that reaches it, its provenance
+    only when it is not the parser's."""
+    step = hit.path[-1]
+    if hit.depth == 1 and origin in (step.source, step.target):
+        arrow = f"-[{step.type}]->" if step.source == origin else f"<-[{step.type}]-"
+        text = f"{arrow} {hit.id}"
+    else:
+        text = f"{hit.id} (depth {hit.depth}, via {step.label})"
+    if step.method and step.method != "parser":
+        text += f" [{_step_source(step)}]"
+    return text
+
+
+def _brief_list(
+    origin: str, hits: list[analysis.Hit]
+) -> tuple[list[str], dict[str, int]]:
+    """The first `BRIEF_LIMIT` hits as lines, and the rest counted by type."""
+    shown = [_brief_hit(origin, h) for h in hits[:BRIEF_LIMIT]]
+    more = Counter(h.type for h in hits[BRIEF_LIMIT:])
+    return shown, dict(sorted(more.items()))
+
+
+def _more_text(more: dict[str, int]) -> list[str]:
+    if not more:
+        return []
+    return ["… more: " + ", ".join(f"{t} {n}" for t, n in more.items())]
+
+
+def _brief_node(
+    node_id: str,
+    fields: dict[str, Any],
+    hits: list[analysis.Hit],
+    limits: list[dict[str, Any]],
+) -> Result:
+    card = {"id": node_id} | {
+        k: v
+        for k, v in fields.items()
+        if k in ("type", "label", "description", "attrs")
+    }
+    if prov := fields.get("provenance"):
+        card["provenance"] = _brief_provenance(prov)
+    neighbors, more = _brief_list(node_id, hits)
+    lines = [f"{node_id} ({fields.get('type')})"]
+    if fields.get("description"):
+        lines.append(f"  {fields['description']}")
+    for key, value in sorted((fields.get("attrs") or {}).items()):
+        lines.append(f"  {key}: {json.dumps(value, ensure_ascii=False)}")
+    if prov:
+        lines.append(f"  at: {_location(prov)}")
+    lines += [f"  {n}" for n in neighbors] + _more_text(more) + _limits_text(limits)
+    data = {"node": card, "neighbors": neighbors, "more": more, "limits": limits}
+    return Result("\n".join(lines), data)
+
+
+def _brief_impact(
+    args: argparse.Namespace,
+    relations: Sequence[str],
+    hits: list[analysis.Hit],
+    omitted: dict[str, int],
+    limits: list[dict[str, Any]],
+) -> Result:
+    results, more = _brief_list(args.id, hits)
+    lines = [
+        f"a change in {args.id} may affect {_plural(len(hits), 'element')} "
+        "(possible effects, not certain ones):",
+        *(f"  {r}" for r in results),
+        *_more_text(more),
+    ]
+    if omitted:
+        counts = ", ".join(f"{t} {n}" for t, n in omitted.items())
+        lines.append(f"left out by --type: {counts}")
+    lines += _limits_text(limits)
+    data = {
+        "id": args.id,
+        "relations": sorted(relations),
+        "types": args.type,
+        "results": results,
+        "total": len(hits),
+        "more": more,
+        "omitted": omitted,
+        "limits": limits,
+    }
+    return Result("\n".join(lines), data)
+
+
+def _location(provenance: dict[str, Any]) -> str:
+    """`path:first-last` (or the path alone) of a provenance."""
+    lines = provenance.get("lines")
+    source = provenance.get("source", "")
+    return f"{source}:{lines[0]}-{lines[1]}" if lines else str(source)
 
 
 def _query_call(func: Callable[..., Any], *args: Any) -> Any:
@@ -881,6 +1001,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     q = query("node", "a node, its attributes and its neighbors", _query_node)
     q.add_argument("id", metavar="ID", help="ID of the node")
+    _brief_option(q)
     q.add_argument(
         "--direction",
         choices=("out", "in", "both"),
@@ -900,6 +1021,7 @@ def build_parser() -> argparse.ArgumentParser:
     q = query(
         "find", "find nodes by name, ID, description, type or attribute", _query_find
     )
+    _brief_option(q)
     q.add_argument("text", nargs="?", help="text in the label, ID or description")
     _type_option(q, "entity types to return")
     q.add_argument(
@@ -912,6 +1034,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
 
     q = query("path", "the shortest chain of edges between two nodes", _query_path)
+    _brief_option(q)
     q.add_argument("source", metavar="FROM", help="ID of the first node")
     q.add_argument("target", metavar="TO", help="ID of the second node")
     _relation_option(q, "relation types the path may use (default: all)")
@@ -940,6 +1063,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     p = add("impact", "what a change in a node may affect", _impact)
     p.add_argument("id", metavar="ID", help="ID of the node that changes")
+    _brief_option(p)
     p.add_argument(
         "--depth",
         type=_positive_int,
@@ -959,6 +1083,15 @@ def build_parser() -> argparse.ArgumentParser:
     _type_option(p, "entity types to list (others are still walked through)")
 
     return parser
+
+
+def _brief_option(p: argparse.ArgumentParser) -> None:
+    p.add_argument(
+        "--brief",
+        action="store_true",
+        help=f"compact answer: one line per edge, provenance once, at most "
+        f"{BRIEF_LIMIT} items",
+    )
 
 
 def _relation_option(p: argparse.ArgumentParser, help_: str) -> None:
