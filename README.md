@@ -9,9 +9,10 @@ decisions — into a **knowledge graph** you can query, visualize and export.
 The graph lives inside the repo (`.kg/graph.json`), as readable, deterministic
 JSON that is versioned with git like any other file.
 
-> **Status: v0.2, the evidence phase.** The MVP (schema, store, extraction,
-> rendering, agent guide) is done, and `kg query` / `kg impact` answer
-> questions over the graph. A benchmark measured whether the graph helps an
+> **Status: v0.2 released; v0.3 next.** The MVP (schema, store, extraction,
+> rendering, agent guide) and the evidence phase are done: `kg query` /
+> `kg impact` answer questions over the graph, and `kg status --check` keeps it
+> fresh. A benchmark measured whether the graph helps an
 > agent. On small repos, an agent that reads node cards (`--brief`) and then
 > only the lines they cite is as accurate as one reading the code, with 63% less
 > context ([report](docs/benchmark.md)). When the graph is stale, the agent
@@ -259,18 +260,17 @@ Details in [docs/schema.md](docs/schema.md), [docs/store.md](docs/store.md),
 | `kg guide` | Guidelines (and skill) for agents that enrich the graph | ✅ |
 | `kg remove`, `kg edit` | Remove nodes or edges, modify a node | ✅ |
 | `kg extract` | Deterministic extraction of a Python repo; reruns follow code changes | ✅ |
-| `kg status` | Whether the graph is up to date with the code | ✅ |
+| `kg status` | Whether the graph is up to date with the code; `--check` for CI and hooks | ✅ |
 | `kg render` | PNG/SVG image and interactive offline HTML | ✅ |
 | `kg query`, `kg impact` | Find nodes, neighbors, paths, untested/undocumented code, impact of a change | ✅ |
 | Benchmark | Measure whether the graph improves an agent's answers ([report](docs/benchmark.md)) | ✅ |
 | `kg export` | Mermaid and Graphviz DOT | v0.3 |
 | MCP server | Expose the operations as agent tools | v0.3 |
 
-v0.2 is a short evidence phase: queries, a graph that stays consistent with
+v0.2 was a short evidence phase: queries, a graph that stays consistent with
 the code, and a benchmark of an agent with and without the graph. Its
 [report](docs/benchmark.md) sets the order of v0.3: first a benchmark on a
-large repo, then keeping the graph fresh and checking documents against
-code. Plan: [docs/roadmap.md](docs/roadmap.md). Full
+large repo (scrapy), then checking documents against code. Plan: [docs/roadmap.md](docs/roadmap.md). Full
 requirements: [docs/requirements.md](docs/requirements.md).
 
 ## Contributing
