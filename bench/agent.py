@@ -113,7 +113,10 @@ def run_question(
             messages.append(
                 {
                     "role": "user",
-                    "content": [_execute(run, strategy, repo, c) for c in calls],
+                    "content": [
+                        _execute(run, strategy, repo, c, question.get("topic", ""))
+                        for c in calls
+                    ],
                 }
             )
         run.outcome = "max_turns"
@@ -122,11 +125,13 @@ def run_question(
         run.seconds = round(time.monotonic() - started, 2)
 
 
-def _execute(run: Run, strategy: str, repo: Path, call: Any) -> dict[str, Any]:
+def _execute(
+    run: Run, strategy: str, repo: Path, call: Any, topic: str = ""
+) -> dict[str, Any]:
     run.tool_calls += 1
     result: dict[str, Any] = {"type": "tool_result", "tool_use_id": call.id}
     try:
-        result["content"] = run_tool(strategy, repo, call.name, dict(call.input))
+        result["content"] = run_tool(strategy, repo, call.name, dict(call.input), topic)
     except ToolError as e:
         run.tool_errors += 1
         result |= {"content": f"Error: {e}", "is_error": True}

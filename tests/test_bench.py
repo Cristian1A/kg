@@ -11,6 +11,7 @@ from bench.agent import run_question
 from bench.grading import grade, normalize, traceability, verifiable
 from bench.run import ROOT, load_questions, load_repos
 from bench.tools import TOOLS, ToolError, run_tool
+from bench.topics import TOPIC_TYPES, build_topic_stores, topic_graph
 from kg import store
 from kg.extract import extract_repo
 from kg.update import update_store
@@ -295,6 +296,41 @@ def test_agent_is_reminded_to_submit(repo):
     run = run_question(client, QUESTION, "code", repo, "m", "low")
     assert run.outcome == "answered"
     assert "submit_answer" in client.requests[1]["messages"][-1]["content"]
+
+
+# --- Topic stores -----------------------------------------------------------------
+
+
+def test_topic_graphs_keep_their_types_and_what_freshness_needs(repo):
+    graph = store.load_graph(repo / ".kg")
+    for topic in TOPIC_TYPES:
+        sub = topic_graph(graph, topic)
+        types = {d["type"] for _, d in sub.nodes(data=True)}
+        assert {"Repo", "File"} <= types
+        assert types <= {"Repo", "File", "Config", *TOPIC_TYPES[topic]}
+        for u, v in sub.edges():
+            assert graph.has_edge(u, v)
+    assert "dependency:requests" in topic_graph(graph, "development")
+    assert "dependency:requests" not in topic_graph(graph, "tests")
+
+
+def test_topic_strategy_queries_its_topic_store(repo):
+    build_topic_stores(repo)
+    tests = json.loads(run_tool("topic", repo, "kg", {"args": ["status"]}, "tests"))
+    assert tests["ok"] and tests["result"]["stale"] is False
+    found = run_tool(
+        "topic", repo, "kg", {"args": ["query", "find", "requests"]}, "tests"
+    )
+    assert json.loads(found)["result"]["nodes"] == []
+    found = run_tool(
+        "topic", repo, "kg", {"args": ["query", "find", "requests"]}, "development"
+    )
+    assert json.loads(found)["result"]["nodes"]
+    # The code strategy never sees the stores
+    listed = run_tool("code", repo, "list_files", {"glob": "**"})
+    assert ".kg" not in listed
+    with pytest.raises(ToolError):
+        run_tool("code", repo, "read_file", {"path": ".kg-tests/graph.json"})
 
 
 # --- Subagent runner --------------------------------------------------------------

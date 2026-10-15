@@ -20,12 +20,13 @@ from typing import Any
 from bench.agent import SYSTEM, run_question
 from bench.grading import grade, traceability
 from bench.tools import TOOLS, run_tool
+from bench.topics import build_topic_stores
 
 ROOT = Path(__file__).resolve().parent
 REPO_ROOT = ROOT.parent
 CACHE = ROOT / ".cache" / "repos"
 DEFAULT_MODEL = "claude-opus-5-5"
-STRATEGIES = ("code", "graph")
+STRATEGIES = ("code", "graph", "topic")
 
 
 def load_questions(path: Path) -> list[dict[str, Any]]:
@@ -48,7 +49,11 @@ def load_repos() -> list[dict[str, Any]]:
 
 
 def prepare(repo: dict[str, Any]) -> Path:
-    """Clone the repo at its commit and build its store, once."""
+    """Clone the repo at its commit and build its stores, once.
+
+    With `graph_commit`, the store is built at that commit and the repo is
+    then checked out at `commit`: a stale graph of the current code.
+    """
     path = CACHE / repo["name"]
     if not (path / ".git").is_dir():
         CACHE.mkdir(parents=True, exist_ok=True)
@@ -56,9 +61,13 @@ def prepare(repo: dict[str, Any]) -> Path:
         _run(["git", "-C", str(path), "checkout", "--quiet", repo["commit"]])
     if not (path / ".kg").is_dir():
         kg_dir = str(path / ".kg")
+        if graph_commit := repo.get("graph_commit"):
+            _run(["git", "-C", str(path), "checkout", "--quiet", graph_commit])
         _run(["kg", "init", "--kg-dir", kg_dir])
         _run(["kg", "extract", str(path), "--kg-dir", kg_dir])
         _run(["kg", "add", str(REPO_ROOT / repo["agent"]), "--kg-dir", kg_dir])
+        _run(["git", "-C", str(path), "checkout", "--quiet", repo["commit"]])
+    build_topic_stores(path)
     head = _run(["git", "-C", str(path), "rev-parse", "--short=7", "HEAD"]).strip()
     if head != repo["commit"][:7]:
         raise SystemExit(f"{path} is at {head}, expected {repo['commit']}")
@@ -170,11 +179,12 @@ def _dry_run(
     samples = {
         "code": ("list_files", {"glob": "*.md"}),
         "graph": ("kg", {"args": ["query", "find", "--type", "Repo"]}),
+        "topic": ("kg", {"args": ["status"]}),
     }
     for name, path in paths.items():
         for strategy in strategies:
             tool, tool_args = samples[strategy]
-            result = run_tool(strategy, path, tool, tool_args)
+            result = run_tool(strategy, path, tool, tool_args, "tests")
             print(f"{name} [{strategy}] {tool}: {len(result)} characters")
     tools = {s: [t["name"] for t in TOOLS[s]] for s in strategies}
     print(f"{len(questions)} questions × {len(strategies)} strategies; tools: {tools}")

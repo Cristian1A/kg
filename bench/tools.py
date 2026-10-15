@@ -2,6 +2,8 @@
 
 - `code`: list, read and search the repo's files (the baseline).
 - `graph`: run `kg query` / `kg impact` / `kg status` on the repo's store.
+- `topic`: the same, on the store of the question's topic (`.kg-<topic>`,
+  see `bench.topics`).
 
 Both get `submit_answer`, which ends the run. Tool definitions are strict
 JSON Schemas and their order is fixed, so the prompt prefix caches well.
@@ -19,7 +21,7 @@ from typing import Any
 MAX_OUTPUT = 20_000  # characters per tool result
 MAX_LINES = 400  # lines per read_file call
 MAX_MATCHES = 200  # matches per search call
-_HIDDEN = (".git", ".kg")
+_HIDDEN = (".git", ".kg")  # and the topic stores, `.kg-<topic>`
 
 SUBMIT = {
     "name": "submit_answer",
@@ -107,7 +109,7 @@ GRAPH_TOOLS = [
     SUBMIT,
 ]
 
-TOOLS = {"code": CODE_TOOLS, "graph": GRAPH_TOOLS}
+TOOLS = {"code": CODE_TOOLS, "graph": GRAPH_TOOLS, "topic": GRAPH_TOOLS}
 
 STRATEGY_HINTS = {
     "code": "You can list, read and search the repository's files. Cite evidence "
@@ -117,18 +119,25 @@ STRATEGY_HINTS = {
     "evidence as graph node IDs or edges (`source -[type]-> target`) from the "
     "tool output.",
 }
+STRATEGY_HINTS["topic"] = STRATEGY_HINTS["graph"]
 
 
 class ToolError(Exception):
     """A tool call that cannot run; its message goes back to the agent."""
 
 
-def run_tool(strategy: str, repo: Path, name: str, args: dict[str, Any]) -> str:
-    """Run one tool call of `strategy` on `repo` and return its text result."""
+def run_tool(
+    strategy: str, repo: Path, name: str, args: dict[str, Any], topic: str = ""
+) -> str:
+    """Run one tool call of `strategy` on `repo` and return its text result.
+
+    `topic` picks the store of the `topic` strategy.
+    """
+    kg_dir = repo / (f".kg-{topic}" if strategy == "topic" else ".kg")
     handlers: dict[str, Callable[[Path, dict[str, Any]], str]] = (
         {"list_files": list_files, "read_file": read_file, "search": search}
         if strategy == "code"
-        else {"kg": run_kg}
+        else {"kg": lambda repo, args: run_kg(repo, args, kg_dir)}
     )
     if name not in handlers:
         raise ToolError(f"unknown tool {name!r} for strategy {strategy!r}")
@@ -180,15 +189,19 @@ def _files(repo: Path) -> list[str]:
     return sorted(
         p.relative_to(root).as_posix()
         for p in root.rglob("*")
-        if p.is_file() and not set(p.relative_to(root).parts) & set(_HIDDEN)
+        if p.is_file() and not _hidden(p.relative_to(root).parts)
     )
 
 
 def _inside(repo: Path, rel: str) -> Path:
     path = (repo / rel).resolve()
-    if not path.is_relative_to(repo.resolve()) or set(Path(rel).parts) & set(_HIDDEN):
+    if not path.is_relative_to(repo.resolve()) or _hidden(Path(rel).parts):
         raise ToolError(f"outside the repo: {rel}")
     return path
+
+
+def _hidden(parts: tuple[str, ...]) -> bool:
+    return any(p in _HIDDEN or p.startswith(".kg-") for p in parts)
 
 
 # --- graph -------------------------------------------------------------------------
@@ -196,7 +209,7 @@ def _inside(repo: Path, rel: str) -> Path:
 _KG_COMMANDS = ("query", "impact", "status")
 
 
-def run_kg(repo: Path, args: dict[str, Any]) -> str:
+def run_kg(repo: Path, args: dict[str, Any], kg_dir: Path | None = None) -> str:
     argv = [str(a) for a in args["args"]]
     if not argv or argv[0] not in _KG_COMMANDS:
         raise ToolError(
@@ -206,7 +219,7 @@ def run_kg(repo: Path, args: dict[str, Any]) -> str:
         raise ToolError("--kg-dir is set by the benchmark")
     if argv[0] == "status":
         argv = ["status", str(repo)]
-    cmd = ["kg", *argv, "--kg-dir", str(repo / ".kg")]
+    cmd = ["kg", *argv, "--kg-dir", str(kg_dir or repo / ".kg")]
     if "--help" not in argv and "-h" not in argv:
         cmd.append("--json")
     proc = subprocess.run(cmd, capture_output=True, text=True, timeout=60, check=False)

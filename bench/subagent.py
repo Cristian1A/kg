@@ -113,6 +113,7 @@ def prepare_session(
                 "strategy": strategy,
                 "repo": q["repo"],
                 "repo_path": str(paths[q["repo"]]),
+                "topic": q["topic"],
             }
             (run_dir / "run.json").write_text(json.dumps(meta, indent=2) + "\n")
             (run_dir / "prompt.md").write_text(prompt(q, strategy, run_dir))
@@ -145,7 +146,9 @@ def call(run_dir: Path, tool: str, raw: str) -> str:
             (run_dir / "answer.json").write_text(json.dumps(answer, indent=2) + "\n")
             result = "Answer submitted. Reply `submitted`."
         else:
-            result = run_tool(meta["strategy"], Path(meta["repo_path"]), tool, args)
+            result = run_tool(
+                meta["strategy"], Path(meta["repo_path"]), tool, args, meta["topic"]
+            )
     except ToolError as e:
         entry["error"] = str(e)
         result = f"Error: {e}"

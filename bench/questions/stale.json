@@ -1,0 +1,86 @@
+[
+  {
+    "id": "kgs-impact-validation",
+    "repo": "kg-stale",
+    "topic": "development",
+    "question": "If src/kg/schema/validation.py changed, which modules of the kg package could be affected, directly or transitively through imports? Leave out tests. List the modules.",
+    "expect": {
+      "items": [
+        "kg.__main__",
+        "kg.cli",
+        "kg.edit",
+        "kg.extract",
+        "kg.extract.deps",
+        "kg.extract.python",
+        "kg.merge",
+        "kg.store",
+        "kg.update"
+      ],
+      "normalize": "module"
+    },
+    "reference": "As kg-impact-validation, on the current code (1a342c4). The graph is from ebd078d, before kg.update existed: it misses kg.update."
+  },
+  {
+    "id": "kgs-tests-update",
+    "repo": "kg-stale",
+    "topic": "tests",
+    "question": "Which test modules import kg.update directly? List the test modules.",
+    "expect": {"items": ["tests.test_update", "tests.test_query"], "normalize": "module"},
+    "reference": "tests/test_update.py and tests/test_query.py. Neither kg.update nor these tests exist in the graph's commit (ebd078d)."
+  },
+  {
+    "id": "kgs-cli-imports",
+    "repo": "kg-stale",
+    "topic": "development",
+    "question": "Which other modules of the kg package does src/kg/cli.py import directly? Do not count the top-level kg package itself. List the modules.",
+    "expect": {
+      "items": [
+        "kg.agents",
+        "kg.analysis",
+        "kg.edit",
+        "kg.extract",
+        "kg.merge",
+        "kg.render",
+        "kg.schema",
+        "kg.schema.validation",
+        "kg.store",
+        "kg.update"
+      ],
+      "normalize": "module"
+    },
+    "reference": "src/kg/cli.py:19-31 at 1a342c4: agents, analysis, edit, extract, merge, render, store, update, schema and schema.validation. At ebd078d it did not import analysis nor update."
+  },
+  {
+    "id": "kgs-update-functions",
+    "repo": "kg-stale",
+    "topic": "development",
+    "question": "Which public functions does src/kg/update.py define at module level? List the function names.",
+    "expect": {"items": ["is_derived", "update_store", "prune", "staleness"], "normalize": "text"},
+    "reference": "is_derived, update_store, prune and staleness (plus the classes Orphan, PruneReport, UpdateResult, Staleness and RepoMismatchError). The file does not exist at ebd078d."
+  },
+  {
+    "id": "kgs-path",
+    "repo": "kg-stale",
+    "topic": "development",
+    "question": "Through which chain of imports does kg.cli reach kg.extract.references? List every module on the shortest import chain, from kg.cli to kg.extract.references.",
+    "expect": {
+      "items": ["kg.cli", "kg.extract", "kg.extract.python", "kg.extract.references"],
+      "normalize": "module"
+    },
+    "reference": "Control: the same chain at both commits."
+  },
+  {
+    "id": "kgs-decision-llm",
+    "repo": "kg-stale",
+    "topic": "decisions",
+    "question": "Does kg call a language model itself? If not, who reads the documents and decisions that end up in the graph, and how do they get there?",
+    "expect": {
+      "keywords": [
+        ["api key", "api-key"],
+        ["agent"],
+        ["json"]
+      ]
+    },
+    "reference": "Control: unchanged between the commits. No LLM and no API keys (RF-24); an external agent sends JSON (kg add)."
+  }
+]
