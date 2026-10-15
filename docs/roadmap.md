@@ -91,7 +91,8 @@ v0.2 is done when the criteria in section 8.2 of the requirements are met. The
 4. Is `kg impact` precise enough with `imports` alone, or does it need `calls`
    (RF-13)?
 
-These answers set the order of v0.3.
+These answers set the order of v0.3. They are in the
+[benchmark report](benchmark.md#answers-to-the-exit-questions).
 
 ## v0.3 — tentative
 

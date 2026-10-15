@@ -17,14 +17,19 @@ system prompt and turn limit:
 |----------|-------|-------------------|
 | `code` (baseline) | `list_files`, `read_file`, `search` over the repo | `path:line` |
 | `graph` | `kg` (read-only `kg query`, `kg impact`, `kg status`) over the repo's store | node IDs and edges |
+| `topic` | the same `kg` tool, over a store of the question's topic (`bench/topics.py`) | node IDs and edges |
 
-Both end by calling `submit_answer` with `answer`, `items` and `evidence`.
+All end by calling `submit_answer` with `answer`, `items` and `evidence`.
 
-- **Repos** (`repos.json`): the three repos of `docs/examples/`, each pinned
-  to a commit. `prepare` clones them into `bench/.cache/` (ignored by git) and
+- **Repos** (`repos.json`): the three repos of `docs/examples/` and `kg`
+  itself, each pinned to a commit. `kg-stale` has `graph_commit`: its store is
+  built at that older commit, then the repo is checked out at `commit`, so the
+  graph is stale (`questions/stale.json`). `prepare` clones them into `bench/.cache/` (ignored by git) and
   builds each store with `kg extract` plus the committed agent layer
   (`examples/agent/<repo>.json`), so the graph strategy needs no LLM to build
-  its graph.
+  its graph. It also writes the topic stores, `.kg-<topic>`: the types a topic
+  needs plus `Repo`, `File` and `Config`, so freshness and containment still
+  work.
 - **Questions** (`questions/*.json`): each has a `topic` (`development`,
   `tests`, `documentation`, `decisions`), a human-readable `reference` answer
   checked against the code, and an `expect` block for mechanical grading:
@@ -124,6 +129,15 @@ Differences from `bench.run`:
 | `pca-sqlalchemy` | python-clean-architecture | development | Six non-test modules import SQLAlchemy |
 | `pca-architecture` | python-clean-architecture | decisions | Clean Architecture; use cases in `src/interactor` |
 
-Next: run the pilot, check the harness (prompts, grading, token counting),
-then grow to 15–30 questions with the topic-specific graph and two-commit
-variants described in #39.
+## Results
+
+The report, with the answers to the v0.2 exit questions, is
+[docs/benchmark.md](../docs/benchmark.md). Result files:
+
+| File | Run |
+|------|-----|
+| `results/20261015T092017Z-subagent.jsonl` | Pilot, `code` and `graph` |
+| `results/20261015T093425Z-subagent.jsonl` | `questions/main.json`, `code` and `graph` |
+| `results/20261015T094923Z-subagent-graph-49.jsonl` | `questions/main.json`, `graph`, with `kg query tested` and `kg impact --type` (#49) |
+| `results/20261015T095721Z-subagent-topic.jsonl` | `questions/main.json`, `topic` |
+| `results/20261015T095733Z-subagent-stale.jsonl` | `questions/stale.json`, `code` and `graph` |
