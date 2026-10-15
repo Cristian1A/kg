@@ -1,9 +1,18 @@
 import json
+import re
+from pathlib import Path
 
 import pytest
 
 from kg import store
-from kg.cli import EXIT_INTERNAL, EXIT_OK, EXIT_USAGE, main
+from kg.cli import (
+    EXIT_INTERNAL,
+    EXIT_OK,
+    EXIT_USAGE,
+    EXIT_VALIDATION,
+    build_parser,
+    main,
+)
 from kg.extract import extract_repo
 from kg.update import is_derived, prune, staleness, update_store
 
@@ -356,6 +365,34 @@ def test_status_of_another_repo_is_a_usage_error(repo, tmp_path, capsys):
     capsys.readouterr()
     assert main(["status", str(other), "--kg-dir", str(repo / ".kg")]) == EXIT_USAGE
     assert "the store holds repo:demo, not repo:other" in capsys.readouterr().err
+
+
+def test_status_check_fails_only_when_files_changed(repo, capsys):
+    extract(repo)
+    assert status(repo, "--check") == EXIT_OK
+    write(repo, {"app/new.py": ""})
+    capsys.readouterr()
+    assert status(repo, "--check", "--json") == EXIT_VALIDATION
+    out = json.loads(capsys.readouterr().out)
+    assert out["ok"] is True and out["result"]["added"] == ["app/new.py"]
+    assert status(repo) == EXIT_OK  # without --check it only reports
+
+
+def test_status_check_ignores_files_kg_cannot_read(repo, capsys):
+    write(repo, {"app/broken.py": "def (:\n"})
+    extract(repo)
+    capsys.readouterr()
+    assert status(repo, "--check", "--json") == EXIT_OK
+    assert json.loads(capsys.readouterr().out)["result"]["unknown"] == ["app/broken.py"]
+
+
+def test_pre_commit_hooks_run_valid_kg_commands():
+    text = (Path(__file__).parents[1] / ".pre-commit-hooks.yaml").read_text()
+    assert re.findall(r"^- id: (\S+)", text, re.M) == ["kg-extract", "kg-status"]
+    for entry in re.findall(r"^  entry: (.+)$", text, re.M):
+        argv = entry.split()
+        assert argv[0] == "kg"
+        build_parser().parse_args(argv[1:])  # a UsageError fails the test
 
 
 def test_status_of_an_empty_store(repo, capsys):

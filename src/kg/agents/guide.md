@@ -53,6 +53,11 @@ element you linked to is gone, it is kept and reported. Send your edges again
 with the new ID (`kg add`), then `kg remove <old ID>`; if the knowledge no
 longer applies, only remove it.
 
+When you change code yourself, run `kg extract .` before committing and commit
+`.kg/graph.json` with the code, unless the repo's pre-commit hook already does
+(`kg-extract`). `kg status --check` exits with code `1` when the graph is
+behind the code.
+
 Never re-create what the parser produces: no `module:`, `class:`,
 `function:`, `file:`, `test:` or `dependency:` nodes of your own, and no
 `config:` node for `pyproject.toml` or `requirements*.txt`. Point your edges

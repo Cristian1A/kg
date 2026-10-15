@@ -86,7 +86,10 @@ kg status                          # later: has the code changed since the extra
 
 `kg extract` is deterministic and needs no LLM. Run it again after changing
 the code: it updates what the parser found and removes what is gone, without
-touching what the agent added. Documents, design decisions
+touching what the agent added. To keep it from going stale, commit the graph
+with the code: a pre-commit hook re-extracts it, and `kg status --check`
+fails CI when it is behind ([Keeping the graph fresh](docs/store.md#keeping-the-graph-fresh)).
+Documents, design decisions
 and domain concepts come from an external agent (Claude Code, Codex…) that
 follows `kg guide` (also installable as a skill with `kg guide --skill`) and
 the JSON Schema (`kg schema`). [`examples/agent/kg.json`](examples/agent/kg.json)
