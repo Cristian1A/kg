@@ -1,0 +1,5143 @@
+{
+  "version": "1",
+  "nodes": [
+    {
+      "id": "document:README.rst",
+      "type": "Document",
+      "label": "README",
+      "description": "Project entry point: Scrapy is a cross-platform web scraping framework for Python 3.10+, maintained by Zyte; shows `pip install scrapy` and links to the docs and contributing guide.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "README.rst",
+        "lines": [
+          1,
+          54
+        ]
+      }
+    },
+    {
+      "id": "document:INSTALL.md",
+      "type": "Document",
+      "label": "Install pointer",
+      "description": "Stub that points to the local and online installation guide.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "INSTALL.md",
+        "lines": [
+          1,
+          4
+        ]
+      }
+    },
+    {
+      "id": "document:CONTRIBUTING.md",
+      "type": "Document",
+      "label": "Contributing pointer",
+      "description": "Stub that links to the online contributing guidelines and asks not to use the issue tracker for support questions.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "CONTRIBUTING.md",
+        "lines": [
+          1,
+          6
+        ]
+      }
+    },
+    {
+      "id": "document:SECURITY.md",
+      "type": "Document",
+      "label": "Security policy",
+      "description": "Only the 2.19.x series receives security fixes; vulnerabilities are reported through GitHub security advisories.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "SECURITY.md",
+        "lines": [
+          1,
+          12
+        ]
+      }
+    },
+    {
+      "id": "document:docs/contributing.rst",
+      "type": "Document",
+      "label": "Contributing to Scrapy",
+      "description": "How to report bugs, find work, write and submit patches; coding style (Ruff via pre-commit), documentation policies (autodoc, versionadded) and running tests with tox and pytest.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "docs/contributing.rst",
+        "lines": [
+          1,
+          419
+        ]
+      }
+    },
+    {
+      "id": "document:docs/intro/overview.rst",
+      "type": "Document",
+      "label": "Scrapy at a glance",
+      "description": "Short walk-through of a quotes spider run with `scrapy runspider`, explaining the asynchronous request scheduling and the features Scrapy offers.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "docs/intro/overview.rst",
+        "lines": [
+          1,
+          159
+        ]
+      }
+    },
+    {
+      "id": "document:docs/intro/install.rst",
+      "type": "Document",
+      "label": "Installation guide",
+      "description": "Supported Python versions (3.10+, CPython or PyPy), installation with pip or conda, key dependencies (lxml, parsel, w3lib, Twisted, cryptography), optional extras and platform notes.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "docs/intro/install.rst",
+        "lines": [
+          1,
+          326
+        ]
+      }
+    },
+    {
+      "id": "document:docs/intro/tutorial.rst",
+      "type": "Document",
+      "label": "Scrapy tutorial",
+      "description": "Step-by-step guide: create a project, write a spider, extract data with CSS/XPath selectors, store it with feed exports and follow links.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "docs/intro/tutorial.rst",
+        "lines": [
+          1,
+          842
+        ]
+      }
+    },
+    {
+      "id": "document:docs/topics/architecture.rst",
+      "type": "Document",
+      "label": "Architecture overview",
+      "description": "The data flow controlled by the engine (spider, scheduler, downloader, middlewares, item pipelines), one paragraph per component, and the use of Twisted for event-driven networking.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "docs/topics/architecture.rst",
+        "lines": [
+          1,
+          165
+        ]
+      }
+    },
+    {
+      "id": "document:docs/topics/concepts.rst",
+      "type": "Document",
+      "label": "Scrapy's building blocks",
+      "description": "Quick map of spiders, items, settings, middlewares, pipelines and extensions: which problem each solves and when to use it.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "docs/topics/concepts.rst",
+        "lines": [
+          1,
+          102
+        ]
+      }
+    },
+    {
+      "id": "document:docs/topics/components.rst",
+      "type": "Document",
+      "label": "Components",
+      "description": "Defines a Scrapy component as any class built with build_from_crawler, lists the settings that take components, and explains from_crawler, component settings and enforcing requirements.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "docs/topics/components.rst",
+        "lines": [
+          1,
+          157
+        ]
+      }
+    },
+    {
+      "id": "document:docs/topics/settings.rst",
+      "type": "Document",
+      "label": "Settings",
+      "description": "How settings are designated and populated with six precedence levels, component priority dictionaries, pre-crawler/reactor/logging special settings, and the reference of built-in settings.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "docs/topics/settings.rst",
+        "lines": [
+          1,
+          2478
+        ]
+      }
+    },
+    {
+      "id": "document:docs/topics/spiders.rst",
+      "type": "Document",
+      "label": "Spiders",
+      "description": "The crawl cycle (start, callbacks, items, pipelines), the scrapy.Spider base class, spider arguments, start requests and the generic spiders CrawlSpider, XMLFeedSpider, CSVFeedSpider and SitemapSpider.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "docs/topics/spiders.rst",
+        "lines": [
+          1,
+          1023
+        ]
+      }
+    },
+    {
+      "id": "document:docs/topics/items.rst",
+      "type": "Document",
+      "label": "Items",
+      "description": "The item types supported through itemadapter (dicts, Item, dataclasses, attrs, Pydantic), declaring Item subclasses and Fields, and writing code that supports any item type.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "docs/topics/items.rst",
+        "lines": [
+          1,
+          435
+        ]
+      }
+    },
+    {
+      "id": "document:docs/topics/item-pipeline.rst",
+      "type": "Document",
+      "label": "Item Pipeline",
+      "description": "Writing pipeline components (process_item, open_spider, close_spider), examples (validation, JSON lines, MongoDB, duplicates), activation through ITEM_PIPELINES and common pitfalls.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "docs/topics/item-pipeline.rst",
+        "lines": [
+          1,
+          413
+        ]
+      }
+    },
+    {
+      "id": "document:docs/topics/downloader-middleware.rst",
+      "type": "Document",
+      "label": "Downloader Middleware",
+      "description": "Activating and ordering downloader middlewares, the process_request/process_response/process_exception hooks, and the reference of every built-in downloader middleware.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "docs/topics/downloader-middleware.rst",
+        "lines": [
+          1,
+          1302
+        ]
+      }
+    },
+    {
+      "id": "document:docs/topics/spider-middleware.rst",
+      "type": "Document",
+      "label": "Spider Middleware",
+      "description": "Activating and ordering spider middlewares, the process_spider_input/output/exception and process_start hooks, BaseSpiderMiddleware and the built-in spider middlewares.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "docs/topics/spider-middleware.rst",
+        "lines": [
+          1,
+          490
+        ]
+      }
+    },
+    {
+      "id": "document:docs/topics/extensions.rst",
+      "type": "Document",
+      "label": "Extensions",
+      "description": "Extensions as wildcard components loaded once per crawler from EXTENSIONS, a sample extension, and the built-in general-purpose and debugging extensions.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "docs/topics/extensions.rst",
+        "lines": [
+          1,
+          573
+        ]
+      }
+    },
+    {
+      "id": "document:docs/topics/signals.rst",
+      "type": "Document",
+      "label": "Signals",
+      "description": "How to connect to Scrapy signals, handler order, asynchronous handlers, and the reference of engine, item, spider, request and response signals.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "docs/topics/signals.rst",
+        "lines": [
+          1,
+          606
+        ]
+      }
+    },
+    {
+      "id": "document:docs/topics/request-response.rst",
+      "type": "Document",
+      "label": "Requests and Responses",
+      "description": "The Request and Response classes and subclasses, request fingerprints, callbacks and errbacks, Request.meta special keys and stopping a download.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "docs/topics/request-response.rst",
+        "lines": [
+          1,
+          1496
+        ]
+      }
+    },
+    {
+      "id": "document:docs/topics/selectors.rst",
+      "type": "Document",
+      "label": "Selectors",
+      "description": "Extracting data with XPath and CSS selectors, a thin wrapper over parsel; nesting, regular expressions, XPath tips, and the Selector/SelectorList reference.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "docs/topics/selectors.rst",
+        "lines": [
+          1,
+          1190
+        ]
+      }
+    },
+    {
+      "id": "document:docs/topics/feed-exports.rst",
+      "type": "Document",
+      "label": "Feed exports",
+      "description": "Exporting scraped items to files: serialization formats, storage backends (local, FTP, S3, GCS, stdout), item filtering, post-processing and the FEEDS family of settings.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "docs/topics/feed-exports.rst",
+        "lines": [
+          1,
+          826
+        ]
+      }
+    },
+    {
+      "id": "document:docs/topics/exporters.rst",
+      "type": "Document",
+      "label": "Item Exporters",
+      "description": "Using and customizing item exporters (start_exporting, export_item, finish_exporting), field serialization and the built-in exporters for JSON, CSV, XML, pickle and more.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "docs/topics/exporters.rst",
+        "lines": [
+          1,
+          537
+        ]
+      }
+    },
+    {
+      "id": "document:docs/topics/loaders.rst",
+      "type": "Document",
+      "label": "Item Loaders",
+      "description": "Populating items with Item Loaders, input and output processors, nested loaders and reuse; Scrapy's ItemLoader extends the itemloaders library with response support.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "docs/topics/loaders.rst",
+        "lines": [
+          1,
+          463
+        ]
+      }
+    },
+    {
+      "id": "document:docs/topics/scheduler.rst",
+      "type": "Document",
+      "label": "Scheduler",
+      "description": "The scheduler component that stores requests from the engine and feeds them back; overriding it with SCHEDULER, BaseScheduler, the default Scheduler and the priority queues.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "docs/topics/scheduler.rst",
+        "lines": [
+          1,
+          41
+        ]
+      }
+    },
+    {
+      "id": "document:docs/topics/asyncio.rst",
+      "type": "Document",
+      "label": "asyncio",
+      "description": "Native asyncio support: the asyncio reactor (default), pre-installed reactor problems, mixing Deferreds and asyncio, and the experimental mode without a Twisted reactor with its limitations.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "docs/topics/asyncio.rst",
+        "lines": [
+          1,
+          363
+        ]
+      }
+    },
+    {
+      "id": "document:docs/topics/coroutines.rst",
+      "type": "Document",
+      "label": "Coroutines",
+      "description": "Which callables may be `async def` (start, callbacks, pipeline and middleware methods, signal handlers) and how to use Deferred-based APIs from coroutines.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "docs/topics/coroutines.rst",
+        "lines": [
+          1,
+          276
+        ]
+      }
+    },
+    {
+      "id": "document:docs/topics/addons.rst",
+      "type": "Document",
+      "label": "Add-ons",
+      "description": "The add-on system that bundles and configures components through the ADDONS setting, writing add-ons with update_settings, fallbacks and examples.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "docs/topics/addons.rst",
+        "lines": [
+          1,
+          206
+        ]
+      }
+    },
+    {
+      "id": "document:docs/topics/download-handlers.rst",
+      "type": "Document",
+      "label": "Download handlers",
+      "description": "Components that download requests per URL scheme (DOWNLOAD_HANDLERS), lazy handlers, writing your own, and the built-in HTTP (HTTP/1.1, HTTP/2, aiohttp, httpx) and non-HTTP handlers.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "docs/topics/download-handlers.rst",
+        "lines": [
+          1,
+          461
+        ]
+      }
+    },
+    {
+      "id": "document:docs/topics/api.rst",
+      "type": "Document",
+      "label": "Core API",
+      "description": "API for extension and middleware developers: Crawler, Settings, SpiderLoader, Signals, Stats Collector and Engine APIs.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "docs/topics/api.rst",
+        "lines": [
+          1,
+          276
+        ]
+      }
+    },
+    {
+      "id": "document:docs/topics/jobs.rst",
+      "type": "Document",
+      "label": "Jobs: pausing and resuming crawls",
+      "description": "Persisting a crawl in a JOBDIR (scheduler queues, dupefilter, spider state) so it can be paused and resumed, and the persistence gotchas.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "docs/topics/jobs.rst",
+        "lines": [
+          1,
+          198
+        ]
+      }
+    },
+    {
+      "id": "document:docs/topics/security.rst",
+      "type": "Document",
+      "label": "Security",
+      "description": "Scrapy defaults with security implications (untrusted responses, memory limits, TLS verification, unencrypted and local protocols, telnet and remote control, credential leakage, job state) and how to harden them.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "docs/topics/security.rst",
+        "lines": [
+          1,
+          340
+        ]
+      }
+    },
+    {
+      "id": "document:docs/topics/contracts.rst",
+      "type": "Document",
+      "label": "Spiders Contracts",
+      "description": "Testing spider callbacks with @-contracts in their docstrings (@url, @returns, @scrapes...), run by `scrapy check`, and writing custom contracts.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "docs/topics/contracts.rst",
+        "lines": [
+          1,
+          145
+        ]
+      }
+    },
+    {
+      "id": "document:docs/topics/stats.rst",
+      "type": "Document",
+      "label": "Stats Collection",
+      "description": "The Stats Collector key/value facility available through Crawler.stats, common uses, the available collectors and the reference of stats Scrapy sets.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "docs/topics/stats.rst",
+        "lines": [
+          1,
+          764
+        ]
+      }
+    },
+    {
+      "id": "document:docs/topics/autothrottle.rst",
+      "type": "Document",
+      "label": "AutoThrottle extension",
+      "description": "Design goals and algorithm of the extension that adjusts download delays from server latency, and its settings.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "docs/topics/autothrottle.rst",
+        "lines": [
+          1,
+          191
+        ]
+      }
+    },
+    {
+      "id": "document:sep/README.rst",
+      "type": "Document",
+      "label": "SEP index",
+      "description": "Explains that the sep/ folder holds Scrapy Enhancement Proposals, mostly migrated from the old Trac wiki.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "sep/README.rst",
+        "lines": [
+          1,
+          7
+        ]
+      }
+    },
+    {
+      "id": "document:sep/sep-002.rst",
+      "type": "Document",
+      "label": "SEP-002: List fields API",
+      "description": "Obsolete proposal (by SEP-008) for an API to handle list-valued item fields.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "sep/sep-002.rst",
+        "lines": [
+          1,
+          116
+        ]
+      }
+    },
+    {
+      "id": "document:sep/sep-008.rst",
+      "type": "Document",
+      "label": "SEP-008: Item Loaders",
+      "description": "Final proposal for the Item Parser API, implemented with variations as Item Loaders: input/output processors and add_value/add_xpath/populate_item.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "sep/sep-008.rst",
+        "lines": [
+          1,
+          112
+        ]
+      }
+    },
+    {
+      "id": "document:sep/sep-009.rst",
+      "type": "Document",
+      "label": "SEP-009: Singleton removal",
+      "description": "Proposal to replace the Scrapy 0.7 singletons (engine, manager, extensions, stats, signals) with members of a single root Crawler object.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "sep/sep-009.rst",
+        "lines": [
+          1,
+          140
+        ]
+      }
+    },
+    {
+      "id": "document:sep/sep-012.rst",
+      "type": "Document",
+      "label": "SEP-012: Spider name",
+      "description": "Final proposal to identify spiders by a `name` attribute and merge domain_name/extra_domain_names into allowed_domains.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "sep/sep-012.rst",
+        "lines": [
+          1,
+          92
+        ]
+      }
+    },
+    {
+      "id": "document:sep/sep-013.rst",
+      "type": "Document",
+      "label": "SEP-013: Middlewares refactoring",
+      "description": "Unfinished proposal to fix inconsistencies in spider, downloader and scheduler middleware hooks, such as missing exception hooks on the way in.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "sep/sep-013.rst",
+        "lines": [
+          1,
+          188
+        ]
+      }
+    },
+    {
+      "id": "document:sep/sep-014.rst",
+      "type": "Document",
+      "label": "SEP-014: CrawlSpider v2",
+      "description": "Proposal to rewrite CrawlSpider with matcher objects and separate request extractors/processors; partially implemented and then discarded for lack of use.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "sep/sep-014.rst",
+        "lines": [
+          1,
+          664
+        ]
+      }
+    },
+    {
+      "id": "document:sep/sep-017.rst",
+      "type": "Document",
+      "label": "SEP-017: Spider Contracts",
+      "description": "Proposal for a lightweight design-by-contract mechanism to test spider callbacks from tags in their docstrings.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "sep/sep-017.rst",
+        "lines": [
+          1,
+          109
+        ]
+      }
+    },
+    {
+      "id": "document:sep/sep-018.rst",
+      "type": "Document",
+      "label": "SEP-018: Spider Middleware v2",
+      "description": "Draft of a new spider middleware architecture with reusable, possibly per-spider components (process_response, process_error, process_request).",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "sep/sep-018.rst",
+        "lines": [
+          1,
+          660
+        ]
+      }
+    },
+    {
+      "id": "document:sep/sep-019.rst",
+      "type": "Document",
+      "label": "SEP-019: Per-spider settings",
+      "description": "Final proposal, implemented with variations, for per-spider settings, setting priorities and the crawl process cleanup (from_crawler, spider loader).",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "sep/sep-019.rst",
+        "lines": [
+          1,
+          329
+        ]
+      }
+    },
+    {
+      "id": "decision:twisted-networking-engine",
+      "type": "Decision",
+      "label": "Twisted as the networking engine",
+      "description": "Scrapy is written on Twisted, an event-driven networking framework, so it downloads with non-blocking asynchronous code for concurrency instead of threads.",
+      "attrs": {
+        "status": "accepted"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "docs/topics/architecture.rst",
+        "lines": [
+          151,
+          165
+        ]
+      }
+    },
+    {
+      "id": "decision:asyncio-reactor-default",
+      "type": "Decision",
+      "label": "asyncio reactor by default",
+      "description": "TWISTED_REACTOR defaults to AsyncioSelectorReactor so that asyncio and asyncio-based libraries can be used in any coroutine; new projects need no setup.",
+      "attrs": {
+        "status": "accepted"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "docs/topics/asyncio.rst",
+        "lines": [
+          7,
+          39
+        ]
+      }
+    },
+    {
+      "id": "decision:reactorless-mode",
+      "type": "Decision",
+      "label": "Running without a Twisted reactor",
+      "description": "TWISTED_REACTOR_ENABLED=False runs Scrapy directly on the asyncio loop (allowing several AsyncCrawlerProcess runs, avoiding SelectorEventLoop limits), switching HTTP(S) to the aiohttp handler and disabling reactor-only features.",
+      "attrs": {
+        "status": "experimental",
+        "since": "2.15.0"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/asyncio.rst",
+        "lines": [
+          143,
+          229
+        ]
+      }
+    },
+    {
+      "id": "decision:settings-priorities",
+      "type": "Decision",
+      "label": "Settings precedence levels",
+      "description": "Settings are populated from six sources with numeric priorities (default 0, command 10, addon 15, project 20, spider 30, cmdline 40), so overriding does not depend on load order.",
+      "attrs": {
+        "status": "accepted"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "docs/topics/settings.rst",
+        "lines": [
+          33,
+          46
+        ]
+      }
+    },
+    {
+      "id": "decision:component-priority-dicts",
+      "type": "Decision",
+      "label": "Component priority dictionaries",
+      "description": "Middlewares, pipelines, extensions and add-ons are enabled with dicts of component to integer order, merged with a *_BASE setting; None disables a built-in component.",
+      "attrs": {
+        "status": "accepted"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "docs/topics/settings.rst",
+        "lines": [
+          247,
+          293
+        ]
+      }
+    },
+    {
+      "id": "decision:middleware-hook-chains",
+      "type": "Decision",
+      "label": "Middleware hook architecture",
+      "description": "HTTP-level and spider-level customization goes through ordered chains of hooks between the engine and the downloader or the spiders; requests traverse them in increasing order and responses or output in decreasing order.",
+      "attrs": {
+        "status": "accepted"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/downloader-middleware.rst",
+        "lines": [
+          7,
+          37
+        ]
+      }
+    },
+    {
+      "id": "decision:crawler-as-root-object",
+      "type": "Decision",
+      "label": "Crawler as the single root object",
+      "description": "Instead of global singletons, every core component hangs off a Crawler that components receive through from_crawler; it is the only way for them to reach settings, signals and stats.",
+      "attrs": {
+        "status": "accepted",
+        "origin": "SEP-009"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/api.rst",
+        "lines": [
+          12,
+          19
+        ]
+      }
+    },
+    {
+      "id": "decision:itemadapter-item-types",
+      "type": "Decision",
+      "label": "Any item type through itemadapter",
+      "description": "Scrapy accepts dicts, Item objects, dataclasses, attrs and Pydantic models via itemadapter, and code that receives items should work with all of them.",
+      "attrs": {
+        "status": "accepted"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/items.rst",
+        "lines": [
+          14,
+          29
+        ]
+      }
+    },
+    {
+      "id": "decision:selectors-wrap-parsel",
+      "type": "Decision",
+      "label": "Selectors as a thin wrapper over parsel",
+      "description": "Selectors delegate to the stand-alone parsel library (built on lxml) and only add integration with Response objects, giving lxml speed and accuracy.",
+      "attrs": {
+        "status": "accepted"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "docs/topics/selectors.rst",
+        "lines": [
+          28,
+          35
+        ]
+      }
+    },
+    {
+      "id": "decision:item-loaders-processors",
+      "type": "Decision",
+      "label": "Item Loaders with input/output processors",
+      "description": "Populating items is separated from the item container: loaders run input processors on added values and output processors when building the item; the Item Parser API of SEP-008 was implemented as Item Loaders, now based on the itemloaders library.",
+      "attrs": {
+        "status": "final"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "sep/sep-008.rst",
+        "lines": [
+          14,
+          34
+        ]
+      }
+    },
+    {
+      "id": "decision:spider-name-identifier",
+      "type": "Decision",
+      "label": "Spiders identified by name",
+      "description": "Spiders get a unique `name` attribute as identifier and a single allowed_domains list, so several spiders can scrape the same domain.",
+      "attrs": {
+        "status": "final"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "sep/sep-012.rst",
+        "lines": [
+          14,
+          33
+        ]
+      }
+    },
+    {
+      "id": "decision:per-spider-settings",
+      "type": "Decision",
+      "label": "Per-spider settings",
+      "description": "Spiders may override settings before the crawler uses them (custom_settings, update_settings) and are built by the crawler via from_crawler; implemented with variations, custom_settings ended up a class attribute.",
+      "attrs": {
+        "status": "final"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "sep/sep-019.rst",
+        "lines": [
+          13,
+          50
+        ]
+      }
+    },
+    {
+      "id": "decision:extensions-wildcard-components",
+      "type": "Decision",
+      "label": "Extensions as wildcard components",
+      "description": "Logic that fits no specific role (stats, memory limits, telnet) goes into extensions, loaded once per crawler from EXTENSIONS and hooked in through signals.",
+      "attrs": {
+        "status": "accepted"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/extensions.rst",
+        "lines": [
+          7,
+          19
+        ]
+      }
+    },
+    {
+      "id": "decision:addons-unified-configuration",
+      "type": "Decision",
+      "label": "Add-ons bundle component configuration",
+      "description": "An add-on enables and configures related middlewares, extensions or pipelines in one place through the ADDONS setting, for a plug-and-play experience.",
+      "attrs": {
+        "status": "accepted"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/addons.rst",
+        "lines": [
+          7,
+          21
+        ]
+      }
+    },
+    {
+      "id": "decision:download-handlers-per-scheme",
+      "type": "Decision",
+      "label": "Download handlers chosen per URL scheme",
+      "description": "The downloader picks a handler by the request URL scheme from DOWNLOAD_HANDLERS merged with DOWNLOAD_HANDLERS_BASE; unknown schemes raise NotSupported.",
+      "attrs": {
+        "status": "accepted"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/download-handlers.rst",
+        "lines": [
+          11,
+          27
+        ]
+      }
+    },
+    {
+      "id": "decision:downloader-aware-priority-queue",
+      "type": "Decision",
+      "label": "Downloader-aware priority queue by default",
+      "description": "The scheduler defaults to DownloaderAwarePriorityQueue because it works better than ScrapyPriorityQueue when crawling many domains in parallel.",
+      "attrs": {
+        "status": "accepted"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/settings.rst",
+        "lines": [
+          2019,
+          2034
+        ]
+      }
+    },
+    {
+      "id": "decision:spider-contracts",
+      "type": "Decision",
+      "label": "Spider contracts in docstrings",
+      "description": "Spider callbacks are tested with design-by-contract tags in their docstrings (sample URL, expected items/requests), run quickly without a full crawl.",
+      "attrs": {
+        "status": "implemented"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "sep/sep-017.rst",
+        "lines": [
+          13,
+          27
+        ]
+      }
+    },
+    {
+      "id": "decision:crawlspider-v2-discarded",
+      "type": "Decision",
+      "label": "CrawlSpider v2 discarded",
+      "description": "A rewrite of CrawlSpider with matcher objects and separate request extractors/processors was partially implemented and then discarded for lack of use; the Rule/LinkExtractor design stayed.",
+      "attrs": {
+        "status": "rejected"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "sep/sep-014.rst",
+        "lines": [
+          1,
+          36
+        ]
+      }
+    },
+    {
+      "id": "decision:spider-middleware-v2",
+      "type": "Decision",
+      "label": "Spider Middleware v2",
+      "description": "Proposed spider middleware API with reusable global or per-spider components; never completed, the current API keeps process_spider_input/output/exception.",
+      "attrs": {
+        "status": "draft"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.8,
+        "source": "sep/sep-018.rst",
+        "lines": [
+          1,
+          50
+        ]
+      }
+    },
+    {
+      "id": "decision:stats-always-available",
+      "type": "Decision",
+      "label": "Stats API always available",
+      "description": "The Stats Collector API works even when stats collection is disabled (it just collects nothing), so collecting a stat takes one line and costs almost nothing when off.",
+      "attrs": {
+        "status": "accepted"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/stats.rst",
+        "lines": [
+          13,
+          22
+        ]
+      }
+    },
+    {
+      "id": "decision:docs-from-docstrings",
+      "type": "Decision",
+      "label": "API reference from docstrings",
+      "description": "API reference lives in docstrings pulled with Sphinx autodoc, topics go in docs/, and docs of deprecated features are removed when they are deprecated.",
+      "attrs": {
+        "status": "accepted"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "docs/contributing.rst",
+        "lines": [
+          293,
+          319
+        ]
+      }
+    },
+    {
+      "id": "decision:scraping-first-security-defaults",
+      "type": "Decision",
+      "label": "Defaults optimized for scraping, not hardening",
+      "description": "Scrapy keeps permissive defaults (e.g. no TLS certificate verification, unencrypted protocols allowed) because stricter ones break valid scraping cases; the security page explains how to harden them.",
+      "attrs": {
+        "status": "accepted"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/security.rst",
+        "lines": [
+          7,
+          16
+        ]
+      }
+    },
+    {
+      "id": "concept:data-flow",
+      "type": "Concept",
+      "label": "Scrapy data flow",
+      "description": "The nine-step loop run by the engine: requests from the spider go through the scheduler and downloader middlewares to the downloader, responses back through spider middlewares to callbacks, items to pipelines, until the scheduler is empty.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/architecture.rst",
+        "lines": [
+          29,
+          71
+        ]
+      }
+    },
+    {
+      "id": "concept:engine",
+      "type": "Concept",
+      "label": "Execution engine",
+      "description": "Core component that controls the data flow between all other components and fires events when actions occur.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/architecture.rst",
+        "lines": [
+          76,
+          83
+        ]
+      }
+    },
+    {
+      "id": "concept:scheduler",
+      "type": "Concept",
+      "label": "Scheduler",
+      "description": "Component that receives requests from the engine, stores them in memory or disk queues and returns the next request when the engine asks.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/scheduler.rst",
+        "lines": [
+          9,
+          12
+        ]
+      }
+    },
+    {
+      "id": "concept:downloader",
+      "type": "Concept",
+      "label": "Downloader",
+      "description": "Component that fetches web pages through download handlers and feeds the responses to the engine.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/architecture.rst",
+        "lines": [
+          94,
+          100
+        ]
+      }
+    },
+    {
+      "id": "concept:spider",
+      "type": "Concept",
+      "label": "Spider",
+      "description": "User class that defines which requests to send and how to parse their responses into items and further requests; one per site or group of sites.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/spiders.rst",
+        "lines": [
+          7,
+          28
+        ]
+      }
+    },
+    {
+      "id": "concept:request",
+      "type": "Concept",
+      "label": "Request",
+      "description": "An HTTP request generated in spiders that travels through the system to the downloader; carries callback, errback, meta and priority.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/request-response.rst",
+        "lines": [
+          10,
+          16
+        ]
+      }
+    },
+    {
+      "id": "concept:response",
+      "type": "Concept",
+      "label": "Response",
+      "description": "The downloaded result of a request, returned to the spider that issued it; text subclasses add selectors and encoding handling.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/request-response.rst",
+        "lines": [
+          13,
+          21
+        ]
+      }
+    },
+    {
+      "id": "concept:callback",
+      "type": "Concept",
+      "label": "Callback and errback",
+      "description": "Spider functions called with the response of a request (or with the failure), which return or yield items and new requests.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/request-response.rst",
+        "lines": [
+          502,
+          535
+        ]
+      }
+    },
+    {
+      "id": "concept:item",
+      "type": "Concept",
+      "label": "Item",
+      "description": "A key-value object holding scraped data; any type supported by itemadapter can be used.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/items.rst",
+        "lines": [
+          10,
+          17
+        ]
+      }
+    },
+    {
+      "id": "concept:item-pipeline",
+      "type": "Concept",
+      "label": "Item pipeline",
+      "description": "Ordered chain of components that receive every scraped item to clean, validate, deduplicate or store it, or drop it with DropItem.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/item-pipeline.rst",
+        "lines": [
+          7,
+          20
+        ]
+      }
+    },
+    {
+      "id": "concept:downloader-middleware",
+      "type": "Concept",
+      "label": "Downloader middleware chain",
+      "description": "Ordered hooks between the engine and the downloader that process every request and response at the HTTP level (proxies, retries, redirects, caching).",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/downloader-middleware.rst",
+        "lines": [
+          7,
+          37
+        ]
+      }
+    },
+    {
+      "id": "concept:spider-middleware",
+      "type": "Concept",
+      "label": "Spider middleware chain",
+      "description": "Ordered hooks between the engine and spider callbacks that process responses going in and items/requests coming out.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/spider-middleware.rst",
+        "lines": [
+          7,
+          39
+        ]
+      }
+    },
+    {
+      "id": "concept:extension",
+      "type": "Concept",
+      "label": "Extension",
+      "description": "A component with no specific role in the data flow, used for anything else (stats, memory limits, telnet), usually driven by signals.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/extensions.rst",
+        "lines": [
+          7,
+          19
+        ]
+      }
+    },
+    {
+      "id": "concept:signal",
+      "type": "Concept",
+      "label": "Signal",
+      "description": "Events Scrapy sends (engine_started, item_scraped, spider_idle...) that handlers connect to, delivering only the arguments the handler accepts.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/signals.rst",
+        "lines": [
+          7,
+          17
+        ]
+      }
+    },
+    {
+      "id": "concept:component",
+      "type": "Concept",
+      "label": "Component",
+      "description": "Any class Scrapy builds with build_from_crawler, optionally through a from_crawler class method that gives it the crawler.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/components.rst",
+        "lines": [
+          7,
+          54
+        ]
+      }
+    },
+    {
+      "id": "concept:crawler",
+      "type": "Concept",
+      "label": "Crawler",
+      "description": "The object that wires settings, signals, stats, extensions and the engine for one spider run, and the entry point of the core API.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/api.rst",
+        "lines": [
+          12,
+          19
+        ]
+      }
+    },
+    {
+      "id": "concept:settings-priority",
+      "type": "Concept",
+      "label": "Setting priority",
+      "description": "Each setting value carries a priority (default, command, addon, project, spider, cmdline) and only a value of equal or higher priority overrides it.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/settings.rst",
+        "lines": [
+          33,
+          46
+        ]
+      }
+    },
+    {
+      "id": "concept:addon",
+      "type": "Concept",
+      "label": "Add-on",
+      "description": "A class enabled in ADDONS that adjusts settings to enable and configure a set of components.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/addons.rst",
+        "lines": [
+          7,
+          21
+        ]
+      }
+    },
+    {
+      "id": "concept:download-handler",
+      "type": "Concept",
+      "label": "Download handler",
+      "description": "Component that downloads requests for one URL scheme (http, https, ftp, s3, file, data) and produces responses.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/download-handlers.rst",
+        "lines": [
+          7,
+          22
+        ]
+      }
+    },
+    {
+      "id": "concept:request-fingerprint",
+      "type": "Concept",
+      "label": "Request fingerprint",
+      "description": "A hash that identifies a request, used by the duplicate filter, the HTTP cache and other components to tell requests apart.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/request-response.rst",
+        "lines": [
+          301,
+          335
+        ]
+      }
+    },
+    {
+      "id": "concept:duplicate-filter",
+      "type": "Concept",
+      "label": "Duplicate request filter",
+      "description": "Filter that drops requests whose fingerprint was already seen, configured by DUPEFILTER_CLASS and persisted in JOBDIR.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/jobs.rst",
+        "lines": [
+          10,
+          18
+        ]
+      }
+    },
+    {
+      "id": "concept:selector",
+      "type": "Concept",
+      "label": "Selector",
+      "description": "Object that selects parts of an HTML/XML document with XPath or CSS expressions and extracts data from them.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/selectors.rst",
+        "lines": [
+          20,
+          35
+        ]
+      }
+    },
+    {
+      "id": "concept:item-loader",
+      "type": "Concept",
+      "label": "Item loader",
+      "description": "Helper that populates items by passing extracted values through input and output processors.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/loaders.rst",
+        "lines": [
+          10,
+          21
+        ]
+      }
+    },
+    {
+      "id": "concept:feed-export",
+      "type": "Concept",
+      "label": "Feed export",
+      "description": "Built-in export of scraped items to feeds in several formats and storage backends, configured with FEEDS.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/feed-exports.rst",
+        "lines": [
+          7,
+          14
+        ]
+      }
+    },
+    {
+      "id": "concept:item-exporter",
+      "type": "Concept",
+      "label": "Item exporter",
+      "description": "Serializer that writes items to a file in a format (JSON, JSON lines, CSV, XML, pickle, marshal); used by feed exports.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/exporters.rst",
+        "lines": [
+          10,
+          30
+        ]
+      }
+    },
+    {
+      "id": "concept:stats-collection",
+      "type": "Concept",
+      "label": "Stats collection",
+      "description": "Key/value counters collected during a crawl and accessible through Crawler.stats.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/stats.rst",
+        "lines": [
+          7,
+          22
+        ]
+      }
+    },
+    {
+      "id": "concept:spider-contract",
+      "type": "Concept",
+      "label": "Spider contract",
+      "description": "A docstring tag (@url, @returns, @scrapes...) that states what a callback must produce for a sample page, checked by `scrapy check`.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/contracts.rst",
+        "lines": [
+          7,
+          18
+        ]
+      }
+    },
+    {
+      "id": "concept:job-persistence",
+      "type": "Concept",
+      "label": "Job persistence (JOBDIR)",
+      "description": "Storing scheduler queues, seen requests and spider state on disk so a crawl can be paused and resumed.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/jobs.rst",
+        "lines": [
+          7,
+          39
+        ]
+      }
+    },
+    {
+      "id": "concept:crawl-rule",
+      "type": "Concept",
+      "label": "Crawling rule",
+      "description": "In CrawlSpider, a Rule pairs a link extractor with a callback and follow behaviour to crawl links automatically.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/spiders.rst",
+        "lines": [
+          513,
+          568
+        ]
+      }
+    },
+    {
+      "id": "concept:autothrottle",
+      "type": "Concept",
+      "label": "AutoThrottle",
+      "description": "Automatic adjustment of download delay and concurrency from the observed server latency.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/autothrottle.rst",
+        "lines": [
+          10,
+          53
+        ]
+      }
+    },
+    {
+      "id": "concept:twisted-reactor",
+      "type": "Concept",
+      "label": "Twisted reactor",
+      "description": "The single per-process Twisted event loop Scrapy runs on; reactor settings are fixed once it is installed.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/settings.rst",
+        "lines": [
+          331,
+          390
+        ]
+      }
+    },
+    {
+      "id": "issue:sep-002-wrong-number",
+      "type": "Issue",
+      "label": "SEP-002 header says SEP 3",
+      "description": "The metadata table of sep/sep-002.rst gives the number 3 while its title says SEP-002; sep-003.rst also declares SEP 3, so two proposals share a number.",
+      "attrs": {
+        "kind": "documentation",
+        "evidence": "sep/sep-002.rst:2 'SEP      3' vs :10 'SEP-002 - List fields API'; sep/sep-003.rst:2 'SEP      3'"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "sep/sep-002.rst",
+        "lines": [
+          1,
+          11
+        ]
+      }
+    },
+    {
+      "id": "issue:sep-017-status-stale",
+      "type": "Issue",
+      "label": "SEP-017 still marked Draft",
+      "description": "Spider Contracts are shipped (scrapy.contracts, `scrapy check`, docs/topics/contracts.rst) but sep/sep-017.rst still has Status Draft.",
+      "attrs": {
+        "kind": "documentation",
+        "evidence": "sep/sep-017.rst:6 'Status   Draft'; scrapy/contracts/__init__.py and scrapy/contracts/default.py implement @url/@returns/@scrapes"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.85,
+        "source": "sep/sep-017.rst",
+        "lines": [
+          1,
+          7
+        ]
+      }
+    },
+    {
+      "id": "issue:sep-009-status-stale",
+      "type": "Issue",
+      "label": "SEP-009 still 'in progress'",
+      "description": "SEP-009 is marked as a document being written, yet its proposal is in place: Crawler is the root object holding settings, signals, stats, extensions and engine.",
+      "attrs": {
+        "kind": "documentation",
+        "evidence": "sep/sep-009.rst:6 'Document in progress'; scrapy/crawler.py:163-210 builds stats, logformatter and extensions on the Crawler; docs/topics/api.rst:15-19"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.7,
+        "source": "sep/sep-009.rst",
+        "lines": [
+          1,
+          40
+        ]
+      }
+    },
+    {
+      "id": "issue:components-list-incomplete",
+      "type": "Issue",
+      "label": "Components page omits some component settings",
+      "description": "components.rst defines a component as any class built with build_from_crawler and lists the settings that take one, but omits ITEM_PROCESSOR (which settings.rst calls a component), LOG_FORMATTER and REQUEST_FINGERPRINTER_CLASS, all built with build_from_crawler.",
+      "attrs": {
+        "kind": "documentation",
+        "evidence": "docs/topics/components.rst:10-27; docs/topics/settings.rst:1598; scrapy/crawler.py:165-171; scrapy/core/scraper.py:112-115"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.75,
+        "source": "docs/topics/components.rst",
+        "lines": [
+          7,
+          27
+        ]
+      }
+    }
+  ],
+  "edges": [
+    {
+      "source": "document:README.rst",
+      "target": "repo:scrapy",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "README.rst",
+        "lines": [
+          34,
+          54
+        ]
+      }
+    },
+    {
+      "source": "document:INSTALL.md",
+      "target": "document:docs/intro/install.rst",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "INSTALL.md",
+        "lines": [
+          1,
+          4
+        ]
+      }
+    },
+    {
+      "source": "document:CONTRIBUTING.md",
+      "target": "document:docs/contributing.rst",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "CONTRIBUTING.md",
+        "lines": [
+          1,
+          6
+        ]
+      }
+    },
+    {
+      "source": "document:SECURITY.md",
+      "target": "repo:scrapy",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.85,
+        "source": "SECURITY.md",
+        "lines": [
+          1,
+          12
+        ]
+      }
+    },
+    {
+      "source": "document:docs/contributing.rst",
+      "target": "repo:scrapy",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.8,
+        "source": "docs/contributing.rst",
+        "lines": [
+          248,
+          390
+        ]
+      }
+    },
+    {
+      "source": "document:docs/intro/overview.rst",
+      "target": "class:scrapy.spiders.Spider",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.8,
+        "source": "docs/intro/overview.rst",
+        "lines": [
+          16,
+          100
+        ]
+      }
+    },
+    {
+      "source": "document:docs/intro/install.rst",
+      "target": "dependency:twisted",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.85,
+        "source": "docs/intro/install.rst",
+        "lines": [
+          47,
+          53
+        ]
+      }
+    },
+    {
+      "source": "document:docs/intro/install.rst",
+      "target": "dependency:parsel",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.85,
+        "source": "docs/intro/install.rst",
+        "lines": [
+          47,
+          53
+        ]
+      }
+    },
+    {
+      "source": "document:docs/intro/install.rst",
+      "target": "dependency:lxml",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.85,
+        "source": "docs/intro/install.rst",
+        "lines": [
+          47,
+          53
+        ]
+      }
+    },
+    {
+      "source": "document:docs/intro/tutorial.rst",
+      "target": "class:scrapy.spiders.Spider",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.75,
+        "source": "docs/intro/tutorial.rst",
+        "lines": [
+          1,
+          842
+        ]
+      }
+    },
+    {
+      "source": "document:docs/intro/tutorial.rst",
+      "target": "class:scrapy.selector.unified.Selector",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.7,
+        "source": "docs/intro/tutorial.rst",
+        "lines": [
+          1,
+          842
+        ]
+      }
+    },
+    {
+      "source": "document:docs/topics/architecture.rst",
+      "target": "class:scrapy.core.engine.ExecutionEngine",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/architecture.rst",
+        "lines": [
+          76,
+          83
+        ]
+      }
+    },
+    {
+      "source": "document:docs/topics/architecture.rst",
+      "target": "class:scrapy.core.scheduler.Scheduler",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/architecture.rst",
+        "lines": [
+          85,
+          92
+        ]
+      }
+    },
+    {
+      "source": "document:docs/topics/architecture.rst",
+      "target": "class:scrapy.core.downloader.Downloader",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/architecture.rst",
+        "lines": [
+          94,
+          100
+        ]
+      }
+    },
+    {
+      "source": "document:docs/topics/architecture.rst",
+      "target": "class:scrapy.spiders.Spider",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/architecture.rst",
+        "lines": [
+          102,
+          109
+        ]
+      }
+    },
+    {
+      "source": "document:docs/topics/architecture.rst",
+      "target": "class:scrapy.pipelines.ItemPipelineManager",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/architecture.rst",
+        "lines": [
+          111,
+          119
+        ]
+      }
+    },
+    {
+      "source": "document:docs/topics/architecture.rst",
+      "target": "class:scrapy.core.downloader.middleware.DownloaderMiddlewareManager",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/architecture.rst",
+        "lines": [
+          121,
+          130
+        ]
+      }
+    },
+    {
+      "source": "document:docs/topics/architecture.rst",
+      "target": "class:scrapy.core.spidermw.SpiderMiddlewareManager",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/architecture.rst",
+        "lines": [
+          132,
+          140
+        ]
+      }
+    },
+    {
+      "source": "document:docs/topics/architecture.rst",
+      "target": "class:scrapy.extension.ExtensionManager",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.8,
+        "source": "docs/topics/architecture.rst",
+        "lines": [
+          142,
+          149
+        ]
+      }
+    },
+    {
+      "source": "document:docs/topics/architecture.rst",
+      "target": "dependency:twisted",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/architecture.rst",
+        "lines": [
+          151,
+          165
+        ]
+      }
+    },
+    {
+      "source": "document:docs/topics/concepts.rst",
+      "target": "package:scrapy",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.75,
+        "source": "docs/topics/concepts.rst",
+        "lines": [
+          1,
+          102
+        ]
+      }
+    },
+    {
+      "source": "document:docs/topics/components.rst",
+      "target": "function:scrapy.utils.misc.build_from_crawler",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/components.rst",
+        "lines": [
+          7,
+          31
+        ]
+      }
+    },
+    {
+      "source": "document:docs/topics/components.rst",
+      "target": "class:scrapy.crawler.Crawler",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.85,
+        "source": "docs/topics/components.rst",
+        "lines": [
+          35,
+          54
+        ]
+      }
+    },
+    {
+      "source": "document:docs/topics/settings.rst",
+      "target": "package:scrapy.settings",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/settings.rst",
+        "lines": [
+          1,
+          246
+        ]
+      }
+    },
+    {
+      "source": "document:docs/topics/settings.rst",
+      "target": "class:scrapy.settings.BaseSettings",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.85,
+        "source": "docs/topics/settings.rst",
+        "lines": [
+          214,
+          246
+        ]
+      }
+    },
+    {
+      "source": "document:docs/topics/settings.rst",
+      "target": "module:scrapy.settings.default_settings",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/settings.rst",
+        "lines": [
+          167,
+          180
+        ]
+      }
+    },
+    {
+      "source": "document:docs/topics/settings.rst",
+      "target": "function:scrapy.utils.project.get_project_settings",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.85,
+        "source": "docs/topics/settings.rst",
+        "lines": [
+          133,
+          146
+        ]
+      }
+    },
+    {
+      "source": "document:docs/topics/settings.rst",
+      "target": "function:scrapy.settings.get_settings_priority",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.75,
+        "source": "docs/topics/settings.rst",
+        "lines": [
+          33,
+          46
+        ]
+      }
+    },
+    {
+      "source": "document:docs/topics/spiders.rst",
+      "target": "class:scrapy.spiders.Spider",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/spiders.rst",
+        "lines": [
+          35,
+          266
+        ]
+      }
+    },
+    {
+      "source": "document:docs/topics/spiders.rst",
+      "target": "class:scrapy.spiders.crawl.CrawlSpider",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/spiders.rst",
+        "lines": [
+          473,
+          618
+        ]
+      }
+    },
+    {
+      "source": "document:docs/topics/spiders.rst",
+      "target": "class:scrapy.spiders.crawl.Rule",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/spiders.rst",
+        "lines": [
+          513,
+          568
+        ]
+      }
+    },
+    {
+      "source": "document:docs/topics/spiders.rst",
+      "target": "class:scrapy.spiders.feed.XMLFeedSpider",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/spiders.rst",
+        "lines": [
+          619,
+          752
+        ]
+      }
+    },
+    {
+      "source": "document:docs/topics/spiders.rst",
+      "target": "class:scrapy.spiders.feed.CSVFeedSpider",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/spiders.rst",
+        "lines": [
+          753,
+          813
+        ]
+      }
+    },
+    {
+      "source": "document:docs/topics/spiders.rst",
+      "target": "class:scrapy.spiders.sitemap.SitemapSpider",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/spiders.rst",
+        "lines": [
+          814,
+          1023
+        ]
+      }
+    },
+    {
+      "source": "document:docs/topics/items.rst",
+      "target": "module:scrapy.item",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/items.rst",
+        "lines": [
+          1,
+          30
+        ]
+      }
+    },
+    {
+      "source": "document:docs/topics/items.rst",
+      "target": "class:scrapy.item.Item",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/items.rst",
+        "lines": [
+          40,
+          80
+        ]
+      }
+    },
+    {
+      "source": "document:docs/topics/items.rst",
+      "target": "class:scrapy.item.Field",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/items.rst",
+        "lines": [
+          212,
+          249
+        ]
+      }
+    },
+    {
+      "source": "document:docs/topics/items.rst",
+      "target": "dependency:itemadapter",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.85,
+        "source": "docs/topics/items.rst",
+        "lines": [
+          21,
+          29
+        ]
+      }
+    },
+    {
+      "source": "document:docs/topics/item-pipeline.rst",
+      "target": "class:scrapy.pipelines.ItemPipelineManager",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.85,
+        "source": "docs/topics/item-pipeline.rst",
+        "lines": [
+          1,
+          64
+        ]
+      }
+    },
+    {
+      "source": "document:docs/topics/item-pipeline.rst",
+      "target": "package:scrapy.pipelines",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.8,
+        "source": "docs/topics/item-pipeline.rst",
+        "lines": [
+          261,
+          277
+        ]
+      }
+    },
+    {
+      "source": "document:docs/topics/downloader-middleware.rst",
+      "target": "class:scrapy.core.downloader.middleware.DownloaderMiddlewareManager",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.85,
+        "source": "docs/topics/downloader-middleware.rst",
+        "lines": [
+          14,
+          58
+        ]
+      }
+    },
+    {
+      "source": "document:docs/topics/downloader-middleware.rst",
+      "target": "package:scrapy.downloadermiddlewares",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/downloader-middleware.rst",
+        "lines": [
+          62,
+          1302
+        ]
+      }
+    },
+    {
+      "source": "document:docs/topics/downloader-middleware.rst",
+      "target": "class:scrapy.downloadermiddlewares.httpcache.HttpCacheMiddleware",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/downloader-middleware.rst",
+        "lines": [
+          353,
+          716
+        ]
+      }
+    },
+    {
+      "source": "document:docs/topics/downloader-middleware.rst",
+      "target": "class:scrapy.downloadermiddlewares.offsite.OffsiteMiddleware",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/downloader-middleware.rst",
+        "lines": [
+          815,
+          824
+        ]
+      }
+    },
+    {
+      "source": "document:docs/topics/downloader-middleware.rst",
+      "target": "class:scrapy.downloadermiddlewares.redirect.RedirectMiddleware",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/downloader-middleware.rst",
+        "lines": [
+          825,
+          949
+        ]
+      }
+    },
+    {
+      "source": "document:docs/topics/downloader-middleware.rst",
+      "target": "class:scrapy.downloadermiddlewares.retry.RetryMiddleware",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/downloader-middleware.rst",
+        "lines": [
+          1005,
+          1141
+        ]
+      }
+    },
+    {
+      "source": "document:docs/topics/downloader-middleware.rst",
+      "target": "class:scrapy.downloadermiddlewares.robotstxt.RobotsTxtMiddleware",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/downloader-middleware.rst",
+        "lines": [
+          1142,
+          1275
+        ]
+      }
+    },
+    {
+      "source": "document:docs/topics/downloader-middleware.rst",
+      "target": "class:scrapy.downloadermiddlewares.useragent.UserAgentMiddleware",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/downloader-middleware.rst",
+        "lines": [
+          1290,
+          1302
+        ]
+      }
+    },
+    {
+      "source": "document:docs/topics/spider-middleware.rst",
+      "target": "class:scrapy.core.spidermw.SpiderMiddlewareManager",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.85,
+        "source": "docs/topics/spider-middleware.rst",
+        "lines": [
+          15,
+          60
+        ]
+      }
+    },
+    {
+      "source": "document:docs/topics/spider-middleware.rst",
+      "target": "package:scrapy.spidermiddlewares",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/spider-middleware.rst",
+        "lines": [
+          64,
+          490
+        ]
+      }
+    },
+    {
+      "source": "document:docs/topics/spider-middleware.rst",
+      "target": "class:scrapy.spidermiddlewares.base.BaseSpiderMiddleware",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/spider-middleware.rst",
+        "lines": [
+          207,
+          219
+        ]
+      }
+    },
+    {
+      "source": "document:docs/topics/spider-middleware.rst",
+      "target": "class:scrapy.spidermiddlewares.depth.DepthMiddleware",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/spider-middleware.rst",
+        "lines": [
+          230,
+          239
+        ]
+      }
+    },
+    {
+      "source": "document:docs/topics/extensions.rst",
+      "target": "class:scrapy.extension.ExtensionManager",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.85,
+        "source": "docs/topics/extensions.rst",
+        "lines": [
+          15,
+          40
+        ]
+      }
+    },
+    {
+      "source": "document:docs/topics/extensions.rst",
+      "target": "package:scrapy.extensions",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/extensions.rst",
+        "lines": [
+          113,
+          573
+        ]
+      }
+    },
+    {
+      "source": "document:docs/topics/extensions.rst",
+      "target": "class:scrapy.extensions.corestats.CoreStats",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/extensions.rst",
+        "lines": [
+          129,
+          144
+        ]
+      }
+    },
+    {
+      "source": "document:docs/topics/extensions.rst",
+      "target": "class:scrapy.extensions.memusage.MemoryUsage",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/extensions.rst",
+        "lines": [
+          155,
+          178
+        ]
+      }
+    },
+    {
+      "source": "document:docs/topics/extensions.rst",
+      "target": "class:scrapy.extensions.spiderstate.SpiderState",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/extensions.rst",
+        "lines": [
+          198,
+          221
+        ]
+      }
+    },
+    {
+      "source": "document:docs/topics/extensions.rst",
+      "target": "class:scrapy.extensions.closespider.CloseSpider",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/extensions.rst",
+        "lines": [
+          222,
+          323
+        ]
+      }
+    },
+    {
+      "source": "document:docs/topics/extensions.rst",
+      "target": "class:scrapy.extensions.telnet.TelnetConsole",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/extensions.rst",
+        "lines": [
+          485,
+          499
+        ]
+      }
+    },
+    {
+      "source": "document:docs/topics/extensions.rst",
+      "target": "class:scrapy.extensions.remote_control.RemoteControl",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.85,
+        "source": "docs/topics/extensions.rst",
+        "lines": [
+          500,
+          573
+        ]
+      }
+    },
+    {
+      "source": "document:docs/topics/signals.rst",
+      "target": "module:scrapy.signals",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/signals.rst",
+        "lines": [
+          111,
+          606
+        ]
+      }
+    },
+    {
+      "source": "document:docs/topics/signals.rst",
+      "target": "class:scrapy.signalmanager.SignalManager",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.8,
+        "source": "docs/topics/signals.rst",
+        "lines": [
+          1,
+          110
+        ]
+      }
+    },
+    {
+      "source": "document:docs/topics/request-response.rst",
+      "target": "package:scrapy.http",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/request-response.rst",
+        "lines": [
+          1,
+          22
+        ]
+      }
+    },
+    {
+      "source": "document:docs/topics/request-response.rst",
+      "target": "class:scrapy.http.request.Request",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/request-response.rst",
+        "lines": [
+          24,
+          218
+        ]
+      }
+    },
+    {
+      "source": "document:docs/topics/request-response.rst",
+      "target": "class:scrapy.http.request.form.FormRequest",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/request-response.rst",
+        "lines": [
+          1070,
+          1074
+        ]
+      }
+    },
+    {
+      "source": "document:docs/topics/request-response.rst",
+      "target": "class:scrapy.http.request.json_request.JsonRequest",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/request-response.rst",
+        "lines": [
+          1075,
+          1117
+        ]
+      }
+    },
+    {
+      "source": "document:docs/topics/request-response.rst",
+      "target": "class:scrapy.http.response.Response",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/request-response.rst",
+        "lines": [
+          1118,
+          1303
+        ]
+      }
+    },
+    {
+      "source": "document:docs/topics/request-response.rst",
+      "target": "class:scrapy.http.response.text.TextResponse",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/request-response.rst",
+        "lines": [
+          1310,
+          1459
+        ]
+      }
+    },
+    {
+      "source": "document:docs/topics/request-response.rst",
+      "target": "class:scrapy.http.response.html.HtmlResponse",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/request-response.rst",
+        "lines": [
+          1460,
+          1470
+        ]
+      }
+    },
+    {
+      "source": "document:docs/topics/request-response.rst",
+      "target": "class:scrapy.utils.request.RequestFingerprinter",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/request-response.rst",
+        "lines": [
+          301,
+          501
+        ]
+      }
+    },
+    {
+      "source": "document:docs/topics/selectors.rst",
+      "target": "class:scrapy.selector.unified.Selector",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/selectors.rst",
+        "lines": [
+          1038,
+          1089
+        ]
+      }
+    },
+    {
+      "source": "document:docs/topics/selectors.rst",
+      "target": "class:scrapy.selector.unified.SelectorList",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/selectors.rst",
+        "lines": [
+          1090,
+          1118
+        ]
+      }
+    },
+    {
+      "source": "document:docs/topics/selectors.rst",
+      "target": "dependency:parsel",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/selectors.rst",
+        "lines": [
+          28,
+          41
+        ]
+      }
+    },
+    {
+      "source": "document:docs/topics/feed-exports.rst",
+      "target": "class:scrapy.extensions.feedexport.FeedExporter",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.85,
+        "source": "docs/topics/feed-exports.rst",
+        "lines": [
+          1,
+          21
+        ]
+      }
+    },
+    {
+      "source": "document:docs/topics/feed-exports.rst",
+      "target": "module:scrapy.extensions.feedexport",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/feed-exports.rst",
+        "lines": [
+          97,
+          369
+        ]
+      }
+    },
+    {
+      "source": "document:docs/topics/feed-exports.rst",
+      "target": "class:scrapy.extensions.feedexport.ItemFilter",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/feed-exports.rst",
+        "lines": [
+          331,
+          369
+        ]
+      }
+    },
+    {
+      "source": "document:docs/topics/feed-exports.rst",
+      "target": "module:scrapy.extensions.postprocessing",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/feed-exports.rst",
+        "lines": [
+          370,
+          428
+        ]
+      }
+    },
+    {
+      "source": "document:docs/topics/exporters.rst",
+      "target": "module:scrapy.exporters",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/exporters.rst",
+        "lines": [
+          1,
+          537
+        ]
+      }
+    },
+    {
+      "source": "document:docs/topics/exporters.rst",
+      "target": "class:scrapy.exporters.BaseItemExporter",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.8,
+        "source": "docs/topics/exporters.rst",
+        "lines": [
+          17,
+          120
+        ]
+      }
+    },
+    {
+      "source": "document:docs/topics/loaders.rst",
+      "target": "class:scrapy.loader.ItemLoader",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/loaders.rst",
+        "lines": [
+          1,
+          463
+        ]
+      }
+    },
+    {
+      "source": "document:docs/topics/loaders.rst",
+      "target": "dependency:itemloaders",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/loaders.rst",
+        "lines": [
+          23,
+          25
+        ]
+      }
+    },
+    {
+      "source": "document:docs/topics/scheduler.rst",
+      "target": "module:scrapy.core.scheduler",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "docs/topics/scheduler.rst",
+        "lines": [
+          1,
+          34
+        ]
+      }
+    },
+    {
+      "source": "document:docs/topics/scheduler.rst",
+      "target": "class:scrapy.core.scheduler.BaseScheduler",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "docs/topics/scheduler.rst",
+        "lines": [
+          22,
+          26
+        ]
+      }
+    },
+    {
+      "source": "document:docs/topics/scheduler.rst",
+      "target": "class:scrapy.core.scheduler.Scheduler",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "docs/topics/scheduler.rst",
+        "lines": [
+          29,
+          34
+        ]
+      }
+    },
+    {
+      "source": "document:docs/topics/scheduler.rst",
+      "target": "class:scrapy.pqueues.DownloaderAwarePriorityQueue",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "docs/topics/scheduler.rst",
+        "lines": [
+          37,
+          41
+        ]
+      }
+    },
+    {
+      "source": "document:docs/topics/scheduler.rst",
+      "target": "class:scrapy.pqueues.ScrapyPriorityQueue",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "docs/topics/scheduler.rst",
+        "lines": [
+          37,
+          41
+        ]
+      }
+    },
+    {
+      "source": "document:docs/topics/asyncio.rst",
+      "target": "module:scrapy.utils.reactor",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.85,
+        "source": "docs/topics/asyncio.rst",
+        "lines": [
+          16,
+          82
+        ]
+      }
+    },
+    {
+      "source": "document:docs/topics/asyncio.rst",
+      "target": "function:scrapy.utils.asyncio.is_asyncio_available",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/asyncio.rst",
+        "lines": [
+          116,
+          140
+        ]
+      }
+    },
+    {
+      "source": "document:docs/topics/asyncio.rst",
+      "target": "class:scrapy.core.downloader.handlers._aiohttp.AiohttpDownloadHandler",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.85,
+        "source": "docs/topics/asyncio.rst",
+        "lines": [
+          145,
+          229
+        ]
+      }
+    },
+    {
+      "source": "document:docs/topics/asyncio.rst",
+      "target": "class:scrapy.crawler.AsyncCrawlerProcess",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.8,
+        "source": "docs/topics/asyncio.rst",
+        "lines": [
+          145,
+          229
+        ]
+      }
+    },
+    {
+      "source": "document:docs/topics/coroutines.rst",
+      "target": "module:scrapy.utils.defer",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.8,
+        "source": "docs/topics/coroutines.rst",
+        "lines": [
+          60,
+          135
+        ]
+      }
+    },
+    {
+      "source": "document:docs/topics/coroutines.rst",
+      "target": "function:scrapy.utils.defer.deferred_to_future",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.75,
+        "source": "docs/topics/coroutines.rst",
+        "lines": [
+          60,
+          135
+        ]
+      }
+    },
+    {
+      "source": "document:docs/topics/addons.rst",
+      "target": "class:scrapy.addons.AddonManager",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.85,
+        "source": "docs/topics/addons.rst",
+        "lines": [
+          1,
+          81
+        ]
+      }
+    },
+    {
+      "source": "document:docs/topics/download-handlers.rst",
+      "target": "package:scrapy.core.downloader.handlers",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/download-handlers.rst",
+        "lines": [
+          1,
+          118
+        ]
+      }
+    },
+    {
+      "source": "document:docs/topics/download-handlers.rst",
+      "target": "class:scrapy.core.downloader.handlers.http11.HTTP11DownloadHandler",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/download-handlers.rst",
+        "lines": [
+          293,
+          333
+        ]
+      }
+    },
+    {
+      "source": "document:docs/topics/download-handlers.rst",
+      "target": "class:scrapy.core.downloader.handlers.http2.H2DownloadHandler",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/download-handlers.rst",
+        "lines": [
+          237,
+          292
+        ]
+      }
+    },
+    {
+      "source": "document:docs/topics/download-handlers.rst",
+      "target": "class:scrapy.core.downloader.handlers._aiohttp.AiohttpDownloadHandler",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/download-handlers.rst",
+        "lines": [
+          183,
+          236
+        ]
+      }
+    },
+    {
+      "source": "document:docs/topics/api.rst",
+      "target": "class:scrapy.crawler.Crawler",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/api.rst",
+        "lines": [
+          12,
+          136
+        ]
+      }
+    },
+    {
+      "source": "document:docs/topics/api.rst",
+      "target": "class:scrapy.settings.Settings",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.85,
+        "source": "docs/topics/api.rst",
+        "lines": [
+          137,
+          179
+        ]
+      }
+    },
+    {
+      "source": "document:docs/topics/api.rst",
+      "target": "class:scrapy.spiderloader.SpiderLoader",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.85,
+        "source": "docs/topics/api.rst",
+        "lines": [
+          180,
+          199
+        ]
+      }
+    },
+    {
+      "source": "document:docs/topics/api.rst",
+      "target": "class:scrapy.signalmanager.SignalManager",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.85,
+        "source": "docs/topics/api.rst",
+        "lines": [
+          200,
+          209
+        ]
+      }
+    },
+    {
+      "source": "document:docs/topics/api.rst",
+      "target": "class:scrapy.statscollectors.StatsCollector",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.85,
+        "source": "docs/topics/api.rst",
+        "lines": [
+          210,
+          271
+        ]
+      }
+    },
+    {
+      "source": "document:docs/topics/api.rst",
+      "target": "class:scrapy.core.engine.ExecutionEngine",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.85,
+        "source": "docs/topics/api.rst",
+        "lines": [
+          272,
+          276
+        ]
+      }
+    },
+    {
+      "source": "document:docs/topics/jobs.rst",
+      "target": "class:scrapy.core.scheduler.Scheduler",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.8,
+        "source": "docs/topics/jobs.rst",
+        "lines": [
+          7,
+          53
+        ]
+      }
+    },
+    {
+      "source": "document:docs/topics/jobs.rst",
+      "target": "class:scrapy.dupefilters.RFPDupeFilter",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.75,
+        "source": "docs/topics/jobs.rst",
+        "lines": [
+          7,
+          53
+        ]
+      }
+    },
+    {
+      "source": "document:docs/topics/jobs.rst",
+      "target": "class:scrapy.extensions.spiderstate.SpiderState",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.8,
+        "source": "docs/topics/jobs.rst",
+        "lines": [
+          77,
+          94
+        ]
+      }
+    },
+    {
+      "source": "document:docs/topics/security.rst",
+      "target": "repo:scrapy",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.75,
+        "source": "docs/topics/security.rst",
+        "lines": [
+          1,
+          37
+        ]
+      }
+    },
+    {
+      "source": "document:docs/topics/security.rst",
+      "target": "class:scrapy.extensions.telnet.TelnetConsole",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.8,
+        "source": "docs/topics/security.rst",
+        "lines": [
+          262,
+          296
+        ]
+      }
+    },
+    {
+      "source": "document:docs/topics/contracts.rst",
+      "target": "package:scrapy.contracts",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/contracts.rst",
+        "lines": [
+          1,
+          145
+        ]
+      }
+    },
+    {
+      "source": "document:docs/topics/contracts.rst",
+      "target": "module:scrapy.contracts.default",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.85,
+        "source": "docs/topics/contracts.rst",
+        "lines": [
+          1,
+          145
+        ]
+      }
+    },
+    {
+      "source": "document:docs/topics/contracts.rst",
+      "target": "module:scrapy.commands.check",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.75,
+        "source": "docs/topics/contracts.rst",
+        "lines": [
+          1,
+          20
+        ]
+      }
+    },
+    {
+      "source": "document:docs/topics/stats.rst",
+      "target": "module:scrapy.statscollectors",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/stats.rst",
+        "lines": [
+          1,
+          25
+        ]
+      }
+    },
+    {
+      "source": "document:docs/topics/autothrottle.rst",
+      "target": "class:scrapy.extensions.throttle.AutoThrottle",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/autothrottle.rst",
+        "lines": [
+          1,
+          191
+        ]
+      }
+    },
+    {
+      "source": "document:sep/README.rst",
+      "target": "repo:scrapy",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.7,
+        "source": "sep/README.rst",
+        "lines": [
+          1,
+          7
+        ]
+      }
+    },
+    {
+      "source": "document:sep/sep-002.rst",
+      "target": "class:scrapy.item.Field",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.6,
+        "source": "sep/sep-002.rst",
+        "lines": [
+          9,
+          40
+        ]
+      }
+    },
+    {
+      "source": "document:sep/sep-008.rst",
+      "target": "class:scrapy.loader.ItemLoader",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.85,
+        "source": "sep/sep-008.rst",
+        "lines": [
+          10,
+          50
+        ]
+      }
+    },
+    {
+      "source": "document:sep/sep-009.rst",
+      "target": "class:scrapy.crawler.Crawler",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.8,
+        "source": "sep/sep-009.rst",
+        "lines": [
+          30,
+          40
+        ]
+      }
+    },
+    {
+      "source": "document:sep/sep-012.rst",
+      "target": "class:scrapy.spiders.Spider",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.85,
+        "source": "sep/sep-012.rst",
+        "lines": [
+          14,
+          41
+        ]
+      }
+    },
+    {
+      "source": "document:sep/sep-012.rst",
+      "target": "class:scrapy.downloadermiddlewares.offsite.OffsiteMiddleware",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.7,
+        "source": "sep/sep-012.rst",
+        "lines": [
+          43,
+          47
+        ]
+      }
+    },
+    {
+      "source": "document:sep/sep-013.rst",
+      "target": "class:scrapy.middleware.MiddlewareManager",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.7,
+        "source": "sep/sep-013.rst",
+        "lines": [
+          13,
+          40
+        ]
+      }
+    },
+    {
+      "source": "document:sep/sep-014.rst",
+      "target": "class:scrapy.spiders.crawl.CrawlSpider",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.85,
+        "source": "sep/sep-014.rst",
+        "lines": [
+          11,
+          36
+        ]
+      }
+    },
+    {
+      "source": "document:sep/sep-017.rst",
+      "target": "package:scrapy.contracts",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.85,
+        "source": "sep/sep-017.rst",
+        "lines": [
+          9,
+          27
+        ]
+      }
+    },
+    {
+      "source": "document:sep/sep-018.rst",
+      "target": "package:scrapy.spidermiddlewares",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.7,
+        "source": "sep/sep-018.rst",
+        "lines": [
+          9,
+          50
+        ]
+      }
+    },
+    {
+      "source": "document:sep/sep-019.rst",
+      "target": "class:scrapy.settings.Settings",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.8,
+        "source": "sep/sep-019.rst",
+        "lines": [
+          52,
+          80
+        ]
+      }
+    },
+    {
+      "source": "document:sep/sep-019.rst",
+      "target": "class:scrapy.spiders.Spider",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.8,
+        "source": "sep/sep-019.rst",
+        "lines": [
+          31,
+          40
+        ]
+      }
+    },
+    {
+      "source": "decision:twisted-networking-engine",
+      "target": "dependency:twisted",
+      "type": "justifies",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "docs/topics/architecture.rst",
+        "lines": [
+          151,
+          156
+        ]
+      }
+    },
+    {
+      "source": "decision:twisted-networking-engine",
+      "target": "class:scrapy.core.engine.ExecutionEngine",
+      "type": "justifies",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.75,
+        "source": "docs/topics/architecture.rst",
+        "lines": [
+          151,
+          156
+        ]
+      }
+    },
+    {
+      "source": "decision:twisted-networking-engine",
+      "target": "class:scrapy.core.downloader.handlers.http11.HTTP11DownloadHandler",
+      "type": "justifies",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.7,
+        "source": "docs/topics/architecture.rst",
+        "lines": [
+          151,
+          156
+        ]
+      }
+    },
+    {
+      "source": "decision:asyncio-reactor-default",
+      "target": "module:scrapy.settings.default_settings",
+      "type": "justifies",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/asyncio.rst",
+        "lines": [
+          24,
+          27
+        ]
+      }
+    },
+    {
+      "source": "decision:asyncio-reactor-default",
+      "target": "function:scrapy.utils.reactor.install_reactor",
+      "type": "justifies",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.85,
+        "source": "docs/topics/asyncio.rst",
+        "lines": [
+          29,
+          38
+        ]
+      }
+    },
+    {
+      "source": "decision:asyncio-reactor-default",
+      "target": "module:scrapy.utils.asyncio",
+      "type": "justifies",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.75,
+        "source": "docs/topics/asyncio.rst",
+        "lines": [
+          116,
+          140
+        ]
+      }
+    },
+    {
+      "source": "decision:reactorless-mode",
+      "target": "class:scrapy.core.downloader.handlers._aiohttp.AiohttpDownloadHandler",
+      "type": "justifies",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/asyncio.rst",
+        "lines": [
+          153,
+          155
+        ]
+      }
+    },
+    {
+      "source": "decision:reactorless-mode",
+      "target": "class:scrapy.crawler.AsyncCrawlerProcess",
+      "type": "justifies",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.85,
+        "source": "docs/topics/asyncio.rst",
+        "lines": [
+          162,
+          168
+        ]
+      }
+    },
+    {
+      "source": "decision:reactorless-mode",
+      "target": "class:scrapy.crawler.Crawler",
+      "type": "justifies",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.8,
+        "source": "scrapy/crawler.py",
+        "lines": [
+          173,
+          208
+        ]
+      }
+    },
+    {
+      "source": "decision:reactorless-mode",
+      "target": "dependency:aiohttp",
+      "type": "justifies",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.8,
+        "source": "docs/topics/asyncio.rst",
+        "lines": [
+          153,
+          155
+        ]
+      }
+    },
+    {
+      "source": "decision:settings-priorities",
+      "target": "package:scrapy.settings",
+      "type": "justifies",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "scrapy/settings/__init__.py",
+        "lines": [
+          33,
+          51
+        ]
+      }
+    },
+    {
+      "source": "decision:settings-priorities",
+      "target": "function:scrapy.settings.get_settings_priority",
+      "type": "justifies",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "scrapy/settings/__init__.py",
+        "lines": [
+          43,
+          51
+        ]
+      }
+    },
+    {
+      "source": "decision:settings-priorities",
+      "target": "class:scrapy.settings.BaseSettings",
+      "type": "justifies",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.8,
+        "source": "docs/topics/settings.rst",
+        "lines": [
+          33,
+          46
+        ]
+      }
+    },
+    {
+      "source": "decision:component-priority-dicts",
+      "target": "class:scrapy.middleware.MiddlewareManager",
+      "type": "justifies",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.8,
+        "source": "docs/topics/settings.rst",
+        "lines": [
+          247,
+          293
+        ]
+      }
+    },
+    {
+      "source": "decision:component-priority-dicts",
+      "target": "module:scrapy.settings.default_settings",
+      "type": "justifies",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.8,
+        "source": "docs/topics/settings.rst",
+        "lines": [
+          281,
+          293
+        ]
+      }
+    },
+    {
+      "source": "decision:middleware-hook-chains",
+      "target": "class:scrapy.core.downloader.middleware.DownloaderMiddlewareManager",
+      "type": "justifies",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/downloader-middleware.rst",
+        "lines": [
+          29,
+          37
+        ]
+      }
+    },
+    {
+      "source": "decision:middleware-hook-chains",
+      "target": "class:scrapy.core.spidermw.SpiderMiddlewareManager",
+      "type": "justifies",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/spider-middleware.rst",
+        "lines": [
+          30,
+          39
+        ]
+      }
+    },
+    {
+      "source": "decision:middleware-hook-chains",
+      "target": "class:scrapy.middleware.MiddlewareManager",
+      "type": "justifies",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.8,
+        "source": "docs/topics/architecture.rst",
+        "lines": [
+          121,
+          140
+        ]
+      }
+    },
+    {
+      "source": "decision:middleware-hook-chains",
+      "target": "package:scrapy.downloadermiddlewares",
+      "type": "justifies",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.8,
+        "source": "docs/topics/architecture.rst",
+        "lines": [
+          121,
+          130
+        ]
+      }
+    },
+    {
+      "source": "decision:middleware-hook-chains",
+      "target": "package:scrapy.spidermiddlewares",
+      "type": "justifies",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.8,
+        "source": "docs/topics/architecture.rst",
+        "lines": [
+          132,
+          140
+        ]
+      }
+    },
+    {
+      "source": "decision:crawler-as-root-object",
+      "target": "class:scrapy.crawler.Crawler",
+      "type": "justifies",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/api.rst",
+        "lines": [
+          15,
+          19
+        ]
+      }
+    },
+    {
+      "source": "decision:crawler-as-root-object",
+      "target": "function:scrapy.utils.misc.build_from_crawler",
+      "type": "justifies",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.85,
+        "source": "docs/topics/components.rst",
+        "lines": [
+          7,
+          8
+        ]
+      }
+    },
+    {
+      "source": "decision:itemadapter-item-types",
+      "target": "dependency:itemadapter",
+      "type": "justifies",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/items.rst",
+        "lines": [
+          24,
+          27
+        ]
+      }
+    },
+    {
+      "source": "decision:itemadapter-item-types",
+      "target": "module:scrapy.item",
+      "type": "justifies",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.75,
+        "source": "docs/topics/items.rst",
+        "lines": [
+          14,
+          17
+        ]
+      }
+    },
+    {
+      "source": "decision:selectors-wrap-parsel",
+      "target": "dependency:parsel",
+      "type": "justifies",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "docs/topics/selectors.rst",
+        "lines": [
+          28,
+          35
+        ]
+      }
+    },
+    {
+      "source": "decision:selectors-wrap-parsel",
+      "target": "class:scrapy.selector.unified.Selector",
+      "type": "justifies",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/selectors.rst",
+        "lines": [
+          28,
+          30
+        ]
+      }
+    },
+    {
+      "source": "decision:item-loaders-processors",
+      "target": "class:scrapy.loader.ItemLoader",
+      "type": "justifies",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.85,
+        "source": "sep/sep-008.rst",
+        "lines": [
+          17,
+          19
+        ]
+      }
+    },
+    {
+      "source": "decision:item-loaders-processors",
+      "target": "dependency:itemloaders",
+      "type": "justifies",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/loaders.rst",
+        "lines": [
+          23,
+          25
+        ]
+      }
+    },
+    {
+      "source": "decision:spider-name-identifier",
+      "target": "class:scrapy.spiders.Spider",
+      "type": "justifies",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "sep/sep-012.rst",
+        "lines": [
+          27,
+          33
+        ]
+      }
+    },
+    {
+      "source": "decision:spider-name-identifier",
+      "target": "class:scrapy.spiderloader.SpiderLoader",
+      "type": "justifies",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.7,
+        "source": "sep/sep-012.rst",
+        "lines": [
+          27,
+          33
+        ]
+      }
+    },
+    {
+      "source": "decision:per-spider-settings",
+      "target": "class:scrapy.spiders.Spider",
+      "type": "justifies",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.85,
+        "source": "docs/topics/settings.rst",
+        "lines": [
+          65,
+          131
+        ]
+      }
+    },
+    {
+      "source": "decision:per-spider-settings",
+      "target": "class:scrapy.crawler.Crawler",
+      "type": "justifies",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.75,
+        "source": "sep/sep-019.rst",
+        "lines": [
+          34,
+          40
+        ]
+      }
+    },
+    {
+      "source": "decision:extensions-wildcard-components",
+      "target": "class:scrapy.extension.ExtensionManager",
+      "type": "justifies",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.85,
+        "source": "docs/topics/extensions.rst",
+        "lines": [
+          15,
+          29
+        ]
+      }
+    },
+    {
+      "source": "decision:extensions-wildcard-components",
+      "target": "package:scrapy.extensions",
+      "type": "justifies",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.85,
+        "source": "docs/topics/extensions.rst",
+        "lines": [
+          7,
+          13
+        ]
+      }
+    },
+    {
+      "source": "decision:addons-unified-configuration",
+      "target": "class:scrapy.addons.AddonManager",
+      "type": "justifies",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/addons.rst",
+        "lines": [
+          17,
+          21
+        ]
+      }
+    },
+    {
+      "source": "decision:download-handlers-per-scheme",
+      "target": "class:scrapy.core.downloader.handlers.DownloadHandlers",
+      "type": "justifies",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.85,
+        "source": "docs/topics/download-handlers.rst",
+        "lines": [
+          14,
+          22
+        ]
+      }
+    },
+    {
+      "source": "decision:downloader-aware-priority-queue",
+      "target": "class:scrapy.pqueues.DownloaderAwarePriorityQueue",
+      "type": "justifies",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/settings.rst",
+        "lines": [
+          2025,
+          2033
+        ]
+      }
+    },
+    {
+      "source": "decision:downloader-aware-priority-queue",
+      "target": "class:scrapy.core.scheduler.Scheduler",
+      "type": "justifies",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.7,
+        "source": "docs/topics/settings.rst",
+        "lines": [
+          2027,
+          2033
+        ]
+      }
+    },
+    {
+      "source": "decision:spider-contracts",
+      "target": "package:scrapy.contracts",
+      "type": "justifies",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "docs/topics/contracts.rst",
+        "lines": [
+          7,
+          18
+        ]
+      }
+    },
+    {
+      "source": "decision:spider-contracts",
+      "target": "class:scrapy.contracts.ContractsManager",
+      "type": "justifies",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.8,
+        "source": "docs/topics/contracts.rst",
+        "lines": [
+          7,
+          18
+        ]
+      }
+    },
+    {
+      "source": "decision:crawlspider-v2-discarded",
+      "target": "class:scrapy.spiders.crawl.CrawlSpider",
+      "type": "justifies",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.75,
+        "source": "sep/sep-014.rst",
+        "lines": [
+          7,
+          8
+        ]
+      }
+    },
+    {
+      "source": "decision:crawlspider-v2-discarded",
+      "target": "class:scrapy.spiders.crawl.Rule",
+      "type": "justifies",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.6,
+        "source": "sep/sep-014.rst",
+        "lines": [
+          31,
+          36
+        ]
+      }
+    },
+    {
+      "source": "decision:spider-middleware-v2",
+      "target": "package:scrapy.spidermiddlewares",
+      "type": "justifies",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.6,
+        "source": "sep/sep-018.rst",
+        "lines": [
+          13,
+          26
+        ]
+      }
+    },
+    {
+      "source": "decision:stats-always-available",
+      "target": "class:scrapy.statscollectors.DummyStatsCollector",
+      "type": "justifies",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.8,
+        "source": "docs/topics/stats.rst",
+        "lines": [
+          13,
+          22
+        ]
+      }
+    },
+    {
+      "source": "decision:stats-always-available",
+      "target": "class:scrapy.statscollectors.StatsCollector",
+      "type": "justifies",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.8,
+        "source": "docs/topics/stats.rst",
+        "lines": [
+          13,
+          22
+        ]
+      }
+    },
+    {
+      "source": "decision:docs-from-docstrings",
+      "target": "repo:scrapy",
+      "type": "justifies",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.8,
+        "source": "docs/contributing.rst",
+        "lines": [
+          296,
+          309
+        ]
+      }
+    },
+    {
+      "source": "decision:scraping-first-security-defaults",
+      "target": "module:scrapy.core.downloader.contextfactory",
+      "type": "justifies",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.75,
+        "source": "docs/topics/security.rst",
+        "lines": [
+          110,
+          141
+        ]
+      }
+    },
+    {
+      "source": "decision:scraping-first-security-defaults",
+      "target": "module:scrapy.settings.default_settings",
+      "type": "justifies",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.7,
+        "source": "docs/topics/security.rst",
+        "lines": [
+          7,
+          16
+        ]
+      }
+    },
+    {
+      "source": "class:scrapy.core.engine.ExecutionEngine",
+      "target": "concept:engine",
+      "type": "implements",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "scrapy/core/engine.py",
+        "lines": [
+          101,
+          717
+        ]
+      }
+    },
+    {
+      "source": "class:scrapy.core.engine.ExecutionEngine",
+      "target": "concept:data-flow",
+      "type": "implements",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.8,
+        "source": "scrapy/core/engine.py",
+        "lines": [
+          101,
+          717
+        ]
+      }
+    },
+    {
+      "source": "class:scrapy.core.scraper.Scraper",
+      "target": "concept:data-flow",
+      "type": "implements",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.75,
+        "source": "scrapy/core/scraper.py",
+        "lines": [
+          106,
+          560
+        ]
+      }
+    },
+    {
+      "source": "class:scrapy.core.scheduler.Scheduler",
+      "target": "concept:scheduler",
+      "type": "implements",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "scrapy/core/scheduler.py",
+        "lines": [
+          127,
+          498
+        ]
+      }
+    },
+    {
+      "source": "class:scrapy.core.scheduler.BaseScheduler",
+      "target": "concept:scheduler",
+      "type": "implements",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "scrapy/core/scheduler.py",
+        "lines": [
+          52,
+          124
+        ]
+      }
+    },
+    {
+      "source": "class:scrapy.pqueues.DownloaderAwarePriorityQueue",
+      "target": "concept:scheduler",
+      "type": "implements",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.75,
+        "source": "scrapy/pqueues.py",
+        "lines": [
+          283,
+          451
+        ]
+      }
+    },
+    {
+      "source": "class:scrapy.core.downloader.Downloader",
+      "target": "concept:downloader",
+      "type": "implements",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "scrapy/core/downloader/__init__.py",
+        "lines": [
+          181,
+          374
+        ]
+      }
+    },
+    {
+      "source": "class:scrapy.spiders.Spider",
+      "target": "concept:spider",
+      "type": "implements",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "scrapy/spiders/__init__.py",
+        "lines": [
+          33,
+          182
+        ]
+      }
+    },
+    {
+      "source": "class:scrapy.spiders.crawl.CrawlSpider",
+      "target": "concept:spider",
+      "type": "implements",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.8,
+        "source": "scrapy/spiders/crawl.py",
+        "lines": [
+          98,
+          233
+        ]
+      }
+    },
+    {
+      "source": "class:scrapy.http.request.Request",
+      "target": "concept:request",
+      "type": "implements",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "scrapy/http/request/__init__.py",
+        "lines": [
+          85,
+          432
+        ]
+      }
+    },
+    {
+      "source": "class:scrapy.http.request.form.FormRequest",
+      "target": "concept:request",
+      "type": "implements",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.8,
+        "source": "scrapy/http/request/form.py",
+        "lines": [
+          40,
+          151
+        ]
+      }
+    },
+    {
+      "source": "class:scrapy.http.response.Response",
+      "target": "concept:response",
+      "type": "implements",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "scrapy/http/response/__init__.py",
+        "lines": [
+          35,
+          364
+        ]
+      }
+    },
+    {
+      "source": "class:scrapy.http.response.text.TextResponse",
+      "target": "concept:response",
+      "type": "implements",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.8,
+        "source": "scrapy/http/response/text.py",
+        "lines": [
+          43,
+          315
+        ]
+      }
+    },
+    {
+      "source": "class:scrapy.http.request.Request",
+      "target": "concept:callback",
+      "type": "implements",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.75,
+        "source": "scrapy/http/request/__init__.py",
+        "lines": [
+          85,
+          432
+        ]
+      }
+    },
+    {
+      "source": "class:scrapy.item.Item",
+      "target": "concept:item",
+      "type": "implements",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "scrapy/item.py",
+        "lines": [
+          72,
+          155
+        ]
+      }
+    },
+    {
+      "source": "class:scrapy.pipelines.ItemPipelineManager",
+      "target": "concept:item-pipeline",
+      "type": "implements",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "scrapy/pipelines/__init__.py",
+        "lines": [
+          48,
+          159
+        ]
+      }
+    },
+    {
+      "source": "class:scrapy.pipelines.media.MediaPipeline",
+      "target": "concept:item-pipeline",
+      "type": "implements",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.75,
+        "source": "scrapy/pipelines/media.py",
+        "lines": [
+          76,
+          345
+        ]
+      }
+    },
+    {
+      "source": "class:scrapy.core.downloader.middleware.DownloaderMiddlewareManager",
+      "target": "concept:downloader-middleware",
+      "type": "implements",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "scrapy/core/downloader/middleware.py",
+        "lines": [
+          34,
+          156
+        ]
+      }
+    },
+    {
+      "source": "package:scrapy.downloadermiddlewares",
+      "target": "concept:downloader-middleware",
+      "type": "implements",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.85,
+        "source": "scrapy/downloadermiddlewares/__init__.py",
+        "lines": [
+          1,
+          1
+        ]
+      }
+    },
+    {
+      "source": "class:scrapy.core.spidermw.SpiderMiddlewareManager",
+      "target": "concept:spider-middleware",
+      "type": "implements",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "scrapy/core/spidermw.py",
+        "lines": [
+          49,
+          307
+        ]
+      }
+    },
+    {
+      "source": "class:scrapy.spidermiddlewares.base.BaseSpiderMiddleware",
+      "target": "concept:spider-middleware",
+      "type": "implements",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.85,
+        "source": "scrapy/spidermiddlewares/base.py",
+        "lines": [
+          18,
+          112
+        ]
+      }
+    },
+    {
+      "source": "class:scrapy.extension.ExtensionManager",
+      "target": "concept:extension",
+      "type": "implements",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "scrapy/extension.py",
+        "lines": [
+          18,
+          25
+        ]
+      }
+    },
+    {
+      "source": "package:scrapy.extensions",
+      "target": "concept:extension",
+      "type": "implements",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.8,
+        "source": "scrapy/extensions/__init__.py",
+        "lines": [
+          1,
+          1
+        ]
+      }
+    },
+    {
+      "source": "module:scrapy.signals",
+      "target": "concept:signal",
+      "type": "implements",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "scrapy/signals.py",
+        "lines": [
+          1,
+          1
+        ]
+      }
+    },
+    {
+      "source": "class:scrapy.signalmanager.SignalManager",
+      "target": "concept:signal",
+      "type": "implements",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "scrapy/signalmanager.py",
+        "lines": [
+          14,
+          116
+        ]
+      }
+    },
+    {
+      "source": "function:scrapy.utils.misc.build_from_crawler",
+      "target": "concept:component",
+      "type": "implements",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "scrapy/utils/misc.py",
+        "lines": [
+          154,
+          161
+        ]
+      }
+    },
+    {
+      "source": "class:scrapy.crawler.Crawler",
+      "target": "concept:crawler",
+      "type": "implements",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "scrapy/crawler.py",
+        "lines": [
+          101,
+          436
+        ]
+      }
+    },
+    {
+      "source": "class:scrapy.settings.BaseSettings",
+      "target": "concept:settings-priority",
+      "type": "implements",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.85,
+        "source": "scrapy/settings/__init__.py",
+        "lines": [
+          81,
+          695
+        ]
+      }
+    },
+    {
+      "source": "class:scrapy.settings.SettingsAttribute",
+      "target": "concept:settings-priority",
+      "type": "implements",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.85,
+        "source": "scrapy/settings/__init__.py",
+        "lines": [
+          54,
+          78
+        ]
+      }
+    },
+    {
+      "source": "class:scrapy.addons.AddonManager",
+      "target": "concept:addon",
+      "type": "implements",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "scrapy/addons.py",
+        "lines": [
+          18,
+          72
+        ]
+      }
+    },
+    {
+      "source": "class:scrapy.core.downloader.handlers.DownloadHandlers",
+      "target": "concept:download-handler",
+      "type": "implements",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "scrapy/core/downloader/handlers/__init__.py",
+        "lines": [
+          61,
+          190
+        ]
+      }
+    },
+    {
+      "source": "class:scrapy.core.downloader.handlers.base.BaseDownloadHandler",
+      "target": "concept:download-handler",
+      "type": "implements",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.85,
+        "source": "scrapy/core/downloader/handlers/base.py",
+        "lines": [
+          15,
+          32
+        ]
+      }
+    },
+    {
+      "source": "class:scrapy.utils.request.RequestFingerprinter",
+      "target": "concept:request-fingerprint",
+      "type": "implements",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "scrapy/utils/request.py",
+        "lines": [
+          118,
+          138
+        ]
+      }
+    },
+    {
+      "source": "class:scrapy.dupefilters.RFPDupeFilter",
+      "target": "concept:duplicate-filter",
+      "type": "implements",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "scrapy/dupefilters.py",
+        "lines": [
+          72,
+          176
+        ]
+      }
+    },
+    {
+      "source": "class:scrapy.dupefilters.BaseDupeFilter",
+      "target": "concept:duplicate-filter",
+      "type": "implements",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.85,
+        "source": "scrapy/dupefilters.py",
+        "lines": [
+          46,
+          69
+        ]
+      }
+    },
+    {
+      "source": "class:scrapy.selector.unified.Selector",
+      "target": "concept:selector",
+      "type": "implements",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "scrapy/selector/unified.py",
+        "lines": [
+          32,
+          111
+        ]
+      }
+    },
+    {
+      "source": "class:scrapy.selector.unified.SelectorList",
+      "target": "concept:selector",
+      "type": "implements",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.8,
+        "source": "scrapy/selector/unified.py",
+        "lines": [
+          25,
+          29
+        ]
+      }
+    },
+    {
+      "source": "class:scrapy.loader.ItemLoader",
+      "target": "concept:item-loader",
+      "type": "implements",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "scrapy/loader/__init__.py",
+        "lines": [
+          20,
+          106
+        ]
+      }
+    },
+    {
+      "source": "class:scrapy.extensions.feedexport.FeedExporter",
+      "target": "concept:feed-export",
+      "type": "implements",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "scrapy/extensions/feedexport.py",
+        "lines": [
+          476,
+          789
+        ]
+      }
+    },
+    {
+      "source": "module:scrapy.exporters",
+      "target": "concept:item-exporter",
+      "type": "implements",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "scrapy/exporters.py",
+        "lines": [
+          1,
+          1
+        ]
+      }
+    },
+    {
+      "source": "class:scrapy.exporters.BaseItemExporter",
+      "target": "concept:item-exporter",
+      "type": "implements",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "scrapy/exporters.py",
+        "lines": [
+          42,
+          133
+        ]
+      }
+    },
+    {
+      "source": "class:scrapy.statscollectors.StatsCollector",
+      "target": "concept:stats-collection",
+      "type": "implements",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "scrapy/statscollectors.py",
+        "lines": [
+          24,
+          117
+        ]
+      }
+    },
+    {
+      "source": "class:scrapy.contracts.Contract",
+      "target": "concept:spider-contract",
+      "type": "implements",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.9,
+        "source": "scrapy/contracts/__init__.py",
+        "lines": [
+          68,
+          154
+        ]
+      }
+    },
+    {
+      "source": "class:scrapy.contracts.ContractsManager",
+      "target": "concept:spider-contract",
+      "type": "implements",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.85,
+        "source": "scrapy/contracts/__init__.py",
+        "lines": [
+          157,
+          286
+        ]
+      }
+    },
+    {
+      "source": "class:scrapy.extensions.spiderstate.SpiderState",
+      "target": "concept:job-persistence",
+      "type": "implements",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.8,
+        "source": "scrapy/extensions/spiderstate.py",
+        "lines": [
+          18,
+          51
+        ]
+      }
+    },
+    {
+      "source": "module:scrapy.squeues",
+      "target": "concept:job-persistence",
+      "type": "implements",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.75,
+        "source": "scrapy/squeues.py",
+        "lines": [
+          1,
+          1
+        ]
+      }
+    },
+    {
+      "source": "class:scrapy.spiders.crawl.Rule",
+      "target": "concept:crawl-rule",
+      "type": "implements",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "scrapy/spiders/crawl.py",
+        "lines": [
+          63,
+          95
+        ]
+      }
+    },
+    {
+      "source": "class:scrapy.extensions.throttle.AutoThrottle",
+      "target": "concept:autothrottle",
+      "type": "implements",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "scrapy/extensions/throttle.py",
+        "lines": [
+          21,
+          127
+        ]
+      }
+    },
+    {
+      "source": "module:scrapy.utils.reactor",
+      "target": "concept:twisted-reactor",
+      "type": "implements",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.8,
+        "source": "scrapy/utils/reactor.py",
+        "lines": [
+          1,
+          1
+        ]
+      }
+    },
+    {
+      "source": "issue:sep-002-wrong-number",
+      "target": "document:sep/sep-002.rst",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.95,
+        "source": "sep/sep-002.rst",
+        "lines": [
+          1,
+          11
+        ]
+      }
+    },
+    {
+      "source": "issue:sep-017-status-stale",
+      "target": "document:sep/sep-017.rst",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.85,
+        "source": "sep/sep-017.rst",
+        "lines": [
+          1,
+          7
+        ]
+      }
+    },
+    {
+      "source": "issue:sep-017-status-stale",
+      "target": "package:scrapy.contracts",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.75,
+        "source": "sep/sep-017.rst",
+        "lines": [
+          1,
+          7
+        ]
+      }
+    },
+    {
+      "source": "issue:sep-009-status-stale",
+      "target": "document:sep/sep-009.rst",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.7,
+        "source": "sep/sep-009.rst",
+        "lines": [
+          1,
+          40
+        ]
+      }
+    },
+    {
+      "source": "issue:components-list-incomplete",
+      "target": "document:docs/topics/components.rst",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.75,
+        "source": "docs/topics/components.rst",
+        "lines": [
+          7,
+          27
+        ]
+      }
+    },
+    {
+      "source": "issue:components-list-incomplete",
+      "target": "function:scrapy.utils.misc.build_from_crawler",
+      "type": "documents",
+      "provenance": {
+        "method": "llm",
+        "extractor": "claude-code",
+        "confidence": 0.7,
+        "source": "scrapy/crawler.py",
+        "lines": [
+          165,
+          171
+        ]
+      }
+    }
+  ]
+}
