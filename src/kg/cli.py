@@ -62,10 +62,15 @@ class UsageError(KgError):
 
 @dataclass
 class Result:
-    """Result of a subcommand: `message` for humans, `data` for `--json`."""
+    """Result of a subcommand: `message` for humans, `data` for `--json`.
+
+    `exit_code` is not `EXIT_OK` only for a check that did not pass
+    (`kg status --check`); the output is still a result, not an error.
+    """
 
     message: str
     data: dict[str, Any] = field(default_factory=dict)
+    exit_code: int = EXIT_OK
 
 
 Handler = Callable[[argparse.Namespace], Result]
@@ -212,6 +217,9 @@ def _status(args: argparse.Namespace) -> Result:
                 "was extracted before kg recorded digests)"
             )
         lines.append(f"run `kg extract {root}` to update the graph")
+    # `unknown` alone does not fail the check: a file kg cannot read (e.g. a
+    # syntax error) never gets a digest, so a new extraction would not clear it
+    behind = bool(state.modified or state.added or state.deleted)
     data = {
         "path": str(root),
         "graph": str(store.graph_path(args.kg_dir)),
@@ -220,7 +228,8 @@ def _status(args: argparse.Namespace) -> Result:
         "methods": counts,
         **state.to_dict(),
     }
-    return Result("\n".join(lines), data)
+    failed = args.check and behind
+    return Result("\n".join(lines), data, EXIT_VALIDATION if failed else EXIT_OK)
 
 
 def _method_counts(graph: Any) -> dict[str, int]:
@@ -895,6 +904,12 @@ def build_parser() -> argparse.ArgumentParser:
 
     p = add("status", "whether the graph is up to date with the repo", _status)
     p.add_argument("path", nargs="?", type=Path, default=Path("."), help="repo path")
+    p.add_argument(
+        "--check",
+        action="store_true",
+        help="exit with code 1 if files were modified, added or deleted since "
+        "the last `kg extract` (for CI and hooks)",
+    )
 
     p = add("add", "add and merge entities and relations", _add)
     p.add_argument(
@@ -1170,4 +1185,4 @@ def main(argv: Sequence[str] | None = None) -> int:
         return EXIT_INTERNAL
 
     _emit(args.json, args.command, result, None)
-    return EXIT_OK
+    return result.exit_code

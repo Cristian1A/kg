@@ -144,6 +144,81 @@ not; `--json` has `stale`, `modified`, `added`, `deleted`, `unknown`,
 `nodes`, `edges` and `methods` (nodes by provenance method). If the store
 holds another repo, it fails with exit code `2`.
 
+`kg status --check` exits with code `1` when files were modified, added or
+deleted since the last extraction, for CI and hooks; the output is the same
+(with `--json`, `ok` is still `true`). `unknown` files alone do not fail the
+check: a file kg cannot read, such as one with a syntax error, never gets a
+digest, so a new extraction would not clear it.
+
+## Keeping the graph fresh
+
+A graph describes the code at its last `kg extract`. Once the code moves on,
+answers can miss what changed: `kg query` and `kg impact` warn
+(`stale_graph`), but the graph cannot tell what is in a file it has not read.
+An agent can still open the changed files, at a higher cost than with a
+fresh graph ([benchmark](benchmark.md#update-reading-what-a-stale-graph-reports-52)).
+The cheapest fix is to commit the graph with the code it describes.
+
+The two layers of the graph are kept fresh differently:
+
+- **The parser layer** (files, modules, imports, functions, tests) is
+  deterministic, needs no model and takes seconds: automate it with a hook,
+  and check it in CI.
+- **The agent layer** (documents, decisions, concepts) is written by an agent;
+  kg calls no model, so nothing regenerates it. `kg extract` keeps it, and
+  reports agent edges whose endpoints disappeared. Review it when the code it
+  describes changes.
+
+**A pre-commit hook** (convenience). With [pre-commit](https://pre-commit.com),
+add to `.pre-commit-config.yaml`:
+
+```yaml
+repos:
+  - repo: https://github.com/Cristian1A/kg
+    rev: main        # better: a release tag or a commit
+    hooks:
+      - id: kg-extract   # or kg-status, to check without changing anything
+```
+
+`kg-extract` re-extracts the graph. Like a formatter, it fails the commit when
+`.kg/graph.json` changes: add it and commit again, so every commit carries
+code and graph that match. pre-commit sets unstaged changes aside first;
+untracked files that git does not ignore are still read, as `kg extract`
+always does. `kg-status` only runs `kg status --check`. Without the
+framework, a plain `.git/hooks/pre-commit` can run
+`kg extract . && git add .kg/graph.json`, but it reads the working tree,
+unstaged changes included.
+
+**A CI check** (guarantee): a stale graph cannot reach the main branch.
+
+```yaml
+# .github/workflows/kg.yml
+name: Knowledge graph
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  fresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pipx install git+https://github.com/Cristian1A/kg.git
+      - run: kg status --check
+```
+
+Install kg outside the repo, as here, or ignore the install directory in
+`.gitignore`: a virtual environment inside the repo would be read as added
+files. The digests compare contents, not timestamps, so a fresh checkout is
+up to date.
+
+**Not recommended: a workflow that commits the graph.** It adds a bot commit
+after every push, can trigger other workflows in a loop, and needs write
+access to the repo. A failing check and a hook give the same result without
+any of that.
+
 ## Removing and editing: `kg remove`, `kg edit`
 
 `kg add` only adds and `kg extract` only removes what the parser no longer

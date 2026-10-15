@@ -1,0 +1,21 @@
+# Hooks for https://pre-commit.com: keep .kg/graph.json in step with the code.
+# See docs/store.md, "Keeping the graph fresh".
+
+# Re-extract the graph. Like a formatter, it fails the commit when it changes
+# .kg/graph.json: add the graph and commit again.
+- id: kg-extract
+  name: kg extract
+  description: Update the knowledge graph so it matches the code being committed
+  entry: kg extract
+  language: python
+  pass_filenames: false
+  always_run: true
+
+# Only check: fail if the graph is stale, without changing it.
+- id: kg-status
+  name: kg status --check
+  description: Fail if files changed since the last kg extract
+  entry: kg status --check
+  language: python
+  pass_filenames: false
+  always_run: true
