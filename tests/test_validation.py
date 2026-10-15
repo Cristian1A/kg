@@ -265,18 +265,46 @@ def test_broken_references_on_both_ends(valid):
     assert paths == ["$.edges[1].source", "$.edges[1].target"]
 
 
-def test_custom_types_are_warnings_not_errors(valid):
-    valid["nodes"].append(node("requirement:rf-01", "Requirement"))
-    valid["edges"].append(edge("function:a.f", "requirement:rf-01", "satisfies"))
+def test_custom_types_are_valid_and_named_once(valid):
+    # A custom type with no standard equivalent is a note, one per type (#18)
+    for i in range(3):
+        valid["nodes"].append(node(f"requirement:rf-0{i}", "Requirement"))
     report = validate_document(valid)
-    assert report.ok
-    assert [(w.code, w.path) for w in report.warnings] == [
-        ("custom_type", "$.nodes[2].type"),
-        ("custom_type", "$.edges[1].type"),
+    assert report.ok and report.warnings == []
+    [note] = report.notes
+    assert (note.code, note.severity, note.path) == (
+        "custom_type",
+        "note",
+        "$.nodes[2].type",
+    )
+    assert note.paths == ("$.nodes[2].type", "$.nodes[3].type", "$.nodes[4].type")
+    assert "warning" not in report.summary("x")
+    assert report.advice_lines() == [
+        "note: custom types, valid (no standard type fits): Requirement ×3"
     ]
-    assert all(w.severity == "warning" for w in report.warnings)
-    assert "1 warning" not in report.summary("x")
-    assert "2 warnings" in report.summary("x")
+
+
+@pytest.mark.parametrize(
+    ("kind", "custom", "standard"),
+    [
+        ("node", "Tutorial", "Document"),  # synonym
+        ("node", "Decison", "Decision"),  # typo
+        ("node", "DesignDecision", "Decision"),  # synonym, any case
+        ("edge", "links_to", "documents"),
+        ("edge", "invokes", "calls"),
+        ("edge", "satisfies", "implements"),
+    ],
+)
+def test_custom_types_that_look_standard_are_warnings(valid, kind, custom, standard):
+    if kind == "node":
+        valid["nodes"].append(node("x:y", custom))
+    else:
+        valid["edges"].append(edge("function:a.f", "file:a.py", custom))
+    report = validate_document(valid)
+    assert report.ok and report.notes == []
+    [warning] = [w for w in report.warnings if w.code == "custom_type"]
+    assert warning.severity == "warning" and warning.expected == f'"{standard}"'
+    assert f'use "{standard}"' in warning.suggestion
 
 
 def test_id_prefix_mismatch_is_warning(valid):
@@ -375,7 +403,9 @@ def test_cli_warnings_exit_0(valid, write, capsys):
     valid["nodes"][0]["id"] = "fichero:a.py"
     valid["edges"][0]["source"] = "fichero:a.py"
     assert main(["validate", write(valid)]) == EXIT_OK
-    assert "warning: $.nodes[0].type" in capsys.readouterr().out
+    out = capsys.readouterr().out
+    assert "note: custom types, valid (no standard type fits): Fichero" in out
+    assert "warning:" not in out
 
 
 def test_cli_errors_exit_1(valid, write, capsys):
@@ -398,7 +428,9 @@ def test_cli_json_success(valid, write, capsys):
     assert result["file"] == path
     assert result["valid"] is True
     assert result["errors"] == []
-    assert result["warnings"][0]["code"] == "custom_type"
+    assert result["warnings"] == []
+    assert result["notes"][0]["code"] == "custom_type"
+    assert result["notes"][0]["paths"] == ["$.nodes[2].type"]
 
 
 def test_cli_json_errors(valid, write, capsys):
@@ -419,6 +451,7 @@ def test_cli_json_errors(valid, write, capsys):
             "expected": "field `extractor`: Tool and version that produced it.",
             "suggestion": "Add the field `extractor`.",
             "severity": "error",
+            "paths": [],
         }
     ]
 

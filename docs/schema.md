@@ -98,10 +98,15 @@ error: $.edges[0].target: the edge points to a node that does not exist in the f
   suggestion: Did you mean "function:a.f"? Fix the ID or add the node to `nodes`.
 ```
 
-With `--json`, errors are in `error.details.errors` and warnings in
-`warnings` (in `result` if the document is valid). Each item has `code`,
-`path`, `message`, `received` (`null` if the field is missing), `expected`,
-`suggestion` and `severity`.
+With `--json`, errors are in `error.details.errors`, and warnings and notes in
+`warnings` and `notes` (in `result` if the document is valid). Each item has
+`code`, `path`, `message`, `received` (`null` if the field is missing),
+`expected`, `suggestion`, `severity` and `paths`. `paths` lists every
+occurrence of an issue that groups several (a custom type is reported once,
+however often it is used), and is empty otherwise; `path` is the first one.
+
+Severities: an **error** makes the document invalid; a **warning** is valid but
+probably a mistake; a **note** is valid by design and needs no action.
 
 | Code | Severity | Cause |
 |------|----------|-------|
@@ -111,7 +116,8 @@ With `--json`, errors are in `error.details.errors` and warnings in
 | `invalid_id`, `invalid_timestamp`, `invalid_type_name` | error | Wrong format |
 | `duplicate_id` | error | Two nodes with the same ID (RF-05) |
 | `broken_reference` | error | Edge to a node that is not in the file (RF-05); with `kg add`, not in the store either |
-| `custom_type` | warning | Type outside the standard catalog (RF-02) |
+| `custom_type` | warning | A type outside the standard catalog that looks like a standard one, by name (`Decison`) or meaning (`Tutorial` → `Document`, `invokes` → `calls`): the suggestion names it (RF-02) |
+| `custom_type` | note | Any other type outside the standard catalog: valid (RF-02). The text output lists them in one line, `note: custom types, valid (no standard type fits): EntryPoint ×3, reads_argv` |
 | `id_prefix_mismatch` | warning | The ID prefix does not match the node's `type` |
 | `missing_description` | warning | A node with `method: llm` has no `description` (#36): agents describe every node they create |
 

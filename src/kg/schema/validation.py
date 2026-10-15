@@ -24,7 +24,7 @@ from kg.schema import (
     validator,
 )
 
-Severity = Literal["error", "warning"]
+Severity = Literal["error", "warning", "note"]
 
 _DEFS = load_schema()["$defs"]
 _ID_PATTERN = _DEFS["id"]["pattern"]
@@ -50,7 +50,12 @@ _MAX_RECEIVED = 80
 
 @dataclass(frozen=True)
 class Issue:
-    """Validation issue. `received` is `None` when the value is missing."""
+    """Validation issue. `received` is `None` when the value is missing.
+
+    An issue that groups several occurrences (a custom type used many times)
+    lists them all in `paths`; `path` is the first one. Otherwise `paths` is
+    empty.
+    """
 
     code: str
     path: str
@@ -59,6 +64,7 @@ class Issue:
     expected: str
     suggestion: str
     severity: Severity = "error"
+    paths: tuple[str, ...] = ()
 
     def to_text(self) -> str:
         received = "(missing)" if self.received is None else self.received
@@ -76,6 +82,7 @@ class Report:
 
     errors: list[Issue] = field(default_factory=list)
     warnings: list[Issue] = field(default_factory=list)
+    notes: list[Issue] = field(default_factory=list)
     nodes: int = 0
     edges: int = 0
 
@@ -98,8 +105,17 @@ class Report:
 
     def to_text(self, name: str) -> str:
         lines = [self.summary(name)]
-        lines += [issue.to_text() for issue in [*self.errors, *self.warnings]]
+        lines += [issue.to_text() for issue in self.errors]
+        lines += self.advice_lines()
         return "\n".join(lines)
+
+    def advice_lines(self) -> list[str]:
+        """Warnings in full, then notes in one line: what does not block."""
+        lines = [issue.to_text() for issue in self.warnings]
+        if self.notes:
+            used = ", ".join(_note_item(n) for n in self.notes)
+            lines.append(f"note: custom types, valid (no standard type fits): {used}")
+        return lines
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -108,6 +124,7 @@ class Report:
             "edges": self.edges,
             "errors": [asdict(i) for i in self.errors],
             "warnings": [asdict(i) for i in self.warnings],
+            "notes": [asdict(i) for i in self.notes],
         }
 
 
@@ -182,6 +199,7 @@ def validate_document(
     _check_descriptions(nodes, report)
     report.errors.sort(key=lambda i: _sort_key(_parse_path(i.path)))
     report.warnings.sort(key=lambda i: _sort_key(_parse_path(i.path)))
+    report.notes.sort(key=lambda i: _sort_key(_parse_path(i.path)))
     return report
 
 
@@ -253,28 +271,115 @@ def _check_references(
 
 
 def _check_custom_types(document: dict[str, Any], report: Report) -> None:
+    """One issue per custom type, not per use (#18).
+
+    A type that looks like a standard one, by name or by a small synonym
+    table, is a warning that names it; any other custom type is valid by
+    design (RF-02), so it is only a note.
+    """
+    uses: dict[tuple[str, str], list[str]] = {}
     for custom in find_custom_types(document):
-        if not re.match(_CUSTOM_TYPE_PATTERNS[custom.kind], custom.type):
-            continue  # already reported as a schema error
-        standard = STANDARD_NODE_TYPES if custom.kind == "node" else STANDARD_EDGE_TYPES
-        close = _closest(custom.type, standard)
-        hint = (
-            f"If it means {_show(close)}, use the standard type; otherwise keep it."
-            if close
-            else "Check that no standard type fits; otherwise keep it."
-        )
-        entity = "entity" if custom.kind == "node" else "relation"
-        report.warnings.append(
-            Issue(
-                code="custom_type",
-                path=custom.path,
-                message=f"custom {entity} type",
-                received=_show(custom.type),
-                expected=f"a standard {entity} type",
-                suggestion=hint,
-                severity="warning",
+        if re.match(_CUSTOM_TYPE_PATTERNS[custom.kind], custom.type):
+            uses.setdefault((custom.kind, custom.type), []).append(custom.path)
+        # otherwise it is already reported as a schema error
+    for (kind, type_), paths in uses.items():
+        entity = "entity" if kind == "node" else "relation"
+        times = f" (used {len(paths)} times)" if len(paths) > 1 else ""
+        standard = _standard_equivalent(kind, type_)
+        if standard:
+            report.warnings.append(
+                Issue(
+                    code="custom_type",
+                    path=paths[0],
+                    message=f"custom {entity} type {_show(type_)} looks like the "
+                    f"standard {_show(standard)}{times}",
+                    received=_show(type_),
+                    expected=_show(standard),
+                    suggestion=f"If they mean the same, use {_show(standard)}; "
+                    "otherwise keep it.",
+                    severity="warning",
+                    paths=tuple(paths),
+                )
             )
-        )
+        else:
+            report.notes.append(
+                Issue(
+                    code="custom_type",
+                    path=paths[0],
+                    message=f"custom {entity} type{times}",
+                    received=_show(type_),
+                    expected=f"no standard {entity} type fits; it is valid",
+                    suggestion="Keep it.",
+                    severity="note",
+                    paths=tuple(paths),
+                )
+            )
+
+
+# Custom names that mean a standard type, by normalized name (lowercase,
+# letters and digits only). Small and deterministic on purpose (RF-24).
+_NODE_SYNONYMS = {
+    **dict.fromkeys(
+        (
+            "tutorial",
+            "guide",
+            "howto",
+            "readme",
+            "doc",
+            "docs",
+            "documentation",
+            "manual",
+            "article",
+            "page",
+            "spec",
+            "specification",
+        ),
+        "Document",
+    ),
+    **dict.fromkeys(("adr", "designdecision", "choice", "rationale"), "Decision"),
+    **dict.fromkeys(("term", "idea", "glossaryterm", "domainconcept"), "Concept"),
+    **dict.fromkeys(("library", "lib", "thirdparty", "requirementfile"), "Dependency"),
+    **dict.fromkeys(("testcase", "testsuite", "unittest"), "Test"),
+    **dict.fromkeys(("method",), "Function"),
+    **dict.fromkeys(("setting", "settings", "configuration"), "Config"),
+    **dict.fromkeys(("route", "apiroute", "api"), "Endpoint"),
+    **dict.fromkeys(("microservice", "daemon", "worker"), "Service"),
+    **dict.fromkeys(("author", "contributor", "maintainer"), "Person"),
+    **dict.fromkeys(("ticket", "bug", "task", "todo"), "Issue"),
+    **dict.fromkeys(("repository",), "Repo"),
+}
+_EDGE_SYNONYMS = {
+    **dict.fromkeys(("invokes", "runs", "executes", "call"), "calls"),
+    **dict.fromkeys(
+        ("linksto", "references", "describes", "explains", "mentions"), "documents"
+    ),
+    **dict.fromkeys(("uses", "requires", "needs"), "depends_on"),
+    **dict.fromkeys(("verifies", "covers", "tested"), "tests"),
+    **dict.fromkeys(("motivates", "rationalefor"), "justifies"),
+    **dict.fromkeys(("writtenby", "createdby", "ownedby"), "authored_by"),
+    **dict.fromkeys(("realizes", "fulfills", "satisfies"), "implements"),
+    **dict.fromkeys(("includes", "has"), "contains"),
+    **dict.fromkeys(("declares",), "defines"),
+    **dict.fromkeys(("import",), "imports"),
+}
+
+
+def _standard_equivalent(kind: str, type_: str) -> str | None:
+    """The standard type a custom one seems to mean: similar name or synonym."""
+    standard = STANDARD_NODE_TYPES if kind == "node" else STANDARD_EDGE_TYPES
+    synonyms = _NODE_SYNONYMS if kind == "node" else _EDGE_SYNONYMS
+    return _closest(type_, standard) or synonyms.get(
+        re.sub(r"[^a-z0-9]", "", type_.lower())
+    )
+
+
+def _note_item(issue: Issue) -> str:
+    try:
+        type_ = json.loads(issue.received or '"?"')
+    except json.JSONDecodeError:  # cut by `_show`
+        type_ = (issue.received or "?").strip('"')
+    count = len(issue.paths)
+    return f"{type_} ×{count}" if count > 1 else str(type_)
 
 
 def _check_id_prefixes(

@@ -120,7 +120,7 @@ failed.
 
 Once version 1.2 is approved:
 
-- [ ] Create the `v0.3` milestone and the `prio:v0.3` label.
-- [ ] Move #35 and #18 to v0.3.
+- [x] Create the `v0.3` milestone and the `prio:v0.3` label.
+- [x] Move #35 and #18 to v0.3.
 - [ ] Open the v0.3 issues marked "to open" when v0.3 starts, not before: their
       order depends on the benchmark.

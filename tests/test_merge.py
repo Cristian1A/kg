@@ -323,7 +323,20 @@ def test_cli_add_json(kg_dir, tmp_path, capsys):
             "kept": "new",
         }
     ]
+    # "Idea" looks like the standard "Concept" (#18)
     assert [w["code"] for w in result["warnings"]] == ["custom_type"]
+    assert result["notes"] == []
+
+
+def test_cli_add_prints_custom_types_as_one_note(kg_dir, tmp_path, capsys):
+    add(kg_dir, BASE)
+    document = doc(
+        [node("entrypoint:a", "EntryPoint"), node("entrypoint:b", "EntryPoint")]
+    )
+    assert main(["add", write(tmp_path, document), "--kg-dir", str(kg_dir)]) == EXIT_OK
+    out = capsys.readouterr().out
+    assert "note: custom types, valid (no standard type fits): EntryPoint ×2" in out
+    assert "warning:" not in out
 
 
 def test_agent_describes_an_extracted_node():
