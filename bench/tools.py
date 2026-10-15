@@ -19,6 +19,7 @@ import fnmatch
 import json
 import re
 import subprocess
+import sys
 from collections.abc import Callable
 from pathlib import Path
 from typing import Any
@@ -332,7 +333,8 @@ def run_kg(repo: Path, args: dict[str, Any], kg_dir: Path | None = None) -> str:
         raise ToolError("--kg-dir is set by the benchmark")
     if argv[0] == "status":
         argv = ["status", str(repo)]
-    cmd = ["kg", *argv, "--kg-dir", str(kg_dir or repo / ".kg")]
+    # The interpreter running the benchmark, so kg need not be on PATH
+    cmd = [sys.executable, "-m", "kg", *argv, "--kg-dir", str(kg_dir or repo / ".kg")]
     if "--help" not in argv and "-h" not in argv:
         cmd.append("--json")
     proc = subprocess.run(cmd, capture_output=True, text=True, timeout=60, check=False)
