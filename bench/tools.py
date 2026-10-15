@@ -92,8 +92,9 @@ GRAPH_TOOLS = [
         "and get its JSON output. `args` are the command line after `kg`, e.g. "
         '["query", "find", "utils"], ["query", "node", "module:app.core", '
         '"--depth", "2"], ["query", "path", "A", "B"], ["query", "untested"], '
-        '["query", "undocumented"], ["impact", "function:app.run", "--depth", '
-        '"2"], ["status"]. Run ["query", "--help"] or ["impact", "--help"] for '
+        '["query", "tested", "--type", "Module"], ["query", "undocumented"], '
+        '["impact", "function:app.run", "--type", "Module,Package"], ["status"]. '
+        'Run ["query", "--help"] or ["impact", "--help"] for '
         "every option.",
         "strict": True,
         "input_schema": {
