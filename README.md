@@ -142,26 +142,30 @@ graph.json merged into .kg/graph.json
 
 ## Examples
 
-We built a graph for each of three public projects, from an easy CLI to a
-layered backend. Each graph combines `kg extract` with the documents,
-decisions and concepts an agent added following `kg guide`. Open the
-interactive pages (offline HTML: search, filters, details on click):
+We built a graph for each of five projects, from a one-file CLI to scrapy.
+Each graph combines `kg extract` with the documents, decisions and concepts
+an agent added following `kg guide`. Open the interactive pages, offline HTML
+with search, filters and details on click:
 
-| Level | Project | Interactive graph |
-|-------|---------|-------------------|
-| Easy | [alfredodeza/basic-python-cli](https://github.com/alfredodeza/basic-python-cli) | [basic-python-cli](https://cristian1a.github.io/kg/examples/basic-python-cli.html) |
-| Intermediate | [bramvdklinkenberg/my_first_data_project](https://github.com/bramvdklinkenberg/my_first_data_project) | [my_first_data_project](https://cristian1a.github.io/kg/examples/my_first_data_project.html) |
-| Complex | [wesleey/python-clean-architecture](https://github.com/wesleey/python-clean-architecture) | [python-clean-architecture](https://cristian1a.github.io/kg/examples/python-clean-architecture.html) |
+| Level | Project | Nodes / edges | Interactive graph |
+|-------|---------|---------------|-------------------|
+| Easy | [alfredodeza/basic-python-cli](https://github.com/alfredodeza/basic-python-cli) | 10 / 12 | [basic-python-cli](https://cristian1a.github.io/kg/examples/basic-python-cli.html) |
+| Intermediate | [bramvdklinkenberg/my_first_data_project](https://github.com/bramvdklinkenberg/my_first_data_project) | 66 / 98 | [my_first_data_project](https://cristian1a.github.io/kg/examples/my_first_data_project.html) |
+| Complex | [wesleey/python-clean-architecture](https://github.com/wesleey/python-clean-architecture) | 398 / 754 | [python-clean-architecture](https://cristian1a.github.io/kg/examples/python-clean-architecture.html) |
+| Self | `kg` itself | 904 / 1889 | [kg](https://cristian1a.github.io/kg/examples/kg.html) |
+| Large | [scrapy/scrapy](https://github.com/scrapy/scrapy) 2.19.0 | 7964 / 18239 | [scrapy](https://cristian1a.github.io/kg/examples/scrapy.html) (8 MB) |
 
-`kg render --png` of `my_first_data_project`: ETL modules (blue), the CI
-workflows, decisions, concepts and TODO items an agent found (orange) and
-the empty test files (green).
+`kg render --png` of `my_first_data_project` shows:
+- the ETL modules (blue);
+- the CI workflows, decisions, concepts and TODO items an agent found (orange);
+- the empty test files (green).
 
 ![Knowledge graph of my_first_data_project](docs/examples/my_first_data_project.png)
 
-Thanks to the authors of these MIT-licensed projects; credits, commits and
-license texts are in [docs/examples](docs/examples/README.md), and the
-validation report in [docs/mvp-validation.md](docs/mvp-validation.md).
+The images of the other four projects, with the types each one shows, are in
+[docs/examples](docs/examples/README.md). Thanks to the authors of these
+projects. Credits, commits and license texts are in the same file, and the
+validation report is in [docs/mvp-validation.md](docs/mvp-validation.md).
 
 ## Data model
 
