@@ -90,8 +90,9 @@ All with `provenance` `method: parser`, `extractor: python-ast@0.1`,
 | `Config` | `config:<path>` | `pyproject.toml`, each requirements file; `attrs.digest` |
 | `Test` | `test:<name>` | Test file, class or function; see *Tests* |
 
-`Class` and `Function` have `provenance.lines` (`[first, last]`, starting at
-the first decorator), a `description` (first paragraph of the docstring) and
+`Package` and `Module` have `provenance.lines` `[1, last]`: the whole file,
+so their size shows without opening it. `Class` and `Function` have
+`provenance.lines` (`[first, last]`, starting at the first decorator), a `description` (first paragraph of the docstring) and
 `attrs`:
 
 | Attribute | On | Value |
@@ -100,6 +101,7 @@ the first decorator), a `description` (first paragraph of the docstring) and
 | `async` | `Function` | `true`, only for `async def` |
 | `decorators` | both | Source of each decorator, if any |
 | `bases` | `Class` | Source of each base class, if any |
+| `signature` | `Function` (and test functions) | Parameters and return annotation as written: `(a, b: int=1, *args) -> str` |
 | `kind` | `Test` | `module`, `class` or `function` |
 
 `attrs.digest` is `sha256:` plus the first 16 hex digits of the SHA-256 of

@@ -6,6 +6,8 @@
   see `bench.topics`).
 - `hybrid`: `kg`, plus `read_file` limited to the files and line ranges the
   graph has cited so far in the run (`Citations`).
+- `cards`: `hybrid` with brief answers: `--brief` is added to every command
+  that takes it.
 
 Both get `submit_answer`, which ends the run. Tool definitions are strict
 JSON Schemas and their order is fixed, so the prompt prefix caches well.
@@ -125,6 +127,7 @@ TOOLS = {
     "graph": GRAPH_TOOLS,
     "topic": GRAPH_TOOLS,
     "hybrid": [GRAPH_TOOLS[0], READ_CITED, SUBMIT],
+    "cards": [GRAPH_TOOLS[0], READ_CITED, SUBMIT],
 }
 
 STRATEGY_HINTS = {
@@ -143,6 +146,9 @@ STRATEGY_HINTS["hybrid"] = (
     "(`kg query node <id>` shows them). Cite evidence as graph node IDs, edges "
     "(`source -[type]-> target`) or `path:line`."
 )
+STRATEGY_HINTS["cards"] = STRATEGY_HINTS["hybrid"]
+# The commands that take `--brief`: the `cards` strategy always adds it
+_BRIEF_COMMANDS = {("query", "node"), ("query", "find"), ("query", "path"), ("impact",)}
 
 
 class Citations:
@@ -225,8 +231,13 @@ def run_tool(
     cited = citations if citations is not None else Citations()
 
     def kg(repo: Path, args: dict[str, Any]) -> str:
-        output = run_kg(repo, args, kg_dir)
-        if strategy == "hybrid":
+        argv = [str(a) for a in args["args"]]
+        if strategy == "cards" and (
+            tuple(argv[:2]) in _BRIEF_COMMANDS or tuple(argv[:1]) in _BRIEF_COMMANDS
+        ):
+            argv = [*argv, "--brief"] if "--brief" not in argv else argv
+        output = run_kg(repo, {"args": argv}, kg_dir)
+        if strategy in ("hybrid", "cards"):
             cited.add_from(output)
         return output
 
@@ -239,6 +250,7 @@ def run_tool(
     handlers: dict[str, Callable[[Path, dict[str, Any]], str]] = {
         "code": {"list_files": list_files, "read_file": read_file, "search": search},
         "hybrid": {"kg": kg, "read_file": read_cited},
+        "cards": {"kg": kg, "read_file": read_cited},
     }.get(strategy, {"kg": kg})
     if name not in handlers:
         raise ToolError(f"unknown tool {name!r} for strategy {strategy!r}")

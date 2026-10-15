@@ -117,6 +117,10 @@ every claim with the IDs and edges the commands return:
 
 - Add `--json` to read results reliably; every result carries its `path` of
   edges, each with its provenance `method` and `confidence`.
+- Add `--brief` to `query node`, `query find`, `query path` and `impact` to
+  keep answers short: a card per node with its provenance once, one line per
+  edge, at most 30 items. The card's `source` and `lines` say which lines of
+  which file to read, when you need the code itself.
 - `kg impact` lists **possible** effects. Say "may be affected", quote the
   path that justifies each one, and give less weight to paths through
   low-confidence `llm` edges. Tests are often most of the results: use

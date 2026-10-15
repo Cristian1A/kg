@@ -221,12 +221,50 @@ documents (`pca-path`: 2 849 against 22 022; `kg-docs-merge`: 11 031 against
   as changed or added be read would let the hybrid strategy recover from a
   stale graph.
 
-**What this means for step 2.** The lever is the size of the graph's answers,
+**What this meant for step 2.** The lever is the size of the graph's answers,
 not reading less code: node cards with the provenance once, neighbor counts
 instead of lists, and a compact output for `find` and `impact`. If that cuts
 the graph's output by about two thirds, as the text format suggests, the
 hybrid strategy would load about half the context of reading the code, with
 the same score.
+
+## Update: node cards (#52, step 2)
+
+`--brief` gives a card per node with its provenance once, one line per
+edge, and at most 30 items (see [query.md](query.md#brief-answers---brief)).
+The extractor now records function signatures and the line range of whole
+modules. The `cards` strategy is `hybrid` with `--brief` added to every
+command that takes it. Its stores were rebuilt with the new extractor, so
+the cards also carry signatures.
+
+| Run | Questions | Score | Answered | Context (chars, mean / median) | Tokens | Calls | Seconds |
+|-----|-----------|-------|----------|--------------------------------|--------|-------|---------|
+| Main, code | 17 | 0.94 (1.00 corrected) | 17/17 | 11 974 / 7 385 | 34 637 | 5.5 | 30 |
+| Main, hybrid | 17 | 1.00 | 17/17 | 14 888 / 9 758 | 35 406 | 7.1 | 44 |
+| Main, **cards** | 17 | **1.00** | 17/17 | **4 411 / 4 819** | **31 395** | 6.5 | 35 |
+| Stale, code | 6 | 1.00 | 6/6 | 8 460 / 2 862 | 33 095 | 4.8 | 30 |
+| Stale, hybrid | 6 | 0.65 | 5/6 | 35 647 / 39 874 | 38 942 | 16.0 | 63 |
+| Stale, cards | 6 | 0.50 | 5/6 | 25 970 / 14 986 | 34 237 | 15.2 | 51 |
+
+**This is the first result where the graph beats reading the code.** On the
+main questions it is as accurate (1.00), loads **63% less context** than the
+code (4 411 against 11 974 characters on average), and uses **3 200 fewer
+tokens** per answer. That is about half once the ~28 000 tokens of the coding
+agent's own prompt are taken out. It loads less context on 12 of the 17
+questions. The biggest gains are the multi-hop ones (`pca-impact-user`: 5 396
+against 31 986; `pca-flask-deps`: 7 865 against 26 947), and the losses are
+lookups where one search is enough (`pca-repo-impl`: 5 865 against 1 405). It
+is still slower, 35 seconds against 30.
+
+**The stale graph is still the weak spot.** Cards do not help there (0.50,
+against 0.65 for hybrid and 1.00 for the code): the questions are about files
+the graph does not have, and the citation rule does not let the agent open
+them. Two runs ran out of calls checking test files one by one. Reading the
+files `kg status` lists as changed or added is the next fix for this case.
+
+Caveats: one run per question, and the cards runs also have the rebuilt
+stores (signatures, module line ranges), so the gain is the format plus the
+richer cards.
 
 ## Limits of this evidence
 

@@ -142,6 +142,10 @@ def test_parser_provenance_with_file_and_lines(repo):
     # A decorated function starts at its first decorator
     assert found["function:app.core.Engine.speed"]["provenance"]["lines"] == [18, 20]
     assert found["repo:proj"]["provenance"] == {**PARSER, "source": "."}
+    # A module spans its whole file, so its size shows without opening it
+    core = found["module:app.core"]["provenance"]
+    assert core["lines"][0] == 1
+    assert core["lines"][1] == len((repo / "src/app/core.py").read_text().splitlines())
     for edge in extract_python(repo).document["edges"]:
         assert edge["provenance"].items() >= PARSER.items()
 
@@ -158,10 +162,12 @@ def test_descriptions_and_attributes(repo):
     assert found["function:app.core.Engine.speed"]["attrs"] == {
         "public": True,
         "decorators": ["property"],
+        "signature": "(self)",
     }
-    assert found["function:app.core.run"]["attrs"] == {"public": True, "async": True}
-    assert found["function:app.core.Engine._private"]["attrs"] == {"public": False}
-    assert found["function:app.core.__getattr__"]["attrs"] == {"public": True}
+    run = found["function:app.core.run"]["attrs"]
+    assert run == {"public": True, "async": True, "signature": run["signature"]}
+    assert found["function:app.core.Engine._private"]["attrs"]["public"] is False
+    assert found["function:app.core.__getattr__"]["attrs"]["public"] is True
     assert found["dependency:yaml-lib"]["attrs"] == {"import_name": "yaml_lib"}
 
 
@@ -507,3 +513,16 @@ def test_scripts_inside_a_package_import_their_siblings(tmp_path):
     assert ("module:etl.job", "dependency:utils") not in imports
     # Not a sibling of etl/tests/test_job.py: stays external
     assert ("test:etl.tests.test_job", "dependency:utils") in imports
+
+
+def test_function_signatures(tmp_path):
+    (tmp_path / "m.py").write_text(
+        "def f(a, b: int = 1, *args, c, **kw) -> str:\n    return ''\n\n\n"
+        "class K:\n    async def g(self, x=None):\n        pass\n"
+    )
+    found = nodes(extract_python(tmp_path))
+    assert found["function:m.f"]["attrs"]["signature"] == (
+        "(a, b: int=1, *args, c, **kw) -> str"
+    )
+    assert found["function:m.K.g"]["attrs"]["signature"] == "(self, x=None)"
+    assert "signature" not in found["class:m.K"]["attrs"]

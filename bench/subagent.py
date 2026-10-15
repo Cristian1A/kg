@@ -158,7 +158,7 @@ def call(run_dir: Path, tool: str, raw: str) -> str:
                 meta["topic"],
                 cited,
             )
-            if meta["strategy"] == "hybrid":
+            if meta["strategy"] in ("hybrid", "cards"):
                 cited_file.write_text(json.dumps(cited.ranges) + "\n")
     except ToolError as e:
         entry["error"] = str(e)

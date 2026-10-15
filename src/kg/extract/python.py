@@ -170,8 +170,15 @@ class _Builder:
         if module.is_test:
             type_, attrs = "Test", {"kind": "module"}
         label = module.name.rsplit(".", 1)[-1]
+        size = _line_count(self.root / module.path)
         self._node(
-            module.id, type_, module.path, label=label, description=doc, attrs=attrs
+            module.id,
+            type_,
+            module.path,
+            lines=[1, size] if size else None,
+            label=label,
+            description=doc,
+            attrs=attrs,
         )
         self._entity(module.name, module.id, module.path)
         self._edge(f"file:{module.path}", module.id, "defines", module.path)
@@ -226,6 +233,8 @@ class _Builder:
                 attrs["decorators"] = [ast.unparse(d) for d in stmt.decorator_list]
             if is_class and stmt.bases:
                 attrs["bases"] = [ast.unparse(b) for b in stmt.bases]
+            if not is_class:
+                attrs["signature"] = _signature(stmt)
             if kind:
                 attrs["kind"] = kind
             self._node(
@@ -529,3 +538,17 @@ def _provenance(source: str, lines: list[int] | None) -> dict[str, Any]:
     if lines is not None:
         prov["lines"] = lines
     return prov
+
+
+def _signature(stmt: ast.FunctionDef | ast.AsyncFunctionDef) -> str:
+    """`(a, b=1, *args) -> int`: the parameters and return annotation, as written."""
+    returns = f" -> {ast.unparse(stmt.returns)}" if stmt.returns else ""
+    return f"({ast.unparse(stmt.args)}){returns}"
+
+
+def _line_count(path: Path) -> int:
+    """Number of lines of a file (0 if it cannot be read)."""
+    try:
+        return len(path.read_bytes().splitlines())
+    except OSError:
+        return 0

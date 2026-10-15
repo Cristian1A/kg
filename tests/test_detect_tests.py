@@ -146,7 +146,12 @@ def test_detects_test_files_functions_and_classes(repo):
 def test_test_nodes_keep_the_usual_attributes_and_edges(repo):
     extraction = extract_python(repo)
     node = nodes(extraction)["test:tests.test_core.test_async"]
-    assert node["attrs"] == {"public": True, "async": True, "kind": "function"}
+    assert node["attrs"] == {
+        "public": True,
+        "async": True,
+        "kind": "function",
+        "signature": "()",
+    }
     assert node["provenance"]["source"] == "tests/test_core.py"
     edges = {
         (e["source"], e["target"], e["type"]) for e in extraction.document["edges"]

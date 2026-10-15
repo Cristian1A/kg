@@ -17,7 +17,8 @@ kg impact function:app.core.charge            # what a change may affect (CU-05)
 ```
 
 All of them take `--json` (one object on stdout, see *JSON output*) and
-`--kg-dir`. An unknown ID is a usage error (exit code `2`) with the closest
+`--kg-dir`. `query node`, `query find`, `query path` and `impact` also take
+`--brief` (see *Brief answers*). An unknown ID is a usage error (exit code `2`) with the closest
 ID as a suggestion:
 
 ```text
@@ -133,6 +134,25 @@ The default relations are a starting point. `calls` edges are not extracted
 yet (RF-13), so a change to a function reaches the modules that import its
 module, not only the functions that call it.
 
+## Brief answers (`--brief`)
+
+`--brief` returns what an agent needs to decide its next step, and little
+else:
+- **The node itself:** a card with its type, label, description and `attrs`
+  (a function's `signature`, a class's `bases`), and its provenance **once**:
+  `method`, `source`, `lines`, plus `confidence` when it is below 1. `lines`
+  says which lines to open: a module spans its whole file.
+- **Neighbors and results:** one line each, with the edge that reaches them:
+  `<-[imports]- module:app.core`, or `module:app.api (depth 2, via
+  module:app.api -[imports]-> module:app.core)`. The provenance appears only
+  when the edge is not the parser's: `<-[justifies]- decision:keep [llm, 0.8]`.
+- **Caps:** at most 30 neighbors, matches or results. The rest are counted by
+  type in `more` (`find` gives `total`).
+
+On the benchmark repos it cuts the answers by a third (`path`) to six sevenths
+(`find`). The full answer stays the default, so agents relying on its keys
+are not affected.
+
 ## Coverage limits
 
 The graph never holds everything, so every answer ends with notes on what it
@@ -168,3 +188,12 @@ A **result** is `{id, type, label, depth, direct, confidence, methods,
 path}`; a **step** is `{source, target, type, method, confidence}`; a
 **limit** is `{code, message}` plus `files` or `relations` where they apply.
 These keys are stable: agents can rely on them.
+
+With `--brief`:
+
+| Command | `result` |
+|---------|----------|
+| `query node` | `node` (the card: `id`, `type`, `label`, `description`, `attrs`, `provenance`), `neighbors` (lines), `more`, `limits` |
+| `query find` | `nodes` (IDs), `total` |
+| `query path` | as without `--brief`, but `path` is a list of edge lines |
+| `impact` | `id`, `relations`, `types`, `results` (lines), `total`, `more`, `omitted`, `limits` |

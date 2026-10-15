@@ -21,13 +21,13 @@
     "name": "kg",
     "url": "https://github.com/Cristian1A/kg",
     "commit": "1a342c4",
-    "agent": "examples/agent/kg.json"
+    "agent": "bench/agent/kg-1a342c4.json"
   },
   {
     "name": "kg-stale",
     "url": "https://github.com/Cristian1A/kg",
     "commit": "1a342c4",
     "graph_commit": "ebd078d",
-    "agent": "examples/agent/kg.json"
+    "agent": "bench/agent/kg-1a342c4.json"
   }
 ]
