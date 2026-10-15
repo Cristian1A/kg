@@ -34,7 +34,7 @@ extend the time box.
 | 3 | #38 | `kg query` and `kg impact`, the minimum the benchmark needs | RF-40–43 | #37 (better results) | The graph agent needs a query interface, not raw JSON |
 | 4 | #36 | Mandatory descriptions for agent-created nodes | RF-20 | — | Changes graph quality, so it should land before measuring |
 | 5 | #39 | Benchmark: pilot with ~5 questions, then 15–30 | RNF-10 | #38 | The goal of the phase. The pilot checks the harness (prompts, grading, token counting) before writing every question |
-| 6 | #40 | Reproducible demo | CU-01–05 | #38 | Shows the result to someone who has not followed the project |
+| 6 | #40 | Reproducible demo: the README's *Ask the graph*, on a published example | CU-01–05 | #38 | Shows the result to someone who has not followed the project |
 
 Steps 1, 2 and 4 are independent and can overlap. Step 5 starts as soon as #38
 has the queries the questions need. The rest of #38 can be finished during the
