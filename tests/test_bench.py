@@ -397,6 +397,28 @@ def test_hybrid_reads_only_what_the_graph_cited(repo):
     assert [t["name"] for t in TOOLS["hybrid"]] == ["kg", "read_file", "submit_answer"]
 
 
+def test_cards_strategy_adds_brief_and_still_cites(repo):
+    cited = Citations()
+    out = run_tool(
+        "cards",
+        repo,
+        "kg",
+        {"args": ["query", "node", "function:app.core.run"]},
+        citations=cited,
+    )
+    assert json.loads(out)["result"]["node"]["provenance"]["source"] == "app/core.py"
+    assert cited.ranges["app/core.py"] == [[4, 5]]
+    assert "return 1" in run_tool(
+        "cards",
+        repo,
+        "read_file",
+        {"path": "app/core.py", "start_line": None, "end_line": None},
+        citations=cited,
+    )
+    status = json.loads(run_tool("cards", repo, "kg", {"args": ["status"]}))
+    assert status["ok"]  # commands without --brief run as usual
+
+
 # --- Subagent runner --------------------------------------------------------------
 
 SUB_QUESTION = {
