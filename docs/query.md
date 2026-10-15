@@ -11,6 +11,7 @@ kg query node module:app.core                 # a node, its attributes and neigh
 kg query find payment --type Function         # find IDs by name, ID or description
 kg query path module:app.api dependency:requests
 kg query untested                             # code with no `tests` edge (CU-02)
+kg query tested --type Module                 # code with tests, and which tests
 kg query undocumented --type Module,Package   # code no document points to (CU-03)
 kg impact function:app.core.charge            # what a change may affect (CU-05)
 ```
@@ -64,7 +65,7 @@ edges all point back (`backward`), and only then mixes directions (`mixed`).
 Each step keeps the real direction of its edge. `--relation` limits the
 edges a path may use. If there is none: `no path between … in the graph`.
 
-## `kg query untested` and `kg query undocumented`
+## `kg query untested`, `tested` and `undocumented`
 
 The predefined queries for the reference questions (RF-42):
 
@@ -72,12 +73,17 @@ The predefined queries for the reference questions (RF-42):
   incoming `tests` edge, leaving out test files and `conftest.py`. The
   `tests` edges come from a static heuristic (see
   [extract.md](extract.md#tests)): a result means "no test refers to it
-  directly", not "never runs under tests".
+  directly", not "never runs under tests". `--type Module,Package` checks
+  modules: a module is tested when a test module imports it.
+- **`tested`**: the complement, each element with the tests that point to it
+  (`<-[tests]- test:…`). For the same options, `tested` and `untested` split
+  the same set, so one call to each is enough to check an answer. Both say
+  what counts as tested (`criterion` in JSON).
 - **`undocumented`** (CU-03): public `Package`, `Module`, `Class` and
   `Function` nodes that no `documents` edge points to. A docstring is not a
   document: it is the node's `description`.
 
-Both take `--type T1,T2` and `--include-private`. Documents that mention
+All three take `--type T1,T2` and `--include-private`. Documents that mention
 something missing from the code are recorded by agents as `Issue` nodes that
 `documents` the document (see `kg guide`): list them with
 `kg query find --type Issue`.
@@ -117,6 +123,11 @@ How a change propagates:
   default there is no limit.
 - `Repo` and `File` nodes are never results: the repo would match
   everything, and a file is represented by its module.
+- `--type T1,T2` lists only results of these types; the walk still goes
+  through the others. Tests are often most of the results (109 of 125 for a
+  change in `kg.schema.validation`), so `--type Module,Package` keeps an
+  answer short. The text ends with `left out by --type: Test 109, …` and the
+  JSON gives the same counts in `omitted`.
 
 The default relations are a starting point. `calls` edges are not extracted
 yet (RF-13), so a change to a function reaches the modules that import its
@@ -148,8 +159,10 @@ root, as `kg init` creates `.kg/` inside the repo (RF-70).
 | `query node` | `node` (stored fields), `neighbors` (results), `limits` |
 | `query find` | `nodes` (`id`, `type`, `label`) |
 | `query path` | `found`, `direction` (`forward`, `backward`, `mixed` or `null`), `path` (steps), `source`, `target`, `limits` |
-| `query untested`, `query undocumented` | `nodes`, `limits` |
-| `impact` | `id`, `depth`, `relations`, `containment`, `results`, `limits` |
+| `query untested` | `nodes`, `criterion`, `limits` |
+| `query tested` | `nodes` (each with `tests`: the IDs of its tests), `criterion`, `limits` |
+| `query undocumented` | `nodes`, `limits` |
+| `impact` | `id`, `depth`, `relations`, `containment`, `types` (`null` without `--type`), `results`, `omitted` (left-out results by type), `limits` |
 
 A **result** is `{id, type, label, depth, direct, confidence, methods,
 path}`; a **step** is `{source, target, type, method, confidence}`; a

@@ -49,6 +49,8 @@ kg query node module:demo.core > /dev/null
 kg query find fetch --type Function | grep -q "function:demo.core.fetch"
 kg impact function:demo.core.fetch | grep -q "may affect"
 kg query untested > /dev/null
+kg query tested > /dev/null
+kg impact function:demo.core.fetch --type Module | grep -q "may affect"
 kg render --html -o graph.html
 kg render --png -o graph.png
 kg render --svg -o graph.svg

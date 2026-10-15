@@ -110,15 +110,21 @@ every claim with the IDs and edges the commands return:
 | What is X, and what is it linked to? | `kg query node <id>` (`--depth 2` for more) |
 | Where is X? Which nodes are about Y? | `kg query find <text>`, `--type`, `--attr` |
 | How are X and Y related? | `kg query path <x> <y>` |
-| Which tests are missing? | `kg query untested` |
+| Which tests are missing? | `kg query untested` (`--type Module` for modules) |
+| Which tests cover what? | `kg query tested`: each element with its tests |
 | Which code has no documentation? | `kg query undocumented` |
-| What may break if X changes? | `kg impact <id>` (`--depth`, `--relation`) |
+| What may break if X changes? | `kg impact <id>` (`--depth`, `--relation`, `--type`) |
 
 - Add `--json` to read results reliably; every result carries its `path` of
   edges, each with its provenance `method` and `confidence`.
 - `kg impact` lists **possible** effects. Say "may be affected", quote the
   path that justifies each one, and give less weight to paths through
-  low-confidence `llm` edges.
+  low-confidence `llm` edges. Tests are often most of the results: use
+  `--type Module,Package` (or the types you need) and read `omitted` for the
+  rest.
+- `untested` and `tested` split the same code: one call to each checks an
+  answer, without walking the tests one by one. Their `criterion` says what
+  counts as tested.
 - Read the `note:` lines (`limits` in JSON) before answering: a stale graph,
   files that could not be read or relation types the graph lacks (no `calls`
   edges, for instance) mean the answer may be incomplete. Say so.

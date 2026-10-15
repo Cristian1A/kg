@@ -175,7 +175,8 @@ This is a **static heuristic**, so it does not see:
   strings, or other test runners' conventions.
 
 **Code without tests** (CU-02) is the code with no incoming `tests` edge:
-`kg query untested` lists it (see [query.md](query.md)). It leaves out code in
+`kg query untested` lists it and `kg query tested` the rest, with each element's
+tests (see [query.md](query.md)). It leaves out code in
 test files and `conftest.py`; `--include-private` adds `_private` names and
 `--type Module,Package` checks modules instead. Given the limits above, a
 result means "no test refers to it directly", not "never runs under tests".

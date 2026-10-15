@@ -18,24 +18,26 @@ import networkx as nx
 CODE_TYPES = ("Function", "Class")
 
 
-def untested(
+def coverage(
     graph: nx.MultiDiGraph,
     types: Collection[str] = CODE_TYPES,
     include_private: bool = False,
-) -> list[str]:
-    """Code with no incoming `tests` edge, sorted by ID (CU-02).
+) -> dict[str, list[str]]:
+    """The tests that point to each element of `types`, by element ID (CU-02).
 
-    Leaves out code defined in test files or `conftest.py` (helpers and
-    fixtures) and, unless `include_private`, names with `attrs.public` false.
-    The `tests` edges come from a static heuristic (see `docs/extract.md`):
-    code exercised only indirectly also shows up here.
+    An element is tested when a `tests` edge points to it: a test module
+    imports it or a test function refers to it. Leaves out code defined in
+    test files or `conftest.py` (helpers and fixtures) and, unless
+    `include_private`, names with `attrs.public` false. The `tests` edges
+    come from a static heuristic (see `docs/extract.md`): code exercised only
+    indirectly has no tests here.
     """
     test_files = {
         data.get("provenance", {}).get("source")
         for _, data in graph.nodes(data=True)
         if data.get("type") == "Test"
     }
-    result = []
+    result = {}
     for node_id, data in graph.nodes(data=True):
         if data.get("type") not in types:
             continue
@@ -44,9 +46,30 @@ def untested(
             continue
         if not include_private and data.get("attrs", {}).get("public") is False:
             continue
-        if not any(key == "tests" for _, _, key in graph.in_edges(node_id, keys=True)):
-            result.append(node_id)
-    return sorted(result)
+        result[node_id] = sorted(
+            {u for u, _, key in graph.in_edges(node_id, keys=True) if key == "tests"}
+        )
+    return dict(sorted(result.items()))
+
+
+def untested(
+    graph: nx.MultiDiGraph,
+    types: Collection[str] = CODE_TYPES,
+    include_private: bool = False,
+) -> list[str]:
+    """Code with no incoming `tests` edge, sorted by ID (see `coverage`)."""
+    return [
+        i for i, tests in coverage(graph, types, include_private).items() if not tests
+    ]
+
+
+def tested(
+    graph: nx.MultiDiGraph,
+    types: Collection[str] = CODE_TYPES,
+    include_private: bool = False,
+) -> dict[str, list[str]]:
+    """Code with at least one `tests` edge, and the tests (see `coverage`)."""
+    return {i: t for i, t in coverage(graph, types, include_private).items() if t}
 
 
 # --- Lookups, neighbors and paths (RF-40) ---------------------------------------
@@ -271,6 +294,7 @@ def impact(
     depth: int | None = None,
     relations: Collection[str] = IMPACT_RELATIONS,
     containment: bool = True,
+    types: Collection[str] | None = None,
 ) -> list[Hit]:
     """Elements that **may** be affected by a change in `node_id`.
 
@@ -279,6 +303,7 @@ def impact(
     module or class that defines it, so whatever imports that module is
     reached too. `Repo` and `File` nodes are never results. Breadth-first:
     each element comes with its shortest justifying path and its depth.
+    `types` limits the results; other nodes are still walked through.
     """
     require(graph, node_id)
 
@@ -292,7 +317,8 @@ def impact(
             found += _owners(graph, current)
         return found
 
-    return _walk(graph, node_id, steps, depth)
+    hits = _walk(graph, node_id, steps, depth)
+    return [h for h in hits if not types or h.type in types]
 
 
 def _owners(graph: nx.MultiDiGraph, node_id: str) -> list[tuple[str, Any]]:
