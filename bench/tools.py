@@ -5,7 +5,8 @@
 - `topic`: the same, on the store of the question's topic (`.kg-<topic>`,
   see `bench.topics`).
 - `hybrid`: `kg`, plus `read_file` limited to the files and line ranges the
-  graph has cited so far in the run (`Citations`).
+  graph has cited so far in the run (`Citations`), and to the files it reports
+  as changed since it was built (`kg status`, or a `stale_graph` limit).
 - `cards`: `hybrid` with brief answers: `--brief` is added to every command
   that takes it.
 
@@ -120,7 +121,9 @@ READ_CITED = {
     "description": f"Read lines of a file the graph has cited, at most {MAX_LINES} "
     "lines per call. Only the files in the `source` of a node the `kg` tool "
     "returned (e.g. with `kg query node <id>`) can be read, and only within its "
-    "`lines` when it gives them; null reads the whole cited range.",
+    "`lines` when it gives them; null reads the whole cited range. Files the "
+    "graph reports as changed or added since it was built (`kg status`, or a "
+    "`stale_graph` limit) can be read whole.",
 }
 
 TOOLS = {
@@ -144,8 +147,10 @@ STRATEGY_HINTS["hybrid"] = (
     "You can query the repository's knowledge graph, built by kg from its code "
     "and documents, with the `kg` tool, and read the files it cites with "
     "`read_file`: only the `source` file and `lines` of the nodes it returns "
-    "(`kg query node <id>` shows them). Cite evidence as graph node IDs, edges "
-    "(`source -[type]-> target`) or `path:line`."
+    "(`kg query node <id>` shows them). If the graph is stale, `kg status` "
+    "lists the files changed or added since it was built: read those whole. "
+    "Cite evidence as graph node IDs, edges (`source -[type]-> target`) or "
+    "`path:line`."
 )
 STRATEGY_HINTS["cards"] = STRATEGY_HINTS["hybrid"]
 # The commands that take `--brief`: the `cards` strategy always adds it
@@ -156,14 +161,19 @@ class Citations:
     """Files and line ranges the graph has cited in a run: what `hybrid` reads.
 
     `ranges` maps a repo path to `[start, end]` pairs; `None` means the whole
-    file (a node with a `source` and no `lines`, such as a module).
+    file (a node with a `source` and no `lines`, such as a module, or a file
+    the graph reports as changed since it was built).
     """
 
     def __init__(self, ranges: dict[str, list[list[int]] | None] | None = None):
         self.ranges: dict[str, list[list[int]] | None] = dict(ranges or {})
 
     def add_from(self, output: str) -> None:
-        """Record every `source` (with its `lines`) in a `kg --json` output."""
+        """Record every `source` (with its `lines`) in a `kg --json` output.
+
+        Files the graph does not match are recorded whole: `modified` and
+        `added` in `kg status`, and the `files` of a `stale_graph` limit.
+        """
         try:
             data = json.loads(output)
         except json.JSONDecodeError:
@@ -180,6 +190,8 @@ class Citations:
                     "method" in item or "extractor" in item
                 ):
                     self._add(source, item.get("lines"))
+                for path in _stale_files(item):
+                    self.ranges[path] = None
                 stack.extend(item.values())
 
     def _add(self, path: str, lines: Any) -> None:
@@ -209,6 +221,17 @@ class Citations:
                 return start or low, end or high
         cited = ", ".join(f"{low}-{high}" for low, high in sorted(allowed))
         raise ToolError(f"outside what the graph cited for {path}: lines {cited}")
+
+
+def _stale_files(item: dict[str, Any]) -> list[str]:
+    """The files a `kg status` result or a `stale_graph` limit says changed."""
+    if item.get("code") == "stale_graph":
+        files = item.get("files", [])
+    elif "stale" in item and "modified" in item:
+        files = [*item.get("modified", []), *item.get("added", [])]
+    else:
+        return []
+    return [f for f in files if isinstance(f, str)]
 
 
 class ToolError(Exception):

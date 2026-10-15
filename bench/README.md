@@ -18,7 +18,7 @@ system prompt and turn limit:
 | `code` (baseline) | `list_files`, `read_file`, `search` over the repo | `path:line` |
 | `graph` | `kg` (read-only `kg query`, `kg impact`, `kg status`) over the repo's store | node IDs and edges |
 | `topic` | the same `kg` tool, over a store of the question's topic (`bench/topics.py`) | node IDs and edges |
-| `hybrid` | `kg`, plus `read_file` limited to the files and line ranges the graph has cited in the run | node IDs, edges and `path:line` |
+| `hybrid` | `kg`, plus `read_file` limited to the files and line ranges the graph has cited in the run, and to the files it reports as changed or added since it was built (`kg status`, or a `stale_graph` limit), read whole | node IDs, edges and `path:line` |
 | `cards` | `hybrid`, with `--brief` added to every `kg` command that takes it (node cards) | node IDs, edges and `path:line` |
 
 All end by calling `submit_answer` with `answer`, `items` and `evidence`.

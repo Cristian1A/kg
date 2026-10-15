@@ -14,7 +14,9 @@ JSON that is versioned with git like any other file.
 > questions over the graph. A benchmark measured whether the graph helps an
 > agent. On small repos, an agent that reads node cards (`--brief`) and then
 > only the lines they cite is as accurate as one reading the code, with 63% less
-> context ([report](docs/benchmark.md)). See the [roadmap](#roadmap).
+> context ([report](docs/benchmark.md)). When the graph is stale, the agent
+> reads the files `kg status` reports as changed, so it still answers, but it
+> costs more than reading the code. See the [roadmap](#roadmap).
 
 ## Why
 

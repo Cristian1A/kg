@@ -266,6 +266,48 @@ Caveats: one run per question, and the cards runs also have the rebuilt
 stores (signatures, module line ranges), so the gain is the format plus the
 richer cards.
 
+## Update: reading what a stale graph reports (#52)
+
+`hybrid` and `cards` can now also read, whole, the files the graph reports as
+changed or added since it was built: the `modified` and `added` of
+`kg status`, and the `files` of the `stale_graph` limit that every query
+answer carries. The hint tells the agent to run `kg status` and read those
+files. Nothing changes on a fresh graph, where neither lists any file.
+
+| Run | Questions | Score | Answered | Context (chars, mean / median) | Tokens | Calls | Seconds |
+|-----|-----------|-------|----------|--------------------------------|--------|-------|---------|
+| Stale, code | 6 | 1.00 | 6/6 | 8 460 / 2 862 | 33 095 | 4.8 | 30 |
+| Stale, hybrid (before) | 6 | 0.65 | 5/6 | 35 647 / 39 874 | 38 942 | 16.0 | 63 |
+| Stale, cards (before) | 6 | 0.50 | 5/6 | 25 970 / 14 986 | 34 237 | 15.2 | 51 |
+| Stale, **hybrid** | 6 | **0.83** | 5/6 | 58 676 / 26 596 | 39 174 | 13.5 | 41 |
+| Stale, **cards** | 6 | **0.83** | 5/6 | 50 750 / 29 524 | 36 912 | 12.8 | 38 |
+
+**Every answer was right, but two ran out of calls.** `kgs-update-functions`
+and `kgs-tests-update`, about files the graph does not have, went from 0 to
+1.00. `kgs-impact-validation` went from 0 to 1.00 with cards: the agent took
+the graph's impact list and added `kg.update`, a new file that imports the
+module. The two failures (`kgs-tests-update` with cards, `kgs-impact-validation`
+with hybrid) had worked out the right answer and hit the 25-call limit before
+submitting. They spent most of it on a few hundred lines per call over the
+changed files, and they loaded the most context of any run (about 166 000
+characters each).
+
+**A stale graph is now safe and usable, but it costs more than the code.**
+The graph cannot index files it has not seen, so the agent reads them whole.
+To find which of the 24 changed files imports a module, the code strategy
+runs one `search`; the hybrid agent reads them one by one. Even leaving out
+the two failures, the context per answer (27 558 for cards, 37 222 for
+hybrid) is three to four times the code's. The natural next step is a
+`search` limited to the files the graph reports as changed: what the graph
+does not cover would then cost what it costs the code strategy, and only that
+part.
+
+Caveats: one run per question. In two runs the agent filtered the output of
+its own calls with `grep`; that saves it reading, but gives it no file it
+could not open. This run also fixed the benchmark calling `kg` from the
+`PATH`: it now uses the interpreter running it, so a subagent that does not
+activate the virtual environment still works.
+
 ## Limits of this evidence
 
 - **Sample size.** 29 questions, one run each. A difference of one question
