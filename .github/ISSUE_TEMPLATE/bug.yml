@@ -31,4 +31,4 @@ body:
     id: environment
     attributes:
       label: Environment
-      placeholder: kg 0.1.0 · Python 3.12 · Ubuntu 24.04
+      placeholder: kg 0.2.0 · Python 3.12 · Ubuntu 24.04
