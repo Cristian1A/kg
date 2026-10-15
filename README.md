@@ -12,8 +12,9 @@ JSON that is versioned with git like any other file.
 > **Status: v0.2, the evidence phase.** The MVP (schema, store, extraction,
 > rendering, agent guide) is done, and `kg query` / `kg impact` answer
 > questions over the graph. A benchmark measured whether the graph helps an
-> agent: on small repos it is as accurate as reading the code, but neither better
-> nor cheaper ([report](docs/benchmark.md)). See the [roadmap](#roadmap).
+> agent. On small repos, an agent that reads node cards (`--brief`) and then
+> only the lines they cite is as accurate as one reading the code, with 63% less
+> context ([report](docs/benchmark.md)). See the [roadmap](#roadmap).
 
 ## Why
 
