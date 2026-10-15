@@ -148,7 +148,12 @@ def test_invalid_document_is_fixed_in_one_iteration(repo, tmp_path, capsys):
     assert run(capsys, "add", str(bad), "--dry-run", "--kg-dir", kg)[0] == EXIT_OK
 
 
-SAMPLES = ["basic-python-cli", "my_first_data_project", "python-clean-architecture"]
+SAMPLES = [
+    "basic-python-cli",
+    "my_first_data_project",
+    "python-clean-architecture",
+    "scrapy",
+]
 
 
 @pytest.mark.parametrize("name", SAMPLES)
