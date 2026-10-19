@@ -2,6 +2,10 @@
 
 [![CI](https://github.com/Cristian1A/kg/actions/workflows/ci.yml/badge.svg)](https://github.com/Cristian1A/kg/actions/workflows/ci.yml)
 
+**Website: [cristian1a.github.io/kg](https://cristian1a.github.io/kg/)**: what
+kg does, the example graphs to explore in the browser, what the benchmark found
+and how to start.
+
 `kg` is a command-line tool, for humans and AI agents, that turns what a
 software project knows about itself — code, dependencies, docs, tests, design
 decisions — into a **knowledge graph** you can query, visualize and export.
@@ -199,7 +203,8 @@ a change in module:src.domain.entities.user may affect 19 elements (possible eff
   …
   module:src.app.flask.create_flask_app (depth 4, via module:src.app.flask.create_flask_app -[imports]-> module:src.app.flask.blueprints.create_user_blueprint)
   module:flask_process_handler (depth 5, via module:flask_process_handler -[imports]-> module:src.app.flask.create_flask_app)
-left out by --type: Test 13
+left out by --type: Document 1, Issue 2, Test 13
+note: the graph has no `calls` edges; whatever depends on them is not in this answer (`kg extract` does not produce `calls`, RF-13)
 ```
 
 **Which modules does no test import?**

@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>kg: a knowledge graph of your codebase</title>
+<meta name="description" content="kg is an offline CLI that turns a Python repository into a knowledge graph: a deterministic parser maps the code, your AI agent adds documents and decisions, and every edge records where it came from.">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#f6f7f8" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#111418" media="(prefers-color-scheme: dark)">
+<meta property="og:title" content="kg: a knowledge graph of your codebase">
+<meta property="og:description" content="A deterministic parser plus your AI agent, one versioned JSON graph, provenance on every edge.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://cristian1a.github.io/kg/">
+<meta property="og:image" content="https://cristian1a.github.io/kg/examples/my_first_data_project.png">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M8 23 16 8l8 15' fill='none' stroke='%239a9993' stroke-width='2.5'/%3E%3Ccircle cx='16' cy='8' r='5' fill='%232a78d6'/%3E%3Ccircle cx='8' cy='23' r='5' fill='%231baf7a'/%3E%3Ccircle cx='24' cy='23' r='5' fill='%23eb6834'/%3E%3C/svg%3E">
+<!--
+  Project site for kg (issue #41). One self-contained page: inline CSS, a few
+  lines of inline JS for copy buttons, no build step, no external requests.
+
+  Maintenance:
+  - Every number comes from docs/benchmark.md, docs/examples/README.md or
+    docs/mvp-validation.md, and the text next to it says which.
+  - Example graphs live in docs/examples/; link them relatively
+    (examples/<repo>.html) so they work under /kg/ and from disk.
+  - Docs link to GitHub, not to Pages: with docs/.nojekyll, Pages serves
+    Markdown as plain text.
+  - tests/test_site.py checks every link, image and anchor on this page.
+-->
+<style>
+:root {
+  --bg: #f6f7f8;
+  --surface: #ffffff;
+  --ink: #14171c;
+  --muted: #4b535d;
+  --rule: #d6dbe0;
+  --rule-strong: #aab2bb;
+  --code-bg: #eef1f4;
+  /* The families of `kg render` (src/kg/render/style.py): mark and text steps */
+  --code: #2a78d6;
+  --code-text: #1d5fb0;
+  --context: #eb6834;
+  --context-text: #a8441c;
+  --tests: #1baf7a;
+  --tests-text: #0f6e4c;
+  --focus: #1d5fb0;
+  --measure: 66ch;
+  --wide: 74rem;
+  --s1: .25rem; --s2: .5rem; --s3: .75rem; --s4: 1rem; --s5: 1.5rem;
+  --s6: 2rem; --s7: 3rem; --s8: 4.5rem; --s9: 6.5rem;
+  --sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --mono: ui-monospace, "SFMono-Regular", "Cascadia Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #111418;
+    --surface: #181c21;
+    --ink: #e7e9ec;
+    --muted: #a5adb7;
+    --rule: #2c323a;
+    --rule-strong: #4a525c;
+    --code-bg: #1d2228;
+    --code: #3987e5;
+    --code-text: #9ec5f4;
+    --context: #d95926;
+    --context-text: #f4ab8c;
+    --tests: #199e70;
+    --tests-text: #8fdcbc;
+    --focus: #9ec5f4;
+  }
+}
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 1.0625rem/1.6 var(--sans);
+  text-rendering: optimizeLegibility;
+}
+h1, h2, h3 { line-height: 1.15; text-wrap: balance; margin: 0; }
+h1 { font-size: clamp(2rem, 1.3rem + 2.2vw, 2.85rem); font-weight: 700; letter-spacing: -.025em; }
+h2 { font-size: clamp(1.6rem, 1.3rem + 1.2vw, 2.2rem); font-weight: 700; letter-spacing: -.02em; }
+h3 { font-size: 1.2rem; font-weight: 650; letter-spacing: -.01em; }
+p { margin: 0 0 var(--s4); max-width: var(--measure); text-wrap: pretty; }
+ul, ol { margin: 0 0 var(--s4); padding-left: 1.25rem; max-width: var(--measure); }
+li + li { margin-top: var(--s2); }
+a { color: var(--code-text); text-decoration-thickness: 1px; text-underline-offset: .18em; }
+a:hover { text-decoration-thickness: 2px; }
+:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; border-radius: 2px; }
+code, pre, kbd { font-family: var(--mono); font-size: .88em; }
+:not(pre) > code { background: var(--code-bg); padding: .08em .3em; border-radius: 3px; overflow-wrap: anywhere; }
+pre {
+  margin: 0; padding: var(--s4) var(--s5); overflow-x: auto;
+  background: var(--code-bg); border: 1px solid var(--rule); border-radius: 6px;
+  line-height: 1.55; font-size: .82rem; tab-size: 2;
+}
+pre code { font-size: inherit; }
+.cm { color: var(--muted); }
+img { max-width: 100%; height: auto; display: block; }
+.vh {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+.skip {
+  position: absolute; left: var(--s4); top: -3rem; z-index: 10;
+  background: var(--surface); color: var(--ink); padding: var(--s2) var(--s4);
+  border: 2px solid var(--focus); border-radius: 4px;
+}
+.skip:focus { top: var(--s2); }
+.wrap { max-width: var(--wide); margin: 0 auto; padding: 0 var(--s5); }
+@media (max-width: 40rem) { .wrap { padding: 0 var(--s4); } }
+
+/* Grid tracks can shrink below their content (long code lines scroll instead) */
+.hero-grid, .lanes, .merge-grid, .compare, .start-grid, .findings, .bench-tables,
+.bench-grid, .status-grid { grid-template-columns: minmax(0, 1fr); }
+
+/* Header */
+.site-header {
+  position: sticky; top: 0; z-index: 5;
+  background: color-mix(in srgb, var(--bg) 92%, transparent);
+  backdrop-filter: blur(6px);
+  border-bottom: 1px solid var(--rule);
+}
+.site-header .wrap { display: flex; align-items: center; gap: var(--s5); min-height: 3.5rem; }
+.brand { display: inline-flex; align-items: center; gap: var(--s2); color: var(--ink); text-decoration: none; font: 700 1.15rem var(--mono); }
+.brand svg { width: 1.6rem; height: 1.6rem; }
+.site-nav { margin-left: auto; min-width: 0; }
+.site-nav ul { display: flex; gap: var(--s1); list-style: none; margin: 0; padding: 0; max-width: none; overflow-x: auto; scrollbar-width: none; }
+.site-nav li + li { margin-top: 0; }
+.site-nav a { display: block; padding: var(--s2) var(--s3); color: var(--muted); text-decoration: none; font-size: .92rem; white-space: nowrap; border-radius: 4px; }
+.site-nav a:hover { color: var(--ink); background: var(--code-bg); }
+@media (max-width: 52rem) {
+  .site-header .wrap { flex-wrap: wrap; gap: 0; padding-top: var(--s2); }
+  .site-nav { margin-left: 0; width: 100%; }
+  .site-nav ul { margin: 0 calc(-1 * var(--s3)); }
+}
+section[id], [id].anchor { scroll-margin-top: 6.5rem; }
+
+/* Sections */
+main > section { padding: var(--s8) 0; border-top: 1px solid var(--rule); }
+main > section:first-child { border-top: 0; }
+.section-head { margin-bottom: var(--s6); }
+.section-head h2 { margin-bottom: var(--s3); }
+.lead { font-size: 1.15rem; color: var(--muted); }
+
+/* Hero */
+.hero { padding: var(--s8) 0 var(--s7); }
+.hero-grid { display: grid; gap: var(--s7); align-items: start; }
+@media (min-width: 62rem) { .hero-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); } }
+.hero h1 { margin-bottom: var(--s5); max-width: 21ch; }
+.hero .lead { color: var(--ink); max-width: 52ch; }
+.actions { display: flex; flex-wrap: wrap; gap: var(--s3); margin: var(--s6) 0; }
+.btn {
+  display: inline-flex; align-items: center; min-height: 2.75rem; padding: 0 var(--s4);
+  border: 1px solid var(--rule-strong); border-radius: 6px;
+  color: var(--ink); background: var(--surface); text-decoration: none; font-weight: 600; font-size: .95rem;
+}
+.btn:hover { border-color: var(--ink); }
+.btn-primary { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.btn-primary:hover { background: var(--code-text); border-color: var(--code-text); color: var(--bg); }
+.facts { display: flex; flex-wrap: wrap; gap: var(--s4) var(--s5); margin: 0; }
+.facts div { border-left: 2px solid var(--rule-strong); padding-left: var(--s3); }
+.facts dt { font-size: .82rem; color: var(--muted); }
+.facts dd { margin: 0; font-weight: 600; font-size: .95rem; white-space: nowrap; }
+
+/* The node card: the page's one bold element */
+.card-figure { margin: 0; }
+.nodecard {
+  background: var(--surface); border: 1px solid var(--rule); border-radius: 8px;
+  overflow: hidden;
+}
+.nodecard-cmd { padding: var(--s3) var(--s5); border-bottom: 1px solid var(--rule); font: .8rem/1.5 var(--mono); color: var(--muted); overflow-x: auto; white-space: nowrap; }
+.nodecard pre { border: 0; border-radius: 0; background: transparent; padding: var(--s4) 0; font-size: .8rem; }
+.nodecard pre code { display: block; min-width: max-content; }
+.ln { display: block; padding: 0 var(--s5); border-left: 4px solid transparent; }
+.ln-head { font-weight: 700; }
+.ln-parser { border-left-color: var(--code); }
+.ln-llm { border-left-color: var(--context); }
+.ln-llm .prov { color: var(--context-text); font-weight: 600; }
+.ln-note { color: var(--muted); }
+.legend { display: flex; flex-wrap: wrap; gap: var(--s2) var(--s5); list-style: none; padding: var(--s3) var(--s5); margin: 0; border-top: 1px solid var(--rule); font-size: .85rem; max-width: none; }
+.legend li + li { margin-top: 0; }
+.swatch { display: inline-block; width: .8rem; height: .8rem; border-radius: 2px; margin-right: .4rem; vertical-align: -.05rem; }
+.sw-code { background: var(--code); }
+.sw-context { background: var(--context); }
+.sw-tests { background: var(--tests); }
+figcaption { font-size: .88rem; color: var(--muted); margin-top: var(--s3); max-width: 60ch; }
+
+/* How it works: two lanes into one graph */
+.lanes { display: grid; gap: var(--s5); }
+@media (min-width: 52rem) { .lanes { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } .lane-merge { grid-column: 1 / -1; } }
+.lane { background: var(--surface); border: 1px solid var(--rule); border-top: 4px solid var(--rule-strong); border-radius: 6px; padding: var(--s5); }
+.lane-code { border-top-color: var(--code); }
+.lane-agent { border-top-color: var(--context); }
+.lane-merge { border-top-color: var(--ink); }
+.lane h3 { margin-bottom: var(--s2); }
+.lane .who { color: var(--muted); font-size: .92rem; margin-bottom: var(--s4); }
+.steps { list-style: none; padding: 0; margin: 0; counter-reset: step; max-width: none; }
+.steps li { counter-increment: step; display: grid; grid-template-columns: 1.9rem minmax(0, 1fr); gap: var(--s3); align-items: baseline; }
+.steps li + li { margin-top: var(--s4); }
+.steps li::before { content: counter(step); font: 700 .8rem var(--mono); color: var(--muted); border: 1px solid var(--rule-strong); border-radius: 50%; width: 1.6rem; height: 1.6rem; display: inline-grid; place-items: center; }
+.steps code { font-weight: 600; }
+.steps p { margin: var(--s1) 0 0; font-size: .95rem; color: var(--muted); }
+.merge-grid { display: grid; gap: var(--s4) var(--s6); }
+@media (min-width: 52rem) { .merge-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.merge-grid h4 { margin: 0 0 var(--s1); font-size: 1rem; }
+.merge-grid p { font-size: .95rem; color: var(--muted); margin: 0; }
+.compare { display: grid; gap: var(--s5); margin-top: var(--s6); }
+@media (min-width: 52rem) { .compare { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } }
+.compare > div { padding-left: var(--s4); border-left: 4px solid var(--code); }
+.compare > div + div { border-left-color: var(--context); }
+.compare h3 { margin-bottom: var(--s2); font-size: 1.05rem; }
+.compare p { font-size: .97rem; margin: 0; }
+
+/* Quick start */
+.start-grid { display: grid; gap: var(--s6); }
+@media (min-width: 62rem) { .start-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } }
+.start-grid h3 { margin-bottom: var(--s3); }
+.start-grid h3:not(:first-child) { margin-top: var(--s6); }
+.codeblock { position: relative; margin-bottom: var(--s4); }
+.copy {
+  position: absolute; top: var(--s2); right: var(--s2);
+  font: 600 .78rem var(--sans); padding: .3rem .6rem; min-height: 2rem;
+  color: var(--ink); background: var(--surface); border: 1px solid var(--rule-strong); border-radius: 4px; cursor: pointer;
+}
+.copy:hover { border-color: var(--ink); }
+.codeblock.has-copy pre { padding-top: 2.6rem; }
+.output-label { font-size: .88rem; color: var(--muted); margin: var(--s4) 0 var(--s2); }
+.note { font-size: .95rem; color: var(--muted); }
+
+/* Examples */
+.examples { list-style: none; padding: 0; margin: 0; display: grid; gap: var(--s6) var(--s5); max-width: none; grid-template-columns: repeat(auto-fill, minmax(min(100%, 21rem), 1fr)); }
+.examples li + li { margin-top: 0; }
+.example { display: flex; flex-direction: column; }
+.thumb { display: block; background: #ffffff; border: 1px solid var(--rule); border-radius: 6px; overflow: hidden; aspect-ratio: 5 / 4; }
+.thumb img { width: 100%; height: 100%; object-fit: contain; }
+.thumb:hover { border-color: var(--rule-strong); }
+.example h3 { margin: var(--s4) 0 var(--s1); font-family: var(--mono); font-size: 1.05rem; overflow-wrap: anywhere; }
+.meta { font-size: .88rem; color: var(--muted); margin-bottom: var(--s3); font-variant-numeric: tabular-nums; }
+.example p { font-size: .97rem; }
+.example .links { list-style: none; padding: 0; margin: auto 0 0; font-size: .93rem; }
+.example .links li + li { margin-top: var(--s1); }
+.example .links .primary { font-weight: 650; }
+.size { color: var(--muted); font-weight: 400; }
+
+/* Findings */
+.findings { display: grid; gap: var(--s7); }
+.finding-group h3 { margin-bottom: var(--s4); }
+@media (min-width: 62rem) {
+  .finding-group { display: grid; grid-template-columns: 15rem minmax(0, 1fr); gap: var(--s6); padding-top: var(--s5); border-top: 1px solid var(--rule); }
+  .finding-group h3 { margin: 0; }
+}
+.finding-group > ul { list-style: none; padding: 0; }
+.finding-group > ul > li { padding-left: var(--s4); border-left: 2px solid var(--rule); }
+.finding-group > ul > li + li { margin-top: var(--s4); }
+.finding-group strong { font-weight: 650; }
+.src { font-size: .88rem; color: var(--muted); }
+.callout { border: 1px solid var(--rule-strong); background: var(--surface); border-radius: 6px; padding: var(--s4) var(--s5); max-width: var(--measure); margin-bottom: var(--s6); }
+.callout p:last-child { margin-bottom: 0; }
+
+/* Tables */
+.table-wrap { overflow-x: auto; margin: 0 0 var(--s4); border: 1px solid var(--rule); border-radius: 6px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-size: .92rem; font-variant-numeric: tabular-nums; }
+caption { text-align: left; padding: var(--s3) var(--s4); font-weight: 650; border-bottom: 1px solid var(--rule); }
+th, td { padding: var(--s2) var(--s4); text-align: left; border-bottom: 1px solid var(--rule); white-space: nowrap; }
+tbody tr:last-child > * { border-bottom: 0; }
+thead th { font-weight: 600; color: var(--muted); font-size: .85rem; }
+td.num, th.num { text-align: right; }
+tr.hl { background: color-mix(in srgb, var(--code) 9%, transparent); }
+tr.hl th { font-weight: 700; }
+.bench-tables { display: grid; gap: var(--s5); max-width: 52rem; }
+.bench-grid { display: grid; gap: var(--s6); }
+.bench-method, .after-list { margin-top: var(--s6); }
+@media (min-width: 62rem) { .bench-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } }
+.bench-grid h3 { margin-bottom: var(--s3); }
+.asof { font-size: .88rem; color: var(--muted); }
+
+/* Docs */
+.doc-groups { display: grid; gap: var(--s6); grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr)); }
+.doc-groups h3 { margin-bottom: var(--s3); font-size: 1.05rem; }
+.doc-groups ul { list-style: none; padding: 0; }
+.doc-groups li + li { margin-top: var(--s3); }
+.doc-groups a { font-weight: 600; }
+.doc-groups span { display: block; font-size: .9rem; color: var(--muted); }
+.status-grid { display: grid; gap: var(--s6); margin-top: var(--s7); }
+@media (min-width: 52rem) { .status-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } }
+.status-grid h3 { margin-bottom: var(--s3); }
+.status-grid ul { padding-left: 1.1rem; }
+
+/* Footer */
+.site-footer { border-top: 1px solid var(--rule); padding: var(--s7) 0; font-size: .9rem; color: var(--muted); }
+.site-footer p { max-width: 80ch; }
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="#top" aria-label="kg, back to top">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M8 23 16 8l8 15" fill="none" stroke="#9a9993" stroke-width="2.5"/><circle cx="16" cy="8" r="5" fill="#2a78d6"/><circle cx="8" cy="23" r="5" fill="#1baf7a"/><circle cx="24" cy="23" r="5" fill="#eb6834"/></svg>
+      kg
+    </a>
+    <nav class="site-nav" aria-label="Sections">
+      <ul>
+        <li><a href="#how">How it works</a></li>
+        <li><a href="#start">Quick start</a></li>
+        <li><a href="#examples">Examples</a></li>
+        <li><a href="#findings">Findings</a></li>
+        <li><a href="#benchmark">Benchmark</a></li>
+        <li><a href="#docs">Docs</a></li>
+        <li><a href="https://github.com/Cristian1A/kg">GitHub</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+<section class="hero" id="top" aria-labelledby="hero-title">
+  <div class="wrap hero-grid">
+    <div>
+      <h1 id="hero-title">A knowledge graph of your codebase that shows where every edge came from</h1>
+      <p class="lead"><code translate="no">kg</code> is a command-line tool for developers and AI agents. A deterministic parser maps a Python repository's files, modules, functions, imports, dependencies and tests. Your AI agent can add the documents, design decisions and concepts it finds. Both live in one JSON graph in your repo: query it, render it as PNG, SVG or interactive HTML, and trace each fact back to its lines.</p>
+      <div class="actions">
+        <a class="btn btn-primary" href="#start">Quick start</a>
+        <a class="btn" href="#examples">Example graphs</a>
+        <a class="btn" href="https://github.com/Cristian1A/kg">Source on GitHub</a>
+      </div>
+      <dl class="facts">
+        <div><dt>Latest release</dt><dd><a href="https://github.com/Cristian1A/kg/releases/tag/v0.2.0">v0.2.0</a>, Oct 2026</dd></div>
+        <div><dt>Reads</dt><dd>Python repos</dd></div>
+        <div><dt>Runs</dt><dd>Offline, no LLM calls</dd></div>
+        <div><dt>License</dt><dd><a href="https://github.com/Cristian1A/kg/blob/main/LICENSE">MIT</a></dd></div>
+      </dl>
+    </div>
+
+    <figure class="card-figure">
+      <div class="nodecard">
+        <div class="nodecard-cmd" translate="no">$ kg query node module:etl.utils --brief</div>
+        <pre tabindex="0"><code translate="no"><span class="ln ln-head">module:etl.utils (Module)</span><span class="ln ln-note">  at: etl/utils.py:1-48</span><span class="ln ln-llm">  &lt;-[justifies]- decision:azure-postgresql-target <span class="prov">[llm, 0.85]</span></span><span class="ln ln-parser">  -[imports]-&gt; dependency:azure</span><span class="ln ln-parser">  -[imports]-&gt; dependency:psycopg2</span><span class="ln ln-llm">  &lt;-[documents]- document:README.md <span class="prov">[llm, 0.9]</span></span><span class="ln ln-parser">  &lt;-[defines]- file:etl/utils.py</span><span class="ln ln-parser">  -[imports]-&gt; module:etl.constants</span><span class="ln ln-parser">  &lt;-[imports]- module:etl.humidity_data_etl_pipeline</span><span class="ln ln-parser">  &lt;-[imports]- module:etl.weather_data_etl_pipeline</span><span class="ln ln-parser">  &lt;-[contains]- package:etl</span></code></pre>
+        <ul class="legend">
+          <li><span class="swatch sw-code" aria-hidden="true"></span>Parser: confidence 1, not labelled</li>
+          <li><span class="swatch sw-context" aria-hidden="true"></span>Agent: labelled with its confidence</li>
+        </ul>
+      </div>
+      <figcaption>Real output for the ETL module of <a href="https://github.com/bramvdklinkenberg/my_first_data_project/tree/3d57177">my_first_data_project</a>, after <code>kg extract</code> and the committed <a href="https://github.com/Cristian1A/kg/blob/main/examples/agent/my_first_data_project.json">agent layer</a>. The imports come from the code; the decision cites line 19 of the README. <a href="examples/my_first_data_project.html#node=module:etl.utils">Open this node in the interactive graph</a>.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section id="how" aria-labelledby="how-title">
+  <div class="wrap">
+    <div class="section-head">
+      <h2 id="how-title">How it works</h2>
+      <p class="lead">Two sources write the same graph, merged by stable IDs such as <code>module:app.core</code> or <code>decision:use-networkx</code>. <code>kg</code> itself never calls a model: your agent uses it as a tool.</p>
+    </div>
+
+    <div class="lanes">
+      <div class="lane lane-code">
+        <h3>From the code</h3>
+        <p class="who">Deterministic. Seconds. Rerun it whenever the code changes.</p>
+        <ol class="steps">
+          <li><div><code>kg init</code><p>Creates <code>.kg/graph.json</code> inside the repo.</p></div></li>
+          <li><div><code>kg extract .</code><p>Reads <code>.py</code> files with Python's <code>ast</code> (never runs them), plus <code>pyproject.toml</code> and requirements files. Reruns replace the parser's layer and keep what agents added.</p></div></li>
+          <li><div><code>kg status --check</code><p>Fails when the code has changed since the last extract, for CI or a pre-commit hook.</p></div></li>
+        </ol>
+      </div>
+      <div class="lane lane-agent">
+        <h3>From your agent (optional)</h3>
+        <p class="who">Claude Code, Codex or any agent that can run a CLI and write JSON.</p>
+        <ol class="steps">
+          <li><div><code>kg guide</code><p>Instructions for the agent: what to add, how to cite lines, how to score confidence. Also installable as a skill with <code>kg guide --skill</code>.</p></div></li>
+          <li><div><code>kg add agent.json --dry-run --json</code><p>Validates the agent's document. Errors carry a JSON path, the expected value and a suggestion, so the agent can fix them in one pass.</p></div></li>
+          <li><div><code>kg add agent.json</code><p>Merges documents, decisions, concepts and issues. Adding the same file twice changes nothing.</p></div></li>
+        </ol>
+      </div>
+      <div class="lane lane-merge">
+        <h3>One graph, three ways to read it</h3>
+        <p class="who">A NetworkX <code>MultiDiGraph</code> stored as sorted, deterministic JSON that diffs cleanly in git.</p>
+        <div class="merge-grid">
+          <div><h4><code>kg render --html</code></h4><p>One offline HTML file: search, filter by type, click a node for its provenance and relations.</p></div>
+          <div><h4><code>kg query</code></h4><p>A node and its neighbours, text search, paths, and code with no test or no document pointing to it.</p></div>
+          <div><h4><code>kg impact</code></h4><p>What a change may affect, walking imports, tests, documents and decisions backwards, with the chain of edges behind each result.</p></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="compare">
+      <div>
+        <h3>Parser edges are facts about the code</h3>
+        <p>Method <code>parser</code>, confidence 1, with the file and line range. Rebuilt on every <code>kg extract</code>, so they follow renames and deletions.</p>
+      </div>
+      <div>
+        <h3>Agent edges are claims with a source</h3>
+        <p>Method <code>llm</code> or <code>manual</code>, a confidence from the guide's rubric and the lines they were read from. <code>kg extract</code> keeps them; nothing regenerates them, so they need review when the code moves on.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="start" aria-labelledby="start-title">
+  <div class="wrap">
+    <div class="section-head">
+      <h2 id="start-title">Quick start</h2>
+      <p class="lead">Python 3.12 or newer, on Linux. <code>kg</code> is not on PyPI yet, so it installs from GitHub.</p>
+    </div>
+
+    <div class="start-grid">
+      <div>
+        <h3>Install</h3>
+        <div class="codeblock"><pre tabindex="0" data-copy><code translate="no">pipx install git+https://github.com/Cristian1A/kg.git
+kg --help</code></pre></div>
+        <p class="note">Or <code>pip install git+https://github.com/Cristian1A/kg.git</code> inside a virtual environment. PNG or SVG images of 500 nodes or more also need <code>scipy</code>.</p>
+
+        <h3>Map your own repository</h3>
+        <div class="codeblock"><pre tabindex="0" data-copy><code translate="no">cd your-python-repo
+kg init                         <span class="cm"># create .kg/graph.json</span>
+kg extract .                    <span class="cm"># code, tests, dependencies</span>
+kg render --html                <span class="cm"># writes kg-graph.html</span>
+kg query untested --type Module <span class="cm"># modules no test imports</span>
+kg query find &lt;name&gt;            <span class="cm"># look up node IDs</span>
+kg impact &lt;node-id&gt; --brief     <span class="cm"># what a change may affect</span></code></pre></div>
+        <p class="note">Then point your agent at <code>kg guide</code> to add documents, decisions and concepts. Every command takes <code>--json</code>. Full instructions: <a href="https://github.com/Cristian1A/kg#install">install</a>, <a href="https://github.com/Cristian1A/kg#quick-start">quick start</a> and <a href="https://github.com/Cristian1A/kg/blob/main/docs/query.md">queries</a>.</p>
+      </div>
+
+      <div>
+        <h3>Or ask a published graph three questions</h3>
+        <p>Rebuild the <code>python-clean-architecture</code> example at the commit it was made from. The agent layer is downloaded from this repository, so no LLM is needed.</p>
+        <div class="codeblock"><pre tabindex="0" data-copy><code translate="no">git clone https://github.com/wesleey/python-clean-architecture
+cd python-clean-architecture  <span class="cm"># keep the name: it is the repo's ID</span>
+git checkout 6f58de5
+kg init &amp;&amp; kg extract .
+curl -sL https://raw.githubusercontent.com/Cristian1A/kg/main/examples/agent/python-clean-architecture.json \
+  | kg add -
+kg impact module:src.domain.entities.user --type Module --brief
+kg query untested --type Module
+kg query node decision:clean-architecture --brief</code></pre></div>
+        <p class="output-label">Output of the first query, shortened:</p>
+        <pre tabindex="0"><code translate="no">a change in module:src.domain.entities.user may affect 19 elements (possible effects, not certain ones):
+  &lt;-[imports]- module:src.infra.db.repositories.user_in_memory_repository
+  &lt;-[imports]- module:src.infra.db.repositories.user_repository
+  <span class="cm">…</span>
+  module:flask_process_handler (depth 5, via module:flask_process_handler -[imports]-&gt; module:src.app.flask.create_flask_app)
+left out by --type: Document 1, Issue 2, Test 13
+note: the graph has no `calls` edges; whatever depends on them is not in this answer (`kg extract` does not produce `calls`, RF-13)</code></pre>
+        <p class="note">All three questions and their answers are in the README's <a href="https://github.com/Cristian1A/kg#ask-the-graph">Ask the graph</a>.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!--
+  Examples: one <li> per graph in docs/examples/. Numbers come from
+  docs/examples/README.md. When a graph is rebuilt, update its counts here.
+-->
+<section id="examples" aria-labelledby="examples-title">
+  <div class="wrap">
+    <div class="section-head">
+      <h2 id="examples-title">Example graphs</h2>
+      <p class="lead">Five public projects, from a one-file script to scrapy. Each graph combines <code>kg extract</code> with the layer an agent (Claude Code) added by following <code>kg guide</code>. The pages are the unmodified output of <code>kg render --html</code>: offline, searchable, with provenance on click.</p>
+    </div>
+
+    <ul class="examples">
+      <li class="example">
+        <a class="thumb" href="examples/basic-python-cli.html" tabindex="-1" aria-hidden="true"><img src="examples/basic-python-cli.png" width="1500" height="1200" loading="lazy" decoding="async" alt=""></a>
+        <h3>basic-python-cli</h3>
+        <p class="meta">Small, 1 Python file. 10 nodes, 12 edges, 6 from the agent.</p>
+        <p>The whole graph fits on one screen. The agent records two decisions from the README (no external dependencies, a single argument) and <code>kg query untested</code> finds no tests at all.</p>
+        <ul class="links">
+          <li><a class="primary" href="examples/basic-python-cli.html">Open the interactive graph</a></li>
+          <li><a href="https://github.com/alfredodeza/basic-python-cli/tree/d0379bb">Source at d0379bb</a> · <a href="https://github.com/Cristian1A/kg/blob/main/examples/agent/basic-python-cli.json">agent layer</a></li>
+        </ul>
+      </li>
+      <li class="example">
+        <a class="thumb" href="examples/my_first_data_project.html" tabindex="-1" aria-hidden="true"><img src="examples/my_first_data_project.png" width="2425" height="1940" loading="lazy" decoding="async" alt=""></a>
+        <h3>my_first_data_project</h3>
+        <p class="meta">ETL in Bash, Python and SQL. 66 nodes, 98 edges, 25 from the agent.</p>
+        <p>The scripts import each other as <code>from utils import …</code>; the parser resolves these to <code>module:etl.utils</code>. The agent adds five CI workflows, four decisions, the TODO list as issues, and two places where the README disagrees with the code.</p>
+        <ul class="links">
+          <li><a class="primary" href="examples/my_first_data_project.html">Open the interactive graph</a></li>
+          <li><a href="https://github.com/bramvdklinkenberg/my_first_data_project/tree/3d57177">Source at 3d57177</a> · <a href="https://github.com/Cristian1A/kg/blob/main/examples/agent/my_first_data_project.json">agent layer</a></li>
+        </ul>
+      </li>
+      <li class="example">
+        <a class="thumb" href="examples/python-clean-architecture.html" tabindex="-1" aria-hidden="true"><img src="examples/python-clean-architecture.png" width="3199" height="2559" loading="lazy" decoding="async" alt=""></a>
+        <h3>python-clean-architecture</h3>
+        <p class="meta">Flask and SQLAlchemy, 104 files. 398 nodes, 754 edges, 22 from the agent.</p>
+        <p>A layered backend. A change to the <code>User</code> entity reaches 19 modules up to five imports away, and the agent's <code>decision:clean-architecture</code> justifies the four layer packages. This is the example you can rebuild in the quick start.</p>
+        <ul class="links">
+          <li><a class="primary" href="examples/python-clean-architecture.html">Open the interactive graph</a></li>
+          <li><a href="https://github.com/wesleey/python-clean-architecture/tree/6f58de5">Source at 6f58de5</a> · <a href="https://github.com/Cristian1A/kg/blob/main/examples/agent/python-clean-architecture.json">agent layer</a> · <a href="https://github.com/Cristian1A/kg#ask-the-graph">reproduce</a></li>
+        </ul>
+      </li>
+      <li class="example">
+        <a class="thumb" href="examples/kg.html" tabindex="-1" aria-hidden="true"><img src="examples/kg.png" width="2781" height="2225" loading="lazy" decoding="async" alt=""></a>
+        <h3>kg</h3>
+        <p class="meta">This repository. 904 nodes, 1889 edges, 58 from the agent.</p>
+        <p>The tool's own graph, with 25 design decisions such as <code>decision:no-embedded-llm</code> and <code>decision:use-networkx</code>, linked to the code and requirements they come from. The image shows modules and the agent layer only.</p>
+        <ul class="links">
+          <li><a class="primary" href="examples/kg.html">Open the interactive graph</a></li>
+          <li><a href="https://github.com/Cristian1A/kg/tree/e18f574">Source at e18f574</a> · <a href="https://github.com/Cristian1A/kg/blob/main/examples/agent/kg.json">agent layer</a></li>
+        </ul>
+      </li>
+      <li class="example">
+        <a class="thumb" href="examples/scrapy.html" tabindex="-1" aria-hidden="true"><img src="examples/scrapy.png" width="5051" height="4041" loading="lazy" decoding="async" alt=""></a>
+        <h3>scrapy</h3>
+        <p class="meta">scrapy 2.19.0. 7964 nodes, 18239 edges, 102 from the agent.</p>
+        <p>A large framework, and a stress test for the HTML view: it opens with the four most numerous types hidden. The static image shows packages, modules and the agent layer only, as a rough overview.</p>
+        <ul class="links">
+          <li><a class="primary" href="examples/scrapy.html">Open the interactive graph</a> <span class="size">(8&nbsp;MB, slow on phones)</span></li>
+          <li><a href="https://github.com/scrapy/scrapy/tree/2.19.0">Source at 2.19.0</a> · <a href="https://github.com/Cristian1A/kg/blob/main/examples/agent/scrapy.json">agent layer</a></li>
+        </ul>
+      </li>
+    </ul>
+    <p class="note after-list">How each graph was built, the image settings, and credits and licenses for the five projects: <a href="https://github.com/Cristian1A/kg/blob/main/docs/examples/README.md">docs/examples/README.md</a>. Thanks to their authors.</p>
+  </div>
+</section>
+
+<section id="findings" aria-labelledby="findings-title">
+  <div class="wrap">
+    <div class="section-head">
+      <h2 id="findings-title">What we have learned so far</h2>
+      <p class="lead">From the MVP validation on four repos, the five example graphs and the v0.2 benchmark. Each point links to its evidence.</p>
+    </div>
+
+    <div class="callout">
+      <p><strong>A missing edge is not proof of a missing relation.</strong> It may be a relation the parser does not extract, or one no agent has added yet. <code>kg</code> answers say so: an empty result reads “no relation found in the graph”, and every answer lists what it may be missing, such as relation types with no edges or files changed since the last extract (<a href="https://github.com/Cristian1A/kg/blob/main/docs/query.md#coverage-limits">coverage limits</a>).</p>
+    </div>
+
+    <div class="findings">
+      <div class="finding-group">
+        <h3>Observed behaviour</h3>
+        <ul>
+          <li><strong>The parser covers the structure of a Python repo.</strong> Files, packages, modules, classes and functions with signatures and line ranges; internal and external imports; dependencies declared in <code>pyproject.toml</code> or requirements files; and pytest-style tests, with a <code>tests</code> edge to the code they import or refer to. Running it twice leaves the store byte for byte identical. <span class="src"><a href="https://github.com/Cristian1A/kg/blob/main/docs/extract.md">extract.md</a></span></li>
+          <li><strong>Agents can write valid graph input on the first try.</strong> In the MVP validation, the agent layers of all three external repos passed <code>kg add --dry-run</code> on the first attempt, each element citing its file, lines and a confidence. A deliberately broken document with five typical mistakes was fixed from the error messages alone. <span class="src"><a href="https://github.com/Cristian1A/kg/blob/main/docs/mvp-validation.md#agent-enrichment-cu-01">MVP validation</a></span></li>
+          <li><strong>Provenance lets you check one edge at a time.</strong> In the node card at the top, the imports of <code>etl.utils</code> are parser facts you can confirm in <code>etl/utils.py</code>; the <a href="examples/my_first_data_project.html#node=decision:azure-postgresql-target">decision</a> that it serves the Azure PostgreSQL target is an agent's reading of README line 19, at confidence 0.85. Different sources, different checks. <span class="src"><a href="https://github.com/Cristian1A/kg/blob/main/docs/schema.md#provenance">schema.md</a></span></li>
+          <li><strong>The agent layer surfaces documentation drift.</strong> In <code>my_first_data_project</code> it recorded that the README announces four workflows and lists five, and says <code>etl/__init__.py</code> imports the modules when the file is empty. <span class="src"><a href="https://github.com/Cristian1A/kg/blob/main/docs/mvp-validation.md#my_first_data_project">MVP validation</a></span></li>
+          <li><strong>Multi-hop questions are where the graph saves effort.</strong> Impact and import-chain questions took fewer tool calls with the graph on six of seven benchmark questions, at the same accuracy. <span class="src"><a href="https://github.com/Cristian1A/kg/blob/main/docs/benchmark.md#multi-hop-questions">benchmark</a></span></li>
+          <li><strong>A stale graph warns instead of guessing.</strong> Every benchmark answer over an outdated graph mentioned that it was stale, and none claimed what the graph could not show. <span class="src"><a href="https://github.com/Cristian1A/kg/blob/main/docs/benchmark.md#stale-graph-questionsstalejson">benchmark</a></span></li>
+        </ul>
+      </div>
+
+      <div class="finding-group">
+        <h3>Current limitations</h3>
+        <ul>
+          <li><strong>No <code>calls</code> edges.</strong> <code>kg impact</code> propagates through imports, so a change to a function reaches the modules that import its module, not only its callers. For the module-level benchmark questions, imports were enough; no function-level question was tested. <span class="src"><a href="https://github.com/Cristian1A/kg/blob/main/docs/query.md#kg-impact-id">query.md</a>, RF-13</span></li>
+          <li><strong>Test detection is a static heuristic.</strong> It misses fixtures, code reached indirectly through other calls, and dynamic access. “Untested” means no test refers to it directly. <span class="src"><a href="https://github.com/Cristian1A/kg/blob/main/docs/extract.md#tests">extract.md</a></span></li>
+          <li><strong>Python only, and only code and manifests.</strong> CI workflow triggers and other configuration are not read by the parser. In the benchmark, the graph repeated a README claim (“flake8 is the only automatic workflow”) that a weekly CodeQL schedule contradicts. <span class="src"><a href="https://github.com/Cristian1A/kg/blob/main/docs/benchmark.md#answers-to-the-exit-questions">benchmark</a></span></li>
+          <li><strong>Import names and package names are not reconciled.</strong> The node card above shows both <code>dependency:azure</code> (imported) and, through the decision, <code>dependency:azure-storage-blob</code> (declared) as separate nodes. <span class="src"><a href="https://github.com/Cristian1A/kg/blob/main/docs/mvp-validation.md#findings">MVP validation</a>, RF-32</span></li>
+          <li><strong>The agent layer ages.</strong> Nothing regenerates it, and the benchmark found a decision citing a line that had since become a different heading. Only a reader that opens the cited lines notices. <span class="src"><a href="https://github.com/Cristian1A/kg/blob/main/docs/benchmark.md#update-context-and-graph-guided-reading-52-step-1">benchmark</a></span></li>
+          <li><strong>A stale graph is safe but expensive.</strong> It cannot index files it has not seen, so an agent reads the changed files whole: right answers, three to four times the context of reading the code. <span class="src"><a href="https://github.com/Cristian1A/kg/blob/main/docs/store.md#keeping-the-graph-fresh">keeping the graph fresh</a></span></li>
+        </ul>
+      </div>
+
+      <div class="finding-group">
+        <h3>Open questions and next experiments</h3>
+        <ul>
+          <li><strong>Does the graph pay off on a repository too large to read?</strong> Every benchmark repo had at most 104 files. A benchmark on scrapy is the first item of v0.3; if the graph does not win there, a redesign starts. <span class="src"><a href="https://github.com/Cristian1A/kg/blob/main/docs/benchmark.md#what-this-means-for-v03">benchmark</a></span></li>
+          <li><strong>Can the graph check documents against code</strong> instead of copying them? Extracting workflow triggers and flagging disagreements would turn the documentation weakness into a use case. <span class="src"><a href="https://github.com/Cristian1A/kg/blob/main/docs/roadmap.md#v03--tentative">roadmap</a></span></li>
+          <li><strong>Would an MCP server help agents use it?</strong> Kept for v0.3, conditional on the large-repo result. <span class="src"><a href="https://github.com/Cristian1A/kg/blob/main/docs/roadmap.md#v03--tentative">roadmap</a></span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!--
+  Benchmark: numbers copied from docs/benchmark.md (sections "Update: node
+  cards" and "Update: reading what a stale graph reports"). When a new report
+  lands, update the tables, the summary and the "as of" line together.
+-->
+<section id="benchmark" aria-labelledby="benchmark-title">
+  <div class="wrap">
+    <div class="section-head">
+      <h2 id="benchmark-title">Benchmark: does the graph help an agent?</h2>
+      <p class="lead">The same agent answers questions about a repository by reading the code, or by querying the graph and then reading only the lines it cites. Answers are graded against references checked in the code.</p>
+    </div>
+
+    <div class="callout">
+      <p><strong>On small repos, an agent using node cards (<code>kg query --brief</code>) was as accurate as one reading the code and loaded 63% less context per answer.</strong> It was also slower, 35 seconds against 30. With a stale graph it was less accurate than reading the code (0.83 against 1.00) and loaded far more context. The sample is small: 23 questions in these two runs, one run each, on repos of 4 to 104 files.</p>
+    </div>
+
+    <div class="bench-tables">
+      <div>
+        <div class="table-wrap" tabindex="0">
+          <table>
+            <caption>Main questions: 17 questions, 4 repos</caption>
+            <thead><tr><th scope="col">Strategy</th><th scope="col" class="num">Score</th><th scope="col" class="num">Context (chars, mean)</th><th scope="col" class="num">Calls</th><th scope="col" class="num">Seconds</th></tr></thead>
+            <tbody>
+              <tr><th scope="row">Read the code</th><td class="num">0.94*</td><td class="num">11&#8239;974</td><td class="num">5.5</td><td class="num">30</td></tr>
+              <tr><th scope="row">Graph only</th><td class="num">0.98</td><td class="num">14&#8239;640</td><td class="num">6.1</td><td class="num">41</td></tr>
+              <tr><th scope="row">Graph, then cited lines</th><td class="num">1.00</td><td class="num">14&#8239;888</td><td class="num">7.1</td><td class="num">44</td></tr>
+              <tr class="hl"><th scope="row">Node cards, then cited lines</th><td class="num">1.00</td><td class="num">4&#8239;411</td><td class="num">6.5</td><td class="num">35</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="note">* 1.00 after correcting one grading error: a right answer that left out a <code>src.</code> prefix.</p>
+      </div>
+      <div>
+        <div class="table-wrap" tabindex="0">
+          <table>
+            <caption>Stale graph: 6 questions, graph older than the code</caption>
+            <thead><tr><th scope="col">Strategy</th><th scope="col" class="num">Score</th><th scope="col" class="num">Context (chars, mean)</th><th scope="col" class="num">Calls</th><th scope="col" class="num">Seconds</th></tr></thead>
+            <tbody>
+              <tr><th scope="row">Read the code</th><td class="num">1.00</td><td class="num">8&#8239;460</td><td class="num">4.8</td><td class="num">30</td></tr>
+              <tr><th scope="row">Graph only</th><td class="num">0.63</td><td class="num">9&#8239;161</td><td class="num">5.7</td><td class="num">44</td></tr>
+              <tr class="hl"><th scope="row">Node cards, plus changed files</th><td class="num">0.83</td><td class="num">50&#8239;750</td><td class="num">12.8</td><td class="num">38</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="note">The one miss had worked out the right answer but ran out of its 25 tool calls before submitting it.</p>
+      </div>
+    </div>
+
+    <div class="bench-grid bench-method">
+      <div>
+        <h3>How it was run</h3>
+        <ul>
+          <li>A fresh Claude Code subagent (Claude Opus 5.5) per question and strategy, 25 tool calls at most, the same prompt apart from the tool section.</li>
+          <li>Repos: the three external examples above plus <code>kg</code> itself, and a copy of <code>kg</code> with an outdated graph.</li>
+          <li>Mechanical grading: F1 over normalised names, or keyword groups. Traceability: the share of cited evidence that exists in the repo or the graph.</li>
+          <li>Tool output is measured in characters. Token totals are reported too, but about 28&#8239;000 of each are Claude Code's own prompt.</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Limits of this evidence</h3>
+        <ul>
+          <li>29 questions in all, one run each: one question moves a mean by 0.06.</li>
+          <li>Small repos, where reading the code is cheap. The large-repo case is untested.</li>
+          <li>The same model family wrote the questions, the references and each graph's agent layer, and the agent layer was written with the code at hand.</li>
+          <li>The subagents ran inside this repository, whose <code>AGENTS.md</code> describes <code>kg</code>.</li>
+        </ul>
+      </div>
+    </div>
+    <p>Full report, with every run, the multi-hop questions and the answers to the v0.2 exit questions: <a href="https://github.com/Cristian1A/kg/blob/main/docs/benchmark.md">docs/benchmark.md</a>. The harness, questions and raw results (<a href="https://github.com/Cristian1A/kg/tree/main/bench/results">bench/results/</a>) are committed, and <a href="https://github.com/Cristian1A/kg/blob/main/bench/README.md">bench/README.md</a> explains how to rerun it with an Anthropic API key or with a coding agent's subagents.</p>
+    <p class="asof">As of the v0.2.0 release (October 2026). The next experiment is the large-repo benchmark planned for v0.3.</p>
+  </div>
+</section>
+
+<section id="docs" aria-labelledby="docs-title">
+  <div class="wrap">
+    <div class="section-head">
+      <h2 id="docs-title">Documentation</h2>
+      <p class="lead">The documents live in the repository, where GitHub renders them. This page only summarises them.</p>
+    </div>
+
+    <div class="doc-groups">
+      <div>
+        <h3>Use kg</h3>
+        <ul>
+          <li><a href="https://github.com/Cristian1A/kg#readme">README</a><span>Install, quick start, data model</span></li>
+          <li><a href="https://github.com/Cristian1A/kg/blob/main/docs/extract.md">Extraction</a><span>Which files are read, the nodes and relations produced</span></li>
+          <li><a href="https://github.com/Cristian1A/kg/blob/main/docs/query.md">Queries and impact</a><span>Lookups, paths, impact rules, coverage limits</span></li>
+          <li><a href="https://github.com/Cristian1A/kg/blob/main/docs/render.md">Rendering</a><span>PNG, SVG and interactive HTML</span></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Reference</h3>
+        <ul>
+          <li><a href="https://github.com/Cristian1A/kg/blob/main/docs/schema.md">Input schema</a><span>IDs, type catalog, provenance, validation</span></li>
+          <li><a href="https://github.com/Cristian1A/kg/blob/main/docs/store.md">The .kg/ store</a><span>Merge rules, updates, keeping the graph fresh</span></li>
+          <li><a href="https://github.com/Cristian1A/kg/blob/main/src/kg/agents/guide.md">Agent guide</a><span>What <code>kg guide</code> tells an agent</span></li>
+          <li><a href="https://github.com/Cristian1A/kg/tree/main/examples/agent">Agent layers</a><span>The JSON each example's agent wrote</span></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Evidence</h3>
+        <ul>
+          <li><a href="https://github.com/Cristian1A/kg/blob/main/docs/mvp-validation.md">MVP validation</a><span>v0.1 on four repos: flow, timings, reference questions</span></li>
+          <li><a href="https://github.com/Cristian1A/kg/blob/main/docs/benchmark.md">Benchmark report</a><span>v0.2: code against graph, with limits</span></li>
+          <li><a href="https://github.com/Cristian1A/kg/blob/main/bench/README.md">Benchmark harness</a><span>How it works and how to rerun it</span></li>
+          <li><a href="https://github.com/Cristian1A/kg/blob/main/docs/examples/README.md">Example graphs</a><span>How they were built, credits, licenses</span></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Project</h3>
+        <ul>
+          <li><a href="https://github.com/Cristian1A/kg/blob/main/docs/requirements.md">Requirements</a><span>Functional and non-functional (RF-xx, RNF-xx)</span></li>
+          <li><a href="https://github.com/Cristian1A/kg/blob/main/docs/roadmap.md">Roadmap</a><span>v0.2 and v0.3: order, dependencies, exit criteria</span></li>
+          <li><a href="https://github.com/Cristian1A/kg/blob/main/docs/discovery.md">Discovery</a><span>The interview behind the requirements</span></li>
+          <li><a href="https://github.com/Cristian1A/kg/releases">Releases</a><span>Tagged versions and their notes</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="status-grid">
+      <div id="status" class="anchor">
+        <h3>Released in v0.2</h3>
+        <ul>
+          <li>Schema, validation with actionable errors, the <code>.kg/</code> store, <code>add</code>, <code>remove</code>, <code>edit</code></li>
+          <li>Deterministic extraction of Python repos that follows code changes, and <code>kg status</code> for CI and hooks</li>
+          <li><code>kg render</code> to PNG, SVG and interactive HTML</li>
+          <li><code>kg query</code> and <code>kg impact</code>, with <code>--brief</code> node cards</li>
+          <li><code>kg guide</code> for agents, and the benchmark report</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Planned for v0.3, not yet available</h3>
+        <ul>
+          <li>A benchmark on a large repository (scrapy)</li>
+          <li>Checking documents against the code</li>
+          <li>Mermaid and Graphviz DOT export</li>
+          <li>An MCP server, if the large-repo benchmark supports it</li>
+        </ul>
+        <p class="note">Order and conditions: <a href="https://github.com/Cristian1A/kg/blob/main/docs/roadmap.md">roadmap</a> and <a href="https://github.com/Cristian1A/kg/milestones">milestones</a>.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="contribute" aria-labelledby="contribute-title">
+  <div class="wrap">
+    <div class="section-head">
+      <h2 id="contribute-title">Report a problem or contribute</h2>
+    </div>
+    <ul>
+      <li><strong>Found a bug or want a feature?</strong> <a href="https://github.com/Cristian1A/kg/issues/new/choose">Open an issue</a> with the bug or feature template, or browse the <a href="https://github.com/Cristian1A/kg/issues">open issues</a>.</li>
+      <li><strong>Want to change the code?</strong> Read <a href="https://github.com/Cristian1A/kg/blob/main/CONTRIBUTING.md">CONTRIBUTING.md</a> for commit and branch conventions, and <a href="https://github.com/Cristian1A/kg/blob/main/AGENTS.md">AGENTS.md</a> for the rules AI coding agents follow here. CI runs <code>pytest</code>, <code>ruff</code> and a smoke test of a clean install on every pull request.</li>
+      <li><strong>Want to try it on your repo and tell us what broke?</strong> That is the most useful contribution right now: the limits above come from exactly that.</li>
+    </ul>
+  </div>
+</section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <p><code>kg</code> is released under the <a href="https://github.com/Cristian1A/kg/blob/main/LICENSE">MIT License</a> by Cristian A. Vlad. The example graphs describe projects by their own authors, under their own licenses (<a href="https://github.com/Cristian1A/kg/blob/main/docs/examples/README.md#credits-and-licenses">credits</a>), and embed <a href="https://github.com/visjs/vis-network">vis-network</a> 9.1.2.</p>
+    <p><a href="https://github.com/Cristian1A/kg">Source on GitHub</a>. This page is <code>docs/index.html</code>, served by GitHub Pages.</p>
+  </div>
+</footer>
+
+<script>
+// Copy buttons for command blocks. Added by script, so without JS there is
+// no button that does nothing.
+(function () {
+  if (!navigator.clipboard) return;
+  var live = document.createElement("p");
+  live.className = "vh";
+  live.setAttribute("aria-live", "polite");
+  document.body.appendChild(live);
+  document.querySelectorAll("pre[data-copy]").forEach(function (pre) {
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "copy";
+    btn.textContent = "Copy";
+    btn.addEventListener("click", function () {
+      navigator.clipboard.writeText(pre.innerText.trim()).then(function () {
+        btn.textContent = "Copied";
+        live.textContent = "Commands copied to the clipboard";
+        setTimeout(function () { btn.textContent = "Copy"; live.textContent = ""; }, 2000);
+      });
+    });
+    pre.parentNode.classList.add("has-copy");
+    pre.parentNode.insertBefore(btn, pre);
+  });
+})();
+</script>
+</body>
+</html>
