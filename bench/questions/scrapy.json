@@ -1,0 +1,291 @@
+[
+  {
+    "id": "scr-retry",
+    "repo": "scrapy",
+    "topic": "development",
+    "category": "navigation",
+    "question": "Which module implements the downloader middleware that retries failed requests, and which settings turn it on and set how many times a request is retried?",
+    "expect": {
+      "keywords": [
+        ["scrapy.downloadermiddlewares.retry", "scrapy/downloadermiddlewares/retry.py"],
+        ["RETRY_ENABLED"],
+        ["RETRY_TIMES"]
+      ]
+    },
+    "reference": "RetryMiddleware in scrapy/downloadermiddlewares/retry.py:141; it reads RETRY_ENABLED (retry.py:145) and RETRY_TIMES (retry.py:147). Defaults: RETRY_ENABLED = True, RETRY_TIMES = 2 (scrapy/settings/default_settings.py:529, 547)."
+  },
+  {
+    "id": "scr-fingerprint",
+    "repo": "scrapy",
+    "topic": "development",
+    "category": "navigation",
+    "question": "Which class computes request fingerprints by default, and in which module is it defined?",
+    "expect": {
+      "keywords": [
+        ["RequestFingerprinter"],
+        ["scrapy.utils.request", "scrapy/utils/request.py"]
+      ]
+    },
+    "reference": "scrapy.utils.request.RequestFingerprinter (scrapy/utils/request.py:118), the default of REQUEST_FINGERPRINTER_CLASS (scrapy/settings/default_settings.py:527)."
+  },
+  {
+    "id": "scr-manager-subclasses",
+    "repo": "scrapy",
+    "topic": "development",
+    "category": "navigation",
+    "question": "Which classes subclass MiddlewareManager from scrapy/middleware.py? List the modules that define them.",
+    "expect": {
+      "items": [
+        "scrapy.core.downloader.middleware",
+        "scrapy.core.spidermw",
+        "scrapy.extension",
+        "scrapy.pipelines"
+      ],
+      "normalize": "module"
+    },
+    "reference": "DownloaderMiddlewareManager (scrapy/core/downloader/middleware.py:34), SpiderMiddlewareManager (scrapy/core/spidermw.py:49), ExtensionManager (scrapy/extension.py:18) and ItemPipelineManager (scrapy/pipelines/__init__.py:48)."
+  },
+  {
+    "id": "scr-tests-scheduler",
+    "repo": "scrapy",
+    "topic": "tests",
+    "category": "navigation",
+    "question": "Which test modules import scrapy.core.scheduler? Count imports inside `if TYPE_CHECKING:` blocks too. List the test modules.",
+    "expect": {
+      "items": [
+        "tests.test_dupefilters",
+        "tests.test_engine",
+        "tests.test_engine_close_spider",
+        "tests.test_engine_loop",
+        "tests.test_scheduler",
+        "tests.test_scheduler_base"
+      ],
+      "normalize": "module"
+    },
+    "reference": "Six test modules; tests/test_engine_close_spider.py imports it only under TYPE_CHECKING (line 16). tests/test_addons.py:186 mentions the dotted path in a string, which is not an import."
+  },
+  {
+    "id": "scr-path-sitemap",
+    "repo": "scrapy",
+    "topic": "development",
+    "category": "multi-hop",
+    "question": "Through which chain of imports does scrapy.cmdline reach scrapy.utils.sitemap? List every module on the shortest import chain, from scrapy.cmdline to scrapy.utils.sitemap.",
+    "expect": {
+      "items": [
+        "scrapy.cmdline",
+        "scrapy",
+        "scrapy.spiders",
+        "scrapy.spiders.sitemap",
+        "scrapy.utils.sitemap"
+      ],
+      "normalize": "module"
+    },
+    "reference": "scrapy.cmdline -> scrapy (the package) -> scrapy.spiders -> scrapy.spiders.sitemap -> scrapy.utils.sitemap: the only shortest chain, with or without TYPE_CHECKING imports (independent AST import graph)."
+  },
+  {
+    "id": "scr-tests-postprocessing",
+    "repo": "scrapy",
+    "topic": "tests",
+    "category": "multi-hop",
+    "question": "Which test modules exercise scrapy.extensions.postprocessing, either by importing it or by importing a scrapy module that imports it directly? List the test modules.",
+    "expect": {
+      "items": [
+        "tests.test_feedexport",
+        "tests.test_feedexport_batch",
+        "tests.test_feedexport_postprocess",
+        "tests.test_feedexport_storages",
+        "tests.test_feedexport_uri_params"
+      ],
+      "normalize": "module"
+    },
+    "reference": "Only scrapy.extensions.feedexport imports scrapy.extensions.postprocessing. tests/test_feedexport_postprocess.py imports postprocessing; test_feedexport, test_feedexport_batch, test_feedexport_storages and test_feedexport_uri_params import feedexport."
+  },
+  {
+    "id": "scr-impact-postprocessing",
+    "repo": "scrapy",
+    "topic": "development",
+    "category": "impact",
+    "question": "If scrapy/extensions/postprocessing.py changed, which non-test modules of the scrapy package could be affected, directly or transitively through imports? List the modules.",
+    "expect": {
+      "items": [
+        "scrapy.__main__",
+        "scrapy.cmdline",
+        "scrapy.commands",
+        "scrapy.commands.bench",
+        "scrapy.commands.check",
+        "scrapy.commands.crawl",
+        "scrapy.commands.edit",
+        "scrapy.commands.fetch",
+        "scrapy.commands.genspider",
+        "scrapy.commands.list",
+        "scrapy.commands.parse",
+        "scrapy.commands.runspider",
+        "scrapy.commands.settings",
+        "scrapy.commands.shell",
+        "scrapy.commands.startproject",
+        "scrapy.commands.version",
+        "scrapy.commands.view",
+        "scrapy.extensions.feedexport"
+      ],
+      "normalize": "module"
+    },
+    "reference": "feedexport imports postprocessing; scrapy.commands (the package) imports feedexport; every command module, scrapy.cmdline and scrapy.__main__ import scrapy.commands or a command. 18 modules, the same with or without TYPE_CHECKING imports."
+  },
+  {
+    "id": "scr-impact-job-runtime",
+    "repo": "scrapy",
+    "topic": "development",
+    "category": "impact",
+    "question": "If scrapy/utils/job.py changed, which non-test modules of the scrapy package could be affected at runtime, directly or transitively through imports? Leave out imports inside `if TYPE_CHECKING:` blocks, which do not run. List the modules.",
+    "expect": {
+      "items": [
+        "scrapy.__main__",
+        "scrapy.cmdline",
+        "scrapy.commands.bench",
+        "scrapy.commands.shell",
+        "scrapy.core.engine",
+        "scrapy.core.scheduler",
+        "scrapy.crawler",
+        "scrapy.dupefilters",
+        "scrapy.extensions.spiderstate",
+        "scrapy.shell",
+        "scrapy.utils.test"
+      ],
+      "normalize": "module"
+    },
+    "reference": "Direct importers: scrapy.core.scheduler, scrapy.dupefilters, scrapy.extensions.spiderstate; then engine, crawler, cmdline, __main__, shell, commands.bench, commands.shell and utils.test. 11 modules. Counting TYPE_CHECKING imports, almost the whole package (154 modules) is reachable, because scrapy.crawler is imported for type hints everywhere."
+  },
+  {
+    "id": "scr-impact-decorators",
+    "repo": "scrapy",
+    "topic": "development",
+    "category": "impact",
+    "question": "If a function in scrapy/utils/decorators.py changed its signature, which non-test modules import that file directly and may need to change? List the modules.",
+    "expect": {
+      "items": [
+        "scrapy.core.downloader",
+        "scrapy.downloadermiddlewares.cookies",
+        "scrapy.downloadermiddlewares.defaultheaders",
+        "scrapy.downloadermiddlewares.downloadtimeout",
+        "scrapy.downloadermiddlewares.httpauth",
+        "scrapy.downloadermiddlewares.httpcache",
+        "scrapy.downloadermiddlewares.httpcompression",
+        "scrapy.downloadermiddlewares.httpproxy",
+        "scrapy.downloadermiddlewares.offsite",
+        "scrapy.downloadermiddlewares.redirect",
+        "scrapy.downloadermiddlewares.retry",
+        "scrapy.downloadermiddlewares.robotstxt",
+        "scrapy.downloadermiddlewares.stats",
+        "scrapy.downloadermiddlewares.useragent",
+        "scrapy.pipelines.media",
+        "scrapy.spidermiddlewares.base",
+        "scrapy.spidermiddlewares.depth",
+        "scrapy.spidermiddlewares.httperror",
+        "scrapy.statscollectors"
+      ],
+      "normalize": "module"
+    },
+    "reference": "19 modules import scrapy.utils.decorators (mostly _warn_spider_arg): the downloader package, every downloader middleware, three spider middlewares, pipelines.media and statscollectors (independent AST import graph, checked with grep)."
+  },
+  {
+    "id": "scr-tests-middleware",
+    "repo": "scrapy",
+    "topic": "tests",
+    "category": "impact",
+    "question": "After a change to scrapy/middleware.py, which test modules should be run: those that import it, or that import a scrapy module that imports it directly? List the test modules.",
+    "expect": {
+      "items": [
+        "tests.test_downloadermiddleware",
+        "tests.test_middleware",
+        "tests.test_pipelines",
+        "tests.test_spidermiddleware"
+      ],
+      "normalize": "module"
+    },
+    "reference": "scrapy.middleware is imported by scrapy.core.downloader.middleware, scrapy.core.spidermw, scrapy.extension and scrapy.pipelines. tests/test_middleware.py imports it; test_downloadermiddleware, test_spidermiddleware and test_pipelines import those modules."
+  },
+  {
+    "id": "scr-docs-download-delay",
+    "repo": "scrapy",
+    "topic": "documentation",
+    "category": "docs",
+    "question": "The settings documentation gives two values for the default of DOWNLOAD_DELAY. Which files of the repository set each value? List the files.",
+    "expect": {
+      "items": ["settings.py.tmpl", "default_settings.py"],
+      "normalize": "file"
+    },
+    "reference": "docs/topics/settings.rst:953 says 1, with a fallback of 0. The 1 comes from the project template that startproject copies, scrapy/templates/project/module/settings.py.tmpl:27; the fallback 0 from scrapy/settings/default_settings.py:292."
+  },
+  {
+    "id": "scr-docs-pipeline",
+    "repo": "scrapy",
+    "topic": "documentation",
+    "category": "docs",
+    "question": "Which documentation file explains how to write an item pipeline component, and which methods does it describe for one?",
+    "expect": {
+      "keywords": [
+        ["item-pipeline.rst"],
+        ["process_item"],
+        ["open_spider"],
+        ["close_spider"]
+      ]
+    },
+    "reference": "docs/topics/item-pipeline.rst, section \"Writing your own item pipeline\" (line 23): process_item (line 29), open_spider (46) and close_spider (57)."
+  },
+  {
+    "id": "scr-decision-reactor",
+    "repo": "scrapy",
+    "topic": "decisions",
+    "category": "docs",
+    "question": "Why does Scrapy use the asyncio reactor as the default TWISTED_REACTOR, and in which file of the code is that default set?",
+    "expect": {
+      "keywords": [
+        ["coroutine", "asyncio-powered", "asyncio-based", "asyncio librar"],
+        ["default_settings"]
+      ]
+    },
+    "reference": "So that asyncio and asyncio-powered libraries can be used in any coroutine without extra setup (docs/topics/asyncio.rst:7-9). The default is set in scrapy/settings/default_settings.py:609."
+  },
+  {
+    "id": "scr-unc-threadsafe",
+    "repo": "scrapy",
+    "topic": "development",
+    "category": "uncertainty",
+    "question": "Is scrapy.core.scheduler.Scheduler thread-safe? Answer only what the repository establishes, and say so if it does not establish it.",
+    "expect": {
+      "keywords": [
+        ["does not establish", "doesn't establish", "not established", "no evidence", "not documented", "does not document", "doesn't document", "does not state", "doesn't state", "does not guarantee", "doesn't guarantee", "no guarantee", "not guaranteed", "cannot be established", "nothing in the repository", "does not claim", "doesn't claim", "no claim"]
+      ]
+    },
+    "reference": "The repository does not establish it: no code or document says the Scheduler is thread-safe, and nothing uses it from several threads. Scrapy runs its components in the reactor or event loop thread; docs/topics/asyncio.rst:244-248 points to call_soon_threadsafe for code in other threads."
+  },
+  {
+    "id": "scr-unc-rate",
+    "repo": "scrapy",
+    "topic": "development",
+    "category": "uncertainty",
+    "question": "How many requests per second does Scrapy download with its default settings?",
+    "expect": {
+      "keywords": [
+        ["depends", "not fixed", "no fixed", "cannot be determined", "can't be determined", "not determined", "does not establish", "doesn't establish", "not established", "no single", "not specified", "does not specify", "doesn't specify", "no rate limit", "not a fixed"],
+        ["CONCURRENT_REQUESTS"]
+      ]
+    },
+    "reference": "The repository sets no rate: the throughput depends on the server's latency. The defaults bound concurrency, not speed: CONCURRENT_REQUESTS = 16 and CONCURRENT_REQUESTS_PER_DOMAIN = 8 (scrapy/settings/default_settings.py:264-265), DOWNLOAD_DELAY = 0 (line 292) and AutoThrottle off (line 234)."
+  },
+  {
+    "id": "scr-unc-pqueue",
+    "repo": "scrapy",
+    "topic": "development",
+    "category": "uncertainty",
+    "question": "Does scrapy/core/scheduler.py import scrapy.pqueues when it runs? If it does not, how does the default scheduler get its priority queue class?",
+    "expect": {
+      "keywords": [
+        ["TYPE_CHECKING", "type checking", "type-checking", "type hint"],
+        ["SCHEDULER_PRIORITY_QUEUE"],
+        ["load_object"]
+      ]
+    },
+    "reference": "No: it imports scrapy.pqueues only under `if TYPE_CHECKING:` (scrapy/core/scheduler.py:16-26). At runtime it loads the class named by the SCHEDULER_PRIORITY_QUEUE setting with load_object (scheduler.py:263); the default is scrapy.pqueues.DownloaderAwarePriorityQueue."
+  }
+]
