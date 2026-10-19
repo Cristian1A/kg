@@ -46,6 +46,25 @@ def test_question_files_are_consistent(path):
         assert q["reference"], q["id"]  # a human-readable reference answer
 
 
+def test_question_categories_are_checked(tmp_path, monkeypatch):
+    path = tmp_path / "q.json"
+    base = {
+        "id": "q1",
+        "repo": "kg",
+        "topic": "tests",
+        "question": "?",
+        "expect": {"items": []},
+        "reference": "None.",
+    }
+    path.write_text(json.dumps([{**base, "category": "multi-hop"}]))
+    assert load_questions(path)[0]["category"] == "multi-hop"
+    path.write_text(json.dumps([base]))  # the category is optional
+    assert load_questions(path)
+    path.write_text(json.dumps([{**base, "category": "trivia"}]))
+    with pytest.raises(SystemExit, match="unknown category"):
+        load_questions(path)
+
+
 def test_repos_are_pinned_to_a_commit():
     for repo in load_repos():
         assert len(repo["commit"]) >= 7
@@ -505,6 +524,7 @@ def test_subagent_submits_once_and_is_graded(session):
     assert code["seconds"] == 9.5 and code["turns"] == 1 and code["tool_calls"] == 0
     assert graph["outcome"] == "no_answer" and graph["tool_errors"] == 1
     assert graph["usage"] == {"total_tokens": None}
+    assert code["category"] is None  # SUB_QUESTION has no category
 
 
 def test_subagent_records_context_and_replays_old_logs(repo, tmp_path):
@@ -573,6 +593,52 @@ def test_report_reads_subagent_records(tmp_path):
 
 
 # --- Report -----------------------------------------------------------------------
+
+
+def _record(question, strategy, score, chars, category=None):
+    return {
+        "question": question,
+        "topic": "development",
+        "category": category,
+        "strategy": strategy,
+        "outcome": "answered",
+        "grade": {"score": score},
+        "traceability": 1.0,
+        "usage": {"total_tokens": 1000},
+        "context_chars": chars,
+        "turns": 2,
+        "seconds": 1.0,
+    }
+
+
+def test_report_by_category_and_repeated_runs(tmp_path):
+    records = [
+        _record("q1", "code", 1.0, 900, "multi-hop"),
+        _record("q1", "code", 0.5, 1100, "multi-hop"),  # a repeated run
+        _record("q1", "cards", 1.0, 300, "multi-hop"),
+        _record("q2", "code", 0.0, 50, "uncertainty"),
+        _record("q3", "code", 1.0, 10),  # no category: left out of that table
+    ]
+    rows = {(r["category"], r["strategy"]): r for r in report.by_category(records)}
+    assert set(rows) == {
+        ("multi-hop", "code"),
+        ("multi-hop", "cards"),
+        ("uncertainty", "code"),
+    }
+    assert rows["multi-hop", "code"]["runs"] == 2
+    assert rows["multi-hop", "code"]["score"] == 0.75
+    assert rows["multi-hop", "code"]["context_chars"] == 1000
+    (spread,) = report.spread(records)
+    assert spread["question"] == "q1" and spread["strategy"] == "code"
+    assert spread["score"] == (0.5, 1.0) and spread["context_chars"] == (900, 1100)
+    text = report.markdown(records)
+    assert "| multi-hop | cards | 1 | 1.00 | 300 |" in text
+    assert "| q1 | code | 2 | 0.50–1.00 | 900–1100 |" in text
+
+
+def test_report_omits_empty_category_and_spread_tables():
+    text = report.markdown([_record("q1", "code", 1.0, 10)])
+    assert "Per category" not in text and "Repeated runs" not in text
 
 
 def test_report_separates_quality_and_cost(tmp_path):

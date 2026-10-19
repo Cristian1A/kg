@@ -1,8 +1,9 @@
 """Summarize benchmark results: `python -m bench.report results/<file>.jsonl`.
 
-Prints a Markdown report: one table per question and strategy, and a summary
-per strategy. Quality (score, traceability, answered) and cost (tokens, time,
-turns) are reported separately.
+Prints a Markdown report: one table per question and strategy, a summary
+per strategy, the score and context per question category, and the spread of
+questions run more than once. Quality (score, traceability, answered) and cost
+(tokens, time, turns) are reported separately.
 """
 
 from __future__ import annotations
@@ -69,6 +70,51 @@ def summary(records: list[dict[str, Any]]) -> list[dict[str, Any]]:
     return rows
 
 
+def by_category(records: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Mean score and context per category and strategy, for categorized runs."""
+    rows = []
+    keys = {(r["category"], r["strategy"]) for r in records if r.get("category")}
+    for category, strategy in sorted(keys):
+        runs = [
+            r
+            for r in records
+            if r.get("category") == category and r["strategy"] == strategy
+        ]
+        rows.append(
+            {
+                "category": category,
+                "strategy": strategy,
+                "runs": len(runs),
+                "score": _mean(r["grade"]["score"] for r in runs),
+                "context_chars": _mean(r.get("context_chars") for r in runs),
+            }
+        )
+    return rows
+
+
+def spread(records: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Range of score and context for each question and strategy run more than once."""
+    groups: dict[tuple[str, str], list[dict[str, Any]]] = {}
+    for r in records:
+        groups.setdefault((r["question"], r["strategy"]), []).append(r)
+    rows = []
+    for (question, strategy), runs in sorted(groups.items()):
+        if len(runs) < 2:
+            continue
+        scores = [r["grade"]["score"] for r in runs]
+        chars = [r["context_chars"] for r in runs if r.get("context_chars") is not None]
+        rows.append(
+            {
+                "question": question,
+                "strategy": strategy,
+                "runs": len(runs),
+                "score": (min(scores), max(scores)),
+                "context_chars": (min(chars), max(chars)) if chars else None,
+            }
+        )
+    return rows
+
+
 def markdown(records: list[dict[str, Any]]) -> str:
     lines = [
         "## Per question",
@@ -96,6 +142,33 @@ def markdown(records: list[dict[str, Any]]) -> str:
             f"{_int(s['output_tokens'])} | {_int(s['total_tokens'])} | "
             f"{_int(s['context_chars'])} | {s['turns']:.1f} | {s['seconds']:.1f} |"
         )
+    if categories := by_category(records):
+        lines += [
+            "",
+            "## Per category (means)",
+            "",
+            _header("Category", "Strategy", "Runs", "Score", "Context"),
+        ]
+        for c in categories:
+            lines.append(
+                f"| {c['category']} | {c['strategy']} | {c['runs']} | "
+                f"{c['score']:.2f} | {_int(c['context_chars'])} |"
+            )
+    if repeated := spread(records):
+        lines += [
+            "",
+            "## Repeated runs (min–max)",
+            "",
+            _header("Question", "Strategy", "Runs", "Score", "Context"),
+        ]
+        for s in repeated:
+            low, high = s["score"]
+            chars = s["context_chars"]
+            context = "–" if chars is None else f"{chars[0]}–{chars[1]}"
+            lines.append(
+                f"| {s['question']} | {s['strategy']} | {s['runs']} | "
+                f"{low:.2f}–{high:.2f} | {context} |"
+            )
     n = len({r["question"] for r in records})
     lines += [
         "",
