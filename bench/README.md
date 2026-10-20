@@ -150,3 +150,6 @@ The report, with the answers to the v0.2 exit questions, is
 | `results/20261015T154222Z-subagent-hybrid-stale.jsonl` | `questions/stale.json`, `hybrid` (#52) |
 | `results/20261015T160303Z-subagent-cards.jsonl` | `questions/main.json`, `cards` (#52) |
 | `results/20261015T160309Z-subagent-cards-stale.jsonl` | `questions/stale.json`, `cards` (#52) |
+| `results/20261019T213916Z-subagent-scrapy.jsonl` | `questions/scrapy.json`, `code`, `graph`, `hybrid` and `cards` (#52) |
+| `results/20261020T090411Z-subagent-scrapy-step0.jsonl` | `questions/scrapy.json`, `companion`, `cards` and `code`, on the faster kg (#67) |
+| `results/20261020T090412Z-subagent-scrapy-step0.jsonl` | `questions/scrapy.json`, `companion` and `cards`, second run (#67) |
