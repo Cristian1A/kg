@@ -21,11 +21,8 @@ import networkx as nx
 
 from kg import __version__
 from kg.render import style
+from kg.render.defaults import INITIAL_NODES
 from kg.render.static import HIDE_ORDER
-
-# Above this many nodes, whole types start hidden (in `HIDE_ORDER`) so the
-# first layout is quick and readable; the filters bring them back.
-INITIAL_NODES = 300
 
 # Matplotlib marker → vis-network shape.
 _SHAPES = {
