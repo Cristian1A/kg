@@ -154,3 +154,4 @@ The report, with the answers to the v0.2 exit questions, is
 | `results/20261019T213916Z-subagent-scrapy.jsonl` | `questions/scrapy.json`, `code`, `graph`, `hybrid` and `cards` (#52) |
 | `results/20261020T090411Z-subagent-scrapy-step0.jsonl` | `questions/scrapy.json`, `companion`, `cards` and `code`, on the faster kg (#67) |
 | `results/20261020T090412Z-subagent-scrapy-step0.jsonl` | `questions/scrapy.json`, `companion` and `cards`, second run (#67) |
+| `results/20261020T130120Z-subagent-scrapy-lean.jsonl` | `questions/scrapy.json`, `lean`, the control for `companion`'s prompt line (#67) |

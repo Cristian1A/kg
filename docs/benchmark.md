@@ -365,12 +365,11 @@ if adding kg to the code tools costs more than 0.03 in score, or more than
 
 **What the numbers say:**
 
-- **The context saving is not kg's.** The 17 `companion` runs that never
-  called `kg` loaded the least context of all (2 719 characters, 3.6 calls,
-  30.5 s, score 0.99). Their prompt differs from the code's by one line,
-  "use whichever gets the answer with fewer calls", which alone makes the
-  agent read less. A `code` run with that same line is the control this run
-  lacks.
+- **Part of the context saving is not kg's.** The 17 `companion` runs that
+  never called `kg` loaded the least context of all (2 719 characters, 3.6
+  calls, 30.5 s, score 0.99). Their prompt differs from the code's by one
+  line, "use whichever gets the answer with fewer calls". The `lean` control
+  below separates that line from the graph.
 - **When the agent calls kg, it gets slower.** The agent called `kg` in 15
   of 32 runs, 47 of 189 calls, on the impact, path, test and decision
   questions. Those 15 runs average 63.6 s and 8.5 calls, against 30.5 s for
@@ -387,11 +386,29 @@ if adding kg to the code tools costs more than 0.03 in score, or more than
 - **`cards` still loads twice the code's context.** It averages 19 166
   characters, against 8 731 for `code`, because it cannot search.
 
-**Conclusion.** Fixing kg's latency was necessary, but adding the graph to
-the code tools does not make an agent faster on scrapy's questions. It makes
-it read less only because of a prompt line that works without the graph.
-Whether step 1 (runtime imports, inheritance and settings, on harder
-questions) is still worth trying is the decision in #67.
+**Control: `lean`, the code tools with the same line.** One run per
+question (`results/20261020T130120Z-subagent-scrapy-lean.jsonl`). Overall it
+looks like `code`: 0.99, 8 955 characters, 5.4 calls, 34.7 s. Split by
+whether `companion` called `kg`, it shows what the graph adds:
+
+| Questions | `lean` | `companion` |
+|-----------|--------|-------------|
+| The 8 where `companion` never called `kg` | 1.00, 2 851 characters, 25.7 s | 0.99, 2 851 characters, 30.3 s |
+| The 7 where it did (decision, impact, path, tests) | 0.99, 9 816 characters, 35.1 s | 0.98, **4 299** characters (−56%), 47.4 s (+35%) |
+| `scr-impact-job-runtime` | 1.00, 51 754 characters, 104 s | 0.50, 30 271 characters, 163 s |
+
+On the questions answered without the graph, the line explains all of the
+saving: the same context to the character. Where the agent uses the graph,
+the graph does cut what it reads by half, at the same score, but costs a
+third more time. On the hardest question it does worse than search.
+
+**Conclusion.** Fixing kg's latency was necessary. With the fix, on the
+questions where the agent chooses it, the graph halves the context an agent
+loads, at the same score, and costs about a third more time. It does not
+make answers more accurate, and on the question about type-only imports it
+gets in the way. By the gate's own terms, step 0 fails on time. Step 1
+(runtime imports, inheritance and settings, on harder questions) is the
+decision in #67.
 
 Caveats: two runs per question. Times are the wall time of subagents run 20
 at a time, so they include the machine's load. One `companion` run was
