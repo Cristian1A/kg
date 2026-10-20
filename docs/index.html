@@ -330,6 +330,7 @@ tr.hl th { font-weight: 700; }
       </div>
       <dl class="facts">
         <div><dt>Latest release</dt><dd><a href="https://github.com/Cristian1A/kg/releases/tag/v0.2.0">v0.2.0</a>, Oct 2026</dd></div>
+        <div><dt>Status</dt><dd>Concluded: <a href="#benchmark">see the result</a></dd></div>
         <div><dt>Reads</dt><dd>Python repos</dd></div>
         <div><dt>Runs</dt><dd>Offline, no LLM calls</dd></div>
         <div><dt>License</dt><dd><a href="https://github.com/Cristian1A/kg/blob/main/LICENSE">MIT</a></dd></div>
@@ -522,7 +523,7 @@ note: the graph has no `calls` edges; whatever depends on them is not in this an
   <div class="wrap">
     <div class="section-head">
       <h2 id="findings-title">What we have learned so far</h2>
-      <p class="lead">From the MVP validation on four repos, the five example graphs and the v0.2 benchmark. Each point links to its evidence.</p>
+      <p class="lead">From the MVP validation on four repos, the five example graphs and the benchmark, including the large-repo run on scrapy that ended the project. Each point links to its evidence.</p>
     </div>
 
     <div class="callout">
@@ -555,11 +556,11 @@ note: the graph has no `calls` edges; whatever depends on them is not in this an
       </div>
 
       <div class="finding-group">
-        <h3>Open questions and next experiments</h3>
+        <h3>The large-repo test, and what it left open</h3>
         <ul>
-          <li><strong>Does the graph pay off on a repository too large to read?</strong> Every benchmark repo had at most 104 files. A benchmark on scrapy is the first item of v0.3; if the graph does not win there, a redesign starts. <span class="src"><a href="https://github.com/Cristian1A/kg/blob/main/docs/benchmark.md#what-this-means-for-v03">benchmark</a></span></li>
-          <li><strong>Can the graph check documents against code</strong> instead of copying them? Extracting workflow triggers and flagging disagreements would turn the documentation weakness into a use case. <span class="src"><a href="https://github.com/Cristian1A/kg/blob/main/docs/roadmap.md#v03--tentative">roadmap</a></span></li>
-          <li><strong>Would an MCP server help agents use it?</strong> Kept for v0.3, conditional on the large-repo result. <span class="src"><a href="https://github.com/Cristian1A/kg/blob/main/docs/roadmap.md#v03--tentative">roadmap</a></span></li>
+          <li><strong>On a repository too large to read, the graph did not beat the code.</strong> On scrapy (489 files), an agent with the graph next to search scored 0.96 against 0.98 for reading the code, and took 45% longer. Where it used the graph, it read half as much at the same score; the graph never made an answer more accurate. <span class="src"><a href="https://github.com/Cristian1A/kg/blob/main/docs/report.md">write-up</a></span></li>
+          <li><strong>The parser's gaps cost answers.</strong> Imports under <code>TYPE_CHECKING</code>, inheritance and classes loaded from strings in settings are not in the graph, and each was behind a lost answer. Edges from such strings remain an open idea. <span class="src"><a href="https://github.com/Cristian1A/kg/blob/main/docs/report.md#an-open-idea-edges-from-strings">write-up</a></span></li>
+          <li><strong>Not tested:</strong> checking documents against code, and an MCP server. Both depended on the large-repo result. <span class="src"><a href="https://github.com/Cristian1A/kg/blob/main/docs/roadmap.md#how-v03-ended">roadmap</a></span></li>
         </ul>
       </div>
     </div>
@@ -568,8 +569,8 @@ note: the graph has no `calls` edges; whatever depends on them is not in this an
 
 <!--
   Benchmark: numbers copied from docs/benchmark.md (sections "Update: node
-  cards" and "Update: reading what a stale graph reports"). When a new report
-  lands, update the tables, the summary and the "as of" line together.
+  cards" and "Update: a large repo, scrapy") and docs/report.md. When a new
+  report lands, update the tables, the summary and the "as of" line together.
 -->
 <section id="benchmark" aria-labelledby="benchmark-title">
   <div class="wrap">
@@ -579,7 +580,7 @@ note: the graph has no `calls` edges; whatever depends on them is not in this an
     </div>
 
     <div class="callout">
-      <p><strong>On small repos, an agent using node cards (<code>kg query --brief</code>) was as accurate as one reading the code and loaded 63% less context per answer.</strong> It was also slower, 35 seconds against 30. With a stale graph it was less accurate than reading the code (0.83 against 1.00) and loaded far more context. The sample is small: 23 questions in these two runs, one run each, on repos of 4 to 104 files.</p>
+      <p><strong>The graph does not beat reading the code.</strong> On small repos, node cards (<code>kg query --brief</code>) tied the code's score with 63% less context. On scrapy, the large repository kg was built for, an agent with the graph next to its search tools tied the code's score and took 45% longer. Where it chose the graph, it read half as much; nowhere did the graph make an answer more accurate. Full account: <a href="https://github.com/Cristian1A/kg/blob/main/docs/report.md">the write-up</a>.</p>
     </div>
 
     <div class="bench-tables">
@@ -601,16 +602,17 @@ note: the graph has no `calls` edges; whatever depends on them is not in this an
       <div>
         <div class="table-wrap" tabindex="0">
           <table>
-            <caption>Stale graph: 6 questions, graph older than the code</caption>
+            <caption>scrapy: 16 questions, 489 files, 32 runs per strategy</caption>
             <thead><tr><th scope="col">Strategy</th><th scope="col" class="num">Score</th><th scope="col" class="num">Context (chars, mean)</th><th scope="col" class="num">Calls</th><th scope="col" class="num">Seconds</th></tr></thead>
             <tbody>
-              <tr><th scope="row">Read the code</th><td class="num">1.00</td><td class="num">8&#8239;460</td><td class="num">4.8</td><td class="num">30</td></tr>
-              <tr><th scope="row">Graph only</th><td class="num">0.63</td><td class="num">9&#8239;161</td><td class="num">5.7</td><td class="num">44</td></tr>
-              <tr class="hl"><th scope="row">Node cards, plus changed files</th><td class="num">0.83</td><td class="num">50&#8239;750</td><td class="num">12.8</td><td class="num">38</td></tr>
+              <tr><th scope="row">Read the code</th><td class="num">0.98</td><td class="num">8&#8239;731</td><td class="num">6.3</td><td class="num">31.8</td></tr>
+              <tr><th scope="row">Read the code, &ldquo;fewer calls&rdquo; prompt*</th><td class="num">0.99</td><td class="num">8&#8239;955</td><td class="num">5.4</td><td class="num">34.7</td></tr>
+              <tr class="hl"><th scope="row">Code tools plus the graph</th><td class="num">0.96</td><td class="num">5&#8239;199</td><td class="num">5.9</td><td class="num">46.0</td></tr>
+              <tr><th scope="row">Node cards, then cited lines</th><td class="num">0.95</td><td class="num">19&#8239;166</td><td class="num">8.3</td><td class="num">50.4</td></tr>
             </tbody>
           </table>
         </div>
-        <p class="note">The one miss had worked out the right answer but ran out of its 25 tool calls before submitting it.</p>
+        <p class="note">* 16 runs: the control for the prompt line the graph strategy carries. With kg 6&times; faster than in the first scrapy run.</p>
       </div>
     </div>
 
@@ -619,7 +621,7 @@ note: the graph has no `calls` edges; whatever depends on them is not in this an
         <h3>How it was run</h3>
         <ul>
           <li>A fresh Claude Code subagent (Claude Opus 5.5) per question and strategy, 25 tool calls at most, the same prompt apart from the tool section.</li>
-          <li>Repos: the three external examples above plus <code>kg</code> itself, and a copy of <code>kg</code> with an outdated graph.</li>
+          <li>Repos: the four external examples above (scrapy among them) plus <code>kg</code> itself, and a copy of <code>kg</code> with an outdated graph. 45 questions in all.</li>
           <li>Mechanical grading: F1 over normalised names, or keyword groups. Traceability: the share of cited evidence that exists in the repo or the graph.</li>
           <li>Tool output is measured in characters. Token totals are reported too, but about 28&#8239;000 of each are Claude Code's own prompt.</li>
         </ul>
@@ -627,15 +629,15 @@ note: the graph has no `calls` edges; whatever depends on them is not in this an
       <div>
         <h3>Limits of this evidence</h3>
         <ul>
-          <li>29 questions in all, one run each: one question moves a mean by 0.06.</li>
-          <li>Small repos, where reading the code is cheap. The large-repo case is untested.</li>
+          <li>16 questions on scrapy, one or two runs per strategy: 0.02 in score is a tie.</li>
+          <li>14 of the 16 scrapy questions are one-hop lookups; harder impact questions were planned but not run.</li>
           <li>The same model family wrote the questions, the references and each graph's agent layer, and the agent layer was written with the code at hand.</li>
           <li>The subagents ran inside this repository, whose <code>AGENTS.md</code> describes <code>kg</code>.</li>
         </ul>
       </div>
     </div>
     <p>Full report, with every run, the multi-hop questions and the answers to the v0.2 exit questions: <a href="https://github.com/Cristian1A/kg/blob/main/docs/benchmark.md">docs/benchmark.md</a>. The harness, questions and raw results (<a href="https://github.com/Cristian1A/kg/tree/main/bench/results">bench/results/</a>) are committed, and <a href="https://github.com/Cristian1A/kg/blob/main/bench/README.md">bench/README.md</a> explains how to rerun it with an Anthropic API key or with a coding agent's subagents.</p>
-    <p class="asof">As of the v0.2.0 release (October 2026). The next experiment is the large-repo benchmark planned for v0.3.</p>
+    <p class="asof">As of October 2026. The large-repo benchmark ended the project; nothing further is planned.</p>
   </div>
 </section>
 
@@ -669,7 +671,8 @@ note: the graph has no `calls` edges; whatever depends on them is not in this an
         <h3>Evidence</h3>
         <ul>
           <li><a href="https://github.com/Cristian1A/kg/blob/main/docs/mvp-validation.md">MVP validation</a><span>v0.1 on four repos: flow, timings, reference questions</span></li>
-          <li><a href="https://github.com/Cristian1A/kg/blob/main/docs/benchmark.md">Benchmark report</a><span>v0.2: code against graph, with limits</span></li>
+          <li><a href="https://github.com/Cristian1A/kg/blob/main/docs/report.md">Write-up</a><span>The result in ten minutes: does the graph help?</span></li>
+          <li><a href="https://github.com/Cristian1A/kg/blob/main/docs/benchmark.md">Benchmark report</a><span>Every run, in order, with limits</span></li>
           <li><a href="https://github.com/Cristian1A/kg/blob/main/bench/README.md">Benchmark harness</a><span>How it works and how to rerun it</span></li>
           <li><a href="https://github.com/Cristian1A/kg/blob/main/docs/examples/README.md">Example graphs</a><span>How they were built, credits, licenses</span></li>
         </ul>
@@ -678,7 +681,7 @@ note: the graph has no `calls` edges; whatever depends on them is not in this an
         <h3>Project</h3>
         <ul>
           <li><a href="https://github.com/Cristian1A/kg/blob/main/docs/requirements.md">Requirements</a><span>Functional and non-functional (RF-xx, RNF-xx)</span></li>
-          <li><a href="https://github.com/Cristian1A/kg/blob/main/docs/roadmap.md">Roadmap</a><span>v0.2 and v0.3: order, dependencies, exit criteria</span></li>
+          <li><a href="https://github.com/Cristian1A/kg/blob/main/docs/roadmap.md">Roadmap</a><span>v0.2 and v0.3: plan, exit criteria and how it ended</span></li>
           <li><a href="https://github.com/Cristian1A/kg/blob/main/docs/discovery.md">Discovery</a><span>The interview behind the requirements</span></li>
           <li><a href="https://github.com/Cristian1A/kg/releases">Releases</a><span>Tagged versions and their notes</span></li>
         </ul>
@@ -697,14 +700,13 @@ note: the graph has no `calls` edges; whatever depends on them is not in this an
         </ul>
       </div>
       <div>
-        <h3>Planned for v0.3, not yet available</h3>
+        <h3>After v0.2</h3>
         <ul>
-          <li>A benchmark on a large repository (scrapy)</li>
-          <li>Checking documents against the code</li>
-          <li>Mermaid and Graphviz DOT export</li>
-          <li>An MCP server, if the large-repo benchmark supports it</li>
+          <li>The large-repo benchmark ran on scrapy, and its gate failed</li>
+          <li>Faster reads on <code>main</code>: a query on scrapy takes 0.8 s, from 4.9 s</li>
+          <li>Not pursued: checking documents against code, DOT and Mermaid export, an MCP server</li>
         </ul>
-        <p class="note">Order and conditions: <a href="https://github.com/Cristian1A/kg/blob/main/docs/roadmap.md">roadmap</a> and <a href="https://github.com/Cristian1A/kg/milestones">milestones</a>.</p>
+        <p class="note">Why: <a href="https://github.com/Cristian1A/kg/blob/main/docs/roadmap.md#how-v03-ended">how v0.3 ended</a>.</p>
       </div>
     </div>
   </div>

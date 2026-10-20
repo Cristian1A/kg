@@ -13,22 +13,22 @@ decisions — into a **knowledge graph** you can query, visualize and export.
 The graph lives inside the repo (`.kg/graph.json`), as readable, deterministic
 JSON that is versioned with git like any other file.
 
-> **Status: v0.2 released; v0.3 next.** The MVP (schema, store, extraction,
-> rendering, agent guide) and the evidence phase are done: `kg query` /
-> `kg impact` answer questions over the graph, and `kg status --check` keeps it
-> fresh. A benchmark measured whether the graph helps an
-> agent. On small repos, an agent that reads node cards (`--brief`) and then
-> only the lines they cite is as accurate as one reading the code, with 63% less
-> context ([report](docs/benchmark.md)). When the graph is stale, the agent
-> reads the files `kg status` reports as changed, so it still answers, but it
-> costs more than reading the code. See the [roadmap](#roadmap).
+> **Status: concluded after v0.2.** kg works: extraction, a versioned store,
+> queries, impact analysis, staleness checks and rendering are done and
+> tested. What it set out to show did not hold. On a 489-file repository, an
+> agent with the graph next to search answered as well as one reading the code,
+> but took 45% longer, and the graph never made an answer more accurate. Read
+> the [write-up](docs/report.md). The benchmark harness can
+> [measure other tools](bench/README.md#measure-your-own-tool).
 
 ## Why
 
 - **Ask real questions about a project.** Which code has no tests? Is the
   documentation in line with the code? Where would these new requirements
-  fit? An agent can answer them reliably when it reasons over a graph instead
-  of grepping files.
+  fit? The graph answers the structural part (dependents, paths, tests of a
+  module) with the evidence for each edge. The benchmark found that this
+  halves what an agent reads on such questions, but does not make it more
+  accurate than grep ([write-up](docs/report.md)).
 - **Two ways in, one graph.** A deterministic parser extracts the structure
   (files, modules, functions, imports, dependencies), and an external agent
   adds what only a reader understands (docs, decisions, concepts). Both write
@@ -269,13 +269,14 @@ Details in [docs/schema.md](docs/schema.md), [docs/store.md](docs/store.md),
 | `kg render` | PNG/SVG image and interactive offline HTML | ✅ |
 | `kg query`, `kg impact` | Find nodes, neighbors, paths, untested/undocumented code, impact of a change | ✅ |
 | Benchmark | Measure whether the graph improves an agent's answers ([report](docs/benchmark.md)) | ✅ |
-| `kg export` | Mermaid and Graphviz DOT | v0.3 |
-| MCP server | Expose the operations as agent tools | v0.3 |
+| `kg export` | Mermaid and Graphviz DOT | not pursued |
+| MCP server | Expose the operations as agent tools | not pursued |
 
 v0.2 was a short evidence phase: queries, a graph that stays consistent with
-the code, and a benchmark of an agent with and without the graph. Its
-[report](docs/benchmark.md) sets the order of v0.3: first a benchmark on a
-large repo (scrapy), then checking documents against code. Plan: [docs/roadmap.md](docs/roadmap.md). Full
+the code, and a benchmark of an agent with and without the graph. v0.3 opened
+with the benchmark on a large repo (scrapy), and its gate failed (#67). The
+graph does not beat reading the code, so v0.3 stops there; see the
+[write-up](docs/report.md) and [docs/roadmap.md](docs/roadmap.md). Full
 requirements: [docs/requirements.md](docs/requirements.md).
 
 ## Contributing

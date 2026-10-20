@@ -110,6 +110,36 @@ Differences from `bench.run`:
   system prompt and tool definitions. Compare the strategies with each other,
   not with `bench.run` results. Effort is whatever the coding agent uses.
 
+## Measure your own tool
+
+The harness is not tied to kg. Any tool an agent can call from a command line
+can be a strategy, compared with `code` and `lean` on the same questions:
+
+1. **Define the tool** in `bench/tools.py`: a JSON Schema in the style of
+   `GRAPH_TOOLS[0]`, the strategy's tool list in `TOOLS` (keep the `code` tools
+   and `SUBMIT` if the tool goes next to search), a line in `STRATEGY_HINTS`
+   telling the agent what the tool is for, and a handler in `run_tool` that
+   runs it on the repo and returns its text output (`run_kg` is the model).
+   Keep the hint's wording to what the tool does. Compare against `lean`,
+   which carries `companion`'s line on fewer calls, so a prompt change is
+   not credited to the tool.
+2. **Register it** in `STRATEGIES` and in the `--dry-run` samples of
+   `bench/run.py`, then check it with `python -m bench.run --dry-run
+   --strategies <name>`.
+3. **Build its index**, if it needs one, where `prepare` leaves each repo
+   (`bench/.cache/repos/<repo>`), before the runs start.
+4. **Run it** with subagents (above) or the API runner, on the same question
+   file as the baselines: `--questions bench/questions/scrapy.json
+   --strategies <name>,code,lean`. Run each strategy at least twice:
+   one run per question cannot tell a 0.02 difference from noise.
+5. **Report**: `python -m bench.report` over the result files. The "Use of
+   the graph" table counts runs that call a tool named `kg`. Name your tool
+   `kg`, or extend `report.kg_use`, to see how often the agent chooses it.
+
+Decide what would count as a win before running: a score margin, a context
+saving and a time limit, as in #67. A tool that only reads less, or only
+answers faster, then shows as what it is.
+
 ## Limits
 
 - 15–30 questions guide decisions; they are not statistically conclusive,
