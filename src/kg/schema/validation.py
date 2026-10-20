@@ -151,8 +151,13 @@ def validate_text(text: str, known_ids: Collection[str] | None = None) -> Report
 
 def validate_path(path: Path) -> Report:
     """Read and validate a file. Lets `OSError` through for the CLI to handle."""
+    return validate_bytes(path.read_bytes())
+
+
+def validate_bytes(data: bytes) -> Report:
+    """Validate the raw contents of a file, which must be UTF-8."""
     try:
-        text = path.read_text(encoding="utf-8")
+        text = data.decode("utf-8")
     except UnicodeDecodeError as e:
         return Report(
             errors=[

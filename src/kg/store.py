@@ -8,19 +8,26 @@ Format documented in `docs/store.md`.
 
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 import tempfile
 from collections.abc import Iterable
+from functools import cache
 from pathlib import Path
 from typing import Any
 
 import networkx as nx
 
+from kg import __version__
 from kg.schema import load_schema
-from kg.schema.validation import Report, validate_document, validate_path
+from kg.schema.validation import Report, validate_bytes, validate_document
 
 GRAPH_FILE = "graph.json"
+# Markers of documents already validated, kept in the user's cache, not the store
+VALIDATED_DIR = Path("kg") / "validated"
+# Markers kept; the oldest are removed beyond this
+VALIDATED_KEEP = 256
 FORMAT_VERSION: str = load_schema()["properties"]["version"]["const"]
 
 # Field order in the file: identity first, then content.
@@ -71,20 +78,28 @@ def init_store(kg_dir: Path) -> Path:
 
 
 def load_graph(kg_dir: Path) -> nx.MultiDiGraph:
-    """Read the graph from the store, validating it against the schema."""
+    """Read the graph from the store, validating it against the schema.
+
+    A document validated before (by `save_graph` or an earlier load) is not
+    validated again: the cache keys it by its content, so any change to
+    `graph.json` is validated in full.
+    """
     path = graph_path(kg_dir)
     if not path.is_file():
         raise StoreNotFoundError(
             f"no store at {kg_dir}; create one with `kg init`", path
         )
-    report = validate_path(path)
-    if not report.ok:
-        raise StoreCorruptError(
-            f"{path} is not a valid store; check it with `kg validate {path}`",
-            path,
-            report,
-        )
-    return document_to_graph(json.loads(path.read_text(encoding="utf-8")), path)
+    data = path.read_bytes()
+    if not _is_validated(data):
+        report = validate_bytes(data)
+        if not report.ok:
+            raise StoreCorruptError(
+                f"{path} is not a valid store; check it with `kg validate {path}`",
+                path,
+                report,
+            )
+        _mark_validated(data)
+    return document_to_graph(json.loads(data), path)
 
 
 def save_graph(graph: nx.MultiDiGraph, kg_dir: Path) -> Path:
@@ -99,7 +114,9 @@ def save_graph(graph: nx.MultiDiGraph, kg_dir: Path) -> Path:
             report,
         )
     document_to_graph(document, path)  # rejects duplicate edges
-    _write_atomic(path, dumps(document))
+    text = dumps(document)
+    _write_atomic(path, text)
+    _mark_validated(text.encode("utf-8"))
     return path
 
 
@@ -174,6 +191,40 @@ def _canonical(value: Any) -> Any:
 
 def _edge_sort_key(edge: dict[str, Any]) -> tuple[str, str, str]:
     return (str(edge["source"]), str(edge["target"]), str(edge.get("type", "")))
+
+
+@cache
+def _validator_key() -> bytes:
+    # kg's version and the schema: either may change what is valid.
+    schema = json.dumps(load_schema(), sort_keys=True)
+    return f"{__version__}\0{schema}\0".encode()
+
+
+def _validated_marker(data: bytes) -> Path:
+    key = hashlib.sha256(_validator_key())
+    key.update(data)
+    cache = os.environ.get("XDG_CACHE_HOME") or Path.home() / ".cache"
+    return Path(cache) / VALIDATED_DIR / key.hexdigest()
+
+
+def _is_validated(data: bytes) -> bool:
+    try:
+        return _validated_marker(data).is_file()
+    except OSError:
+        return False
+
+
+def _mark_validated(data: bytes) -> None:
+    # Best effort: without a writable cache, every load validates in full.
+    try:
+        marker = _validated_marker(data)
+        marker.parent.mkdir(parents=True, exist_ok=True)
+        marker.touch()
+        markers = sorted(marker.parent.iterdir(), key=lambda m: m.stat().st_mtime)
+        for old in markers[:-VALIDATED_KEEP]:
+            old.unlink(missing_ok=True)
+    except OSError:
+        pass
 
 
 def _write_atomic(path: Path, text: str) -> None:
