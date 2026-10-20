@@ -459,6 +459,20 @@ def test_cards_strategy_adds_brief_and_still_cites(repo):
     assert status["ok"]  # commands without --brief run as usual
 
 
+def test_companion_has_the_code_tools_and_brief_kg(repo):
+    names = [t["name"] for t in TOOLS["companion"]]
+    assert names == ["list_files", "read_file", "search", "kg", "submit_answer"]
+    out = run_tool(
+        "companion", repo, "kg", {"args": ["query", "node", "function:app.core.run"]}
+    )
+    assert "neighbors" in json.loads(out)["result"]  # brief: a card, not a dump
+    assert "at" not in json.loads(out)["result"]["node"]
+    search = {"pattern": "return 1", "glob": "**/*.py"}
+    assert "app/core.py:5" in run_tool("companion", repo, "search", search)
+    read = {"path": "README.md", "start_line": None, "end_line": None}
+    assert "# Demo" in run_tool("companion", repo, "read_file", read)  # uncited
+
+
 # --- Subagent runner --------------------------------------------------------------
 
 SUB_QUESTION = {
@@ -639,6 +653,25 @@ def test_report_by_category_and_repeated_runs(tmp_path):
 def test_report_omits_empty_category_and_spread_tables():
     text = report.markdown([_record("q1", "code", 1.0, 10)])
     assert "Per category" not in text and "Repeated runs" not in text
+
+
+def test_report_counts_the_runs_that_call_kg():
+    records = [
+        _record("q1", "companion", 1.0, 10) | {"calls": ["kg", "search", "kg"]},
+        _record("q2", "companion", 1.0, 10)
+        | {"calls": ["search", "read_file", "submit_answer"]},
+        _record("q1", "cards", 1.0, 10) | {"calls": ["kg"]},  # no choice: left out
+    ]
+    (row,) = report.kg_use(records)
+    assert row == {
+        "strategy": "companion",
+        "runs": 2,
+        "with_kg": 1,
+        "kg_calls": 2,
+        "calls": 5,
+    }
+    assert "| companion | 2 | 1 | 2 | 5 |" in report.markdown(records)
+    assert "Use of the graph" not in report.markdown(records[2:])
 
 
 def test_report_separates_quality_and_cost(tmp_path):

@@ -1,8 +1,9 @@
 """Summarize benchmark results: `python -m bench.report results/<file>.jsonl`.
 
 Prints a Markdown report: one table per question and strategy, a summary
-per strategy, the score and context per question category, and the spread of
-questions run more than once. Quality (score, traceability, answered) and cost
+per strategy, the score and context per question category, the spread of
+questions run more than once, and how often a strategy that can choose between
+the files and the graph calls `kg`. Quality (score, traceability, answered) and cost
 (tokens, time, turns) are reported separately.
 """
 
@@ -14,6 +15,8 @@ import statistics
 import sys
 from pathlib import Path
 from typing import Any
+
+from bench.tools import TOOLS
 
 
 def load(paths: list[Path]) -> list[dict[str, Any]]:
@@ -92,6 +95,30 @@ def by_category(records: list[dict[str, Any]]) -> list[dict[str, Any]]:
     return rows
 
 
+def kg_use(records: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """For strategies with both `search` and `kg`: how often runs call `kg`."""
+    rows = []
+    for strategy in sorted({r["strategy"] for r in records}):
+        names = {t["name"] for t in TOOLS.get(strategy, [])}
+        if not {"search", "kg"} <= names:
+            continue
+        runs = [r for r in records if r["strategy"] == strategy]
+        kg_calls = [r.get("calls", []).count("kg") for r in runs]
+        rows.append(
+            {
+                "strategy": strategy,
+                "runs": len(runs),
+                "with_kg": sum(n > 0 for n in kg_calls),
+                "kg_calls": sum(kg_calls),
+                "calls": sum(
+                    len([c for c in r.get("calls", []) if c != "submit_answer"])
+                    for r in runs
+                ),
+            }
+        )
+    return rows
+
+
 def spread(records: list[dict[str, Any]]) -> list[dict[str, Any]]:
     """Range of score and context for each question and strategy run more than once."""
     groups: dict[tuple[str, str], list[dict[str, Any]]] = {}
@@ -153,6 +180,18 @@ def markdown(records: list[dict[str, Any]]) -> str:
             lines.append(
                 f"| {c['category']} | {c['strategy']} | {c['runs']} | "
                 f"{c['score']:.2f} | {_int(c['context_chars'])} |"
+            )
+    if choices := kg_use(records):
+        lines += [
+            "",
+            "## Use of the graph (strategies that can also search the files)",
+            "",
+            _header("Strategy", "Runs", "Runs that call kg", "kg calls", "All calls"),
+        ]
+        for c in choices:
+            lines.append(
+                f"| {c['strategy']} | {c['runs']} | {c['with_kg']} | "
+                f"{c['kg_calls']} | {c['calls']} |"
             )
     if repeated := spread(records):
         lines += [
