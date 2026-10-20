@@ -4,8 +4,8 @@ Action plan for the releases after the MVP. The requirements behind each step
 are in [requirements.md](requirements.md) (section 7 and section 8.2); this
 document covers the **order**, the dependencies and the exit criteria.
 
-> **Status: draft (#43).** It goes with version 1.2 of the requirements, which
-> is pending the client's approval.
+> **Status: closed (#69).** v0.2 shipped. v0.3 stopped after its first
+> experiment; see [How v0.3 ended](#how-v03-ended).
 
 ## Where we are
 
@@ -115,6 +115,24 @@ point: each item says which benchmark result would move it up or down.
 If the benchmark shows that the graph does **not** help, v0.3 does not follow
 this table: it starts with a redesign based on the cases where the graph
 failed.
+
+## How v0.3 ended
+
+v0.3 began with the large-repo benchmark, as planned, and stopped there. The
+whole account is in the [write-up](report.md).
+
+- **The first scrapy run (#52).** On a 489-file repository, reading the code
+  won on every measure but total tokens.
+- **The redesign (#67).** An unofficial review proposed a redesign in steps,
+  each with a numeric kill criterion. Step 0 made kg's reads six times faster
+  and gave the agent the graph next to search.
+- **The gate failed on time.** The agent was as accurate with the graph and
+  read half as much where it used it, but took 45% longer. A control showed
+  the rest of the saving came from a prompt line, not the graph.
+
+Following the plan's own rule, kg is not developed further as a code-graph
+tool for agents. None of the table above was started, and the issues opened
+for it (#35, #55, #60, #66) are left for the maintainer to close or keep.
 
 ## After approval
 
