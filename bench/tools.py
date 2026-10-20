@@ -11,6 +11,8 @@
   that takes it.
 - `companion`: the `code` tools plus `kg` with brief answers: the graph next
   to search, not instead of it (#67).
+- `lean`: the `code` tools with `companion`'s line on using fewer calls: the
+  control that separates that line from the graph (#67).
 
 Both get `submit_answer`, which ends the run. Tool definitions are strict
 JSON Schemas and their order is fixed, so the prompt prefix caches well.
@@ -135,6 +137,7 @@ TOOLS = {
     "hybrid": [GRAPH_TOOLS[0], READ_CITED, SUBMIT],
     "cards": [GRAPH_TOOLS[0], READ_CITED, SUBMIT],
     "companion": [*CODE_TOOLS[:3], GRAPH_TOOLS[0], SUBMIT],
+    "lean": CODE_TOOLS,
 }
 
 STRATEGY_HINTS = {
@@ -161,6 +164,10 @@ STRATEGY_HINTS["companion"] = (
     "knowledge graph, built by kg from its code and documents, with the `kg` "
     "tool. Use whichever gets the answer with fewer calls. Cite evidence as "
     "`path:line`, graph node IDs or edges (`source -[type]-> target`)."
+)
+# Companion's line on fewer calls, alone: the `lean` control
+STRATEGY_HINTS["lean"] = (
+    STRATEGY_HINTS["code"] + " Use whichever gets the answer with fewer calls."
 )
 # The commands that take `--brief`: `cards` and `companion` always add it
 _BRIEF = ("cards", "companion")
@@ -281,16 +288,13 @@ def run_tool(
         )
         return read_file(repo, {**args, "start_line": start, "end_line": end})
 
+    code = {"list_files": list_files, "read_file": read_file, "search": search}
     handlers: dict[str, Callable[[Path, dict[str, Any]], str]] = {
-        "code": {"list_files": list_files, "read_file": read_file, "search": search},
+        "code": code,
+        "lean": code,
         "hybrid": {"kg": kg, "read_file": read_cited},
         "cards": {"kg": kg, "read_file": read_cited},
-        "companion": {
-            "list_files": list_files,
-            "read_file": read_file,
-            "search": search,
-            "kg": kg,
-        },
+        "companion": {**code, "kg": kg},
     }.get(strategy, {"kg": kg})
     if name not in handlers:
         raise ToolError(f"unknown tool {name!r} for strategy {strategy!r}")

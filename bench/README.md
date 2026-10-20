@@ -21,6 +21,7 @@ system prompt and turn limit:
 | `hybrid` | `kg`, plus `read_file` limited to the files and line ranges the graph has cited in the run, and to the files it reports as changed or added since it was built (`kg status`, or a `stale_graph` limit), read whole | node IDs, edges and `path:line` |
 | `cards` | `hybrid`, with `--brief` added to every `kg` command that takes it (node cards) | node IDs, edges and `path:line` |
 | `companion` | the `code` tools plus `kg`, with `--brief` as in `cards`: the graph next to search, not instead of it (#67). The report counts the runs that call `kg` | `path:line`, node IDs and edges |
+| `lean` | the `code` tools, with `companion`'s line "use whichever gets the answer with fewer calls": the control for that line (#67) | `path:line` |
 
 All end by calling `submit_answer` with `answer`, `items` and `evidence`.
 

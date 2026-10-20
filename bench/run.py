@@ -26,7 +26,7 @@ ROOT = Path(__file__).resolve().parent
 REPO_ROOT = ROOT.parent
 CACHE = ROOT / ".cache" / "repos"
 DEFAULT_MODEL = "claude-opus-5-5"
-STRATEGIES = ("code", "graph", "topic", "hybrid", "cards", "companion")
+STRATEGIES = ("code", "graph", "topic", "hybrid", "cards", "companion", "lean")
 # The kind of reasoning a question needs (#66), orthogonal to its `topic`
 CATEGORIES = ("navigation", "multi-hop", "impact", "docs", "uncertainty")
 
@@ -188,6 +188,7 @@ def _dry_run(
         "hybrid": ("kg", {"args": ["query", "find", "--type", "Repo"]}),
         "cards": ("kg", {"args": ["query", "find", "--type", "Repo"]}),
         "companion": ("kg", {"args": ["query", "find", "--type", "Repo"]}),
+        "lean": ("list_files", {"glob": "*.md"}),
     }
     for name, path in paths.items():
         for strategy in strategies:

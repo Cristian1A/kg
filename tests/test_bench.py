@@ -10,7 +10,7 @@ from bench import report, subagent
 from bench.agent import run_question
 from bench.grading import grade, normalize, traceability, verifiable
 from bench.run import ROOT, load_questions, load_repos
-from bench.tools import TOOLS, Citations, ToolError, run_tool
+from bench.tools import STRATEGY_HINTS, TOOLS, Citations, ToolError, run_tool
 from bench.topics import TOPIC_TYPES, build_topic_stores, topic_graph
 from kg import store
 from kg.extract import extract_repo
@@ -471,6 +471,19 @@ def test_companion_has_the_code_tools_and_brief_kg(repo):
     assert "app/core.py:5" in run_tool("companion", repo, "search", search)
     read = {"path": "README.md", "start_line": None, "end_line": None}
     assert "# Demo" in run_tool("companion", repo, "read_file", read)  # uncited
+
+
+def test_lean_is_code_with_the_companion_line(repo):
+    assert TOOLS["lean"] == TOOLS["code"]
+    line = "Use whichever gets the answer with fewer calls."
+    assert line in STRATEGY_HINTS["companion"] and line in STRATEGY_HINTS["lean"]
+    assert STRATEGY_HINTS["lean"].startswith(STRATEGY_HINTS["code"])
+    search = {"pattern": "return 1", "glob": "**/*.py"}
+    assert run_tool("lean", repo, "search", search) == run_tool(
+        "code", repo, "search", search
+    )
+    with pytest.raises(ToolError):
+        run_tool("lean", repo, "kg", {"args": ["status"]})
 
 
 # --- Subagent runner --------------------------------------------------------------
