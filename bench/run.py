@@ -26,7 +26,9 @@ ROOT = Path(__file__).resolve().parent
 REPO_ROOT = ROOT.parent
 CACHE = ROOT / ".cache" / "repos"
 DEFAULT_MODEL = "claude-opus-5-5"
-STRATEGIES = ("code", "graph", "topic", "hybrid", "cards")
+STRATEGIES = ("code", "graph", "topic", "hybrid", "cards", "companion", "lean")
+# The kind of reasoning a question needs (#66), orthogonal to its `topic`
+CATEGORIES = ("navigation", "multi-hop", "impact", "docs", "uncertainty")
 
 
 def load_questions(path: Path) -> list[dict[str, Any]]:
@@ -41,6 +43,8 @@ def load_questions(path: Path) -> list[dict[str, Any]]:
             raise SystemExit(f"{path}: {q['id']}: unknown repo {q['repo']!r}")
         if ("items" in q["expect"]) == ("keywords" in q["expect"]):
             raise SystemExit(f"{path}: {q['id']}: expect needs items or keywords")
+        if q.get("category", CATEGORIES[0]) not in CATEGORIES:
+            raise SystemExit(f"{path}: {q['id']}: unknown category {q['category']!r}")
     return questions
 
 
@@ -146,6 +150,7 @@ def _record(
         **run.to_dict(),
         "repo": q["repo"],
         "topic": q["topic"],
+        "category": q.get("category"),
         "grade": grade(q["expect"], run.answer).to_dict(),
         "traceability": traceability(evidence, repo, graph),
         "config": config,
@@ -182,6 +187,8 @@ def _dry_run(
         "topic": ("kg", {"args": ["status"]}),
         "hybrid": ("kg", {"args": ["query", "find", "--type", "Repo"]}),
         "cards": ("kg", {"args": ["query", "find", "--type", "Repo"]}),
+        "companion": ("kg", {"args": ["query", "find", "--type", "Repo"]}),
+        "lean": ("list_files", {"glob": "*.md"}),
     }
     for name, path in paths.items():
         for strategy in strategies:

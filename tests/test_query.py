@@ -426,6 +426,20 @@ def test_cli_tested_lists_the_tests_and_states_the_criterion(repo, capsys):
     assert "tested: a `tests` edge points to it" in text
 
 
+def test_cli_query_node_depth_zero_is_the_node_alone(repo, capsys):
+    code, out = run(repo, capsys, "query", "node", "module:app.core", "--depth", "0")
+    assert code == EXIT_OK
+    assert out["result"]["node"]["type"] == "Module"
+    assert out["result"]["neighbors"] == []
+
+    capsys.readouterr()
+    args = ["query", "node", "module:app.core", "--depth", "0", "--brief"]
+    main([*args, "--kg-dir", str(repo / ".kg")])
+    text = capsys.readouterr().out
+    assert text.startswith("module:app.core (Module)")
+    assert "no neighbors" not in text
+
+
 def test_cli_brief_node_is_a_card(repo, capsys):
     _, full = run(repo, capsys, "query", "node", "function:app.util.helper")
     _, brief = run(repo, capsys, "query", "node", "function:app.util.helper", "--brief")
@@ -526,7 +540,13 @@ def test_cli_unknown_ids_are_usage_errors(repo, capsys, argv):
 
 
 @pytest.mark.parametrize(
-    "argv", [["query"], ["query", "find"], ["impact", "x", "--depth", "0"]]
+    "argv",
+    [
+        ["query"],
+        ["query", "find"],
+        ["impact", "x", "--depth", "0"],
+        ["query", "node", "module:app.core", "--depth", "-1"],
+    ],
 )
 def test_cli_usage_errors(repo, capsys, argv):
     assert main([*argv, "--kg-dir", str(repo / ".kg")]) == EXIT_USAGE

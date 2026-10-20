@@ -48,7 +48,7 @@ module:kg.merge (Module)
 | `--direction out\|in\|both` | Edges to follow (default `both`) |
 | `--relation R1,R2` | Only these relation types |
 | `--type T1,T2` | Only list nodes of these types; others are still walked through |
-| `--depth N` | Up to N edges away (default 1). Deeper nodes show the edges that lead to them |
+| `--depth N` | Up to N edges away (default 1); `0` shows the node alone. Deeper nodes show the edges that lead to them |
 
 ## `kg query find [TEXT]`
 

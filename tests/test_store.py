@@ -217,6 +217,69 @@ def test_load_rejects_duplicate_edges(kg_dir):
         store.load_graph(kg_dir)
 
 
+# --- Validated-content cache -------------------------------------------------
+
+
+def validated(cache_home):
+    return list((cache_home / store.VALIDATED_DIR).iterdir())
+
+
+def test_saved_store_loads_without_validating_again(kg_dir, monkeypatch):
+    graph = store.document_to_graph(example_document())
+    store.save_graph(graph, kg_dir)
+
+    def fail(data):
+        raise AssertionError("validated again")
+
+    monkeypatch.setattr(store, "validate_bytes", fail)
+    assert nx.utils.graphs_equal(store.load_graph(kg_dir), graph)
+
+
+def test_edited_store_is_validated_again(kg_dir):
+    store.load_graph(kg_dir)  # the empty store is now known to be valid
+    path = store.graph_path(kg_dir)
+    path.write_text('{"version": "1", "nodes": []}', encoding="utf-8")
+    with pytest.raises(StoreCorruptError):
+        store.load_graph(kg_dir)
+
+
+def test_store_validated_on_load_is_remembered(kg_dir, cache_home, monkeypatch):
+    document = example_document()
+    store.graph_path(kg_dir).write_text(json.dumps(document), encoding="utf-8")
+    calls = []
+    real = store.validate_bytes
+    monkeypatch.setattr(store, "validate_bytes", lambda d: calls.append(d) or real(d))
+    store.load_graph(kg_dir)
+    store.load_graph(kg_dir)
+    assert len(calls) == 1
+
+
+def test_invalid_store_is_never_remembered(kg_dir, cache_home):
+    before = validated(cache_home)
+    store.graph_path(kg_dir).write_text("{ not json", encoding="utf-8")
+    for _ in range(2):
+        with pytest.raises(StoreCorruptError):
+            store.load_graph(kg_dir)
+    assert validated(cache_home) == before
+
+
+def test_unwritable_cache_still_loads(kg_dir, tmp_path, monkeypatch):
+    blocked = tmp_path / "blocked"
+    blocked.write_text("a file, not a directory")
+    monkeypatch.setenv("XDG_CACHE_HOME", str(blocked))
+    store.save_graph(store.document_to_graph(example_document()), kg_dir)
+    assert store.load_graph(kg_dir).number_of_nodes() > 0
+
+
+def test_cache_keeps_only_the_latest_markers(kg_dir, cache_home, monkeypatch):
+    monkeypatch.setattr(store, "VALIDATED_KEEP", 3)
+    for i in range(5):
+        graph = nx.MultiDiGraph()
+        graph.add_node(f"module:m{i}", type="Module", provenance=dict(PROV))
+        store.save_graph(graph, kg_dir)
+    assert len(validated(cache_home)) == 3
+
+
 def test_save_invalid_graph_keeps_previous_store(kg_dir):
     before = store.graph_path(kg_dir).read_bytes()
     graph = nx.MultiDiGraph()

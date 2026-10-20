@@ -9,6 +9,10 @@
   as changed since it was built (`kg status`, or a `stale_graph` limit).
 - `cards`: `hybrid` with brief answers: `--brief` is added to every command
   that takes it.
+- `companion`: the `code` tools plus `kg` with brief answers: the graph next
+  to search, not instead of it (#67).
+- `lean`: the `code` tools with `companion`'s line on using fewer calls: the
+  control that separates that line from the graph (#67).
 
 Both get `submit_answer`, which ends the run. Tool definitions are strict
 JSON Schemas and their order is fixed, so the prompt prefix caches well.
@@ -132,6 +136,8 @@ TOOLS = {
     "topic": GRAPH_TOOLS,
     "hybrid": [GRAPH_TOOLS[0], READ_CITED, SUBMIT],
     "cards": [GRAPH_TOOLS[0], READ_CITED, SUBMIT],
+    "companion": [*CODE_TOOLS[:3], GRAPH_TOOLS[0], SUBMIT],
+    "lean": CODE_TOOLS,
 }
 
 STRATEGY_HINTS = {
@@ -153,7 +159,18 @@ STRATEGY_HINTS["hybrid"] = (
     "`path:line`."
 )
 STRATEGY_HINTS["cards"] = STRATEGY_HINTS["hybrid"]
-# The commands that take `--brief`: the `cards` strategy always adds it
+STRATEGY_HINTS["companion"] = (
+    "You can list, read and search the repository's files, and query its "
+    "knowledge graph, built by kg from its code and documents, with the `kg` "
+    "tool. Use whichever gets the answer with fewer calls. Cite evidence as "
+    "`path:line`, graph node IDs or edges (`source -[type]-> target`)."
+)
+# Companion's line on fewer calls, alone: the `lean` control
+STRATEGY_HINTS["lean"] = (
+    STRATEGY_HINTS["code"] + " Use whichever gets the answer with fewer calls."
+)
+# The commands that take `--brief`: `cards` and `companion` always add it
+_BRIEF = ("cards", "companion")
 _BRIEF_COMMANDS = {("query", "node"), ("query", "find"), ("query", "path"), ("impact",)}
 
 
@@ -256,7 +273,7 @@ def run_tool(
 
     def kg(repo: Path, args: dict[str, Any]) -> str:
         argv = [str(a) for a in args["args"]]
-        if strategy == "cards" and (
+        if strategy in _BRIEF and (
             tuple(argv[:2]) in _BRIEF_COMMANDS or tuple(argv[:1]) in _BRIEF_COMMANDS
         ):
             argv = [*argv, "--brief"] if "--brief" not in argv else argv
@@ -271,10 +288,13 @@ def run_tool(
         )
         return read_file(repo, {**args, "start_line": start, "end_line": end})
 
+    code = {"list_files": list_files, "read_file": read_file, "search": search}
     handlers: dict[str, Callable[[Path, dict[str, Any]], str]] = {
-        "code": {"list_files": list_files, "read_file": read_file, "search": search},
+        "code": code,
+        "lean": code,
         "hybrid": {"kg": kg, "read_file": read_cited},
         "cards": {"kg": kg, "read_file": read_cited},
+        "companion": {**code, "kg": kg},
     }.get(strategy, {"kg": kg})
     if name not in handlers:
         raise ToolError(f"unknown tool {name!r} for strategy {strategy!r}")

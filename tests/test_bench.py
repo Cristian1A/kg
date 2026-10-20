@@ -10,7 +10,7 @@ from bench import report, subagent
 from bench.agent import run_question
 from bench.grading import grade, normalize, traceability, verifiable
 from bench.run import ROOT, load_questions, load_repos
-from bench.tools import TOOLS, Citations, ToolError, run_tool
+from bench.tools import STRATEGY_HINTS, TOOLS, Citations, ToolError, run_tool
 from bench.topics import TOPIC_TYPES, build_topic_stores, topic_graph
 from kg import store
 from kg.extract import extract_repo
@@ -44,6 +44,25 @@ def test_question_files_are_consistent(path):
     }
     for q in questions:
         assert q["reference"], q["id"]  # a human-readable reference answer
+
+
+def test_question_categories_are_checked(tmp_path, monkeypatch):
+    path = tmp_path / "q.json"
+    base = {
+        "id": "q1",
+        "repo": "kg",
+        "topic": "tests",
+        "question": "?",
+        "expect": {"items": []},
+        "reference": "None.",
+    }
+    path.write_text(json.dumps([{**base, "category": "multi-hop"}]))
+    assert load_questions(path)[0]["category"] == "multi-hop"
+    path.write_text(json.dumps([base]))  # the category is optional
+    assert load_questions(path)
+    path.write_text(json.dumps([{**base, "category": "trivia"}]))
+    with pytest.raises(SystemExit, match="unknown category"):
+        load_questions(path)
 
 
 def test_repos_are_pinned_to_a_commit():
@@ -440,6 +459,33 @@ def test_cards_strategy_adds_brief_and_still_cites(repo):
     assert status["ok"]  # commands without --brief run as usual
 
 
+def test_companion_has_the_code_tools_and_brief_kg(repo):
+    names = [t["name"] for t in TOOLS["companion"]]
+    assert names == ["list_files", "read_file", "search", "kg", "submit_answer"]
+    out = run_tool(
+        "companion", repo, "kg", {"args": ["query", "node", "function:app.core.run"]}
+    )
+    assert "neighbors" in json.loads(out)["result"]  # brief: a card, not a dump
+    assert "at" not in json.loads(out)["result"]["node"]
+    search = {"pattern": "return 1", "glob": "**/*.py"}
+    assert "app/core.py:5" in run_tool("companion", repo, "search", search)
+    read = {"path": "README.md", "start_line": None, "end_line": None}
+    assert "# Demo" in run_tool("companion", repo, "read_file", read)  # uncited
+
+
+def test_lean_is_code_with_the_companion_line(repo):
+    assert TOOLS["lean"] == TOOLS["code"]
+    line = "Use whichever gets the answer with fewer calls."
+    assert line in STRATEGY_HINTS["companion"] and line in STRATEGY_HINTS["lean"]
+    assert STRATEGY_HINTS["lean"].startswith(STRATEGY_HINTS["code"])
+    search = {"pattern": "return 1", "glob": "**/*.py"}
+    assert run_tool("lean", repo, "search", search) == run_tool(
+        "code", repo, "search", search
+    )
+    with pytest.raises(ToolError):
+        run_tool("lean", repo, "kg", {"args": ["status"]})
+
+
 # --- Subagent runner --------------------------------------------------------------
 
 SUB_QUESTION = {
@@ -505,6 +551,7 @@ def test_subagent_submits_once_and_is_graded(session):
     assert code["seconds"] == 9.5 and code["turns"] == 1 and code["tool_calls"] == 0
     assert graph["outcome"] == "no_answer" and graph["tool_errors"] == 1
     assert graph["usage"] == {"total_tokens": None}
+    assert code["category"] is None  # SUB_QUESTION has no category
 
 
 def test_subagent_records_context_and_replays_old_logs(repo, tmp_path):
@@ -573,6 +620,71 @@ def test_report_reads_subagent_records(tmp_path):
 
 
 # --- Report -----------------------------------------------------------------------
+
+
+def _record(question, strategy, score, chars, category=None):
+    return {
+        "question": question,
+        "topic": "development",
+        "category": category,
+        "strategy": strategy,
+        "outcome": "answered",
+        "grade": {"score": score},
+        "traceability": 1.0,
+        "usage": {"total_tokens": 1000},
+        "context_chars": chars,
+        "turns": 2,
+        "seconds": 1.0,
+    }
+
+
+def test_report_by_category_and_repeated_runs(tmp_path):
+    records = [
+        _record("q1", "code", 1.0, 900, "multi-hop"),
+        _record("q1", "code", 0.5, 1100, "multi-hop"),  # a repeated run
+        _record("q1", "cards", 1.0, 300, "multi-hop"),
+        _record("q2", "code", 0.0, 50, "uncertainty"),
+        _record("q3", "code", 1.0, 10),  # no category: left out of that table
+    ]
+    rows = {(r["category"], r["strategy"]): r for r in report.by_category(records)}
+    assert set(rows) == {
+        ("multi-hop", "code"),
+        ("multi-hop", "cards"),
+        ("uncertainty", "code"),
+    }
+    assert rows["multi-hop", "code"]["runs"] == 2
+    assert rows["multi-hop", "code"]["score"] == 0.75
+    assert rows["multi-hop", "code"]["context_chars"] == 1000
+    (spread,) = report.spread(records)
+    assert spread["question"] == "q1" and spread["strategy"] == "code"
+    assert spread["score"] == (0.5, 1.0) and spread["context_chars"] == (900, 1100)
+    text = report.markdown(records)
+    assert "| multi-hop | cards | 1 | 1.00 | 300 |" in text
+    assert "| q1 | code | 2 | 0.50–1.00 | 900–1100 |" in text
+
+
+def test_report_omits_empty_category_and_spread_tables():
+    text = report.markdown([_record("q1", "code", 1.0, 10)])
+    assert "Per category" not in text and "Repeated runs" not in text
+
+
+def test_report_counts_the_runs_that_call_kg():
+    records = [
+        _record("q1", "companion", 1.0, 10) | {"calls": ["kg", "search", "kg"]},
+        _record("q2", "companion", 1.0, 10)
+        | {"calls": ["search", "read_file", "submit_answer"]},
+        _record("q1", "cards", 1.0, 10) | {"calls": ["kg"]},  # no choice: left out
+    ]
+    (row,) = report.kg_use(records)
+    assert row == {
+        "strategy": "companion",
+        "runs": 2,
+        "with_kg": 1,
+        "kg_calls": 2,
+        "calls": 5,
+    }
+    assert "| companion | 2 | 1 | 2 | 5 |" in report.markdown(records)
+    assert "Use of the graph" not in report.markdown(records[2:])
 
 
 def test_report_separates_quality_and_cost(tmp_path):

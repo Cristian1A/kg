@@ -114,6 +114,7 @@ def prepare_session(
                 "repo": q["repo"],
                 "repo_path": str(paths[q["repo"]]),
                 "topic": q["topic"],
+                "category": q.get("category"),
             }
             (run_dir / "run.json").write_text(json.dumps(meta, indent=2) + "\n")
             (run_dir / "prompt.md").write_text(prompt(q, strategy, run_dir))
@@ -212,6 +213,7 @@ def collect(
                 "usage": {"total_tokens": own.get("total_tokens")},
                 "repo": meta["repo"],
                 "topic": q["topic"],
+                "category": q.get("category"),
                 "grade": grade(q["expect"], answer).to_dict(),
                 "traceability": traceability(
                     evidence, repo, store.load_graph(repo / ".kg")

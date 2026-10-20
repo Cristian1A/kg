@@ -20,6 +20,8 @@ system prompt and turn limit:
 | `topic` | the same `kg` tool, over a store of the question's topic (`bench/topics.py`) | node IDs and edges |
 | `hybrid` | `kg`, plus `read_file` limited to the files and line ranges the graph has cited in the run, and to the files it reports as changed or added since it was built (`kg status`, or a `stale_graph` limit), read whole | node IDs, edges and `path:line` |
 | `cards` | `hybrid`, with `--brief` added to every `kg` command that takes it (node cards) | node IDs, edges and `path:line` |
+| `companion` | the `code` tools plus `kg`, with `--brief` as in `cards`: the graph next to search, not instead of it (#67). The report counts the runs that call `kg` | `path:line`, node IDs and edges |
+| `lean` | the `code` tools, with `companion`'s line "use whichever gets the answer with fewer calls": the control for that line (#67) | `path:line` |
 
 All end by calling `submit_answer` with `answer`, `items` and `evidence`.
 
@@ -149,3 +151,7 @@ The report, with the answers to the v0.2 exit questions, is
 | `results/20261015T154222Z-subagent-hybrid-stale.jsonl` | `questions/stale.json`, `hybrid` (#52) |
 | `results/20261015T160303Z-subagent-cards.jsonl` | `questions/main.json`, `cards` (#52) |
 | `results/20261015T160309Z-subagent-cards-stale.jsonl` | `questions/stale.json`, `cards` (#52) |
+| `results/20261019T213916Z-subagent-scrapy.jsonl` | `questions/scrapy.json`, `code`, `graph`, `hybrid` and `cards` (#52) |
+| `results/20261020T090411Z-subagent-scrapy-step0.jsonl` | `questions/scrapy.json`, `companion`, `cards` and `code`, on the faster kg (#67) |
+| `results/20261020T090412Z-subagent-scrapy-step0.jsonl` | `questions/scrapy.json`, `companion` and `cards`, second run (#67) |
+| `results/20261020T130120Z-subagent-scrapy-lean.jsonl` | `questions/scrapy.json`, `lean`, the control for `companion`'s prompt line (#67) |

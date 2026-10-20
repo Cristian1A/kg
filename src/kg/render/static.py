@@ -22,12 +22,12 @@ from matplotlib.lines import Line2D
 from matplotlib.patches import FancyArrowPatch
 from matplotlib.patheffects import withStroke
 
+from kg.render.defaults import DPI, MAX_NODES
 from kg.render.style import EDGE, INK, INK_MUTED, SURFACE, type_style
 
 Format = Literal["png", "svg"]
 
 SEED = 42
-MAX_NODES = 150
 # Types hidden first, in this order, when the graph exceeds `max_nodes`: the
 # most numerous and the least useful in an overview.
 HIDE_ORDER = ("Function", "Test", "File", "Class")
@@ -41,7 +41,6 @@ LABELED_TYPES = frozenset(
 # NetworkX needs scipy for spring_layout from this size on.
 _SCIPY_FROM = 500
 _BASE_MARKER = 36.0  # points², a Function node
-DPI = 150  # PNG resolution; the SVG is vector and has none
 _LABEL_SIZE = 7  # points
 _LABEL_OFFSET = 9  # points below the node
 

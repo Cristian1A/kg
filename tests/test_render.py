@@ -209,6 +209,21 @@ def test_render_does_not_use_pyplot(tmp_path):
     assert out.stdout.strip() == "False"
 
 
+def test_cli_imports_matplotlib_only_to_render():
+    code = (
+        "import sys\n"
+        "import kg.cli\n"
+        "from kg import render\n"
+        "print('matplotlib' in sys.modules, render.DPI)\n"
+        "render.render_static\n"
+        "print('matplotlib' in sys.modules)\n"
+    )
+    out = subprocess.run(
+        [sys.executable, "-c", code], capture_output=True, text=True, check=True
+    )
+    assert out.stdout.split() == ["False", "150", "True"]
+
+
 # --- CLI -----------------------------------------------------------------------
 
 

@@ -308,6 +308,113 @@ could not open. This run also fixed the benchmark calling `kg` from the
 `PATH`: it now uses the interpreter running it, so a subagent that does not
 activate the virtual environment still works.
 
+## Update: a large repo, scrapy (#52, #67)
+
+The case kg was designed for: a repo too large to read, here scrapy at
+`8026dee`, with 489 Python files and 16 questions (`questions/scrapy.json`).
+
+**First run (#52): the code wins.** Each question ran once.
+
+| Strategy | Score | Context (chars, mean) | Total tokens | Calls | Seconds |
+|----------|-------|-----------------------|--------------|-------|---------|
+| code | 0.99 | 9 638 | 36 420 | 6.8 | 29 |
+| cards | 0.98 | 17 516 | 36 345 | 8.9 | 92 |
+| hybrid | 0.97 | 48 704 | 40 437 | 9.7 | 85 |
+| graph | 0.93 | 28 638 | 40 664 | 9.8 | 115 |
+
+Total tokens tie, because the coding agent's own prompt dominates them. The
+losses are in time, about three times the code's, and in the context the
+tools return. Part of the time came from kg itself rather than from the
+graph. Every `kg query` re-validated the 11.5 MB store against the schema,
+which took 5 to 10 s a call. Agents also asked for `--depth 0` 19 times and
+got a usage error each time. The three accuracy losses are facts the graph
+does not hold:
+
+- imports under `if TYPE_CHECKING:` are not told apart from runtime ones
+  (`scr-impact-job-runtime`);
+- classes have no inheritance edges (`scr-manager-subclasses`);
+- settings and `.tmpl` files are not extracted (`scr-docs-download-delay`).
+
+**Step 0 of #67: kg fixed, the graph next to search.** In this run a read
+skips validation when the store's contents were already validated, and
+matplotlib is imported only to render: a query on scrapy dropped from 4.9 s
+to 0.8 s. The graph strategies above all forbid reading the code freely, so
+they test the graph *instead of* search, which is not how agents use tools.
+The new `companion` strategy gives the code tools plus `kg` with `--brief`.
+`companion` and `cards` ran twice per question, and `code` once more, so
+every strategy has 32 runs.
+
+| Strategy | Runs | Score | Context (chars, mean / median) | Total tokens | Calls | Seconds (mean / median) |
+|----------|------|-------|--------------------------------|--------------|-------|-------------------------|
+| code | 32 | 0.98 | 8 731 / 5 912 | 36 064 | 6.3 | 31.8 / 28.1 |
+| companion | 32 | 0.96 | **5 199** / 2 800 | 34 924 | 5.9 | 46.0 / 39.0 |
+| cards | 32 | 0.95 | 19 166 / 6 507 | 36 165 | 8.3 | 50.4 / 40.9 |
+
+The `code` row joins the first run's 16 runs and 16 new ones. The new ones
+alone average 34.5 s.
+
+**The step-0 gate fails on time.** The criterion was to stop the code layer
+if adding kg to the code tools costs more than 0.03 in score, or more than
+15% in context or 30% in time:
+
+| Criterion | `companion` against `code` | |
+|-----------|----------------------------|---|
+| Score | 0.96 against 0.98 (−0.02) | passes |
+| Context | 5 199 against 8 731 (−40%) | passes |
+| Time | 46.0 s against 31.8 s (+45%; +33% against the `code` runs of the same session) | **fails** |
+
+**What the numbers say:**
+
+- **Part of the context saving is not kg's.** The 17 `companion` runs that
+  never called `kg` loaded the least context of all (2 719 characters, 3.6
+  calls, 30.5 s, score 0.99). Their prompt differs from the code's by one
+  line, "use whichever gets the answer with fewer calls". The `lean` control
+  below separates that line from the graph.
+- **When the agent calls kg, it gets slower.** The agent called `kg` in 15
+  of 32 runs, 47 of 189 calls, on the impact, path, test and decision
+  questions. Those 15 runs average 63.6 s and 8.5 calls, against 30.5 s for
+  the runs without kg. They are also the harder questions. On them, though,
+  `code` is faster too: `scr-path-sitemap` takes 31 s with `code` and 58 s
+  with `companion`, and `scr-impact-decorators` 27 s against 48 s.
+- **The hardest question fails with every strategy.**
+  `scr-impact-job-runtime` needs to tell type-only imports from runtime
+  ones. `code` scores 0.43 and 1.00, `companion` 0.00 (out of calls) and
+  1.00, `cards` 0.00 (out of calls) and 0.62. The graph does not mark
+  `TYPE_CHECKING`, so `kg impact` lists 261 nodes where the answer has 11.
+  Without this question, `companion` costs 38.2 s against 29.5 s (+29%) at
+  the same score (0.99).
+- **`cards` still loads twice the code's context.** It averages 19 166
+  characters, against 8 731 for `code`, because it cannot search.
+
+**Control: `lean`, the code tools with the same line.** One run per
+question (`results/20261020T130120Z-subagent-scrapy-lean.jsonl`). Overall it
+looks like `code`: 0.99, 8 955 characters, 5.4 calls, 34.7 s. Split by
+whether `companion` called `kg`, it shows what the graph adds:
+
+| Questions | `lean` | `companion` |
+|-----------|--------|-------------|
+| The 8 where `companion` never called `kg` | 1.00, 2 851 characters, 25.7 s | 0.99, 2 851 characters, 30.3 s |
+| The 7 where it did (decision, impact, path, tests) | 0.99, 9 816 characters, 35.1 s | 0.98, **4 299** characters (−56%), 47.4 s (+35%) |
+| `scr-impact-job-runtime` | 1.00, 51 754 characters, 104 s | 0.50, 30 271 characters, 163 s |
+
+On the questions answered without the graph, the line explains all of the
+saving: the same context to the character. Where the agent uses the graph,
+the graph does cut what it reads by half, at the same score, but costs a
+third more time. On the hardest question it does worse than search.
+
+**Conclusion.** Fixing kg's latency was necessary. With the fix, on the
+questions where the agent chooses it, the graph halves the context an agent
+loads, at the same score, and costs about a third more time. It does not
+make answers more accurate, and on the question about type-only imports it
+gets in the way. By the gate's own terms, step 0 fails on time. Step 1
+(runtime imports, inheritance and settings, on harder questions) is the
+decision in #67.
+
+Caveats: two runs per question. Times are the wall time of subagents run 20
+at a time, so they include the machine's load. One `companion` run was
+interrupted by a usage limit and resumed hours later; its time (146 s) is
+estimated from the gaps between its calls, without the outage.
+
 ## Limits of this evidence
 
 - **Sample size.** 29 questions, one run each. A difference of one question

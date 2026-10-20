@@ -451,7 +451,7 @@ def _query_node(args: argparse.Namespace) -> Result:
     if hits:
         lines.append(f"{_plural(len(hits), 'neighbor')}:")
         lines += [_neighbor_text(args.id, hit) for hit in hits]
-    else:
+    elif args.depth:
         lines.append("no neighbors in the graph with these options")
     limits = _limits(args, graph)
     if args.brief:
@@ -1029,10 +1029,10 @@ def build_parser() -> argparse.ArgumentParser:
     _type_option(q, "entity types to list (others are still walked through)")
     q.add_argument(
         "--depth",
-        type=_positive_int,
+        type=_non_negative_int,
         default=1,
         metavar="N",
-        help="how many edges away (default: 1)",
+        help="how many edges away; 0 shows the node alone (default: 1)",
     )
 
     q = query(
@@ -1131,6 +1131,17 @@ def _type_list(value: str) -> list[str]:
     if not types:
         raise argparse.ArgumentTypeError("expected at least one type, e.g. Module")
     return types
+
+
+def _non_negative_int(value: str) -> int:
+    if value.strip() == "0":
+        return 0
+    try:
+        return _positive_int(value)
+    except argparse.ArgumentTypeError:
+        raise argparse.ArgumentTypeError(
+            f"expected 0 or a positive integer, got {value!r}"
+        ) from None
 
 
 def _positive_int(value: str) -> int:

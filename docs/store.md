@@ -270,6 +270,17 @@ A single file: writes are atomic (temporary file + `rename`) and the graph is
 never left half-written across two files. With one object per node/edge and a
 fixed order, a change to an entity only touches its own lines.
 
+**Validated once.** Every read checks the store against the schema, which
+takes seconds on a large graph (about 7 s for scrapy's 11 MB). So kg
+remembers which contents it has already validated: a write or a successful
+load leaves an empty marker named after the SHA-256 of the file's contents,
+kg's version and the schema, in `$XDG_CACHE_HOME/kg/validated/` (by default
+`~/.cache/kg/validated/`). A read whose contents have a marker skips the
+validation. Any change to `graph.json`, by hand, by git or by another kg
+version, has no marker and is validated in full. The cache is outside the
+store, is never committed, keeps the latest 256 markers and can be deleted
+at any time; when it cannot be written, every read validates.
+
 ## Format
 
 `graph.json` is a **valid document of the input schema** (see
@@ -332,7 +343,7 @@ are not stored.
 from pathlib import Path
 from kg import store
 
-graph = store.load_graph(Path(".kg"))  # validated against the schema
+graph = store.load_graph(Path(".kg"))  # validated against the schema, once
 graph.edges["file:a.py", "function:a.f", "defines"]
 store.save_graph(graph, Path(".kg"))  # validated before writing
 ```

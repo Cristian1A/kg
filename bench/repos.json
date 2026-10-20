@@ -18,6 +18,12 @@
     "agent": "examples/agent/python-clean-architecture.json"
   },
   {
+    "name": "scrapy",
+    "url": "https://github.com/scrapy/scrapy",
+    "commit": "8026dee",
+    "agent": "examples/agent/scrapy.json"
+  },
+  {
     "name": "kg",
     "url": "https://github.com/Cristian1A/kg",
     "commit": "1a342c4",
