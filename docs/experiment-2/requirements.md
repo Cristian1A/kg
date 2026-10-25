@@ -2,9 +2,9 @@
 
 | Field | Value |
 |-------|-------|
-| Document version | 1.0 |
+| Document version | 1.1 |
 | Date | 2026-10-25 |
-| Status | Approved by the client (2026-10-25). Open questions (§11) pending |
+| Status | 1.0 approved by the client (2026-10-25). 1.1 records the answers to the open questions, see the [change log](#13-change-log) |
 | Issue | #71 |
 | Branch | `experiment-2/agent-context-memory` |
 | Previous experiment | `experiment-1/code-graph-negative-result` ([report](../report.md)) |
@@ -155,12 +155,25 @@ Custom types are a kg feature, not an experimental variable.
   70 PRs, their issues, the docs, the benchmark runs and the decisions of
   experiment 1, including decisions that were later superseded (the v0.2
   re-scope) and approaches that failed (`graph`, `topic`, `cards`).
-- **R2-02.** Sessions are reconstructed as a controlled, ordered sequence of
-  session records (what was done, decided, found and left pending), each
-  pinned to a commit. The same sequence feeds every strategy.
-- **R2-03.** A second corpus on a repository the model family did not write
-  (candidate: Engram or a sample in `samples/`), so the result is not only
-  about our own history (Q2-01).
+- **R2-02.** Sessions are a controlled, ordered sequence of session records
+  (what was done, decided, found and left pending), each pinned to a commit.
+  The same sequence feeds every strategy. Their source depends on the corpus
+  (Q2-02):
+  - **kg:** PRs, issues and commits, plus the reviewed Claude Code
+    transcripts of this project for negative knowledge and pending work,
+    which rarely reach a PR. Transcripts are never copied raw (N2-06).
+  - **External repositories:** their public PRs, issues and commits, plus
+    **generated sessions**: subagents work on the repository over several
+    sessions, on tasks fixed in advance, and their records become the corpus.
+    Generated sessions are the realistic case of R2-11's agent-written mode.
+- **R2-03.** Two more corpora, so the result is not only about our own
+  history (Q2-01):
+
+| Corpus | Role | Caveat |
+|--------|------|--------|
+| kg (this repo) | primary; real history with superseded decisions and failed approaches | written by the same model family |
+| [Engram](https://github.com/Gentleman-Programming/engram) | second; recent, so less likely to be in the model's training data | written in Go: `kg extract` does not parse it, which memory does not need |
+| [pandas](https://github.com/pandas-dev/pandas) | third; large store, for S6 and for scale | well known to the model, which inflates S0: report it apart |
 
 ### 5.2 Question categories
 
@@ -222,9 +235,22 @@ Custom types are a kg feature, not an experimental variable.
 | S6 | Hierarchical | project → component → memory → evidence | large stores |
 | S7 | Iterative | the agent searches, inspects, finds gaps and queries again | complex questions |
 | S8 | Hybrid | text seeds, graph expansion, evidence attached | mixed questions |
+| S9 | Router | picks one of S2–S8 from the question's category | every category, if routing works |
 
 - **R2-13.** Priority: S0, S2, S4 and S8 are required. S1, S3 and S7 are
-  required if H1 holds. S5 and S6 are optional.
+  required if H1 holds. S5, S6 and S9 are optional; S9 runs only after the
+  per-category results of S2–S8 exist, and is scored on questions it was not
+  tuned on.
+- **R2-17.** Ablations, each changing one condition against S8 on the same
+  questions (Q2-02):
+
+| Condition | Varies | Tells |
+|-----------|--------|-------|
+| Memory present | store vs no store (S0) | whether memory helps at all |
+| Relations present | the same memories with and without their edges | what the edges add over the text |
+| Context size | S1 with a large window vs top-K | whether a long context makes retrieval unnecessary |
+| Agent setup | one agent vs a lead agent with subagents | whether delegation changes what memory is needed |
+| Sessions | one long session vs the same work split into several | whether memory pays off only across sessions |
 
 ### 6.3 Evaluation
 
@@ -281,8 +307,13 @@ failure is published like experiment 1's.
   tool or context description, same tool-call and token budget, same store.
   Any prompt line one strategy gets, a control gets too.
 - **N2-02. Local and offline.** SQLite (stdlib `sqlite3` with FTS5) and
-  NetworkX. Embeddings run locally; their dependency is justified and declared
-  in `pyproject.toml` as an optional extra (Q2-03).
+  NetworkX. Embeddings run locally with `all-MiniLM-L6-v2`, declared in
+  `pyproject.toml` as an optional extra (Q2-03). The runtime (ONNX or
+  `sentence-transformers`) is chosen in P2, preferring the lighter one.
+- **N2-07. One store.** The memory lives in kg's `.kg/` store and schema,
+  with the types and relations of §4 added to the catalog. kg's provenance,
+  validation, `kg add` / `kg edit` and staleness check (`kg status`) are
+  reused (Q2-04).
 - **N2-03. Deterministic.** Same store and question give the same retrieved
   context for S0–S6 and S8. Only S7, which the agent drives, may vary.
 - **N2-04. Reproducible.** Corpus, store, questions, references and results
@@ -300,10 +331,10 @@ failure is published like experiment 1's.
 
 | Phase | Output | Exit criterion |
 |-------|--------|----------------|
-| P0 | corpus, 30+ questions with references, gates frozen | questions reviewed and committed |
+| P0 | Engram studied; corpus, 30+ questions with references, gates frozen | questions reviewed and committed |
 | P1 | store, write modes, S0 and S2 | G0 measured |
 | P2 | S4 and S8; S1 and S3 if G0 passes | G1–G3 measured |
-| P3 | S7, continuation tasks, second corpus | results replicated on corpus 2 |
+| P3 | S7, S9, ablations, continuation tasks, Engram measured, corpora 2 and 3 | results replicated on corpus 2 |
 | P4 | report | published, whatever the result |
 
 G0 failing after P1 ends the experiment early, with a report.
@@ -326,12 +357,33 @@ G0 failing after P1 ends the experiment early, with a report.
 
 ---
 
-## 11. Open questions
+## 11. Resolved questions
 
-| ID | Question |
-|----|----------|
-| Q2-01 | Which repository is the second corpus? |
-| Q2-02 | Do we reconstruct sessions from PRs and issues only, or also from reviewed Claude Code transcripts? |
-| Q2-03 | Which local embedding model (size, dependency weight) for S3? |
-| Q2-04 | Does the store reuse kg's `.kg/` format and schema, or start a new one? |
-| Q2-05 | Is Engram run as an external system through the harness, or only studied? |
+| ID | Question | Answer (2026-10-25) |
+|----|----------|---------------------|
+| Q2-01 | Which repository is the second corpus? | Engram, and pandas as a third, large corpus (R2-03). Other repos left out of experiment 1 may join later |
+| Q2-02 | Where do the sessions come from? | kg: PRs, issues, commits and reviewed transcripts. Other repos: public history plus sessions generated by subagents. Conditions are varied by ablation (R2-02, R2-17) |
+| Q2-03 | Which embedding model for S3? | `all-MiniLM-L6-v2`; the runtime is chosen in P2 (N2-02) |
+| Q2-04 | Which store? | kg's `.kg/` store and schema (N2-07) |
+| Q2-05 | What do we do with Engram? | Studied in P0, measured in P3 as an external system through `bench/`'s "measure your own tool" entry point |
+
+---
+
+## 12. After the research: what kg could become
+
+Not a requirement of this experiment; recorded so the results are read with
+it in mind. If the per-category results show that no single strategy wins
+everywhere, kg could become **one store with several ways to retrieve from
+it, chosen by the kind of question**: text for lookups, relations for
+rationale and multi-hop, status and time for continuation. S9 is the test of
+that idea. Whether it improves on Engram is decided by P3's measurement, not
+assumed. The product decision is taken after the report.
+
+---
+
+## 13. Change log
+
+| Version | Date | Change |
+|---------|------|--------|
+| 1.0 | 2026-10-25 | First version, approved |
+| 1.1 | 2026-10-25 | Answers Q2-01..Q2-05: corpora Engram and pandas, session sources, ablations (R2-17), router strategy S9, `all-MiniLM-L6-v2`, `.kg/` store (N2-07), §12 |

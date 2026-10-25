@@ -20,6 +20,8 @@ are published in `docs/examples/` (credits there).
 | Complex | [wesleey/python-clean-architecture](https://github.com/wesleey/python-clean-architecture) | Layered backend, 17 test files | `6f58de5` |
 | Self | `kg` (this repo) | Dogfooding; benchmark repo (#39) | `e18f574` |
 | Large | [scrapy/scrapy](https://github.com/scrapy/scrapy) | About 300 modules, docs and SEPs; the large repo of #52 | `8026dee` (2.19.0) |
+| Memory (#71) | [Gentleman-Programming/engram](https://github.com/Gentleman-Programming/engram) | Experiment 2's second corpus and reference memory system; Go, MIT; full history (1 225 commits) | `7192931` |
+| Memory, large (#71) | [pandas-dev/pandas](https://github.com/pandas-dev/pandas) | Experiment 2's third corpus, for scale; BSD-3; full history (39 611 commits) | `199f52b12c` |
 
 Add every new repo you test with here.
 
@@ -29,6 +31,8 @@ Add every new repo you test with here.
 git clone --depth 1 https://github.com/alfredodeza/basic-python-cli samples/basic-python-cli
 git clone --depth 1 --branch 2.19.0 https://github.com/scrapy/scrapy samples/scrapy
 git clone . samples/kg && git -C samples/kg checkout e18f574
+git clone --filter=blob:none https://github.com/Gentleman-Programming/engram samples/engram
+git clone --filter=blob:none https://github.com/pandas-dev/pandas samples/pandas
 kg init --kg-dir samples/runs/basic-python-cli/.kg
 kg extract samples/basic-python-cli --kg-dir samples/runs/basic-python-cli/.kg
 kg add examples/agent/basic-python-cli.json --kg-dir samples/runs/basic-python-cli/.kg
