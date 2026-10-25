@@ -24,6 +24,7 @@ import argparse
 import json
 import sys
 import time
+from collections.abc import Callable
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
@@ -122,8 +123,15 @@ def prepare_session(
     return runs
 
 
-def call(run_dir: Path, tool: str, raw: str) -> str:
-    """Run one tool call for a subagent and log it in `calls.jsonl`."""
+Runner = Callable[[Path, dict[str, Any], str, dict[str, Any]], str]
+
+
+def call(run_dir: Path, tool: str, raw: str, runner: Runner | None = None) -> str:
+    """Run one tool call for a subagent and log it in `calls.jsonl`.
+
+    `runner(run_dir, meta, tool, args)` runs a tool other than `submit_answer`;
+    by default, the strategy's tool from `bench.tools`.
+    """
     meta = json.loads((run_dir / "run.json").read_text(encoding="utf-8"))
     log = run_dir / "calls.jsonl"
     calls = log.read_text(encoding="utf-8").splitlines() if log.exists() else []
@@ -147,26 +155,28 @@ def call(run_dir: Path, tool: str, raw: str) -> str:
             (run_dir / "answer.json").write_text(json.dumps(answer, indent=2) + "\n")
             result = "Answer submitted. Reply `submitted`."
         else:
-            cited_file = run_dir / "citations.json"
-            cited = Citations(
-                json.loads(cited_file.read_text()) if cited_file.exists() else None
-            )
-            result = run_tool(
-                meta["strategy"],
-                Path(meta["repo_path"]),
-                tool,
-                args,
-                meta["topic"],
-                cited,
-            )
-            if meta["strategy"] in ("hybrid", "cards"):
-                cited_file.write_text(json.dumps(cited.ranges) + "\n")
+            result = (runner or _run_strategy_tool)(run_dir, meta, tool, args)
     except ToolError as e:
         entry["error"] = str(e)
         result = f"Error: {e}"
     entry["chars"] = len(result)
     with log.open("a", encoding="utf-8") as f:
         f.write(json.dumps(entry, ensure_ascii=False) + "\n")
+    return result
+
+
+def _run_strategy_tool(
+    run_dir: Path, meta: dict[str, Any], tool: str, args: dict[str, Any]
+) -> str:
+    cited_file = run_dir / "citations.json"
+    cited = Citations(
+        json.loads(cited_file.read_text()) if cited_file.exists() else None
+    )
+    result = run_tool(
+        meta["strategy"], Path(meta["repo_path"]), tool, args, meta["topic"], cited
+    )
+    if meta["strategy"] in ("hybrid", "cards"):
+        cited_file.write_text(json.dumps(cited.ranges) + "\n")
     return result
 
 
