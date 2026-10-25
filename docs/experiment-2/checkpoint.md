@@ -79,6 +79,20 @@ EOF
 - Commit the results file and a short write-up of G0 (mean, spread, per
   category), then update #71 and this file.
 
+## Notes from the run
+
+- **Protocol violations** are listed in `violations.tsv` in the session
+  (run, what happened). Report each result with and without them.
+  So far: `kg-M6.s0.3` ran shell helpers on the tool output.
+- **The keyword grader is lenient with abstentions.** `kg-R3.s0.2` said the
+  repo does not record why the repos were dropped, guessed licensing, and
+  scored 1.00 because it named "license" and "MIT". This favours S0, so it
+  makes G0 harder to pass, not easier. The grader stays frozen. After the
+  run, audit by hand the answers to the 15 hidden questions and report the
+  number of answers that admit not knowing, next to the mechanical score.
+- After batches 1 and 2 (40 runs, 2026-10-25): every run answered except
+  none; `kg-R6` scored 0.00 in all three S0 runs and 1.00 with S2.
+
 ## Decisions already taken (do not reopen)
 
 - Subagents only, never an API key. Everything versioned in English.
