@@ -1,0 +1,96 @@
+# Experiment 2: checkpoint
+
+Where the work stands, so a new session can resume it without this one's
+conversation. **Update this file whenever the state below changes.**
+
+Last update: 2026-10-25, during the first scored run (G0).
+
+## State
+
+| Phase | State |
+|-------|-------|
+| P0 | done: [questions](questions-draft.md) frozen (`bench/questions/memory/kg.json`), [corpus](corpus.md) (`bench/corpus/kg/`), gates in [requirements](requirements.md) §7 |
+| P1 | harness done ([harness.md](harness.md), `bench/memory.py`, S0 and S2); **the G0 run is in progress** |
+| P2–P4 | not started |
+
+Branch `experiment-2/agent-context-memory`; issue #71 tracks the checklist.
+
+## The G0 run in progress
+
+- **Session:** `bench/.cache/memory/20261025T212002Z/` (git-ignored, on this
+  machine only): 240 runs = 40 questions × `s0`, `s2` × 3 repeats.
+- **Order:** `order.txt` in the session, shuffled with seed 71. Runs are
+  launched in that order, in batches of about 20.
+- **Pilot:** 4 runs in `bench/.cache/memory/20261025T211107Z/`, not part of
+  the results (D2 and R1, both strategies, once).
+
+### Resume
+
+From the repo root, with `source env/bin/activate`:
+
+```bash
+S=bench/.cache/memory/20261025T212002Z
+python -m bench.memory status $S          # done / pending runs
+```
+
+A run is **done** when it has `answer.json` or used its 25 calls. For each
+pending run, in the order of `order.txt`, start one Claude Code subagent
+(Agent tool, `general-purpose`, model `opus`) with exactly this prompt:
+
+```text
+Read the file /home/cris/networkx/<S>/<run>/prompt.md and follow its instructions exactly. Reading that one prompt file is allowed; after that, the only command you may run is the one it describes.
+```
+
+- Launch about 20 at a time in the background, wait for the notifications,
+  then the next batch. Never an API key.
+- **A run that has `calls.jsonl` but is not done** was cut off (session
+  limit, crash). It cannot be resumed as is. Ask the user before resetting
+  it (deleting its `calls.jsonl`), then launch it again.
+
+### When every run is done
+
+```bash
+# tokens and seconds of every run, from the subagents' transcripts
+python -m bench.memory usage $S ~/.claude/projects/-home-cris-networkx/<session id>/subagents
+python -m bench.memory collect $S          # -> bench/results/memory/20261025T212002Z.jsonl
+python -m bench.report bench/results/memory/20261025T212002Z.jsonl
+```
+
+- The subagents' transcripts live under the Claude Code session that launched
+  them: `8c8f5c90-4496-4460-8c26-1107a306f8e4` for the runs started on
+  2026-10-25. Runs launched from a later session have their transcripts under
+  that session's ID, so run `usage` once per session directory; it merges
+  into `usage.json`.
+- **G0** (requirements §7): on the 15 questions that only GitHub or a session
+  can answer (`lives_in` without `file` or `git-log`), the best memory
+  strategy must beat S0 by at least 0.15 in mean score. Otherwise the
+  experiment stops and the result is reported.
+
+```bash
+python - <<'EOF'
+import json, statistics
+rows = [json.loads(l) for l in open("bench/results/memory/20261025T212002Z.jsonl")]
+hidden = [r for r in rows if not {"file", "git-log"} & set(r["lives_in"])]
+for s in ("s0", "s2"):
+    print(s, round(statistics.mean(r["grade"]["score"] for r in hidden if r["strategy"] == s), 3))
+EOF
+```
+
+- Commit the results file and a short write-up of G0 (mean, spread, per
+  category), then update #71 and this file.
+
+## Decisions already taken (do not reopen)
+
+- Subagents only, never an API key. Everything versioned in English.
+- Every strategy has S0's tools; only the memory in the prompt differs.
+- S2 follows Engram's FTS5 ranking with OR over the question's words, K = 8.
+- A run that uses its 25 calls without answering scores 0, as in
+  experiment 1.
+- S4 was corrected after freezing, before any scored run (questions draft,
+  open point 5). Nothing else changes in the frozen questions.
+
+## Next after G0
+
+If G0 passes: P2, strategies S4 (graph traversal) and S8 (hybrid), then S1
+and S3, and gates G1–G3. The agent-written corpus (R2-11) is still to build;
+it is the control for the corpus having been written after the questions.

@@ -218,3 +218,51 @@ def test_the_kg_corpus_answers_its_questions_with_s2():
             graphs[q["commit"]] = memory.load_memory(memory.snapshot(q["commit"]))
         ids = memory.fts_search(memory.fts_index(graphs[q["commit"]]), q["question"])
         assert len(ids) == memory.TOP_K, q["id"]
+
+
+def test_usage_comes_from_the_subagent_transcripts(tmp_path, capsys):
+    session = tmp_path / "session"
+    (session / "kg-X1.s2.1").mkdir(parents=True)
+    (session / "kg-X1.s0.1").mkdir()
+    (session / "kg-X1.s0.1" / "answer.json").write_text("{}")
+    transcripts = tmp_path / "subagents"
+    transcripts.mkdir()
+    prompt = session / "kg-X1.s2.1" / "prompt.md"
+    events = [
+        {
+            "type": "user",
+            "timestamp": "2026-10-25T10:00:00Z",
+            "message": {"content": f"Read the file {prompt} and follow it."},
+        },
+        {
+            "type": "assistant",
+            "timestamp": "2026-10-25T10:00:30.5Z",
+            "message": {
+                "model": "claude-opus-5-5",
+                "usage": {
+                    "input_tokens": 2,
+                    "cache_creation_input_tokens": 100,
+                    "cache_read_input_tokens": 30000,
+                    "output_tokens": 50,
+                },
+            },
+        },
+    ]
+    lines = "\n".join(json.dumps(e) for e in events)
+    (transcripts / "agent-1.jsonl").write_text(lines + "\n")
+    (transcripts / "agent-2.jsonl").write_text(json.dumps(events[1]) + "\n")
+    assert memory.usage_from_transcripts(session, transcripts) == {
+        "kg-X1.s2.1": {
+            "total_tokens": 30152,
+            "seconds": 30.5,
+            "model": "claude-opus-5-5",
+        }
+    }
+    assert memory.main(["usage", str(session), str(transcripts)]) == 0
+    assert (
+        json.loads((session / "usage.json").read_text())["kg-X1.s2.1"]["seconds"]
+        == 30.5
+    )
+    assert memory.main(["status", str(session)]) == 0
+    out = capsys.readouterr().out
+    assert "done 1, pending 1" in out and "pending: kg-X1.s2.1 (0 calls)" in out

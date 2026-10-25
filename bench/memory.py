@@ -16,7 +16,9 @@ subagents, as `bench.subagent` does:
 
     python -m bench.memory prepare --strategies s0,s2 --repeat 3
     python -m bench.memory call <run dir> <tool> '<JSON>'
-    python -m bench.memory collect <session> --usage usage.json
+    python -m bench.memory status <session>
+    python -m bench.memory usage <session> ~/.claude/projects/<project>/<id>/subagents
+    python -m bench.memory collect <session>
 """
 
 from __future__ import annotations
@@ -374,6 +376,49 @@ def collect(
     return records
 
 
+def usage_from_transcripts(session: Path, transcripts: Path) -> dict[str, Any]:
+    """Tokens, seconds and model of each run, read from the subagents' transcripts.
+
+    A Claude Code subagent's transcript (`subagents/agent-*.jsonl`) starts with
+    the message that names its run's `prompt.md`. Tokens are those of its last
+    request, as the subagent notification reports them; seconds go from its
+    first event to its last. Runs with no transcript are left out.
+    """
+    usage = {}
+    for path in sorted(transcripts.glob("*.jsonl")):
+        events = [json.loads(line) for line in path.read_text().splitlines() if line]
+        first = next((e for e in events if e.get("type") == "user"), None)
+        if first is None or not isinstance(first["message"].get("content"), str):
+            continue
+        text = first["message"]["content"]
+        name = next(
+            (
+                p.parent.name
+                for p in map(Path, text.split())
+                if p.name == "prompt.md" and p.parent.parent == session
+            ),
+            None,
+        )
+        replies = [e["message"] for e in events if e.get("type") == "assistant"]
+        if name is None or not replies:
+            continue
+        u = replies[-1]["usage"]
+        times = sorted(
+            datetime.fromisoformat(e["timestamp"].replace("Z", "+00:00"))
+            for e in events
+            if e.get("timestamp")
+        )
+        usage[name] = {
+            "total_tokens": u["input_tokens"]
+            + u["cache_creation_input_tokens"]
+            + u["cache_read_input_tokens"]
+            + u["output_tokens"],
+            "seconds": round((times[-1] - times[0]).total_seconds(), 2),
+            "model": replies[-1]["model"],
+        }
+    return usage
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         prog="python -m bench.memory",
@@ -394,7 +439,33 @@ def main(argv: list[str] | None = None) -> int:
     k.add_argument("session", type=Path)
     k.add_argument("--usage", type=Path, help="as for `bench.subagent collect`")
     k.add_argument("--out", type=Path, help="JSONL file (default: results/memory/)")
+    u = sub.add_parser("usage", help="write <session>/usage.json from the transcripts")
+    u.add_argument("session", type=Path)
+    u.add_argument("transcripts", type=Path, help="a directory of agent-*.jsonl")
+    s = sub.add_parser("status", help="which runs of a session are done")
+    s.add_argument("session", type=Path)
     args = parser.parse_args(argv)
+
+    if args.command == "usage":
+        session = args.session.resolve()
+        out = session / "usage.json"
+        usage = json.loads(out.read_text()) if out.exists() else {}
+        usage.update(usage_from_transcripts(session, args.transcripts))
+        out.write_text(json.dumps(usage, indent=2, sort_keys=True) + "\n")
+        print(f"{len(usage)} runs with usage: {out}")
+        return 0
+
+    if args.command == "status":
+        done, pending = [], []
+        for run_dir in sorted(p for p in args.session.iterdir() if p.is_dir()):
+            log = run_dir / "calls.jsonl"
+            calls = len(log.read_text().splitlines()) if log.exists() else 0
+            finished = (run_dir / "answer.json").exists() or calls >= subagent.MAX_TURNS
+            (done if finished else pending).append(f"{run_dir.name} ({calls} calls)")
+        print(f"done {len(done)}, pending {len(pending)}")
+        for line in pending:
+            print(f"pending: {line}")
+        return 0
 
     if args.command == "call":
         raw = args.json if args.json is not None else sys.stdin.read()
@@ -432,7 +503,9 @@ def main(argv: list[str] | None = None) -> int:
     config = json.loads((args.session / "config.json").read_text(encoding="utf-8"))
     path = REPO_ROOT / config["questions"]
     questions = {q["id"]: q for q in json.loads(path.read_text(encoding="utf-8"))}
-    usage = json.loads(args.usage.read_text()) if args.usage else {}
+    default_usage = args.session / "usage.json"
+    usage_file = args.usage or (default_usage if default_usage.exists() else None)
+    usage = json.loads(usage_file.read_text()) if usage_file else {}
     out = args.out or ROOT / "results/memory" / f"{args.session.name}.jsonl"
     out.parent.mkdir(parents=True, exist_ok=True)
     with out.open("w", encoding="utf-8") as f:
