@@ -14,6 +14,7 @@ from bench.tools import STRATEGY_HINTS, TOOLS, Citations, ToolError, run_tool
 from bench.topics import TOPIC_TYPES, build_topic_stores, topic_graph
 from kg import store
 from kg.extract import extract_repo
+from kg.merge import add_to_store
 from kg.update import update_store
 
 
@@ -760,6 +761,62 @@ def test_memory_questions_follow_the_frozen_design(path):
     assert counts == {c: round(s * len(questions)) for c, s in MEMORY_SHARES.items()}
     hidden = [q for q in questions if not {"file", "git-log"} & set(q["lives_in"])]
     assert len(hidden) * 3 >= len(questions)
+
+
+MEMORY_TYPES = {"Decision", "Component", "Task", "Experiment", "Constraint", "Issue"}
+MEMORY_RELATIONS = {
+    "decided_because",
+    "affects",
+    "supported_by",
+    "supersedes",
+    "invalidated_by",
+    "blocked_by",
+    "produced",
+}
+
+
+def test_memory_corpus_loads_in_session_order(tmp_path):
+    """The curated corpus of experiment 2 merges into one store, session by session."""
+    kg_dir = tmp_path / ".kg"
+    store.init_store(kg_dir)
+    files = sorted((ROOT / "corpus/kg").glob("*.json"))
+    for path in files:
+        result = add_to_store(kg_dir, path.read_text(encoding="utf-8"))
+        assert result.validation.ok, path.name
+    graph = store.load_graph(kg_dir)
+    assert {t for _, _, t in graph.edges(keys=True)} == MEMORY_RELATIONS
+    memories = [
+        n
+        for n, d in graph.nodes(data=True)
+        if d["type"] in MEMORY_TYPES - {"Component"}
+    ]
+    for node in memories:
+        attrs = graph.nodes[node]["attrs"]
+        assert attrs["status"] in {"active", "superseded", "invalidated", "done"}, node
+        sessions = [s for s, _, t in graph.in_edges(node, keys=True) if t == "produced"]
+        assert sessions == [attrs["session"]], node
+
+    # Every key point of the questions only GitHub or a session can answer is in
+    # the corpus of their snapshot (curated mode measures retrieval alone)
+    def text(paths):
+        docs = [json.loads(p.read_text(encoding="utf-8")) for p in paths]
+        return " ".join(
+            " ".join([n.get("label", ""), n.get("description", "")])
+            + json.dumps(n.get("attrs", {}))
+            for d in docs
+            for n in d["nodes"]
+        ).lower()
+
+    snapshots = {"e066c56": text(files[:11]), "7dfd6ad": text(files)}
+    questions = json.loads(
+        (ROOT / "questions/memory/kg.json").read_text(encoding="utf-8")
+    )
+    for q in questions:
+        if {"file", "git-log"} & set(q["lives_in"]):
+            continue
+        corpus = snapshots[q["commit"]]
+        for group in q["expect"]["keywords"]:
+            assert any(alt.lower() in corpus for alt in group), (q["id"], group)
 
 
 def test_bench_does_not_need_the_sdk():

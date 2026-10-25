@@ -1,0 +1,656 @@
+{
+  "version": "1",
+  "nodes": [
+    {
+      "id": "session:2026-10-12-a38a03e6",
+      "type": "Session",
+      "label": "Extractors, renderers, agent guide and MVP validation",
+      "description": "Goal: Finish the MVP: #6 to #12 and #28.\nInstructions: One issue, one branch, one PR; the user merges. Credit the authors of example repos.\nDiscoveries: The basic-python-cli render mixed Spanish and English labels; the user wants zoom, node details on click, and a way to delete or edit nodes; the HTML of a 376-node graph takes seconds to lay out; two candidate example repos declare no license.\nAccomplished: Python extractor (#24), dependencies and config (#25), pytest tests (#26), static render with --dpi (#27), kg remove and kg edit (#29), interactive HTML (#30), kg guide (#31), MVP validated on three MIT repos with published examples (#32), prototypes removed (#34). GitHub Pages enabled by hand by the user. Issues #35 to #40 opened for v0.2.\nNext steps: v0.2: #35 to #40. An external suggestion asks for a reproducible benchmark, code against graph.\nRelevant files: src/kg/extract/, src/kg/render/, src/kg/agents/guide.md, docs/mvp-validation.md, docs/examples/",
+      "attrs": {
+        "date": "2026-10-12",
+        "commit": "8b9d7b2",
+        "transcript": "a38a03e6",
+        "order": 4
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "timestamp": "2026-10-12T00:00:00Z"
+      }
+    },
+    {
+      "id": "evidence:pr-30",
+      "type": "Evidence",
+      "label": "Interactive offline HTML",
+      "attrs": {
+        "kind": "pr",
+        "ref": "30"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:issue-10",
+      "type": "Evidence",
+      "label": "Interactive HTML with pyvis",
+      "attrs": {
+        "kind": "issue",
+        "ref": "10"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "decision:vis-network-bundled",
+      "type": "Decision",
+      "label": "The HTML embeds vis-network itself, not pyvis",
+      "description": "What: The interactive HTML bundles vis-network 9.1.2 so it works offline, with its own template.\nWhy: pyvis's template lacks filters, search and the details panel, and pyvis pulls in ipython.\nWhere: docs/requirements.md PA-03; docs/render.md",
+      "attrs": {
+        "created": "2026-10-12",
+        "session": "session:2026-10-12-a38a03e6",
+        "status": "active"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "timestamp": "2026-10-12T00:00:00Z"
+      }
+    },
+    {
+      "id": "decision:html-with-vis-network",
+      "type": "Decision",
+      "attrs": {
+        "status": "superseded"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "timestamp": "2026-10-12T00:00:00Z"
+      }
+    },
+    {
+      "id": "evidence:comment-10-1",
+      "type": "Evidence",
+      "label": "Feedback after the static render",
+      "attrs": {
+        "kind": "comment",
+        "ref": "10-1"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:pr-29",
+      "type": "Evidence",
+      "label": "kg remove and kg edit",
+      "attrs": {
+        "kind": "pr",
+        "ref": "29"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "decision:no-edit-in-html",
+      "type": "Decision",
+      "label": "Editing nodes goes to the CLI, not the HTML",
+      "description": "What: Deleting or editing nodes, asked for after the render, is done with `kg remove` and `kg edit` (#28), not from the HTML.\nWhy: A self-contained offline HTML cannot write back to the store.",
+      "attrs": {
+        "created": "2026-10-12",
+        "session": "session:2026-10-12-a38a03e6",
+        "status": "active"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "timestamp": "2026-10-12T00:00:00Z"
+      }
+    },
+    {
+      "id": "evidence:comment-11-1",
+      "type": "Evidence",
+      "label": "Feedback: the graph mixes languages",
+      "attrs": {
+        "kind": "comment",
+        "ref": "11-1"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:pr-31",
+      "type": "Evidence",
+      "label": "kg guide",
+      "attrs": {
+        "kind": "pr",
+        "ref": "31"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "decision:single-language-graph",
+      "type": "Decision",
+      "label": "One language for every text in a graph",
+      "description": "What: The agent guide requires a single language for every human-readable text in the graph (label, description, free-text attrs); IDs keep their normal form.\nWhy: The basic-python-cli graph mixed Spanish and English labels (comment on #11, 2026-10-12).\nWhere: src/kg/agents/guide.md (kg guide)",
+      "attrs": {
+        "created": "2026-10-12",
+        "session": "session:2026-10-12-a38a03e6",
+        "status": "active"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "timestamp": "2026-10-12T00:00:00Z"
+      }
+    },
+    {
+      "id": "evidence:comment-12-2",
+      "type": "Evidence",
+      "label": "Update: new repos, licensed only",
+      "attrs": {
+        "kind": "comment",
+        "ref": "12-2"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "decision:licensed-example-repos",
+      "type": "Decision",
+      "label": "Example repos must be licensed",
+      "description": "What: jit-karki/small-python-projects and borys25ol/fastapi-realworld-backend were dropped; the MVP validation uses three MIT repos: basic-python-cli (d0379bb), my_first_data_project (3d57177) and python-clean-architecture (6f58de5).\nWhy: The two dropped repos declare no license, and the examples are published, so they risked licensing problems.",
+      "attrs": {
+        "created": "2026-10-12",
+        "session": "session:2026-10-12-a38a03e6",
+        "status": "active"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "timestamp": "2026-10-12T00:00:00Z"
+      }
+    },
+    {
+      "id": "evidence:pr-32",
+      "type": "Evidence",
+      "label": "Validate the MVP on three repos",
+      "attrs": {
+        "kind": "pr",
+        "ref": "32"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "experiment:mvp-validation",
+      "type": "Experiment",
+      "label": "MVP validated on three repos",
+      "description": "What: The init, extract, add, render flow ran without errors on three MIT repos; an agent answered the three reference questions from the graph; the examples are published on Pages with credits.\nWhere: docs/mvp-validation.md",
+      "attrs": {
+        "created": "2026-10-12",
+        "session": "session:2026-10-12-a38a03e6",
+        "status": "done"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "timestamp": "2026-10-12T00:00:00Z"
+      }
+    },
+    {
+      "id": "evidence:issue-35",
+      "type": "Evidence",
+      "label": "Large graphs take long to lay out",
+      "attrs": {
+        "kind": "issue",
+        "ref": "35"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "issue:large-html-slow",
+      "type": "Issue",
+      "label": "Large graphs take seconds to lay out in the HTML",
+      "description": "What: python-clean-architecture's code graph (376 nodes, 702 edges) stays on 'Laying out the graph' for 2.9 s on a fast desktop, with no progress indicator.",
+      "attrs": {
+        "created": "2026-10-12",
+        "session": "session:2026-10-12-a38a03e6",
+        "status": "active"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "timestamp": "2026-10-12T00:00:00Z"
+      }
+    },
+    {
+      "id": "evidence:pr-34",
+      "type": "Evidence",
+      "label": "Remove prototypes",
+      "attrs": {
+        "kind": "pr",
+        "ref": "34"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:commit-8b9d7b2",
+      "type": "Evidence",
+      "label": "Merge of #34, end of the MVP",
+      "attrs": {
+        "kind": "commit",
+        "ref": "8b9d7b2"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "task:cleanup-prototypes",
+      "type": "Task",
+      "label": "Remove the exploration prototypes",
+      "description": "What: di_graph.py, graph.py, graph.html, graphy.ipynb, tuto.py, lib/ and the root requirements.txt removed; the toy graphs module too.",
+      "attrs": {
+        "created": "2026-10-12",
+        "session": "session:2026-10-12-a38a03e6",
+        "status": "done"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "timestamp": "2026-10-12T00:00:00Z"
+      }
+    },
+    {
+      "id": "evidence:issue-39",
+      "type": "Evidence",
+      "label": "Reproducible benchmark",
+      "attrs": {
+        "kind": "issue",
+        "ref": "39"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:issue-40",
+      "type": "Evidence",
+      "label": "Reproducible demo",
+      "attrs": {
+        "kind": "issue",
+        "ref": "40"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "task:v02-issues",
+      "type": "Task",
+      "label": "v0.2 opened with six issues",
+      "description": "What: #35 (large HTML), #36 (mandatory descriptions), #37 (consistency), #38 (kg query and kg impact), #39 (benchmark, code against graph), #40 (reproducible demo).",
+      "attrs": {
+        "created": "2026-10-12",
+        "session": "session:2026-10-12-a38a03e6",
+        "status": "done"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "timestamp": "2026-10-12T00:00:00Z"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "source": "session:2026-10-12-a38a03e6",
+      "target": "decision:vis-network-bundled",
+      "type": "produced",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:vis-network-bundled",
+      "target": "evidence:pr-30",
+      "type": "supported_by",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:vis-network-bundled",
+      "target": "evidence:issue-10",
+      "type": "supported_by",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:vis-network-bundled",
+      "target": "component:render",
+      "type": "affects",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:vis-network-bundled",
+      "target": "decision:html-with-vis-network",
+      "type": "supersedes",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-12-a38a03e6",
+      "target": "decision:no-edit-in-html",
+      "type": "produced",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:no-edit-in-html",
+      "target": "evidence:comment-10-1",
+      "type": "supported_by",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:no-edit-in-html",
+      "target": "evidence:pr-29",
+      "type": "supported_by",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:no-edit-in-html",
+      "target": "component:render",
+      "type": "affects",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:no-edit-in-html",
+      "target": "component:store",
+      "type": "affects",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-12-a38a03e6",
+      "target": "decision:single-language-graph",
+      "type": "produced",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:single-language-graph",
+      "target": "evidence:comment-11-1",
+      "type": "supported_by",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:single-language-graph",
+      "target": "evidence:pr-31",
+      "type": "supported_by",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:single-language-graph",
+      "target": "component:agent-guide",
+      "type": "affects",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-12-a38a03e6",
+      "target": "decision:licensed-example-repos",
+      "type": "produced",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:licensed-example-repos",
+      "target": "evidence:comment-12-2",
+      "type": "supported_by",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:licensed-example-repos",
+      "target": "component:docs",
+      "type": "affects",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-12-a38a03e6",
+      "target": "experiment:mvp-validation",
+      "type": "produced",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "experiment:mvp-validation",
+      "target": "evidence:pr-32",
+      "type": "supported_by",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "experiment:mvp-validation",
+      "target": "component:docs",
+      "type": "affects",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-12-a38a03e6",
+      "target": "issue:large-html-slow",
+      "type": "produced",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "issue:large-html-slow",
+      "target": "evidence:issue-35",
+      "type": "supported_by",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "issue:large-html-slow",
+      "target": "component:render",
+      "type": "affects",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-12-a38a03e6",
+      "target": "task:cleanup-prototypes",
+      "type": "produced",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:cleanup-prototypes",
+      "target": "evidence:pr-34",
+      "type": "supported_by",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:cleanup-prototypes",
+      "target": "evidence:commit-8b9d7b2",
+      "type": "supported_by",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:cleanup-prototypes",
+      "target": "component:docs",
+      "type": "affects",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-12-a38a03e6",
+      "target": "task:v02-issues",
+      "type": "produced",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:v02-issues",
+      "target": "evidence:issue-39",
+      "type": "supported_by",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:v02-issues",
+      "target": "evidence:issue-40",
+      "type": "supported_by",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    }
+  ]
+}

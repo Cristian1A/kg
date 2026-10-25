@@ -1,0 +1,1113 @@
+{
+  "version": "1",
+  "nodes": [
+    {
+      "id": "session:2026-10-20-84137a84",
+      "type": "Session",
+      "label": "Council, step 0, and closing kg",
+      "description": "Goal: Decide whether to revive kg after the scrapy result.\nInstructions: An unofficial council: nothing goes to the repo until there is a good idea.\nDiscoveries: Part of the loss was kg's own implementation (re-validating the store on every read, importing matplotlib, --depth 0 rejected). With kg fast and next to search, the gate failed on time. The lean control shows the prompt line explains the saving where kg was not used.\nAccomplished: Council run; #67 opened with a numeric gate; fast reads and companion (#68), merged by the user; lean control; option 1 chosen; report and README (#69, #70); v0.3 issues and the milestones closed; project marked concluded in memory.\nNext steps: None for v0.3. If reopened: the string-edges idea, better as a contribution to an existing tool. The harness can measure other tools.\nRelevant files: docs/report.md, docs/benchmark.md, docs/roadmap.md, bench/README.md, README.md",
+      "attrs": {
+        "date": "2026-10-20",
+        "commit": "e066c56",
+        "transcript": "84137a84",
+        "order": 11
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "timestamp": "2026-10-20T00:00:00Z"
+      }
+    },
+    {
+      "id": "experiment:council",
+      "type": "Experiment",
+      "label": "An unofficial council reviewed the state of kg",
+      "description": "What: Set up after Karpathy's llm-council: subagents as experts researched similar tools and what kg could borrow or add, then cross-reviewed and synthesised. Explicitly unofficial; its good idea became #67.\nLearned: It suggested taking string edges to existing tools with users (code-review-graph, codebase-memory-mcp, or libraries such as grimp or import-linter) as a plugin, PR or small library, and was about 50% sure nothing does it yet, after a short search.",
+      "attrs": {
+        "created": "2026-10-20",
+        "session": "session:2026-10-20-84137a84",
+        "status": "active"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "timestamp": "2026-10-20T00:00:00Z"
+      }
+    },
+    {
+      "id": "evidence:issue-67",
+      "type": "Evidence",
+      "label": "Re-evaluate the graph, step 0",
+      "attrs": {
+        "kind": "issue",
+        "ref": "67"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "decision:step0-gate",
+      "type": "Decision",
+      "label": "Step 0 gate, fixed before the run",
+      "description": "What: Score within 0.03 of code, at most +15% context, at most +30% time, set in #67 before the run.",
+      "attrs": {
+        "created": "2026-10-20",
+        "session": "session:2026-10-20-84137a84",
+        "status": "active"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "timestamp": "2026-10-20T00:00:00Z"
+      }
+    },
+    {
+      "id": "issue:store-revalidated-every-read",
+      "type": "Issue",
+      "label": "Every kg query re-validates the store",
+      "description": "What: Every read re-validates scrapy's 11.5 MB store against the schema, 5 to 10 s per call.",
+      "attrs": {
+        "created": "2026-10-20",
+        "session": "session:2026-10-20-84137a84",
+        "status": "invalidated"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "timestamp": "2026-10-20T00:00:00Z"
+      }
+    },
+    {
+      "id": "issue:depth0-rejected",
+      "type": "Issue",
+      "label": "kg query node X --depth 0 is a usage error",
+      "description": "What: Asking for a node alone with --depth 0 gives a usage error.",
+      "attrs": {
+        "created": "2026-10-20",
+        "session": "session:2026-10-20-84137a84",
+        "status": "invalidated"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "timestamp": "2026-10-20T00:00:00Z"
+      }
+    },
+    {
+      "id": "issue:matplotlib-on-every-command",
+      "type": "Issue",
+      "label": "Every command imports matplotlib",
+      "description": "What: kg imports matplotlib on every command, slowing start-up (0.64 s).",
+      "attrs": {
+        "created": "2026-10-20",
+        "session": "session:2026-10-20-84137a84",
+        "status": "invalidated"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "timestamp": "2026-10-20T00:00:00Z"
+      }
+    },
+    {
+      "id": "evidence:commit-7947ba7",
+      "type": "Evidence",
+      "label": "Validate a store's contents only once",
+      "attrs": {
+        "kind": "commit",
+        "ref": "7947ba7"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:pr-68",
+      "type": "Evidence",
+      "label": "Fast kg reads and companion",
+      "attrs": {
+        "kind": "pr",
+        "ref": "68"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "decision:validate-once",
+      "type": "Decision",
+      "label": "Validate a store's contents once",
+      "description": "What: load_graph skips validation when a marker exists in $XDG_CACHE_HOME/kg/validated/, keyed by the SHA-256 of the contents, kg's version and the schema. kg query on scrapy drops from 4.9 s to 0.8 s.\nWhere: docs/store.md §Validated once; src/kg/store.py",
+      "attrs": {
+        "created": "2026-10-20",
+        "session": "session:2026-10-20-84137a84",
+        "status": "active"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "timestamp": "2026-10-20T00:00:00Z"
+      }
+    },
+    {
+      "id": "evidence:commit-97f3741",
+      "type": "Evidence",
+      "label": "Show a node alone with --depth 0",
+      "attrs": {
+        "kind": "commit",
+        "ref": "97f3741"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:comment-67-1",
+      "type": "Evidence",
+      "label": "Step 0 result",
+      "attrs": {
+        "kind": "comment",
+        "ref": "67-1"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:commit-32da19f",
+      "type": "Evidence",
+      "label": "Record the step-0 runs",
+      "attrs": {
+        "kind": "commit",
+        "ref": "32da19f"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "experiment:step0-companion",
+      "type": "Experiment",
+      "label": "Step 0: companion fails the gate on time",
+      "description": "What: companion (code tools plus kg) on the faster kg: 0.96 against code 0.98, context −40%, time +45%. The gate fails on time. First reading: the context saving is not kg's; scr-impact-job-runtime fails with every strategy.",
+      "attrs": {
+        "created": "2026-10-20",
+        "session": "session:2026-10-20-84137a84",
+        "status": "superseded"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "timestamp": "2026-10-20T00:00:00Z"
+      }
+    },
+    {
+      "id": "evidence:comment-67-2",
+      "type": "Evidence",
+      "label": "Control: lean",
+      "attrs": {
+        "kind": "comment",
+        "ref": "67-2"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:commit-e2fc75b",
+      "type": "Evidence",
+      "label": "Record the lean control",
+      "attrs": {
+        "kind": "commit",
+        "ref": "e2fc75b"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "experiment:lean-control",
+      "type": "Experiment",
+      "label": "The lean control",
+      "description": "What: lean (code tools plus companion's prompt line): where companion never called kg, the prompt line explains all of the saving. Where it did, the graph halved the context (−56%) at the same score, at +35% time. On scr-impact-job-runtime lean scored 1.00 (104 s), companion 0.50. The graph never improved accuracy.",
+      "attrs": {
+        "created": "2026-10-20",
+        "session": "session:2026-10-20-84137a84",
+        "status": "active"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "timestamp": "2026-10-20T00:00:00Z"
+      }
+    },
+    {
+      "id": "issue:merge-blocked",
+      "type": "Issue",
+      "label": "Claude could not merge #68",
+      "description": "What: Claude Code's permission classifier blocked merging PR #68 through the API as an unreviewed merge; Claude did not try to get around it, and the user merged it from GitHub.",
+      "attrs": {
+        "created": "2026-10-20",
+        "session": "session:2026-10-20-84137a84",
+        "status": "active"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "timestamp": "2026-10-20T00:00:00Z"
+      }
+    },
+    {
+      "id": "evidence:issue-69",
+      "type": "Evidence",
+      "label": "Publish the result",
+      "attrs": {
+        "kind": "issue",
+        "ref": "69"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:pr-70",
+      "type": "Evidence",
+      "label": "Publish the result",
+      "attrs": {
+        "kind": "pr",
+        "ref": "70"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "decision:close-kg",
+      "type": "Decision",
+      "label": "Close kg and publish the negative result",
+      "description": "What: Option 1 chosen on 2026-10-20: close kg as a code-graph tool, publish the report, keep the harness reusable, close v0.3. Option 3, taking string edges to an existing tool, was weighed against it: the council was only about 50% sure the idea is new, acceptance depends on others, and it was never measured.",
+      "attrs": {
+        "created": "2026-10-20",
+        "session": "session:2026-10-20-84137a84",
+        "status": "active"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "timestamp": "2026-10-20T00:00:00Z"
+      }
+    },
+    {
+      "id": "evidence:commit-b663f17",
+      "type": "Evidence",
+      "label": "Publish the result",
+      "attrs": {
+        "kind": "commit",
+        "ref": "b663f17"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "decision:readme-why-corrected",
+      "type": "Decision",
+      "label": "The README's Why no longer claims the graph beats grep",
+      "description": "What: The Why section now says the graph answers the structural part with the evidence for each edge and halves what an agent reads on such questions, but does not make it more accurate than grep.",
+      "attrs": {
+        "created": "2026-10-20",
+        "session": "session:2026-10-20-84137a84",
+        "status": "active"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "timestamp": "2026-10-20T00:00:00Z"
+      }
+    },
+    {
+      "id": "evidence:file-docs-roadmap-md",
+      "type": "Evidence",
+      "label": "Roadmap",
+      "attrs": {
+        "kind": "file",
+        "ref": "docs/roadmap.md",
+        "commit": "e066c56"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "source": "docs/roadmap.md"
+      }
+    },
+    {
+      "id": "decision:v03-ended",
+      "type": "Decision",
+      "label": "v0.3 ended",
+      "description": "What: v0.3 ended on 2026-10-20 after the gate failed: #35, #55, #60 and #66 closed as not planned; the v0.3 and MVP milestones closed. MCP, export, calls, deduplication, hook and history and the Dockerfile were never started.\nWhere: docs/roadmap.md §How v0.3 ended",
+      "attrs": {
+        "created": "2026-10-20",
+        "session": "session:2026-10-20-84137a84",
+        "status": "active"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "timestamp": "2026-10-20T00:00:00Z"
+      }
+    },
+    {
+      "id": "task:benchmark-v3",
+      "type": "Task",
+      "attrs": {
+        "status": "invalidated"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "timestamp": "2026-10-20T00:00:00Z"
+      }
+    },
+    {
+      "id": "task:measure-drift",
+      "type": "Task",
+      "attrs": {
+        "status": "invalidated"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "timestamp": "2026-10-20T00:00:00Z"
+      }
+    },
+    {
+      "id": "task:mcp-server",
+      "type": "Task",
+      "attrs": {
+        "status": "invalidated"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "timestamp": "2026-10-20T00:00:00Z"
+      }
+    },
+    {
+      "id": "task:incremental-extraction",
+      "type": "Task",
+      "attrs": {
+        "status": "invalidated"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "timestamp": "2026-10-20T00:00:00Z"
+      }
+    },
+    {
+      "id": "task:revisit-own-graph",
+      "type": "Task",
+      "attrs": {
+        "status": "invalidated"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "timestamp": "2026-10-20T00:00:00Z"
+      }
+    },
+    {
+      "id": "task:52-step2-open",
+      "type": "Task",
+      "attrs": {
+        "status": "invalidated"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "timestamp": "2026-10-20T00:00:00Z"
+      }
+    },
+    {
+      "id": "task:plan-52",
+      "type": "Task",
+      "attrs": {
+        "status": "done"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "timestamp": "2026-10-20T00:00:00Z"
+      }
+    },
+    {
+      "id": "decision:35-with-55",
+      "type": "Decision",
+      "attrs": {
+        "status": "invalidated"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "timestamp": "2026-10-20T00:00:00Z"
+      }
+    },
+    {
+      "id": "evidence:file-docs-report-md",
+      "type": "Evidence",
+      "label": "The write-up",
+      "attrs": {
+        "kind": "file",
+        "ref": "docs/report.md",
+        "commit": "e066c56"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "source": "docs/report.md"
+      }
+    },
+    {
+      "id": "task:string-edges",
+      "type": "Task",
+      "label": "Open idea: edges from dotted-path strings",
+      "description": "What: Edges from dotted-path strings (settings → the class load_object loads), with a line and a confidence below 1. About 5 of scrapy's 16 questions turned on it. Better as a contribution to an existing code-graph tool than as a reason to keep kg going.\nWhere: docs/report.md §An open idea",
+      "attrs": {
+        "created": "2026-10-20",
+        "session": "session:2026-10-20-84137a84",
+        "status": "active"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "timestamp": "2026-10-20T00:00:00Z"
+      }
+    },
+    {
+      "id": "decision:harness-reusable",
+      "type": "Decision",
+      "label": "The harness measures other tools",
+      "description": "What: bench/README.md 'Measure your own tool': add a strategy, compare it with code and lean on the same questions, run with subagents, several runs per question.\nWhere: bench/README.md",
+      "attrs": {
+        "created": "2026-10-20",
+        "session": "session:2026-10-20-84137a84",
+        "status": "active"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "timestamp": "2026-10-20T00:00:00Z"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "source": "session:2026-10-20-84137a84",
+      "target": "experiment:council",
+      "type": "produced",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-20-84137a84",
+      "target": "decision:step0-gate",
+      "type": "produced",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:step0-gate",
+      "target": "evidence:issue-67",
+      "type": "supported_by",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:step0-gate",
+      "target": "component:bench",
+      "type": "affects",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:step0-gate",
+      "target": "experiment:scrapy-run",
+      "type": "decided_because",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:step0-gate",
+      "target": "experiment:council",
+      "type": "decided_because",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-20-84137a84",
+      "target": "issue:store-revalidated-every-read",
+      "type": "produced",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "issue:store-revalidated-every-read",
+      "target": "evidence:issue-67",
+      "type": "supported_by",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "issue:store-revalidated-every-read",
+      "target": "component:store",
+      "type": "affects",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-20-84137a84",
+      "target": "issue:depth0-rejected",
+      "type": "produced",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "issue:depth0-rejected",
+      "target": "evidence:issue-67",
+      "type": "supported_by",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "issue:depth0-rejected",
+      "target": "component:query",
+      "type": "affects",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-20-84137a84",
+      "target": "issue:matplotlib-on-every-command",
+      "type": "produced",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "issue:matplotlib-on-every-command",
+      "target": "evidence:issue-67",
+      "type": "supported_by",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "issue:matplotlib-on-every-command",
+      "target": "component:cli",
+      "type": "affects",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "issue:matplotlib-on-every-command",
+      "target": "component:render",
+      "type": "affects",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-20-84137a84",
+      "target": "decision:validate-once",
+      "type": "produced",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:validate-once",
+      "target": "evidence:commit-7947ba7",
+      "type": "supported_by",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:validate-once",
+      "target": "evidence:pr-68",
+      "type": "supported_by",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:validate-once",
+      "target": "component:store",
+      "type": "affects",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "issue:store-revalidated-every-read",
+      "target": "evidence:commit-7947ba7",
+      "type": "invalidated_by",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "issue:depth0-rejected",
+      "target": "evidence:commit-97f3741",
+      "type": "invalidated_by",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "issue:matplotlib-on-every-command",
+      "target": "evidence:pr-68",
+      "type": "invalidated_by",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-20-84137a84",
+      "target": "experiment:step0-companion",
+      "type": "produced",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "experiment:step0-companion",
+      "target": "evidence:comment-67-1",
+      "type": "supported_by",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "experiment:step0-companion",
+      "target": "evidence:commit-32da19f",
+      "type": "supported_by",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "experiment:step0-companion",
+      "target": "component:bench",
+      "type": "affects",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "experiment:step0-companion",
+      "target": "decision:step0-gate",
+      "type": "decided_because",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-20-84137a84",
+      "target": "experiment:lean-control",
+      "type": "produced",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "experiment:lean-control",
+      "target": "evidence:comment-67-2",
+      "type": "supported_by",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "experiment:lean-control",
+      "target": "evidence:commit-e2fc75b",
+      "type": "supported_by",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "experiment:lean-control",
+      "target": "component:bench",
+      "type": "affects",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "experiment:lean-control",
+      "target": "experiment:step0-companion",
+      "type": "supersedes",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-20-84137a84",
+      "target": "issue:merge-blocked",
+      "type": "produced",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-20-84137a84",
+      "target": "decision:close-kg",
+      "type": "produced",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:close-kg",
+      "target": "evidence:issue-69",
+      "type": "supported_by",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:close-kg",
+      "target": "evidence:pr-70",
+      "type": "supported_by",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:close-kg",
+      "target": "component:docs",
+      "type": "affects",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:close-kg",
+      "target": "experiment:lean-control",
+      "type": "decided_because",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:close-kg",
+      "target": "experiment:step0-companion",
+      "type": "decided_because",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:close-kg",
+      "target": "experiment:scrapy-run",
+      "type": "decided_because",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-20-84137a84",
+      "target": "decision:readme-why-corrected",
+      "type": "produced",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:readme-why-corrected",
+      "target": "evidence:commit-b663f17",
+      "type": "supported_by",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:readme-why-corrected",
+      "target": "component:docs",
+      "type": "affects",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:readme-why-corrected",
+      "target": "decision:close-kg",
+      "type": "decided_because",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-20-84137a84",
+      "target": "decision:v03-ended",
+      "type": "produced",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:v03-ended",
+      "target": "evidence:file-docs-roadmap-md",
+      "type": "supported_by",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:v03-ended",
+      "target": "component:docs",
+      "type": "affects",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:v03-ended",
+      "target": "decision:close-kg",
+      "type": "decided_because",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-20-84137a84",
+      "target": "task:string-edges",
+      "type": "produced",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:string-edges",
+      "target": "evidence:file-docs-report-md",
+      "type": "supported_by",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:string-edges",
+      "target": "component:extract",
+      "type": "affects",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-20-84137a84",
+      "target": "decision:harness-reusable",
+      "type": "produced",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:harness-reusable",
+      "target": "evidence:pr-70",
+      "type": "supported_by",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:harness-reusable",
+      "target": "component:bench",
+      "type": "affects",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:harness-reusable",
+      "target": "constraint:benchmark-with-subagents",
+      "type": "decided_because",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    }
+  ]
+}

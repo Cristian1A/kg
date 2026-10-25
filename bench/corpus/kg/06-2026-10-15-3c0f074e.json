@@ -1,0 +1,794 @@
+{
+  "version": "1",
+  "nodes": [
+    {
+      "id": "session:2026-10-15-3c0f074e",
+      "type": "Session",
+      "label": "First benchmark, the plan with scrapy, and node cards",
+      "description": "Goal: Run the v0.2 benchmark and decide what follows.\nInstructions: No Anthropic key: run the benchmark with Claude Code subagents.\nDiscoveries: On small repos the graph ties with reading the code; the graph agent could not read files, so it never followed the source and lines every node carries. Node cards match the code's score with 63% less context.\nAccomplished: kg query tested and kg impact --type (#50); benchmark harness and v0.2 report (#51); plan issue #52 with scrapy as the large repo; five example graphs rebuilt (#54); #55 opened; context metric and hybrid strategy (#56); node cards with --brief and signatures (#57, open).\nNext steps: Proposed by impact: (1) let hybrid read the files a stale graph reports, (2) the rest of step 2 (document sections, quoted claims), (3) step 3, scrapy with 15 to 20 questions, (4) #55. Tags waiting for confirmation.\nRelevant files: bench/, docs/benchmark.md, src/kg/query.py, examples/agent/",
+      "attrs": {
+        "date": "2026-10-15",
+        "commit": "7d642d8",
+        "transcript": "3c0f074e",
+        "order": 6
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "timestamp": "2026-10-15T00:00:00Z"
+      }
+    },
+    {
+      "id": "task:run-benchmark",
+      "type": "Task",
+      "attrs": {
+        "status": "done"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "timestamp": "2026-10-15T00:00:00Z"
+      }
+    },
+    {
+      "id": "constraint:benchmark-with-subagents",
+      "type": "Constraint",
+      "label": "The benchmark runs with subagents, never an API key",
+      "description": "What: Benchmark runs use Claude Code subagents (`python -m bench.subagent prepare`, then `collect --usage`), not the API runner with an Anthropic key: a fresh subagent on Claude Opus 5.5 per question and strategy, at most 25 tool calls.\nWhy: The user decided not to use an Anthropic key.\nWhere: bench/README.md",
+      "attrs": {
+        "created": "2026-10-15",
+        "session": "session:2026-10-15-3c0f074e",
+        "status": "active"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "timestamp": "2026-10-15T00:00:00Z"
+      }
+    },
+    {
+      "id": "evidence:issue-49",
+      "type": "Evidence",
+      "label": "Answers an agent can check in one call",
+      "attrs": {
+        "kind": "issue",
+        "ref": "49"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:pr-50",
+      "type": "Evidence",
+      "label": "kg query tested and kg impact --type",
+      "attrs": {
+        "kind": "pr",
+        "ref": "50"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "issue:impact-drowns-in-tests",
+      "type": "Issue",
+      "label": "kg impact drowns the answer in tests",
+      "description": "What: A change in module:kg.schema.validation gave 125 results, 109 of them Test nodes; untested could not be checked in one call. Fixed with kg impact --type and kg query tested.",
+      "attrs": {
+        "created": "2026-10-15",
+        "session": "session:2026-10-15-3c0f074e",
+        "status": "done"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "timestamp": "2026-10-15T00:00:00Z"
+      }
+    },
+    {
+      "id": "evidence:pr-51",
+      "type": "Evidence",
+      "label": "Benchmark and v0.2 report",
+      "attrs": {
+        "kind": "pr",
+        "ref": "51"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:file-docs-benchmark-md",
+      "type": "Evidence",
+      "label": "Benchmark report",
+      "attrs": {
+        "kind": "file",
+        "ref": "docs/benchmark.md",
+        "commit": "e18f574"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "source": "docs/benchmark.md"
+      }
+    },
+    {
+      "id": "experiment:benchmark-small-repos",
+      "type": "Experiment",
+      "label": "On small repos the graph ties with the code",
+      "description": "What: 17 multi-hop questions on four small repos: code 1.00 (after a grader fix), graph 0.98, hybrid 1.00, with the same tokens and more time. The graph uses fewer calls on multi-hop questions (2 to 4 against 5 to 9), backs claims with IDs, and never invents on a stale graph.\nWhere: docs/benchmark.md; docs/report.md §On small repos\nLearned: The decisive test is a repo too large to read.",
+      "attrs": {
+        "created": "2026-10-15",
+        "session": "session:2026-10-15-3c0f074e",
+        "status": "active"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "timestamp": "2026-10-15T00:00:00Z"
+      }
+    },
+    {
+      "id": "experiment:benchmark-stale-graph",
+      "type": "Experiment",
+      "label": "A stale graph is safe but not useful",
+      "description": "What: 6 questions on a graph built at an older commit (kg-stale): the graph scores 0.63 and says what it cannot know instead of guessing.\nWhere: docs/benchmark.md; docs/report.md §A stale graph",
+      "attrs": {
+        "created": "2026-10-15",
+        "session": "session:2026-10-15-3c0f074e",
+        "status": "active"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "timestamp": "2026-10-15T00:00:00Z"
+      }
+    },
+    {
+      "id": "evidence:issue-52",
+      "type": "Evidence",
+      "label": "Benchmark v2: graph-guided reading, node cards, scrapy",
+      "attrs": {
+        "kind": "issue",
+        "ref": "52"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "decision:scrapy-large-repo",
+      "type": "Decision",
+      "label": "scrapy is the large repo",
+      "description": "What: After the small repos tied, the user and Claude agreed a larger repo was needed; the user chose scrapy (2.19.0, 8026dee, BSD-3-Clause).\nWhy: A repo of hundreds of modules is where reading the code is expensive, the case kg is designed for.",
+      "attrs": {
+        "created": "2026-10-15",
+        "session": "session:2026-10-15-3c0f074e",
+        "status": "active"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "timestamp": "2026-10-15T00:00:00Z"
+      }
+    },
+    {
+      "id": "evidence:pr-57",
+      "type": "Evidence",
+      "label": "Node cards with --brief",
+      "attrs": {
+        "kind": "pr",
+        "ref": "57"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "decision:descriptive-nodes",
+      "type": "Decision",
+      "label": "Nodes that orient the agent: node cards",
+      "description": "What: The user proposed more descriptive nodes (provenance, where in the docs a fact comes from, links to files) so the agent loads only the context it needs. It became node cards: `--brief` with signatures, size, neighbour counts and provenance once.",
+      "attrs": {
+        "created": "2026-10-15",
+        "session": "session:2026-10-15-3c0f074e",
+        "status": "active"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "timestamp": "2026-10-15T00:00:00Z"
+      }
+    },
+    {
+      "id": "task:plan-52",
+      "type": "Task",
+      "label": "Plan of #52: three steps",
+      "description": "What: Step 1: measure context per answer and add a hybrid strategy (graph to locate, code only in the cited lines). Step 2: node cards, Section nodes for documents, quoted claims, CI workflow triggers. Step 3: scrapy with 15 to 20 questions.",
+      "attrs": {
+        "created": "2026-10-15",
+        "session": "session:2026-10-15-3c0f074e",
+        "status": "active"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "timestamp": "2026-10-15T00:00:00Z"
+      }
+    },
+    {
+      "id": "evidence:pr-56",
+      "type": "Evidence",
+      "label": "Context per answer and hybrid",
+      "attrs": {
+        "kind": "pr",
+        "ref": "56"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "experiment:hybrid-context",
+      "type": "Experiment",
+      "label": "hybrid: graph plus the cited lines",
+      "description": "What: Every tool call logs the size of its result; hybrid reads only the ranges the graph cites. On the 17 questions it scores 1.00 but loads more context than the code (14 888 against 11 974 characters).",
+      "attrs": {
+        "created": "2026-10-15",
+        "session": "session:2026-10-15-3c0f074e",
+        "status": "active"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "timestamp": "2026-10-15T00:00:00Z"
+      }
+    },
+    {
+      "id": "evidence:commit-e09903b",
+      "type": "Evidence",
+      "label": "Report the node-card runs",
+      "attrs": {
+        "kind": "commit",
+        "ref": "e09903b"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "experiment:cards-small-repos",
+      "type": "Experiment",
+      "label": "Node cards match the code with 63% less context",
+      "description": "What: cards (--brief) scores 1.00 like the code with 4 411 characters of context against 11 974, a little slower (35 s against 30 s). On the stale graph it stays at 0.50: it cannot open files added after the graph was built.\nLearned: One run per question; the cards also add signatures, so the saving mixes format and richer information.",
+      "attrs": {
+        "created": "2026-10-15",
+        "session": "session:2026-10-15-3c0f074e",
+        "status": "active"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "timestamp": "2026-10-15T00:00:00Z"
+      }
+    },
+    {
+      "id": "evidence:pr-54",
+      "type": "Evidence",
+      "label": "Rebuild five example graphs",
+      "attrs": {
+        "kind": "pr",
+        "ref": "54"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "task:examples-five",
+      "type": "Task",
+      "label": "Rebuild the example graphs for five projects",
+      "description": "What: basic-python-cli, my_first_data_project, python-clean-architecture, kg itself (e18f574) and scrapy 2.19.0 (8026dee, agent layer written by a subagent following kg guide, 102 nodes).",
+      "attrs": {
+        "created": "2026-10-15",
+        "session": "session:2026-10-15-3c0f074e",
+        "status": "done"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "timestamp": "2026-10-15T00:00:00Z"
+      }
+    },
+    {
+      "id": "evidence:issue-55",
+      "type": "Evidence",
+      "label": "Overview of large graphs",
+      "attrs": {
+        "kind": "issue",
+        "ref": "55"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "issue:large-graph-overview",
+      "type": "Issue",
+      "label": "Overview images of large graphs are hard to read",
+      "description": "What: Hidden types take their edges with them, so 61 of 435 visible nodes in scrapy's image look unconnected; the centre is dense.",
+      "attrs": {
+        "created": "2026-10-15",
+        "session": "session:2026-10-15-3c0f074e",
+        "status": "active"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "timestamp": "2026-10-15T00:00:00Z"
+      }
+    },
+    {
+      "id": "decision:release-tags-proposal",
+      "type": "Decision",
+      "label": "Proposed release tags",
+      "description": "What: Claude proposed v0.1.0 after the fact on 8b9d7b2 (the merge of #34, the MVP, 2026-10-12), and v0.2.0 once the demo (#40) was closed, with a PR raising __version__. Waiting for the user's confirmation, since tags and releases are public.\nWhy: The user asked whether each milestone should get a tag.",
+      "attrs": {
+        "created": "2026-10-15",
+        "session": "session:2026-10-15-3c0f074e",
+        "status": "active"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "timestamp": "2026-10-15T00:00:00Z"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "source": "session:2026-10-15-3c0f074e",
+      "target": "constraint:benchmark-with-subagents",
+      "type": "produced",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "constraint:benchmark-with-subagents",
+      "target": "component:bench",
+      "type": "affects",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-15-3c0f074e",
+      "target": "issue:impact-drowns-in-tests",
+      "type": "produced",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "issue:impact-drowns-in-tests",
+      "target": "evidence:issue-49",
+      "type": "supported_by",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "issue:impact-drowns-in-tests",
+      "target": "evidence:pr-50",
+      "type": "supported_by",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "issue:impact-drowns-in-tests",
+      "target": "component:query",
+      "type": "affects",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-15-3c0f074e",
+      "target": "experiment:benchmark-small-repos",
+      "type": "produced",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "experiment:benchmark-small-repos",
+      "target": "evidence:pr-51",
+      "type": "supported_by",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "experiment:benchmark-small-repos",
+      "target": "evidence:file-docs-benchmark-md",
+      "type": "supported_by",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "experiment:benchmark-small-repos",
+      "target": "component:bench",
+      "type": "affects",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-15-3c0f074e",
+      "target": "experiment:benchmark-stale-graph",
+      "type": "produced",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "experiment:benchmark-stale-graph",
+      "target": "evidence:pr-51",
+      "type": "supported_by",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "experiment:benchmark-stale-graph",
+      "target": "component:bench",
+      "type": "affects",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-15-3c0f074e",
+      "target": "decision:scrapy-large-repo",
+      "type": "produced",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:scrapy-large-repo",
+      "target": "evidence:issue-52",
+      "type": "supported_by",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:scrapy-large-repo",
+      "target": "component:bench",
+      "type": "affects",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:scrapy-large-repo",
+      "target": "experiment:benchmark-small-repos",
+      "type": "decided_because",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-15-3c0f074e",
+      "target": "decision:descriptive-nodes",
+      "type": "produced",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:descriptive-nodes",
+      "target": "evidence:issue-52",
+      "type": "supported_by",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:descriptive-nodes",
+      "target": "evidence:pr-57",
+      "type": "supported_by",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:descriptive-nodes",
+      "target": "component:query",
+      "type": "affects",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:descriptive-nodes",
+      "target": "experiment:benchmark-small-repos",
+      "type": "decided_because",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-15-3c0f074e",
+      "target": "task:plan-52",
+      "type": "produced",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:plan-52",
+      "target": "evidence:issue-52",
+      "type": "supported_by",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:plan-52",
+      "target": "component:bench",
+      "type": "affects",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-15-3c0f074e",
+      "target": "experiment:hybrid-context",
+      "type": "produced",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "experiment:hybrid-context",
+      "target": "evidence:pr-56",
+      "type": "supported_by",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "experiment:hybrid-context",
+      "target": "component:bench",
+      "type": "affects",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-15-3c0f074e",
+      "target": "experiment:cards-small-repos",
+      "type": "produced",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "experiment:cards-small-repos",
+      "target": "evidence:pr-57",
+      "type": "supported_by",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "experiment:cards-small-repos",
+      "target": "evidence:commit-e09903b",
+      "type": "supported_by",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "experiment:cards-small-repos",
+      "target": "component:query",
+      "type": "affects",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "experiment:cards-small-repos",
+      "target": "component:bench",
+      "type": "affects",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-15-3c0f074e",
+      "target": "task:examples-five",
+      "type": "produced",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:examples-five",
+      "target": "evidence:pr-54",
+      "type": "supported_by",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:examples-five",
+      "target": "component:docs",
+      "type": "affects",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-15-3c0f074e",
+      "target": "issue:large-graph-overview",
+      "type": "produced",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "issue:large-graph-overview",
+      "target": "evidence:issue-55",
+      "type": "supported_by",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "issue:large-graph-overview",
+      "target": "component:render",
+      "type": "affects",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-15-3c0f074e",
+      "target": "decision:release-tags-proposal",
+      "type": "produced",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:release-tags-proposal",
+      "target": "component:ci",
+      "type": "affects",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    }
+  ]
+}

@@ -5,6 +5,7 @@ The questions are in `bench/questions/memory/kg.json`, frozen in a commit
 together with the gates of the requirements (§7) before the first scored run
 (N2-04). `tests/test_bench.py` checks that the file keeps the shares of R2-04
 and R2-06. This page stays as the readable version and the review notes.
+The memory they are asked against is the [kg corpus](corpus.md).
 
 40 questions about kg's own history, in the shares of R2-04. Each has a
 reference answer, its evidence, and **where the answer lives**:
@@ -95,7 +96,7 @@ IDs are kept stable, so dropped questions leave gaps:
 |----|----------|------------------|----------|----------|
 | S1 | The first step-0 result said `companion`'s context saving was not kg's. What did the later control change in that conclusion? | The `lean` control confirmed it only where kg was not called (the prompt line explains all the saving there). Where the agent called kg, the graph did halve the context (−56%) at the same score, at +35% time | #67, both comments; `docs/report.md` §What is the graph's | F, I |
 | S2 | Does `scr-impact-job-runtime` fail with every strategy? | It was first reported so (#67, first comment). The later `lean` control scored 1.00 on it (104 s); `companion` scored 0.50 | #67 comments; `docs/report.md` | F, I |
-| S4 | What is the current plan for v0.3? | There is none: v0.3 ended on 2026-10-20 after the gate failed; #35, #55, #60 and #66 were closed as not planned. Work moved to experiment 2 | `docs/roadmap.md` §How v0.3 ended; this branch's `docs/experiment-2/` | F |
+| S4 | What is the current plan for v0.3? | There is none: v0.3 ended on 2026-10-20 after the gate failed; #35, #55, #60 and #66 were closed as not planned | `docs/roadmap.md` §How v0.3 ended | F |
 | S5 | #59's acceptance criteria asked for the CI template to be tried on this repo's own workflow. Was it? | No. The criterion was replaced on purpose when #59 closed (2026-10-15): kg does not commit its own `.kg/`, so the template has nothing to check here. The hooks were tried instead with `pre-commit try-repo` on a demo repo (`kg-status` fails on a stale graph, `kg-extract` updates it and fails the commit like a formatter) | #59 body and closing comment | I |
 
 ## Staleness
@@ -147,9 +148,13 @@ at the pinned commit.
 4. **Overlap.** S1 and M1 share evidence. Kept on
    purpose: one asks *what*, the other *why* or *what changed*, which is the
    difference the experiment measures.
-5. **C2 is about this experiment.** It is pinned to a later commit than the
+5. **S4 was corrected after freezing**, before any scored run. Its reference
+   said work moved to experiment 2, which does not exist at the pinned commit
+   `e066c56`; the key point went with it. Found by checking the corpus
+   against the questions.
+6. **C2 is about this experiment.** It is pinned to a later commit than the
    rest and needs its own corpus snapshot.
-6. **Grading.** Every question is graded mechanically, as in experiment 1
+7. **Grading.** Every question is graded mechanically, as in experiment 1
    (R2-07): its rubric is a list of key points, each a group of alternative
    words the answer must mention, and the score is the share of key points
    found. Every key point appears in the reference answer. The direct lookups
@@ -157,5 +162,5 @@ at the pinned commit.
    multi-hop, continuation), the key points are what a correct answer cannot
    leave out. A bare "no" is never a key point: on staleness and supersession
    the answer must name what changed (the fixing commit, the later result).
-7. **Engram and pandas questions** come after these are reviewed, with the
+8. **Engram and pandas questions** come after these are reviewed, with the
    same categories, from their PRs, issues and generated sessions (R2-02).

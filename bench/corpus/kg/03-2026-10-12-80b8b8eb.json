@@ -1,0 +1,303 @@
+{
+  "version": "1",
+  "nodes": [
+    {
+      "id": "session:2026-10-12-80b8b8eb",
+      "type": "Session",
+      "label": "Store, kg add, and the move to English",
+      "description": "Goal: Implement #4 (store) and #5 (kg add); try a graph on basic-python-cli.\nInstructions: Commit before opening the PR; the user reviews design decisions first.\nDiscoveries: Validation warnings for custom types read as if the user had done something wrong, and name no concrete standard type. The project in Spanish would be less visible.\nAccomplished: `kg init` and a single deterministic `.kg/graph.json` (PR #17); `kg add` merge by ID (PR #19); a valid graph of basic-python-cli stored in its `.kg/`; issue #18 opened; the docs, CLI and code translated to English (#20, PRs #21 to #23).\nNext steps: Merge #21 then #22 so the English README shows on main; then #6, the Python extractor.\nRelevant files: src/kg/store.py, src/kg/merge.py, docs/store.md, README.md",
+      "attrs": {
+        "date": "2026-10-12",
+        "commit": "a0af8e8",
+        "transcript": "80b8b8eb",
+        "order": 3
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "timestamp": "2026-10-12T00:00:00Z"
+      }
+    },
+    {
+      "id": "evidence:pr-17",
+      "type": "Evidence",
+      "label": "kg init and the .kg/ store",
+      "attrs": {
+        "kind": "pr",
+        "ref": "17"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "decision:single-graph-json",
+      "type": "Decision",
+      "label": "One graph.json per store",
+      "description": "What: The store is a single `.kg/graph.json`, not two files: atomic writes, one object per node or edge, a fixed order so a change touches only its own lines.\nWhy: Inside a project, one graph is what a user expects to find in `.kg/`.\nWhere: docs/store.md",
+      "attrs": {
+        "created": "2026-10-12",
+        "session": "session:2026-10-12-80b8b8eb",
+        "status": "active"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "timestamp": "2026-10-12T00:00:00Z"
+      }
+    },
+    {
+      "id": "evidence:pr-19",
+      "type": "Evidence",
+      "label": "kg add",
+      "attrs": {
+        "kind": "pr",
+        "ref": "19"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "decision:merge-new-value-wins",
+      "type": "Decision",
+      "label": "kg add merges by ID, the new value wins",
+      "description": "What: Nodes with an existing ID combine their fields; a different value for the same field is replaced by the new one and reported as a conflict; parser provenance is never overwritten by llm or manual.\nWhere: docs/store.md §Merge rules",
+      "attrs": {
+        "created": "2026-10-12",
+        "session": "session:2026-10-12-80b8b8eb",
+        "status": "active"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "timestamp": "2026-10-12T00:00:00Z"
+      }
+    },
+    {
+      "id": "evidence:issue-18",
+      "type": "Evidence",
+      "label": "Clearer, less alarming warnings for custom types",
+      "attrs": {
+        "kind": "issue",
+        "ref": "18"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "issue:custom-type-warnings-alarming",
+      "type": "Issue",
+      "label": "Custom-type warnings feel alarming",
+      "description": "What: `kg validate` warns on every custom type as if it were a mistake, and only says 'a type of the standard catalog' instead of naming the one it resembles.\nWhy: Reported by the user after the first graph of basic-python-cli.",
+      "attrs": {
+        "created": "2026-10-12",
+        "session": "session:2026-10-12-80b8b8eb",
+        "status": "active"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "timestamp": "2026-10-12T00:00:00Z"
+      }
+    },
+    {
+      "id": "evidence:issue-20",
+      "type": "Evidence",
+      "label": "Translate the project to English",
+      "attrs": {
+        "kind": "issue",
+        "ref": "20"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:pr-21",
+      "type": "Evidence",
+      "label": "Translate docs",
+      "attrs": {
+        "kind": "pr",
+        "ref": "21"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "decision:english-everywhere",
+      "type": "Decision",
+      "label": "Everything versioned is in English",
+      "description": "What: Code, CLI messages, docs, commits, issues and PRs are in English; the assistant answers the user in the user's language.\nWhy: An English project is more visible on GitHub.\nWhere: AGENTS.md rule 8",
+      "attrs": {
+        "created": "2026-10-12",
+        "session": "session:2026-10-12-80b8b8eb",
+        "status": "active"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "timestamp": "2026-10-12T00:00:00Z"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "source": "session:2026-10-12-80b8b8eb",
+      "target": "decision:single-graph-json",
+      "type": "produced",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:single-graph-json",
+      "target": "evidence:pr-17",
+      "type": "supported_by",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:single-graph-json",
+      "target": "component:store",
+      "type": "affects",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-12-80b8b8eb",
+      "target": "decision:merge-new-value-wins",
+      "type": "produced",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:merge-new-value-wins",
+      "target": "evidence:pr-19",
+      "type": "supported_by",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:merge-new-value-wins",
+      "target": "component:store",
+      "type": "affects",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-12-80b8b8eb",
+      "target": "issue:custom-type-warnings-alarming",
+      "type": "produced",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "issue:custom-type-warnings-alarming",
+      "target": "evidence:issue-18",
+      "type": "supported_by",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "issue:custom-type-warnings-alarming",
+      "target": "component:schema",
+      "type": "affects",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-12-80b8b8eb",
+      "target": "decision:english-everywhere",
+      "type": "produced",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:english-everywhere",
+      "target": "evidence:issue-20",
+      "type": "supported_by",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:english-everywhere",
+      "target": "evidence:pr-21",
+      "type": "supported_by",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:english-everywhere",
+      "target": "component:docs",
+      "type": "affects",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:english-everywhere",
+      "target": "component:cli",
+      "type": "affects",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    }
+  ]
+}

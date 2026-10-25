@@ -1,0 +1,899 @@
+{
+  "version": "1",
+  "nodes": [
+    {
+      "id": "session:2026-10-15-4381279d",
+      "type": "Session",
+      "label": "Stale-graph reads, keeping the graph fresh, release 0.2.0",
+      "description": "Goal: Resume the pasted plan: the stale graph first, then close v0.2.\nInstructions: The user pasted the previous plan; Claude recommended option 1 and then scrapy.\nDiscoveries: Letting hybrid read the files a stale graph reports lifts it from 0.63 to 0.83. Committing kg's own graph would conflict on almost every PR. The package version was still 0.1.0.dev0.\nAccomplished: Stale reads (#58); kg status --check and pre-commit hooks (#61), #59 closed; custom-type notes (#62), closing #18; Ask the graph in the README (#63), closing #40; #35 moved to v0.3 together with #55; #60 opened; v0.1.0 tagged; release 0.2.0 (#64) and its tag; v0.2 milestone closed.\nNext steps: Review the v0.3 order in docs/roadmap.md; step 3 of #52, scrapy, which decides whether v0.3 follows the table or starts a redesign.\nRelevant files: bench/tools.py, docs/store.md, README.md, docs/roadmap.md",
+      "attrs": {
+        "date": "2026-10-15",
+        "commit": "05cef90",
+        "transcript": "4381279d",
+        "order": 8
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "timestamp": "2026-10-15T00:00:00Z"
+      }
+    },
+    {
+      "id": "evidence:pr-58",
+      "type": "Evidence",
+      "label": "Let hybrid read what a stale graph reports",
+      "attrs": {
+        "kind": "pr",
+        "ref": "58"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "experiment:stale-reads",
+      "type": "Experiment",
+      "label": "Reading what a stale graph reports helps, partly",
+      "description": "What: hybrid and cards open the files kg status reports as modified or added. On the stale graph the score rises from 0.63 to 0.83, still below the code's 1.00, at three to four times the code's context.\nWhere: docs/benchmark.md; docs/report.md §A stale graph\nLearned: The bench called a bare kg that only exists with the virtualenv active; it now runs sys.executable -m kg.",
+      "attrs": {
+        "created": "2026-10-15",
+        "session": "session:2026-10-15-4381279d",
+        "status": "active"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "timestamp": "2026-10-15T00:00:00Z"
+      }
+    },
+    {
+      "id": "evidence:issue-59",
+      "type": "Evidence",
+      "label": "Keep the graph fresh",
+      "attrs": {
+        "kind": "issue",
+        "ref": "59"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:pr-61",
+      "type": "Evidence",
+      "label": "kg status --check and pre-commit hooks",
+      "attrs": {
+        "kind": "pr",
+        "ref": "61"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "decision:keep-graph-fresh",
+      "type": "Decision",
+      "label": "Keep the graph fresh: check, hooks, CI template",
+      "description": "What: kg status --check exits 1 on a stale graph; pre-commit hooks kg-extract and kg-status; a copy-paste CI template; a bot that commits the graph is not recommended.\nWhy: The benchmark shows a stale graph is the costly case.\nWhere: docs/store.md §Keeping the graph fresh",
+      "attrs": {
+        "created": "2026-10-15",
+        "session": "session:2026-10-15-4381279d",
+        "status": "active"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "timestamp": "2026-10-15T00:00:00Z"
+      }
+    },
+    {
+      "id": "evidence:comment-59-1",
+      "type": "Evidence",
+      "label": "#59 closing comment",
+      "attrs": {
+        "kind": "comment",
+        "ref": "59-1"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "decision:no-own-graph-committed",
+      "type": "Decision",
+      "label": "kg does not commit its own .kg/",
+      "description": "What: kg's own graph is not committed, so the CI template does not run on this repo. #59's criterion 'tried on this repo's own workflow' was replaced on purpose: the hooks were tried with pre-commit try-repo on a demo repo instead.\nWhy: Merge conflicts: two PRs that touch code both change graph.json, so the second conflicts almost every time, and PR diffs grow about sixfold. Every contributor has kg and rebuilds the graph in about 2 s. Size (1.17 MB, 78 KB compressed) is not the problem.",
+      "attrs": {
+        "created": "2026-10-15",
+        "session": "session:2026-10-15-4381279d",
+        "status": "active"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "timestamp": "2026-10-15T00:00:00Z"
+      }
+    },
+    {
+      "id": "task:revisit-own-graph",
+      "type": "Task",
+      "label": "Revisit committing kg's own graph",
+      "description": "What: Commit kg's graph and run the CI template on it once agents working on kg should query its graph without building it.",
+      "attrs": {
+        "created": "2026-10-15",
+        "session": "session:2026-10-15-4381279d",
+        "status": "active"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "timestamp": "2026-10-15T00:00:00Z"
+      }
+    },
+    {
+      "id": "task:mcp-server",
+      "type": "Task",
+      "label": "MCP server (RF-23)",
+      "description": "What: Expose kg's operations as agent tools through an MCP server. Moved to v0.3 by the re-scope.",
+      "attrs": {
+        "created": "2026-10-15",
+        "session": "session:2026-10-15-4381279d",
+        "status": "active"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "timestamp": "2026-10-15T00:00:00Z"
+      }
+    },
+    {
+      "id": "task:incremental-extraction",
+      "type": "Task",
+      "label": "Incremental extraction (RF-78)",
+      "description": "What: Reprocess only the files that changed. Not needed while a full extraction takes seconds; revisit if the hook is slow on scrapy.",
+      "attrs": {
+        "created": "2026-10-15",
+        "session": "session:2026-10-15-4381279d",
+        "status": "active"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "timestamp": "2026-10-15T00:00:00Z"
+      }
+    },
+    {
+      "id": "constraint:full-updates-fast",
+      "type": "Constraint",
+      "label": "Full updates are fast enough",
+      "description": "What: A full extraction of kg takes seconds (about 1 s per 100 files), so incremental extraction is not needed yet (RNF-06).\nWhere: docs/extract.md §Not yet",
+      "attrs": {
+        "created": "2026-10-15",
+        "session": "session:2026-10-15-4381279d",
+        "status": "active"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "timestamp": "2026-10-15T00:00:00Z"
+      }
+    },
+    {
+      "id": "evidence:issue-60",
+      "type": "Evidence",
+      "label": "Measure graph drift",
+      "attrs": {
+        "kind": "issue",
+        "ref": "60"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "task:measure-drift",
+      "type": "Task",
+      "label": "Measure graph drift (#60)",
+      "description": "What: A drift metric in kg status (share of nodes and edges whose source changed, by provenance method) and an accuracy curve against the graph's age in commits.",
+      "attrs": {
+        "created": "2026-10-15",
+        "session": "session:2026-10-15-4381279d",
+        "status": "active"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "timestamp": "2026-10-15T00:00:00Z"
+      }
+    },
+    {
+      "id": "issue:custom-type-warnings-alarming",
+      "type": "Issue",
+      "attrs": {
+        "status": "done"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "timestamp": "2026-10-15T00:00:00Z"
+      }
+    },
+    {
+      "id": "evidence:pr-62",
+      "type": "Evidence",
+      "label": "Name the standard type a custom one means",
+      "attrs": {
+        "kind": "pr",
+        "ref": "62"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "decision:custom-type-notes",
+      "type": "Decision",
+      "label": "A custom type is a note unless it looks standard",
+      "description": "What: One issue per custom type, not per use; a type that looks standard (by name or a small synonym table: Tutorial → Document, invokes → calls) is a warning that names it; any other is a note, valid.",
+      "attrs": {
+        "created": "2026-10-15",
+        "session": "session:2026-10-15-4381279d",
+        "status": "active"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "timestamp": "2026-10-15T00:00:00Z"
+      }
+    },
+    {
+      "id": "evidence:pr-63",
+      "type": "Evidence",
+      "label": "Ask the graph",
+      "attrs": {
+        "kind": "pr",
+        "ref": "63"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "decision:demo-as-readme-section",
+      "type": "Decision",
+      "label": "#40 closed with a README section, not a demo",
+      "description": "What: The reproducible demo (#40) was closed with the README's 'Ask the graph' section: three real queries on python-clean-architecture.\nWhy: The user judged a separate demo unnecessary: the repo and the published example graphs already show how to apply kg to any repo. What was missing was a page showing the graph answering a question.",
+      "attrs": {
+        "created": "2026-10-15",
+        "session": "session:2026-10-15-4381279d",
+        "status": "active"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "timestamp": "2026-10-15T00:00:00Z"
+      }
+    },
+    {
+      "id": "evidence:comment-35-1",
+      "type": "Evidence",
+      "label": "Plan with #55",
+      "attrs": {
+        "kind": "comment",
+        "ref": "35-1"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:comment-55-1",
+      "type": "Evidence",
+      "label": "Plan with #35",
+      "attrs": {
+        "kind": "comment",
+        "ref": "55-1"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "decision:35-with-55",
+      "type": "Decision",
+      "label": "#35 and #55 to be done together",
+      "description": "What: #35 moves to v0.3, to be addressed together with #55 in one design.\nWhy: They touch the same code and decisions: which nodes are visible at start, how hidden nodes are shown, and a layout precomputed in Python; the initial view is chosen once and laid out once.",
+      "attrs": {
+        "created": "2026-10-15",
+        "session": "session:2026-10-15-4381279d",
+        "status": "active"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "timestamp": "2026-10-15T00:00:00Z"
+      }
+    },
+    {
+      "id": "evidence:pr-64",
+      "type": "Evidence",
+      "label": "Release 0.2.0",
+      "attrs": {
+        "kind": "pr",
+        "ref": "64"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:commit-05cef90",
+      "type": "Evidence",
+      "label": "Merge of #64",
+      "attrs": {
+        "kind": "commit",
+        "ref": "05cef90"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "decision:release-tags",
+      "type": "Decision",
+      "label": "v0.1.0 on 8b9d7b2, v0.2.0 on the release merge",
+      "description": "What: v0.1.0 tagged after the fact on 8b9d7b2; a PR raised __version__ to 0.2.0 (#64) and v0.2.0 was tagged on its merge, 05cef90, with a GitHub Release. The v0.2 milestone closed with 15 of 15 issues.\nWhy: The demo #40 was closed with a README section, so v0.2.0 no longer waited for it.",
+      "attrs": {
+        "created": "2026-10-15",
+        "session": "session:2026-10-15-4381279d",
+        "status": "active"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "timestamp": "2026-10-15T00:00:00Z"
+      }
+    },
+    {
+      "id": "decision:release-tags-proposal",
+      "type": "Decision",
+      "attrs": {
+        "status": "superseded"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "timestamp": "2026-10-15T00:00:00Z"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "source": "session:2026-10-15-4381279d",
+      "target": "experiment:stale-reads",
+      "type": "produced",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "experiment:stale-reads",
+      "target": "evidence:pr-58",
+      "type": "supported_by",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "experiment:stale-reads",
+      "target": "component:bench",
+      "type": "affects",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "experiment:stale-reads",
+      "target": "experiment:benchmark-stale-graph",
+      "type": "decided_because",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-15-4381279d",
+      "target": "decision:keep-graph-fresh",
+      "type": "produced",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:keep-graph-fresh",
+      "target": "evidence:issue-59",
+      "type": "supported_by",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:keep-graph-fresh",
+      "target": "evidence:pr-61",
+      "type": "supported_by",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:keep-graph-fresh",
+      "target": "component:store",
+      "type": "affects",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:keep-graph-fresh",
+      "target": "component:ci",
+      "type": "affects",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-15-4381279d",
+      "target": "decision:no-own-graph-committed",
+      "type": "produced",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:no-own-graph-committed",
+      "target": "evidence:comment-59-1",
+      "type": "supported_by",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:no-own-graph-committed",
+      "target": "component:store",
+      "type": "affects",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:no-own-graph-committed",
+      "target": "component:ci",
+      "type": "affects",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:no-own-graph-committed",
+      "target": "decision:keep-graph-fresh",
+      "type": "decided_because",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-15-4381279d",
+      "target": "task:revisit-own-graph",
+      "type": "produced",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:revisit-own-graph",
+      "target": "evidence:comment-59-1",
+      "type": "supported_by",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:revisit-own-graph",
+      "target": "component:store",
+      "type": "affects",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:revisit-own-graph",
+      "target": "task:mcp-server",
+      "type": "blocked_by",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-15-4381279d",
+      "target": "task:mcp-server",
+      "type": "produced",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:mcp-server",
+      "target": "evidence:pr-44",
+      "type": "supported_by",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:mcp-server",
+      "target": "component:cli",
+      "type": "affects",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-15-4381279d",
+      "target": "task:incremental-extraction",
+      "type": "produced",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:incremental-extraction",
+      "target": "evidence:issue-59",
+      "type": "supported_by",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:incremental-extraction",
+      "target": "component:extract",
+      "type": "affects",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:incremental-extraction",
+      "target": "constraint:full-updates-fast",
+      "type": "blocked_by",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-15-4381279d",
+      "target": "constraint:full-updates-fast",
+      "type": "produced",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "constraint:full-updates-fast",
+      "target": "component:extract",
+      "type": "affects",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-15-4381279d",
+      "target": "task:measure-drift",
+      "type": "produced",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:measure-drift",
+      "target": "evidence:issue-60",
+      "type": "supported_by",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:measure-drift",
+      "target": "component:store",
+      "type": "affects",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:measure-drift",
+      "target": "component:bench",
+      "type": "affects",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-15-4381279d",
+      "target": "decision:custom-type-notes",
+      "type": "produced",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:custom-type-notes",
+      "target": "evidence:pr-62",
+      "type": "supported_by",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:custom-type-notes",
+      "target": "component:schema",
+      "type": "affects",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-15-4381279d",
+      "target": "decision:demo-as-readme-section",
+      "type": "produced",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:demo-as-readme-section",
+      "target": "evidence:pr-63",
+      "type": "supported_by",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:demo-as-readme-section",
+      "target": "component:docs",
+      "type": "affects",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-15-4381279d",
+      "target": "decision:35-with-55",
+      "type": "produced",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:35-with-55",
+      "target": "evidence:comment-35-1",
+      "type": "supported_by",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:35-with-55",
+      "target": "evidence:comment-55-1",
+      "type": "supported_by",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:35-with-55",
+      "target": "component:render",
+      "type": "affects",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:35-with-55",
+      "target": "issue:large-html-slow",
+      "type": "decided_because",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:35-with-55",
+      "target": "issue:large-graph-overview",
+      "type": "decided_because",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-15-4381279d",
+      "target": "decision:release-tags",
+      "type": "produced",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:release-tags",
+      "target": "evidence:pr-64",
+      "type": "supported_by",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:release-tags",
+      "target": "evidence:commit-05cef90",
+      "type": "supported_by",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:release-tags",
+      "target": "component:ci",
+      "type": "affects",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:release-tags",
+      "target": "decision:demo-as-readme-section",
+      "type": "decided_because",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:release-tags",
+      "target": "decision:release-tags-proposal",
+      "type": "supersedes",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    }
+  ]
+}

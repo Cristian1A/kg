@@ -1,0 +1,52 @@
+{
+  "version": "1",
+  "nodes": [
+    {
+      "id": "session:2026-10-15-735af7cf",
+      "type": "Session",
+      "label": "The previous session was lost",
+      "description": "Goal: Recover the previous conversation.\nInstructions: None.\nDiscoveries: claude --continue, claude --resume and /resume reopen earlier sessions; the work state is in git (branch feat/52-node-cards, last commit e09903b).\nAccomplished: Nothing beyond the instructions.\nNext steps: Resume from the plan of the lost session.\nRelevant files: none",
+      "attrs": {
+        "date": "2026-10-15",
+        "commit": "e09903b",
+        "transcript": "735af7cf",
+        "order": 7
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "timestamp": "2026-10-15T00:00:00Z"
+      }
+    },
+    {
+      "id": "issue:session-lost",
+      "type": "Issue",
+      "label": "The evening session of 2026-10-15 was lost",
+      "description": "What: The conversation could not be resumed; the user pasted Claude's last message by hand into a new session to recover the plan.\nLearned: Pending work that lives only in a conversation is lost with it.",
+      "attrs": {
+        "created": "2026-10-15",
+        "session": "session:2026-10-15-735af7cf",
+        "status": "active"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "timestamp": "2026-10-15T00:00:00Z"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "source": "session:2026-10-15-735af7cf",
+      "target": "issue:session-lost",
+      "type": "produced",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    }
+  ]
+}

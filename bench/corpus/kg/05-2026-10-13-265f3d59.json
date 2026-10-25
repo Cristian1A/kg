@@ -1,0 +1,685 @@
+{
+  "version": "1",
+  "nodes": [
+    {
+      "id": "session:2026-10-13-265f3d59",
+      "type": "Session",
+      "label": "v0.2 re-scoped to the evidence phase; CI, consistency and queries",
+      "description": "Goal: Fold external feedback into the plan and implement the v0.2 base: #42, #37, #36, #38.\nInstructions: Do everything that does not need the user; the benchmark waits for a go-ahead because it costs money.\nDiscoveries: External feedback: a short bounded phase to get evidence that kg solves a problem. The user adds topic-specific graphs and old-against-recent commits to #39. Pushing workflow files needs a token with the workflow scope.\nAccomplished: #41 (project site) opened as a proposal; requirements 1.2 drafted and v0.2 re-scoped (#43, PR #44); CI with a clean-install smoke test (#45); consistent extraction and kg status (#46); mandatory descriptions (#47); kg query and kg impact (#48).\nNext steps: Run the benchmark (#39) once the user decides how to pay for the model calls; then #40.\nRelevant files: docs/requirements.md, docs/roadmap.md, .github/workflows/ci.yml, src/kg/update.py, src/kg/query.py",
+      "attrs": {
+        "date": "2026-10-13",
+        "commit": "1a342c4",
+        "transcript": "265f3d59",
+        "order": 5
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "timestamp": "2026-10-13T00:00:00Z"
+      }
+    },
+    {
+      "id": "evidence:pr-44",
+      "type": "Evidence",
+      "label": "Re-scope v0.2 to the evidence phase",
+      "attrs": {
+        "kind": "pr",
+        "ref": "44"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:issue-43",
+      "type": "Evidence",
+      "label": "Re-scope v0.2",
+      "attrs": {
+        "kind": "issue",
+        "ref": "43"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:comment-39-1",
+      "type": "Evidence",
+      "label": "Priority note",
+      "attrs": {
+        "kind": "comment",
+        "ref": "39-1"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "decision:v02-evidence-phase",
+      "type": "Decision",
+      "label": "v0.2 becomes a short evidence phase",
+      "description": "What: v0.2 is re-scoped to queries, a graph that stays consistent with the code, CI and a benchmark of an agent with and without the graph, time-boxed to about two weeks. Deduplication, export, hooks and history, MCP, calls and the Dockerfile move to v0.3.\nWhy: External feedback (2026-10-13) asked for evidence that kg solves a problem; the old v0.2 was too broad and lacked stale-graph detection, coverage limits, CI and a benchmark as success criterion.\nWhere: docs/requirements.md 1.2, PA-05; docs/roadmap.md",
+      "attrs": {
+        "created": "2026-10-13",
+        "session": "session:2026-10-13-265f3d59",
+        "status": "active"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "timestamp": "2026-10-13T00:00:00Z"
+      }
+    },
+    {
+      "id": "decision:benchmark-first",
+      "type": "Decision",
+      "label": "The benchmark is the most valuable item of v0.2",
+      "description": "What: Order for v0.2: #38 (the minimum kg query and kg impact the graph agent needs), then the benchmark #39, then the demo #40; #37 and #42 alongside. A negative result is a valid outcome.",
+      "attrs": {
+        "created": "2026-10-13",
+        "session": "session:2026-10-13-265f3d59",
+        "status": "active"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "timestamp": "2026-10-13T00:00:00Z"
+      }
+    },
+    {
+      "id": "decision:topic-graphs",
+      "type": "Decision",
+      "label": "Benchmark topic-specific graphs too",
+      "description": "What: #39 also compares graphs built per topic (documentation, tests, development, technical decisions) against the agent without a graph, and graphs at old against recent commits.\nWhy: The user asked whether graphs specific to an interest beat a generic graph.",
+      "attrs": {
+        "created": "2026-10-13",
+        "session": "session:2026-10-13-265f3d59",
+        "status": "active"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "timestamp": "2026-10-13T00:00:00Z"
+      }
+    },
+    {
+      "id": "evidence:pr-46",
+      "type": "Evidence",
+      "label": "Consistent extraction and kg status",
+      "attrs": {
+        "kind": "pr",
+        "ref": "46"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:issue-37",
+      "type": "Evidence",
+      "label": "Keep the graph consistent",
+      "attrs": {
+        "kind": "issue",
+        "ref": "37"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "decision:full-rebuild-parser-layer",
+      "type": "Decision",
+      "label": "A full rebuild of the parser layer is enough (RF-72)",
+      "description": "What: `kg extract` replaces the parser layer in one atomic write, keeping llm and manual knowledge; agent edges whose endpoints disappeared are reported. Processing only changed files became RF-78, for v0.3.\nWhy: A full extraction takes seconds; incremental extraction is an optimisation, needed only if full updates become slow (RNF-06).\nWhere: docs/requirements.md RF-72, RF-78; docs/extract.md",
+      "attrs": {
+        "created": "2026-10-13",
+        "session": "session:2026-10-13-265f3d59",
+        "status": "active"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "timestamp": "2026-10-13T00:00:00Z"
+      }
+    },
+    {
+      "id": "decision:staleness-by-digest",
+      "type": "Decision",
+      "label": "kg status detects changes by content digest",
+      "description": "What: RF-77: `kg status` compares file content digests with those recorded at extraction, rather than git commits, and lists modified, added and deleted files.\nWhere: docs/store.md; docs/requirements.md RF-77",
+      "attrs": {
+        "created": "2026-10-13",
+        "session": "session:2026-10-13-265f3d59",
+        "status": "active"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "timestamp": "2026-10-13T00:00:00Z"
+      }
+    },
+    {
+      "id": "evidence:pr-47",
+      "type": "Evidence",
+      "label": "Mandatory descriptions",
+      "attrs": {
+        "kind": "pr",
+        "ref": "47"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "decision:mandatory-descriptions",
+      "type": "Decision",
+      "label": "Agent-created nodes must have a description",
+      "description": "What: Every node an agent creates has a one- or two-sentence description; `kg validate` warns `missing_description` on llm nodes without one; HTML search matches descriptions.\nWhy: A node with only an ID and a label sends the reader back to the files.",
+      "attrs": {
+        "created": "2026-10-13",
+        "session": "session:2026-10-13-265f3d59",
+        "status": "active"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "timestamp": "2026-10-13T00:00:00Z"
+      }
+    },
+    {
+      "id": "evidence:pr-45",
+      "type": "Evidence",
+      "label": "CI",
+      "attrs": {
+        "kind": "pr",
+        "ref": "45"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "experiment:ci",
+      "type": "Experiment",
+      "label": "CI with a clean-install smoke test",
+      "description": "What: CI runs ruff and pytest on Python 3.12 and 3.13, and a clean `pip install .` followed by a smoke test of init, extract, add, validate and render.",
+      "attrs": {
+        "created": "2026-10-13",
+        "session": "session:2026-10-13-265f3d59",
+        "status": "done"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "timestamp": "2026-10-13T00:00:00Z"
+      }
+    },
+    {
+      "id": "evidence:pr-48",
+      "type": "Evidence",
+      "label": "kg query and kg impact",
+      "attrs": {
+        "kind": "pr",
+        "ref": "48"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:commit-1a342c4",
+      "type": "Evidence",
+      "label": "Merge of #48",
+      "attrs": {
+        "kind": "commit",
+        "ref": "1a342c4"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "decision:query-impact",
+      "type": "Decision",
+      "label": "kg query and kg impact",
+      "description": "What: `kg query node|find|path|untested|undocumented` and `kg impact <ID>`, which lists what may be affected by walking imports, depends_on, documents, implements, justifies and tests edges.\nWhere: docs/query.md",
+      "attrs": {
+        "created": "2026-10-13",
+        "session": "session:2026-10-13-265f3d59",
+        "status": "active"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "timestamp": "2026-10-13T00:00:00Z"
+      }
+    },
+    {
+      "id": "task:run-benchmark",
+      "type": "Task",
+      "label": "Run the benchmark",
+      "description": "What: The harness is ready but the runs wait: the API runner needs an Anthropic key and costs money.",
+      "attrs": {
+        "created": "2026-10-13",
+        "session": "session:2026-10-13-265f3d59",
+        "status": "active"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "timestamp": "2026-10-13T00:00:00Z"
+      }
+    },
+    {
+      "id": "evidence:issue-41",
+      "type": "Evidence",
+      "label": "Project site",
+      "attrs": {
+        "kind": "issue",
+        "ref": "41"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "task:project-site",
+      "type": "Task",
+      "label": "A project site on GitHub Pages (proposal)",
+      "description": "What: Make Pages a landing page for the whole project, redirecting to the example pages, or try a Streamlit app instead. Proposal still to validate.",
+      "attrs": {
+        "created": "2026-10-13",
+        "session": "session:2026-10-13-265f3d59",
+        "status": "active"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "timestamp": "2026-10-13T00:00:00Z"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "source": "session:2026-10-13-265f3d59",
+      "target": "decision:v02-evidence-phase",
+      "type": "produced",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:v02-evidence-phase",
+      "target": "evidence:issue-43",
+      "type": "supported_by",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:v02-evidence-phase",
+      "target": "evidence:pr-44",
+      "type": "supported_by",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:v02-evidence-phase",
+      "target": "evidence:comment-39-1",
+      "type": "supported_by",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:v02-evidence-phase",
+      "target": "component:docs",
+      "type": "affects",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-13-265f3d59",
+      "target": "decision:benchmark-first",
+      "type": "produced",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:benchmark-first",
+      "target": "evidence:comment-39-1",
+      "type": "supported_by",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:benchmark-first",
+      "target": "component:bench",
+      "type": "affects",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:benchmark-first",
+      "target": "decision:v02-evidence-phase",
+      "type": "decided_because",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-13-265f3d59",
+      "target": "decision:topic-graphs",
+      "type": "produced",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:topic-graphs",
+      "target": "component:bench",
+      "type": "affects",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-13-265f3d59",
+      "target": "decision:full-rebuild-parser-layer",
+      "type": "produced",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:full-rebuild-parser-layer",
+      "target": "evidence:pr-46",
+      "type": "supported_by",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:full-rebuild-parser-layer",
+      "target": "evidence:issue-37",
+      "type": "supported_by",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:full-rebuild-parser-layer",
+      "target": "component:extract",
+      "type": "affects",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:full-rebuild-parser-layer",
+      "target": "component:store",
+      "type": "affects",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-13-265f3d59",
+      "target": "decision:staleness-by-digest",
+      "type": "produced",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:staleness-by-digest",
+      "target": "evidence:pr-46",
+      "type": "supported_by",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:staleness-by-digest",
+      "target": "component:store",
+      "type": "affects",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-13-265f3d59",
+      "target": "decision:mandatory-descriptions",
+      "type": "produced",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:mandatory-descriptions",
+      "target": "evidence:pr-47",
+      "type": "supported_by",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:mandatory-descriptions",
+      "target": "component:agent-guide",
+      "type": "affects",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:mandatory-descriptions",
+      "target": "component:schema",
+      "type": "affects",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-13-265f3d59",
+      "target": "experiment:ci",
+      "type": "produced",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "experiment:ci",
+      "target": "evidence:pr-45",
+      "type": "supported_by",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "experiment:ci",
+      "target": "component:ci",
+      "type": "affects",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-13-265f3d59",
+      "target": "decision:query-impact",
+      "type": "produced",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:query-impact",
+      "target": "evidence:pr-48",
+      "type": "supported_by",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:query-impact",
+      "target": "evidence:commit-1a342c4",
+      "type": "supported_by",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:query-impact",
+      "target": "component:query",
+      "type": "affects",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-13-265f3d59",
+      "target": "task:run-benchmark",
+      "type": "produced",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:run-benchmark",
+      "target": "component:bench",
+      "type": "affects",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-13-265f3d59",
+      "target": "task:project-site",
+      "type": "produced",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:project-site",
+      "target": "evidence:issue-41",
+      "type": "supported_by",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:project-site",
+      "target": "component:site",
+      "type": "affects",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    }
+  ]
+}

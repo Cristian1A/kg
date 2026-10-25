@@ -1,0 +1,99 @@
+{
+  "version": "1",
+  "nodes": [
+    {
+      "id": "session:2026-10-19-87cb8ed3",
+      "type": "Session",
+      "label": "The project site",
+      "description": "Goal: Implement #41: a polished landing page on GitHub Pages.\nInstructions: A self-contained page; old example URLs must keep working.\nDiscoveries: A GitHub incident slowed Actions and Pages; the legacy Pages build published the site while the workflow was still queued.\nAccomplished: docs/index.html with tests for every link (#65); the repo's About text updated.\nNext steps: Step 3 of #52, scrapy.\nRelevant files: docs/index.html, tests/test_site.py",
+      "attrs": {
+        "date": "2026-10-19",
+        "commit": "eb360b2",
+        "transcript": "87cb8ed3",
+        "order": 9
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "timestamp": "2026-10-19T00:00:00Z"
+      }
+    },
+    {
+      "id": "evidence:pr-65",
+      "type": "Evidence",
+      "label": "Project site",
+      "attrs": {
+        "kind": "pr",
+        "ref": "65"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "decision:site-self-contained",
+      "type": "Decision",
+      "label": "The site is one self-contained page",
+      "description": "What: docs/index.html: inline CSS, a few lines of JS, no external requests, light and dark; it shows a real node card, the benchmark with its caveats and the project status. A test checks every link and anchor.",
+      "attrs": {
+        "created": "2026-10-19",
+        "session": "session:2026-10-19-87cb8ed3",
+        "status": "active"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "timestamp": "2026-10-19T00:00:00Z"
+      }
+    },
+    {
+      "id": "task:project-site",
+      "type": "Task",
+      "attrs": {
+        "status": "done"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "timestamp": "2026-10-19T00:00:00Z"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "source": "session:2026-10-19-87cb8ed3",
+      "target": "decision:site-self-contained",
+      "type": "produced",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:site-self-contained",
+      "target": "evidence:pr-65",
+      "type": "supported_by",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:site-self-contained",
+      "target": "component:site",
+      "type": "affects",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    }
+  ]
+}

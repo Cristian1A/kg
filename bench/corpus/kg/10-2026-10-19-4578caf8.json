@@ -1,0 +1,336 @@
+{
+  "version": "1",
+  "nodes": [
+    {
+      "id": "session:2026-10-19-4578caf8",
+      "type": "Session",
+      "label": "Benchmark v3 proposal and the scrapy runs",
+      "description": "Goal: Place a proposal to extend the benchmark, then run step 3 of #52 on scrapy.\nInstructions: Work on a separate branch; run the repetitions, then write the report.\nDiscoveries: The graph did not win on scrapy: code 0.99, cards 0.98, hybrid 0.97, graph 0.93, and the graph strategies were three to four times slower. The user doubted the graph helps models at all.\nAccomplished: #66 (benchmark v3) opened, depending on scrapy's results; status comment on #52; question categories; scrapy with 16 checked questions; runs of code, graph, hybrid and cards.\nNext steps: Repetitions and the report. The user asked for a checkpoint.md to resume the next day, but the session limit hit first: no checkpoint was written.\nRelevant files: bench/questions/scrapy.json, bench/repos.json, bench/results/20261019T213916Z-subagent-scrapy.jsonl",
+      "attrs": {
+        "date": "2026-10-19",
+        "commit": "c4953bf",
+        "transcript": "4578caf8",
+        "order": 10
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "timestamp": "2026-10-19T00:00:00Z"
+      }
+    },
+    {
+      "id": "evidence:comment-52-1",
+      "type": "Evidence",
+      "label": "Where #52 stands",
+      "attrs": {
+        "kind": "comment",
+        "ref": "52-1"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "task:52-step2-open",
+      "type": "Task",
+      "label": "Open parts of #52's step 2",
+      "description": "What: Section nodes for documents, quoted claims in the agent layer, and extracting CI workflow triggers (CU-03). They do not block step 3.",
+      "attrs": {
+        "created": "2026-10-19",
+        "session": "session:2026-10-19-4578caf8",
+        "status": "active"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "timestamp": "2026-10-19T00:00:00Z"
+      }
+    },
+    {
+      "id": "issue:scrapy-not-in-bench",
+      "type": "Issue",
+      "label": "scrapy is not in the benchmark yet",
+      "description": "What: scrapy's graph and agent layer exist (#53), but scrapy is not in bench/repos.json and has no questions.",
+      "attrs": {
+        "created": "2026-10-19",
+        "session": "session:2026-10-19-4578caf8",
+        "status": "invalidated"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "timestamp": "2026-10-19T00:00:00Z"
+      }
+    },
+    {
+      "id": "evidence:issue-66",
+      "type": "Evidence",
+      "label": "Benchmark v3",
+      "attrs": {
+        "kind": "issue",
+        "ref": "66"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "task:benchmark-v3",
+      "type": "Task",
+      "label": "Benchmark v3: diverse repos and categories (#66)",
+      "description": "What: pytest as a second large repo, Requests and Flask as small controls, question categories, repetitions. pandas out of scope (Cython/C). Starts only once scrapy has results.",
+      "attrs": {
+        "created": "2026-10-19",
+        "session": "session:2026-10-19-4578caf8",
+        "status": "active"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "timestamp": "2026-10-19T00:00:00Z"
+      }
+    },
+    {
+      "id": "evidence:commit-c4953bf",
+      "type": "Evidence",
+      "label": "Record the scrapy runs",
+      "attrs": {
+        "kind": "commit",
+        "ref": "c4953bf"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "experiment:scrapy-run",
+      "type": "Experiment",
+      "label": "On scrapy, reading the code won",
+      "description": "What: 16 questions on scrapy (489 Python files): code 0.99 at 29 s, cards 0.98 at 92 s, hybrid 0.97 at 85 s, graph 0.93 at 115 s.\nWhere: docs/benchmark.md; docs/report.md §On a large repo\nLearned: The losses trace to facts the graph lacks: imports under if TYPE_CHECKING, inheritance kept as strings, settings and classes loaded from dotted-path strings.",
+      "attrs": {
+        "created": "2026-10-19",
+        "session": "session:2026-10-19-4578caf8",
+        "status": "active"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "timestamp": "2026-10-19T00:00:00Z"
+      }
+    },
+    {
+      "id": "evidence:commit-e661007",
+      "type": "Evidence",
+      "label": "Add scrapy and 16 questions",
+      "attrs": {
+        "kind": "commit",
+        "ref": "e661007"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "issue:no-checkpoint",
+      "type": "Issue",
+      "label": "The hand-over of 2026-10-19 was not saved",
+      "description": "What: Work stopped at the session limit during the scrapy repetitions; the checkpoint.md the user asked for was never written.\nLearned: A hand-over has to be written before the limit, not at it.",
+      "attrs": {
+        "created": "2026-10-19",
+        "session": "session:2026-10-19-4578caf8",
+        "status": "active"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "timestamp": "2026-10-19T00:00:00Z"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "source": "session:2026-10-19-4578caf8",
+      "target": "task:52-step2-open",
+      "type": "produced",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:52-step2-open",
+      "target": "evidence:comment-52-1",
+      "type": "supported_by",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:52-step2-open",
+      "target": "component:extract",
+      "type": "affects",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:52-step2-open",
+      "target": "component:agent-guide",
+      "type": "affects",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-19-4578caf8",
+      "target": "issue:scrapy-not-in-bench",
+      "type": "produced",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "issue:scrapy-not-in-bench",
+      "target": "evidence:comment-52-1",
+      "type": "supported_by",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "issue:scrapy-not-in-bench",
+      "target": "component:bench",
+      "type": "affects",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-19-4578caf8",
+      "target": "task:benchmark-v3",
+      "type": "produced",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:benchmark-v3",
+      "target": "evidence:issue-66",
+      "type": "supported_by",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:benchmark-v3",
+      "target": "component:bench",
+      "type": "affects",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:benchmark-v3",
+      "target": "experiment:scrapy-run",
+      "type": "blocked_by",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-19-4578caf8",
+      "target": "experiment:scrapy-run",
+      "type": "produced",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "experiment:scrapy-run",
+      "target": "evidence:commit-c4953bf",
+      "type": "supported_by",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "experiment:scrapy-run",
+      "target": "component:bench",
+      "type": "affects",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "experiment:scrapy-run",
+      "target": "decision:scrapy-large-repo",
+      "type": "decided_because",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "issue:scrapy-not-in-bench",
+      "target": "evidence:commit-e661007",
+      "type": "invalidated_by",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-19-4578caf8",
+      "target": "issue:no-checkpoint",
+      "type": "produced",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    }
+  ]
+}

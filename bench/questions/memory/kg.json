@@ -817,19 +817,17 @@
           "ended"
         ],
         [
-          "#69",
           "closed",
           "gate failed"
         ],
         [
-          "experiment 2"
+          "not planned"
         ]
       ]
     },
-    "reference": "There is none: v0.3 ended on 2026-10-20 after the gate failed; #35, #55, #60 and #66 were closed as not planned. Work moved to experiment 2",
+    "reference": "There is none: v0.3 ended on 2026-10-20 after the gate failed; #35, #55, #60 and #66 were closed as not planned",
     "evidence": [
-      "`docs/roadmap.md` §How v0.3 ended",
-      "this branch's `docs/experiment-2/`"
+      "`docs/roadmap.md` §How v0.3 ended"
     ]
   },
   {

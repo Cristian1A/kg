@@ -1,0 +1,208 @@
+{
+  "version": "1",
+  "nodes": [
+    {
+      "id": "session:2026-10-09-67dcc1db",
+      "type": "Session",
+      "label": "Manual check of #1, samples folder, schema and validate",
+      "description": "Goal: Check PR #13 by hand, document samples/, then implement #2 and #3.\nInstructions: The user merges PRs from GitHub; Claude opens them and waits.\nDiscoveries: Third-party repos for manual tests are better cloned into an ignored folder than vendored.\nAccomplished: PR #13 merged; samples/ documented (PR #14); JSON Schema with the standard catalog and custom types (PR #15); `kg validate` with actionable errors (PR #16, open).\nNext steps: #4: `kg init` and the `.kg/` store, the base of `kg add` (#5) and `kg extract` (#6).\nRelevant files: src/kg/schema/, docs/schema.md, samples/README.md",
+      "attrs": {
+        "date": "2026-10-09",
+        "commit": "58989a9",
+        "transcript": "67dcc1db",
+        "order": 2
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "timestamp": "2026-10-09T00:00:00Z"
+      }
+    },
+    {
+      "id": "evidence:pr-14",
+      "type": "Evidence",
+      "label": "Document samples/",
+      "attrs": {
+        "kind": "pr",
+        "ref": "14"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "decision:samples-folder",
+      "type": "Decision",
+      "label": "Third-party test repos go in samples/",
+      "description": "What: Public repos used for manual testing (alfredodeza/basic-python-cli first) are cloned into `samples/`, ignored by git and listed in samples/README.md.",
+      "attrs": {
+        "created": "2026-10-09",
+        "session": "session:2026-10-09-67dcc1db",
+        "status": "active"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "timestamp": "2026-10-09T00:00:00Z"
+      }
+    },
+    {
+      "id": "evidence:pr-15",
+      "type": "Evidence",
+      "label": "JSON Schema with standard catalog",
+      "attrs": {
+        "kind": "pr",
+        "ref": "15"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "decision:custom-types-valid",
+      "type": "Decision",
+      "label": "Custom types are valid (RF-02)",
+      "description": "What: A node or edge type outside the standard catalog is valid; kg reports it so the author can check whether a standard type fits. Entities in PascalCase, relations in snake_case.\nWhere: docs/schema.md §Custom types",
+      "attrs": {
+        "created": "2026-10-09",
+        "session": "session:2026-10-09-67dcc1db",
+        "status": "active"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "timestamp": "2026-10-09T00:00:00Z"
+      }
+    },
+    {
+      "id": "evidence:pr-16",
+      "type": "Evidence",
+      "label": "kg validate",
+      "attrs": {
+        "kind": "pr",
+        "ref": "16"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "decision:actionable-errors",
+      "type": "Decision",
+      "label": "Validation errors say path, value, expectation and fix",
+      "description": "What: `kg validate` reports each issue with its JSON path, the received value, the expected one and a suggestion, as text or `--json`.\nWhere: docs/schema.md §Validation",
+      "attrs": {
+        "created": "2026-10-09",
+        "session": "session:2026-10-09-67dcc1db",
+        "status": "active"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "timestamp": "2026-10-09T00:00:00Z"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "source": "session:2026-10-09-67dcc1db",
+      "target": "decision:samples-folder",
+      "type": "produced",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:samples-folder",
+      "target": "evidence:pr-14",
+      "type": "supported_by",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:samples-folder",
+      "target": "component:docs",
+      "type": "affects",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-09-67dcc1db",
+      "target": "decision:custom-types-valid",
+      "type": "produced",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:custom-types-valid",
+      "target": "evidence:pr-15",
+      "type": "supported_by",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:custom-types-valid",
+      "target": "component:schema",
+      "type": "affects",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-09-67dcc1db",
+      "target": "decision:actionable-errors",
+      "type": "produced",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:actionable-errors",
+      "target": "evidence:pr-16",
+      "type": "supported_by",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:actionable-errors",
+      "target": "component:schema",
+      "type": "affects",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    }
+  ]
+}

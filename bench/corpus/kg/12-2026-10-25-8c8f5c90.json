@@ -1,0 +1,131 @@
+{
+  "version": "1",
+  "nodes": [
+    {
+      "id": "session:2026-10-25-8c8f5c90",
+      "type": "Session",
+      "label": "Experiment 2 opened",
+      "description": "Goal: Test whether an explicit memory of a project helps an agent across sessions.\nInstructions: Engram is a reference, not a dependency; run everything with subagents.\nDiscoveries: Engram stores memories in SQLite with FTS5 and relations only for conflicts.\nAccomplished: Requirements 1.0 approved and 1.1 with the answers to Q2-01 to Q2-05; branches cleaned (main, experiment-1/code-graph-negative-result, experiment-2/agent-context-memory); #71 opened; Engram and pandas cloned in samples/.\nNext steps: P0: study Engram, write the questions, freeze them with the gates.\nRelevant files: docs/experiment-2/requirements.md, samples/README.md",
+      "attrs": {
+        "date": "2026-10-25",
+        "commit": "7dfd6ad",
+        "transcript": "8c8f5c90",
+        "order": 12
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "timestamp": "2026-10-25T00:00:00Z"
+      }
+    },
+    {
+      "id": "component:memory",
+      "type": "Component",
+      "label": "memory",
+      "description": "Experiment 2: the agent context memory under study.",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:issue-71",
+      "type": "Evidence",
+      "label": "Experiment 2",
+      "attrs": {
+        "kind": "issue",
+        "ref": "71"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:commit-7dfd6ad",
+      "type": "Evidence",
+      "label": "Answer the open questions",
+      "attrs": {
+        "kind": "commit",
+        "ref": "7dfd6ad"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "decision:experiment-2",
+      "type": "Decision",
+      "label": "Experiment 2: agent context memory",
+      "description": "What: A context graph of decisions, components, tasks, experiments, constraints, issues, evidence and sessions, compared with FTS5, embeddings and other retrieval strategies over one store, on kg, Engram and pandas.",
+      "attrs": {
+        "created": "2026-10-25",
+        "session": "session:2026-10-25-8c8f5c90",
+        "status": "active"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "timestamp": "2026-10-25T00:00:00Z"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "source": "session:2026-10-25-8c8f5c90",
+      "target": "decision:experiment-2",
+      "type": "produced",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:experiment-2",
+      "target": "evidence:issue-71",
+      "type": "supported_by",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:experiment-2",
+      "target": "evidence:commit-7dfd6ad",
+      "type": "supported_by",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:experiment-2",
+      "target": "component:memory",
+      "type": "affects",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:experiment-2",
+      "target": "decision:close-kg",
+      "type": "decided_because",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    }
+  ]
+}

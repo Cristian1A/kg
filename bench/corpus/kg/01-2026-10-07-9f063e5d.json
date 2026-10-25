@@ -1,0 +1,545 @@
+{
+  "version": "1",
+  "nodes": [
+    {
+      "id": "session:2026-10-07-9f063e5d",
+      "type": "Session",
+      "label": "Requirements interview and repository set-up",
+      "description": "Goal: Design kg with the user acting as client, and set up the repository.\nInstructions: The user answers question blocks in a text file; the requirements come out as a Markdown document. Secrets go in `.env`, never committed.\nDiscoveries: The client wants a CLI for humans and agents that turns a project's knowledge into a queryable graph; open questions PA-01 to PA-03 were settled (name `kg`, stable IDs, HTML with vis.js through pyvis).\nAccomplished: Agent folder layout created; requirements and the interview summary written; repo initialised and pushed; MVP issues #1 to #12 opened; #1 (CLI skeleton) implemented in PR #13.\nNext steps: Review and merge PR #13, then #2 (JSON Schema).\nRelevant files: docs/requirements.md, docs/discovery.md, AGENTS.md, src/kg/cli.py",
+      "attrs": {
+        "date": "2026-10-07",
+        "commit": "7d4bd49",
+        "transcript": "9f063e5d",
+        "order": 1
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "timestamp": "2026-10-07T00:00:00Z"
+      }
+    },
+    {
+      "id": "component:cli",
+      "type": "Component",
+      "label": "cli",
+      "description": "The `kg` command line: subcommands, `--json` output, exit codes.",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "component:schema",
+      "type": "Component",
+      "label": "schema",
+      "description": "The JSON Schema, the standard catalog and `kg validate`.",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "component:store",
+      "type": "Component",
+      "label": "store",
+      "description": "The `.kg/` store: `graph.json`, `kg init`, `kg add`, `kg remove`, `kg edit`, `kg status`.",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "component:extract",
+      "type": "Component",
+      "label": "extract",
+      "description": "`kg extract`: the Python, manifest and test extractors.",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "component:render",
+      "type": "Component",
+      "label": "render",
+      "description": "`kg render`: static PNG/SVG and the interactive offline HTML.",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "component:query",
+      "type": "Component",
+      "label": "query",
+      "description": "`kg query` and `kg impact`.",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "component:agent-guide",
+      "type": "Component",
+      "label": "agent-guide",
+      "description": "`kg guide` and the `kg-graph` skill, for agents that add documents, decisions and concepts.",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "component:bench",
+      "type": "Component",
+      "label": "bench",
+      "description": "The benchmark harness in `bench/`: questions, strategies, graders, results.",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "component:docs",
+      "type": "Component",
+      "label": "docs",
+      "description": "The documentation, the README and the example graphs.",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "component:site",
+      "type": "Component",
+      "label": "site",
+      "description": "The project site on GitHub Pages.",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "component:ci",
+      "type": "Component",
+      "label": "ci",
+      "description": "GitHub Actions CI and the release process.",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:file-docs-requirements-md",
+      "type": "Evidence",
+      "label": "Functional requirements",
+      "attrs": {
+        "kind": "file",
+        "ref": "docs/requirements.md",
+        "commit": "7d4bd49"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "source": "docs/requirements.md"
+      }
+    },
+    {
+      "id": "evidence:file-docs-discovery-md",
+      "type": "Evidence",
+      "label": "The client interview",
+      "attrs": {
+        "kind": "file",
+        "ref": "docs/discovery.md",
+        "commit": "7d4bd49"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "source": "docs/discovery.md"
+      }
+    },
+    {
+      "id": "decision:cli-for-humans-and-agents",
+      "type": "Decision",
+      "label": "kg is a CLI for humans and AI agents",
+      "description": "What: kg turns a project's code, dependencies, docs, tests and decisions into a knowledge graph that can be queried, rendered and exported, from a CLI usable by people and by agents.\nWhy: The client wants agents to reason over a project's structure instead of rediscovering it.\nWhere: docs/requirements.md, docs/discovery.md",
+      "attrs": {
+        "created": "2026-10-07",
+        "session": "session:2026-10-07-9f063e5d",
+        "status": "active"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "timestamp": "2026-10-07T00:00:00Z"
+      }
+    },
+    {
+      "id": "constraint:python-networkx",
+      "type": "Constraint",
+      "label": "Python 3.12 and NetworkX",
+      "description": "What: kg is written in Python 3.12 or later on NetworkX; dependencies need a justification and go in pyproject.toml.\nWhere: AGENTS.md rule 5; pyproject.toml",
+      "attrs": {
+        "created": "2026-10-07",
+        "session": "session:2026-10-07-9f063e5d",
+        "status": "active"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "timestamp": "2026-10-07T00:00:00Z"
+      }
+    },
+    {
+      "id": "constraint:kg-calls-no-llm",
+      "type": "Constraint",
+      "label": "kg itself calls no model (RF-24)",
+      "description": "What: kg never calls an LLM. Agents write their knowledge (documents, decisions, concepts) through `kg add`; kg validates and stores it.\nWhy: Deterministic, offline, free to run; the agent that uses kg already is a model.\nWhere: docs/requirements.md RF-24",
+      "attrs": {
+        "created": "2026-10-07",
+        "session": "session:2026-10-07-9f063e5d",
+        "status": "active"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "timestamp": "2026-10-07T00:00:00Z"
+      }
+    },
+    {
+      "id": "decision:html-with-vis-network",
+      "type": "Decision",
+      "label": "Interactive HTML on vis.js (PA-03)",
+      "description": "What: PA-03: the interactive HTML uses pyvis with vis.js. Confirmed by the user on 2026-10-07.\nWhere: docs/requirements.md PA-03",
+      "attrs": {
+        "created": "2026-10-07",
+        "session": "session:2026-10-07-9f063e5d",
+        "status": "active"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "timestamp": "2026-10-07T00:00:00Z"
+      }
+    },
+    {
+      "id": "decision:name-kg",
+      "type": "Decision",
+      "label": "The project is called kg (PA-01)",
+      "description": "What: PA-01: the tool keeps the name `kg`, for knowledge graph, for now.",
+      "attrs": {
+        "created": "2026-10-07",
+        "session": "session:2026-10-07-9f063e5d",
+        "status": "active"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "timestamp": "2026-10-07T00:00:00Z"
+      }
+    },
+    {
+      "id": "constraint:secrets-in-env",
+      "type": "Constraint",
+      "label": "Secrets live in .env",
+      "description": "What: Tokens live in `.env`, which is git-ignored; agents load it into the environment and never print, copy or commit it.\nWhere: AGENTS.md rule 10",
+      "attrs": {
+        "created": "2026-10-07",
+        "session": "session:2026-10-07-9f063e5d",
+        "status": "active"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "timestamp": "2026-10-07T00:00:00Z"
+      }
+    },
+    {
+      "id": "evidence:issue-1",
+      "type": "Evidence",
+      "label": "CLI skeleton",
+      "attrs": {
+        "kind": "issue",
+        "ref": "1"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:issue-12",
+      "type": "Evidence",
+      "label": "MVP validation on 3 repos",
+      "attrs": {
+        "kind": "issue",
+        "ref": "12"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "task:mvp-issues",
+      "type": "Task",
+      "label": "MVP issues #1 to #12",
+      "description": "What: The MVP (v0.1) was split into twelve issues: CLI skeleton, schema, validate, store, add, three extractors, two renderers, the agent guide and a validation on three repos.",
+      "attrs": {
+        "created": "2026-10-07",
+        "session": "session:2026-10-07-9f063e5d",
+        "status": "done"
+      },
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0,
+        "timestamp": "2026-10-07T00:00:00Z"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "source": "session:2026-10-07-9f063e5d",
+      "target": "decision:cli-for-humans-and-agents",
+      "type": "produced",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:cli-for-humans-and-agents",
+      "target": "evidence:file-docs-requirements-md",
+      "type": "supported_by",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:cli-for-humans-and-agents",
+      "target": "evidence:file-docs-discovery-md",
+      "type": "supported_by",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:cli-for-humans-and-agents",
+      "target": "component:cli",
+      "type": "affects",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-07-9f063e5d",
+      "target": "constraint:python-networkx",
+      "type": "produced",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "constraint:python-networkx",
+      "target": "evidence:file-docs-requirements-md",
+      "type": "supported_by",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "constraint:python-networkx",
+      "target": "component:cli",
+      "type": "affects",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-07-9f063e5d",
+      "target": "constraint:kg-calls-no-llm",
+      "type": "produced",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "constraint:kg-calls-no-llm",
+      "target": "evidence:file-docs-requirements-md",
+      "type": "supported_by",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "constraint:kg-calls-no-llm",
+      "target": "component:store",
+      "type": "affects",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "constraint:kg-calls-no-llm",
+      "target": "component:agent-guide",
+      "type": "affects",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-07-9f063e5d",
+      "target": "decision:html-with-vis-network",
+      "type": "produced",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:html-with-vis-network",
+      "target": "evidence:file-docs-requirements-md",
+      "type": "supported_by",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:html-with-vis-network",
+      "target": "component:render",
+      "type": "affects",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-07-9f063e5d",
+      "target": "decision:name-kg",
+      "type": "produced",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:name-kg",
+      "target": "evidence:file-docs-discovery-md",
+      "type": "supported_by",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:name-kg",
+      "target": "component:cli",
+      "type": "affects",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-07-9f063e5d",
+      "target": "constraint:secrets-in-env",
+      "type": "produced",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "constraint:secrets-in-env",
+      "target": "component:ci",
+      "type": "affects",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-07-9f063e5d",
+      "target": "task:mvp-issues",
+      "type": "produced",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:mvp-issues",
+      "target": "evidence:issue-1",
+      "type": "supported_by",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:mvp-issues",
+      "target": "evidence:issue-12",
+      "type": "supported_by",
+      "provenance": {
+        "method": "manual",
+        "extractor": "exp2-curated@1",
+        "confidence": 1.0
+      }
+    }
+  ]
+}
