@@ -1,0 +1,1250 @@
+[
+  {
+    "id": "kg-D1",
+    "corpus": "kg",
+    "commit": "e066c56",
+    "category": "direct",
+    "lives_in": [
+      "file"
+    ],
+    "question": "Which model answered experiment 1's benchmark questions, and with what tool-call limit?",
+    "expect": {
+      "keywords": [
+        [
+          "opus 5.5",
+          "opus"
+        ],
+        [
+          "25"
+        ]
+      ]
+    },
+    "reference": "A fresh Claude Code subagent on Claude Opus 5.5 per question and strategy, at most 25 tool calls",
+    "evidence": [
+      "`docs/report.md` §How it was measured"
+    ]
+  },
+  {
+    "id": "kg-D2",
+    "corpus": "kg",
+    "commit": "e066c56",
+    "category": "direct",
+    "lives_in": [
+      "file"
+    ],
+    "question": "Which version and commit of scrapy did the large-repo benchmark use?",
+    "expect": {
+      "keywords": [
+        [
+          "2.19.0",
+          "2.19"
+        ],
+        [
+          "8026dee"
+        ]
+      ]
+    },
+    "reference": "2.19.0, commit `8026dee`",
+    "evidence": [
+      "`docs/report.md`",
+      "`samples/README.md`"
+    ]
+  },
+  {
+    "id": "kg-D3",
+    "corpus": "kg",
+    "commit": "e066c56",
+    "category": "direct",
+    "lives_in": [
+      "file"
+    ],
+    "question": "Which JavaScript library does the interactive HTML embed, and which version?",
+    "expect": {
+      "keywords": [
+        [
+          "vis-network"
+        ],
+        [
+          "9.1.2"
+        ]
+      ]
+    },
+    "reference": "vis-network 9.1.2, bundled to work offline",
+    "evidence": [
+      "`docs/requirements.md` PA-03"
+    ]
+  },
+  {
+    "id": "kg-D4",
+    "corpus": "kg",
+    "commit": "e066c56",
+    "category": "direct",
+    "lives_in": [
+      "file"
+    ],
+    "question": "How long did one `kg query` on scrapy take before and after the fast-reads work?",
+    "expect": {
+      "keywords": [
+        [
+          "4.9"
+        ],
+        [
+          "0.8"
+        ]
+      ]
+    },
+    "reference": "4.9 s before, 0.8 s after",
+    "evidence": [
+      "`docs/report.md` §With kg fast"
+    ]
+  },
+  {
+    "id": "kg-D5",
+    "corpus": "kg",
+    "commit": "e066c56",
+    "category": "direct",
+    "lives_in": [
+      "file"
+    ],
+    "question": "Where does kg cache that a store was already validated, and what is the cache keyed by?",
+    "expect": {
+      "keywords": [
+        [
+          "kg/validated"
+        ],
+        [
+          "sha-256",
+          "sha256"
+        ],
+        [
+          "version"
+        ],
+        [
+          "schema"
+        ]
+      ]
+    },
+    "reference": "`$XDG_CACHE_HOME/kg/validated/`, keyed by the SHA-256 of the contents, kg's version and the schema",
+    "evidence": [
+      "`docs/store.md`",
+      "`src/kg/store.py`",
+      "PR #68"
+    ]
+  },
+  {
+    "id": "kg-D7",
+    "corpus": "kg",
+    "commit": "e066c56",
+    "category": "direct",
+    "lives_in": [
+      "session"
+    ],
+    "question": "What review came before the step-0 experiment, and on what terms was it run?",
+    "expect": {
+      "keywords": [
+        [
+          "council"
+        ],
+        [
+          "unofficial"
+        ],
+        [
+          "llm-council",
+          "karpathy"
+        ],
+        [
+          "#67"
+        ]
+      ]
+    },
+    "reference": "An unofficial \"council\" on 2026-10-20, set up after Karpathy's llm-council: subagents as experts researched similar tools and what kg could borrow or add, then cross-reviewed and synthesised. It was explicitly unofficial: nothing went to the repo until there was a good idea, which then became #67",
+    "evidence": [
+      "session 2026-10-20 (`84137a84`)",
+      "`docs/roadmap.md` only says \"unofficial review\""
+    ]
+  },
+  {
+    "id": "kg-D8",
+    "corpus": "kg",
+    "commit": "e066c56",
+    "category": "direct",
+    "lives_in": [
+      "session"
+    ],
+    "question": "On 2026-10-15, which release tags did Claude first propose, and what was `v0.2.0` to wait for?",
+    "expect": {
+      "keywords": [
+        [
+          "v0.1.0"
+        ],
+        [
+          "8b9d7b2"
+        ],
+        [
+          "#40",
+          "demo"
+        ],
+        [
+          "__version__",
+          "version"
+        ]
+      ]
+    },
+    "reference": "`v0.1.0` after the fact on `8b9d7b2` (the merge of #34, the MVP, 2026-10-12), and `v0.2.0` once the demo (#40) was closed, with a PR raising `__version__`. Both waited for the user's confirmation, since tags and releases are public. The tags themselves are in git (`v0.2.0` on `05cef90`, PR #64); what they waited for is only in the session",
+    "evidence": [
+      "session 2026-10-15 (`3c0f074e`)"
+    ]
+  },
+  {
+    "id": "kg-D9",
+    "corpus": "kg",
+    "commit": "e066c56",
+    "category": "direct",
+    "lives_in": [
+      "file"
+    ],
+    "question": "Which Python version and which runtime dependencies does kg require?",
+    "expect": {
+      "keywords": [
+        [
+          "3.12"
+        ],
+        [
+          "networkx"
+        ],
+        [
+          "matplotlib"
+        ],
+        [
+          "jsonschema"
+        ]
+      ]
+    },
+    "reference": "Python 3.12 or later; `networkx>=3.7`, `matplotlib>=3.11` and `jsonschema>=4.18`. The extras `dev` (pytest, pytest-cov, ruff) and `bench` (anthropic) are optional",
+    "evidence": [
+      "`pyproject.toml`"
+    ]
+  },
+  {
+    "id": "kg-R1",
+    "corpus": "kg",
+    "commit": "e066c56",
+    "category": "rationale",
+    "lives_in": [
+      "github"
+    ],
+    "question": "Why does kg not commit its own `.kg/graph.json`, so the CI freshness template does not run on kg itself?",
+    "expect": {
+      "keywords": [
+        [
+          "merge conflict",
+          "conflict"
+        ],
+        [
+          "2 s",
+          "two seconds",
+          "seconds"
+        ],
+        [
+          "size is not",
+          "not the size",
+          "not the problem",
+          "1.17"
+        ]
+      ]
+    },
+    "reference": "Merge conflicts: two PRs that touch code both change `graph.json`, so the second conflicts almost every time, and PR diffs grow about sixfold. Every contributor has kg and rebuilds the whole graph in about 2 s, so committing it does not pay off. Size (1.17 MB) is not the problem",
+    "evidence": [
+      "#59 closing comment"
+    ]
+  },
+  {
+    "id": "kg-R3",
+    "corpus": "kg",
+    "commit": "e066c56",
+    "category": "rationale",
+    "lives_in": [
+      "github"
+    ],
+    "question": "Why were two of the first candidate repos for the MVP validation dropped?",
+    "expect": {
+      "keywords": [
+        [
+          "license"
+        ],
+        [
+          "mit"
+        ]
+      ]
+    },
+    "reference": "They declared no license, and the examples were going to be published, so they risked licensing problems. Three MIT repos replaced them",
+    "evidence": [
+      "#12, second comment"
+    ]
+  },
+  {
+    "id": "kg-R4",
+    "corpus": "kg",
+    "commit": "e066c56",
+    "category": "rationale",
+    "lives_in": [
+      "file",
+      "github"
+    ],
+    "question": "Why was v0.2 re-scoped on 2026-10-13?",
+    "expect": {
+      "keywords": [
+        [
+          "feedback"
+        ],
+        [
+          "evidence"
+        ],
+        [
+          "too broad",
+          "broad"
+        ],
+        [
+          "benchmark"
+        ]
+      ]
+    },
+    "reference": "External feedback asked for a short, bounded phase to get evidence that kg solves a problem. The old v0.2 was too broad (deduplication, export, hooks and history, MCP, `calls`, a Dockerfile) and lacked what the plan needed (stale-graph detection, coverage limits, CI, the benchmark as success criterion)",
+    "evidence": [
+      "#43",
+      "`docs/requirements.md` PA-05 and change log 1.2"
+    ]
+  },
+  {
+    "id": "kg-R5",
+    "corpus": "kg",
+    "commit": "e066c56",
+    "category": "rationale",
+    "lives_in": [
+      "github"
+    ],
+    "question": "Why were #35 and #55 to be done together?",
+    "expect": {
+      "keywords": [
+        [
+          "same code"
+        ],
+        [
+          "initial view",
+          "visible at start"
+        ],
+        [
+          "layout"
+        ]
+      ]
+    },
+    "reference": "They touch the same code and the same decisions: which nodes are visible at start, how hidden nodes are shown, and a layout precomputed in Python. One design chooses the initial view once and lays it out once",
+    "evidence": [
+      "#35 and #55, comments of 2026-10-15"
+    ]
+  },
+  {
+    "id": "kg-R6",
+    "corpus": "kg",
+    "commit": "e066c56",
+    "category": "rationale",
+    "lives_in": [
+      "github",
+      "session"
+    ],
+    "question": "When the step-0 gate failed, which options were weighed, and which was chosen?",
+    "expect": {
+      "keywords": [
+        [
+          "option 1",
+          "first option"
+        ],
+        [
+          "negative result"
+        ],
+        [
+          "option 3",
+          "existing tool"
+        ],
+        [
+          "50%",
+          "50 %",
+          "half"
+        ]
+      ]
+    },
+    "reference": "Option 1, close and publish the negative result (report, a reusable harness, close v0.3), against option 3, take the string edges to an existing tool (risks: the council was only about 50% sure the idea is new, acceptance depends on others, and it was never measured). Option 1 was chosen on 2026-10-20. Option 2 is not in the session text (it was in the report draft)",
+    "evidence": [
+      "session 2026-10-20 (`84137a84`)",
+      "PR #70 names option 1"
+    ]
+  },
+  {
+    "id": "kg-R7",
+    "corpus": "kg",
+    "commit": "e066c56",
+    "category": "rationale",
+    "lives_in": [
+      "session"
+    ],
+    "question": "Why was #40 (a reproducible demo) closed with a README section instead of a separate demo?",
+    "expect": {
+      "keywords": [
+        [
+          "unnecessary",
+          "not needed",
+          "adds nothing"
+        ],
+        [
+          "example graphs",
+          "published examples",
+          "examples"
+        ],
+        [
+          "ask the graph"
+        ]
+      ]
+    },
+    "reference": "The user judged it unnecessary: the repo and the published example graphs already show how to apply kg to any repo, so a separate tutorial adds nothing. The README's *Ask the graph* took its place",
+    "evidence": [
+      "session 2026-10-15 (`4381279d`)",
+      "the outcome alone is in the `docs/requirements.md` change log"
+    ]
+  },
+  {
+    "id": "kg-M1",
+    "corpus": "kg",
+    "commit": "e066c56",
+    "category": "multi-hop",
+    "lives_in": [
+      "file"
+    ],
+    "question": "Which experiments led to closing kg, and what did each one show?",
+    "expect": {
+      "keywords": [
+        [
+          "17"
+        ],
+        [
+          "stale"
+        ],
+        [
+          "scrapy"
+        ],
+        [
+          "companion",
+          "step 0"
+        ],
+        [
+          "lean"
+        ]
+      ]
+    },
+    "reference": "(1) 17 questions on small repos: a tie (code 1.00, graph 0.98, hybrid 1.00). (2) 6 on a stale graph: safe but not useful (0.63; 0.83 once it read changed files). (3) 16 on scrapy: code 0.99, graph 0.93, slower. (4) Step 0, `companion`: 0.96 against 0.98, +45% time, gate failed. (5) `lean` control: the prompt line explains the saving where kg was not used",
+    "evidence": [
+      "`docs/report.md`",
+      "#52",
+      "#67"
+    ]
+  },
+  {
+    "id": "kg-M3",
+    "corpus": "kg",
+    "commit": "e066c56",
+    "category": "multi-hop",
+    "lives_in": [
+      "file",
+      "github"
+    ],
+    "question": "Which facts missing from the graph explain the accuracy losses on scrapy, and which question did each cost?",
+    "expect": {
+      "keywords": [
+        [
+          "type_checking"
+        ],
+        [
+          "inheritance",
+          "subclass"
+        ],
+        [
+          "string",
+          "load_object"
+        ]
+      ]
+    },
+    "reference": "Imports under `if TYPE_CHECKING:` (job runtime impact), inheritance kept as strings (manager subclasses), settings and classes loaded from strings (download delay)",
+    "evidence": [
+      "#67 body",
+      "`docs/report.md` §On a large repo"
+    ]
+  },
+  {
+    "id": "kg-M4",
+    "corpus": "kg",
+    "commit": "e066c56",
+    "category": "multi-hop",
+    "lives_in": [
+      "github",
+      "git-log"
+    ],
+    "question": "Which problems of kg's own implementation did the review of the scrapy run find, and which commit fixed each?",
+    "expect": {
+      "keywords": [
+        [
+          "7947ba7"
+        ],
+        [
+          "matplotlib"
+        ],
+        [
+          "#68"
+        ],
+        [
+          "--depth 0",
+          "depth 0"
+        ],
+        [
+          "97f3741"
+        ]
+      ]
+    },
+    "reference": "Every read re-validated the store (fixed in `7947ba7`, validate once); every command imported matplotlib (lazy loading of `kg.render`, PR #68); `--depth 0` was rejected (`97f3741`)",
+    "evidence": [
+      "#67 body",
+      "`git log`"
+    ]
+  },
+  {
+    "id": "kg-M6",
+    "corpus": "kg",
+    "commit": "e066c56",
+    "category": "multi-hop",
+    "lives_in": [
+      "github",
+      "file"
+    ],
+    "question": "What triggered the single-language rule for agent-written text, and where is it stated now?",
+    "expect": {
+      "keywords": [
+        [
+          "spanish"
+        ],
+        [
+          "#11",
+          "basic-python-cli"
+        ],
+        [
+          "guide.md",
+          "kg guide"
+        ]
+      ]
+    },
+    "reference": "The basic-python-cli graph mixed Spanish and English labels (#11 comment, 2026-10-12); the rule is in the agent guide (`kg guide`, `src/kg/agents/guide.md`)",
+    "evidence": [
+      "#11",
+      "`src/kg/agents/guide.md`"
+    ]
+  },
+  {
+    "id": "kg-M7",
+    "corpus": "kg",
+    "commit": "e066c56",
+    "category": "multi-hop",
+    "lives_in": [
+      "session"
+    ],
+    "question": "Where did the council suggest taking the string-edges idea, and how sure was it that the idea is new?",
+    "expect": {
+      "keywords": [
+        [
+          "code-review-graph",
+          "codebase-memory-mcp",
+          "grimp",
+          "import-linter"
+        ],
+        [
+          "existing tool",
+          "plugin"
+        ],
+        [
+          "50%",
+          "50 %",
+          "half"
+        ]
+      ]
+    },
+    "reference": "To existing tools with users rather than inside kg: code-review-graph, codebase-memory-mcp, or libraries such as grimp or import-linter, as a plugin, PR or small library. It was about 50% sure nothing does it yet, after a short search",
+    "evidence": [
+      "session 2026-10-20 (`84137a84`)"
+    ]
+  },
+  {
+    "id": "kg-M8",
+    "corpus": "kg",
+    "commit": "e066c56",
+    "category": "multi-hop",
+    "lives_in": [
+      "session"
+    ],
+    "question": "What led from the small-repo results to scrapy and node cards, and who chose each?",
+    "expect": {
+      "keywords": [
+        [
+          "scrapy"
+        ],
+        [
+          "larger repo",
+          "large repo",
+          "bigger repo"
+        ],
+        [
+          "node card",
+          "--brief"
+        ],
+        [
+          "#57"
+        ]
+      ]
+    },
+    "reference": "After the small repos tied (2026-10-15), the user and Claude agreed a larger repo was needed and the user chose scrapy. The user also proposed more descriptive nodes (provenance, where in the docs a fact comes from, links to files) to save context, which became node cards (`--brief`, #57)",
+    "evidence": [
+      "session 2026-10-15 (`3c0f074e`)",
+      "#52"
+    ]
+  },
+  {
+    "id": "kg-N1",
+    "corpus": "kg",
+    "commit": "e066c56",
+    "category": "negative",
+    "lives_in": [
+      "file"
+    ],
+    "question": "Which ways of giving the agent the graph were tried and did not beat reading the code?",
+    "expect": {
+      "keywords": [
+        [
+          "graph"
+        ],
+        [
+          "topic"
+        ],
+        [
+          "hybrid"
+        ],
+        [
+          "cards"
+        ],
+        [
+          "companion"
+        ]
+      ]
+    },
+    "reference": "`graph`, `topic`, `hybrid`, `cards` and `companion`. `lean` was the control, not a graph strategy",
+    "evidence": [
+      "`docs/report.md` strategies table"
+    ]
+  },
+  {
+    "id": "kg-N2",
+    "corpus": "kg",
+    "commit": "e066c56",
+    "category": "negative",
+    "lives_in": [
+      "file"
+    ],
+    "question": "Did letting the agent read the files a stale graph reports solve the stale-graph problem?",
+    "expect": {
+      "keywords": [
+        [
+          "partly",
+          "partially"
+        ],
+        [
+          "0.83"
+        ],
+        [
+          "context"
+        ]
+      ]
+    },
+    "reference": "Partly: 0.63 → 0.83, still below the code's 1.00, at three to four times the code's context",
+    "evidence": [
+      "`docs/report.md` §A stale graph"
+    ]
+  },
+  {
+    "id": "kg-N3",
+    "corpus": "kg",
+    "commit": "e066c56",
+    "category": "negative",
+    "lives_in": [
+      "github"
+    ],
+    "question": "Why can a user not edit or delete nodes from the interactive HTML?",
+    "expect": {
+      "keywords": [
+        [
+          "offline"
+        ],
+        [
+          "write back",
+          "cannot write",
+          "can't write"
+        ],
+        [
+          "kg edit",
+          "kg remove",
+          "#28"
+        ]
+      ]
+    },
+    "reference": "A self-contained offline HTML cannot write back to the store; editing went to the CLI instead (`kg remove`, `kg edit`, #28)",
+    "evidence": [
+      "#10 comment",
+      "#28"
+    ]
+  },
+  {
+    "id": "kg-N4",
+    "corpus": "kg",
+    "commit": "e066c56",
+    "category": "negative",
+    "lives_in": [
+      "session"
+    ],
+    "question": "Why did Claude not merge PR #68 itself?",
+    "expect": {
+      "keywords": [
+        [
+          "classifier",
+          "permission"
+        ],
+        [
+          "user merged",
+          "merged it from github",
+          "the user"
+        ]
+      ]
+    },
+    "reference": "Claude Code's permission classifier blocked the merge through the API as an unreviewed merge; Claude did not try to get around it, and the user merged it from GitHub",
+    "evidence": [
+      "session 2026-10-20 (`84137a84`)"
+    ]
+  },
+  {
+    "id": "kg-S1",
+    "corpus": "kg",
+    "commit": "e066c56",
+    "category": "supersession",
+    "lives_in": [
+      "file",
+      "github"
+    ],
+    "question": "The first step-0 result said `companion`'s context saving was not kg's. What did the later control change in that conclusion?",
+    "expect": {
+      "keywords": [
+        [
+          "lean"
+        ],
+        [
+          "-56%",
+          "−56%",
+          "56%",
+          "halve"
+        ],
+        [
+          "+35%",
+          "35%"
+        ]
+      ]
+    },
+    "reference": "The `lean` control confirmed it only where kg was not called (the prompt line explains all the saving there). Where the agent called kg, the graph did halve the context (−56%) at the same score, at +35% time",
+    "evidence": [
+      "#67, both comments",
+      "`docs/report.md` §What is the graph's"
+    ]
+  },
+  {
+    "id": "kg-S2",
+    "corpus": "kg",
+    "commit": "e066c56",
+    "category": "supersession",
+    "lives_in": [
+      "file",
+      "github"
+    ],
+    "question": "Does `scr-impact-job-runtime` fail with every strategy?",
+    "expect": {
+      "keywords": [
+        [
+          "lean"
+        ],
+        [
+          "1.00",
+          "1.0"
+        ],
+        [
+          "companion"
+        ],
+        [
+          "0.50",
+          "0.5"
+        ]
+      ]
+    },
+    "reference": "It was first reported so (#67, first comment). The later `lean` control scored 1.00 on it (104 s); `companion` scored 0.50",
+    "evidence": [
+      "#67 comments",
+      "`docs/report.md`"
+    ]
+  },
+  {
+    "id": "kg-S4",
+    "corpus": "kg",
+    "commit": "e066c56",
+    "category": "supersession",
+    "lives_in": [
+      "file"
+    ],
+    "question": "What is the current plan for v0.3?",
+    "expect": {
+      "keywords": [
+        [
+          "no plan",
+          "none",
+          "there is none",
+          "ended"
+        ],
+        [
+          "#69",
+          "closed",
+          "gate failed"
+        ],
+        [
+          "experiment 2"
+        ]
+      ]
+    },
+    "reference": "There is none: v0.3 ended on 2026-10-20 after the gate failed; #35, #55, #60 and #66 were closed as not planned. Work moved to experiment 2",
+    "evidence": [
+      "`docs/roadmap.md` §How v0.3 ended",
+      "this branch's `docs/experiment-2/`"
+    ]
+  },
+  {
+    "id": "kg-S5",
+    "corpus": "kg",
+    "commit": "e066c56",
+    "category": "supersession",
+    "lives_in": [
+      "github"
+    ],
+    "question": "#59's acceptance criteria asked for the CI template to be tried on this repo's own workflow. Was it?",
+    "expect": {
+      "keywords": [
+        [
+          "does not commit",
+          "doesn't commit",
+          "not commit"
+        ],
+        [
+          "try-repo"
+        ],
+        [
+          "demo repo"
+        ]
+      ]
+    },
+    "reference": "No. The criterion was replaced on purpose when #59 closed (2026-10-15): kg does not commit its own `.kg/`, so the template has nothing to check here. The hooks were tried instead with `pre-commit try-repo` on a demo repo (`kg-status` fails on a stale graph, `kg-extract` updates it and fails the commit like a formatter)",
+    "evidence": [
+      "#59 body and closing comment"
+    ]
+  },
+  {
+    "id": "kg-T1",
+    "corpus": "kg",
+    "commit": "e066c56",
+    "category": "staleness",
+    "lives_in": [
+      "github",
+      "file"
+    ],
+    "question": "#67 says every `kg query` re-validates scrapy's 11.5 MB store, 5–10 s per call. Is it still true?",
+    "expect": {
+      "keywords": [
+        [
+          "7947ba7",
+          "validated once",
+          "cache"
+        ]
+      ]
+    },
+    "reference": "No. Since `7947ba7` a store is validated once and the result cached by content hash",
+    "evidence": [
+      "#67",
+      "`src/kg/store.py`",
+      "`docs/store.md`"
+    ]
+  },
+  {
+    "id": "kg-T2",
+    "corpus": "kg",
+    "commit": "e066c56",
+    "category": "staleness",
+    "lives_in": [
+      "github",
+      "git-log"
+    ],
+    "question": "#67 says `kg query node X --depth 0` gives a usage error. Is it still true?",
+    "expect": {
+      "keywords": [
+        [
+          "97f3741",
+          "alone"
+        ]
+      ]
+    },
+    "reference": "No. `97f3741` shows a node alone with `--depth 0`",
+    "evidence": [
+      "#67",
+      "`git log`",
+      "`src/kg/cli.py`"
+    ]
+  },
+  {
+    "id": "kg-T3",
+    "corpus": "kg",
+    "commit": "e066c56",
+    "category": "staleness",
+    "lives_in": [
+      "github",
+      "file"
+    ],
+    "question": "The status comment on #52 (2026-10-19) says scrapy is not in `bench/repos.json` and has no questions. Is it still true?",
+    "expect": {
+      "keywords": [
+        [
+          "repos.json"
+        ],
+        [
+          "16"
+        ]
+      ]
+    },
+    "reference": "No. `bench/repos.json` lists scrapy and `bench/questions/scrapy.json` has its 16 questions",
+    "evidence": [
+      "#52 comment",
+      "`bench/repos.json`",
+      "`bench/questions/scrapy.json`"
+    ]
+  },
+  {
+    "id": "kg-T4",
+    "corpus": "kg",
+    "commit": "e066c56",
+    "category": "staleness",
+    "lives_in": [
+      "file",
+      "git-log"
+    ],
+    "question": "The README's *Why* said an agent answers questions reliably when it reasons over a graph instead of grepping files. Is it still true?",
+    "expect": {
+      "keywords": [
+        [
+          "b663f17",
+          "#70"
+        ],
+        [
+          "not more accurate",
+          "not make it more accurate",
+          "does not make"
+        ],
+        [
+          "halve",
+          "half"
+        ]
+      ]
+    },
+    "reference": "No. Since `b663f17` (PR #70, 2026-10-20) it says the graph answers the structural part with the evidence for each edge and halves what an agent reads on such questions, but does not make it more accurate than grep",
+    "evidence": [
+      "`README.md` §Why",
+      "`git log -p README.md`"
+    ]
+  },
+  {
+    "id": "kg-B1",
+    "corpus": "kg",
+    "commit": "e066c56",
+    "category": "blocked",
+    "lives_in": [
+      "github"
+    ],
+    "question": "Which decision about the store was left to revisit, and what was it waiting for?",
+    "expect": {
+      "keywords": [
+        [
+          "rf-23",
+          "mcp"
+        ],
+        [
+          "never started",
+          "not started",
+          "moved to v0.3"
+        ]
+      ]
+    },
+    "reference": "Committing kg's own graph and running the CI template on it, to revisit when the MCP server (RF-23) lands and agents should query kg's graph without building it. RF-23 moved to v0.3 and was never started",
+    "evidence": [
+      "#59 closing comment",
+      "`docs/requirements.md`"
+    ]
+  },
+  {
+    "id": "kg-B2",
+    "corpus": "kg",
+    "commit": "e066c56",
+    "category": "blocked",
+    "lives_in": [
+      "file",
+      "github"
+    ],
+    "question": "Which parts of #52's step 2 were left open?",
+    "expect": {
+      "keywords": [
+        [
+          "section"
+        ],
+        [
+          "quote",
+          "quoted claim"
+        ],
+        [
+          "workflow trigger",
+          "ci workflow",
+          "cu-03"
+        ]
+      ]
+    },
+    "reference": "`Section` nodes for documents, quoted claims in the agent layer, and extracting CI workflow triggers (CU-03)",
+    "evidence": [
+      "#52 comment of 2026-10-19",
+      "`docs/benchmark.md`"
+    ]
+  },
+  {
+    "id": "kg-B3",
+    "corpus": "kg",
+    "commit": "e066c56",
+    "category": "blocked",
+    "lives_in": [
+      "file",
+      "github"
+    ],
+    "question": "Which v0.3 items were never started, and why?",
+    "expect": {
+      "keywords": [
+        [
+          "rf-23",
+          "mcp"
+        ],
+        [
+          "export",
+          "rf-60"
+        ],
+        [
+          "calls",
+          "rf-13"
+        ],
+        [
+          "gate failed",
+          "#69",
+          "closed"
+        ]
+      ]
+    },
+    "reference": "MCP (RF-23), export (RF-60–61), `calls` (RF-13), deduplication (RF-31–33), hook and history (RF-73–74), the Dockerfile, plus #35, #55, #60 and #66: the gate failed and kg was closed (#69)",
+    "evidence": [
+      "`docs/roadmap.md`",
+      "`docs/requirements.md` 1.2"
+    ]
+  },
+  {
+    "id": "kg-B4",
+    "corpus": "kg",
+    "commit": "e066c56",
+    "category": "blocked",
+    "lives_in": [
+      "file",
+      "github"
+    ],
+    "question": "#59 left incremental extraction (RF-78) for later. What was it waiting for, and did that happen?",
+    "expect": {
+      "keywords": [
+        [
+          "slow"
+        ],
+        [
+          "scrapy"
+        ],
+        [
+          "never",
+          "did not happen",
+          "didn't happen",
+          "not timed"
+        ]
+      ]
+    },
+    "reference": "For full updates to become slow: #59 says to revisit it if the hook is slow on scrapy, and RF-78 is \"needed only if full updates become slow\" (RNF-06). It never happened: the hook was not timed on scrapy, v0.3 ended, and RF-78 is still under \"Not yet\" (every run reads the whole repo, about 1 s for 100 files)",
+    "evidence": [
+      "#59 technical notes",
+      "`docs/requirements.md` RF-78",
+      "`docs/extract.md` §Not yet"
+    ]
+  },
+  {
+    "id": "kg-C1",
+    "corpus": "kg",
+    "commit": "e066c56",
+    "category": "continuation",
+    "lives_in": [
+      "file",
+      "session"
+    ],
+    "question": "I want to measure a new tool with the benchmark harness. What do I read first, which strategies do I compare it with, and how must the runs be launched?",
+    "expect": {
+      "keywords": [
+        [
+          "measure your own tool"
+        ],
+        [
+          "code"
+        ],
+        [
+          "lean"
+        ],
+        [
+          "subagent"
+        ],
+        [
+          "api key"
+        ]
+      ]
+    },
+    "reference": "`bench/README.md` \"Measure your own tool\"; compare with `code` and `lean`; run with Claude Code subagents (`python -m bench.subagent prepare`, then `collect --usage`), never with an API key",
+    "evidence": [
+      "`bench/README.md`",
+      "session of 2026-10-15"
+    ]
+  },
+  {
+    "id": "kg-C2",
+    "corpus": "kg",
+    "commit": "7dfd6ad",
+    "category": "continuation",
+    "lives_in": [
+      "file",
+      "github"
+    ],
+    "question": "Resume experiment 2 (pinned at `7dfd6ad`). What is done and what comes next?",
+    "expect": {
+      "keywords": [
+        [
+          "1.1",
+          "approved"
+        ],
+        [
+          "open questions"
+        ],
+        [
+          "engram"
+        ],
+        [
+          "p0"
+        ],
+        [
+          "questions"
+        ]
+      ]
+    },
+    "reference": "Requirements 1.1 approved, open questions answered, Engram and pandas cloned in `samples/`. Next is P0: study Engram, write the questions, freeze them with the gates",
+    "evidence": [
+      "`docs/experiment-2/requirements.md`",
+      "#71"
+    ]
+  },
+  {
+    "id": "kg-C4",
+    "corpus": "kg",
+    "commit": "e066c56",
+    "category": "continuation",
+    "lives_in": [
+      "session"
+    ],
+    "question": "On the evening of 2026-10-15 the session was lost. What plan did the next one resume from, and how was it recovered?",
+    "expect": {
+      "keywords": [
+        [
+          "pasted",
+          "by hand"
+        ],
+        [
+          "hybrid",
+          "stale graph"
+        ],
+        [
+          "scrapy"
+        ],
+        [
+          "#55"
+        ],
+        [
+          "v0.1.0",
+          "tag"
+        ]
+      ]
+    },
+    "reference": "The user pasted Claude's last message by hand. The plan, by impact: (1) let `hybrid` read the files a stale graph reports, (2) the rest of step 2 (document sections, quoted claims), (3) step 3, scrapy with 15–20 questions, (4) #55; tags still to confirm (v0.1.0 retroactive on `8b9d7b2`). Claude recommended 1, then scrapy",
+    "evidence": [
+      "sessions 2026-10-15 (`735af7cf`, `4381279d`)"
+    ]
+  },
+  {
+    "id": "kg-C5",
+    "corpus": "kg",
+    "commit": "e066c56",
+    "category": "continuation",
+    "lives_in": [
+      "session"
+    ],
+    "question": "On 2026-10-19 work stopped at the session limit. What was in progress, and was the hand-over saved?",
+    "expect": {
+      "keywords": [
+        [
+          "scrapy"
+        ],
+        [
+          "report"
+        ],
+        [
+          "checkpoint"
+        ],
+        [
+          "not written",
+          "no checkpoint",
+          "never written",
+          "was not saved",
+          "not saved"
+        ],
+        [
+          "council"
+        ]
+      ]
+    },
+    "reference": "The scrapy repetitions of #52, to be followed by the report. The user asked for a `checkpoint.md` for the next session, but the limit hit first: no checkpoint was written. The next session, on 2026-10-20, began with the council instead",
+    "evidence": [
+      "session 2026-10-19 (`4578caf8`)",
+      "no `checkpoint.md` in the repo"
+    ]
+  }
+]

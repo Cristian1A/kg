@@ -732,6 +732,36 @@ def test_reference_answers_score_full_marks(path):
         assert grade(expect, answer).score == 1.0, q["id"]
 
 
+# Experiment 2 (#71): category shares of R2-04 and the hidden share of R2-06
+MEMORY_SHARES = {
+    "direct": 0.20,
+    "rationale": 0.15,
+    "multi-hop": 0.15,
+    "negative": 0.10,
+    "supersession": 0.10,
+    "staleness": 0.10,
+    "blocked": 0.10,
+    "continuation": 0.10,
+}
+
+
+@pytest.mark.parametrize("path", sorted((ROOT / "questions/memory").glob("*.json")))
+def test_memory_questions_follow_the_frozen_design(path):
+    questions = json.loads(path.read_text(encoding="utf-8"))
+    assert len({q["id"] for q in questions}) == len(questions) >= 30
+    counts = {c: 0 for c in MEMORY_SHARES}
+    for q in questions:
+        counts[q["category"]] += 1
+        assert q["reference"] and q["evidence"], q["id"]
+        assert set(q["lives_in"]) <= {"file", "git-log", "github", "session"}
+        # Every key point is in the reference answer, which scores full marks
+        for group in q["expect"]["keywords"]:
+            assert any(alt.lower() in q["reference"].lower() for alt in group), q["id"]
+    assert counts == {c: round(s * len(questions)) for c, s in MEMORY_SHARES.items()}
+    hidden = [q for q in questions if not {"file", "git-log"} & set(q["lives_in"])]
+    assert len(hidden) * 3 >= len(questions)
+
+
 def test_bench_does_not_need_the_sdk():
     # The harness imports anthropic lazily, only to call the model
     source = Path(ROOT / "agent.py").read_text() + Path(ROOT / "tools.py").read_text()
