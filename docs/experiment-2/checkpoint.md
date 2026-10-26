@@ -3,14 +3,14 @@
 Where the work stands, so a new session can resume it without this one's
 conversation. **Update this file whenever the state below changes.**
 
-Last update: 2026-10-26, during the first scored run (G0).
+Last update: 2026-10-26, all 240 runs of G0 done; analysis pending.
 
 ## State
 
 | Phase | State |
 |-------|-------|
 | P0 | done: [questions](questions-draft.md) frozen (`bench/questions/memory/kg.json`), [corpus](corpus.md) (`bench/corpus/kg/`), gates in [requirements](requirements.md) §7 |
-| P1 | harness done ([harness.md](harness.md), `bench/memory.py`, S0 and S2); **the G0 run is in progress** |
+| P1 | harness done ([harness.md](harness.md), `bench/memory.py`, S0 and S2); **the G0 runs are done, analysis pending** |
 | P2–P4 | not started |
 
 Branch `experiment-2/agent-context-memory`; issue #71 tracks the checklist.
@@ -128,11 +128,14 @@ EOF
   closest with 21) and no subagent reported a violation. Only 20 subagents
   can run at once, so the last two were launched as the first finished.
   Done after batch 12: 218 of 240.
-- Batch 13 (positions 219–240, the last 22, session `23eb9334`):
-  **launched, in progress** (20 at once, the last two as slots free). If
-  this note is still here, check `status`; runs with calls but no answer
-  were cut off (ask the user before resetting them). Then follow "When
-  every run is done".
+- Batch 13 (positions 219–240, the last 22, session `23eb9334`): 21 runs
+  answered. `kg-R1.s0.3` used its 25 calls without answering (scores 0),
+  the same way as the other three S0 runs (several calls chained per shell
+  command); four S0 runs in all, none with S2. `kg-B1.s0.3` piped tool
+  output through grep/cut/head (logged in `violations.tsv`, three in all).
+- **Every run is done: 240 of 240** (2026-10-26). **Next:** the steps
+  under "When every run is done" (`usage` for sessions `8c8f5c90`,
+  `c97e654c` and `23eb9334`, then `collect`, `report` and the G0 check).
 
 ## Decisions already taken (do not reopen)
 
