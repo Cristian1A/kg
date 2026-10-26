@@ -3,7 +3,7 @@
 Where the work stands, so a new session can resume it without this one's
 conversation. **Update this file whenever the state below changes.**
 
-Last update: 2026-10-26, G0 passed; P2 started (S1, S4, S8 implemented).
+Last update: 2026-10-26, G0 passed; P2: S4/S8 run in progress.
 
 ## State
 
@@ -11,7 +11,7 @@ Last update: 2026-10-26, G0 passed; P2 started (S1, S4, S8 implemented).
 |-------|-------|
 | P0 | done: [questions](questions-draft.md) frozen (`bench/questions/memory/kg.json`), [corpus](corpus.md) (`bench/corpus/kg/`), gates in [requirements](requirements.md) §7 |
 | P1 | harness done ([harness.md](harness.md), `bench/memory.py`, S0 and S2); **G0 done and passed** ([g0.md](g0.md)) |
-| P2 | in progress: S1, S4 and S8 implemented ([harness.md](harness.md)); their run is next |
+| P2 | in progress: S1, S4 and S8 implemented ([harness.md](harness.md)); **the S4/S8 run is in progress** |
 | P3–P4 | not started |
 
 Branch `experiment-2/agent-context-memory`; issue #71 tracks the checklist.
@@ -153,10 +153,25 @@ EOF
 - **2026-10-26: S1, S4 and S8 implemented** in `bench/memory.py`, with
   tests; the design is in [harness.md](harness.md) (FTS5 seeds, relations to
   depth 2 for S4 and 1 for S8, 8 memories, S8 adds evidence). Not run yet.
-- **Next:** decide with the user the run (S4 and S8 × 40 × 3 = 240 runs,
-  S1 optional), prepare it with `prepare --strategies s4,s8 --repeat 3`,
-  record the session path here and launch it in batches as for G0. S0 and
-  S2 are not run again: G1–G3 compare against the G0 session.
+- **Decided with the user (2026-10-26):** S1 stays (R2-13 requires it once
+  H1 holds, and it is the control for "the whole memory fits in the
+  prompt"), run separately after S4/S8. S0 and S2 are not run again: G1–G3
+  compare against the G0 session.
+
+### The S4/S8 run in progress
+
+- **Session:** `bench/.cache/memory/20261026T154359Z/` (git-ignored, this
+  machine only): 240 runs = 40 questions × `s4`, `s8` × 3 repeats, prepared
+  at `3410487`. `order.txt` is shuffled with seed 71 the same way as G0's
+  (`random.Random(71).shuffle` of the sorted run names).
+- **Resume and launch exactly as for G0** (section "Resume" above), with
+  `S=bench/.cache/memory/20261026T154359Z`: the same subagent prompt, about
+  20 at a time (at most 20 subagents run at once), ask before resetting a
+  cut-off run.
+- **Transcripts:** runs launched from session
+  `23eb9334-2b4d-4205-9750-5e558d746c9e` (batch 1 on).
+- Batch 1 (positions 1–20): **launched, in progress.** If this note is still
+  here, check `status`.
 - **S3** waits until the S4/S8 run is done (the user's decision,
   2026-10-26). Runtime: `sentence-transformers` with `all-MiniLM-L6-v2`, as
   an optional extra (N2-02, Q2-03).
