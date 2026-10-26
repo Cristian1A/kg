@@ -140,8 +140,12 @@ EOF
 - **G0 passes.** On the 15 hidden questions: S0 0.387, S2 0.916, difference
   +0.529 (+0.520 without the three violations; question-level bootstrap
   95% CI 0.32–0.73, seed 71). The write-up is [g0.md](g0.md).
-  **Next:** the hand audit of abstentions (see the grader note above),
-  then update #71 and start P2.
+- **Hand audit done** (2026-10-26, in [g0.md](g0.md)): 18 of 45 S0 answers
+  abstain (they got 7.0 points), none of S2. Scoring them 0 gives +0.684.
+  The three `kg-B1.s2` runs are a keyword false negative (right decision,
+  no RF-23), not a retrieval failure. #71 updated with the result.
+  **Next:** P2 (S4, S8, then S1, S3; gates G1–G3) and the agent-written
+  corpus (R2-11).
 
 ## Decisions already taken (do not reopen)
 
