@@ -157,8 +157,9 @@ EOF
   S1 optional), prepare it with `prepare --strategies s4,s8 --repeat 3`,
   record the session path here and launch it in batches as for G0. S0 and
   S2 are not run again: G1–G3 compare against the G0 session.
-- **S3** needs the embeddings extra (`all-MiniLM-L6-v2`, runtime to choose,
-  N2-02): ask the user before adding the dependency.
+- **S3** waits until the S4/S8 run is done (the user's decision,
+  2026-10-26). Runtime: `sentence-transformers` with `all-MiniLM-L6-v2`, as
+  an optional extra (N2-02, Q2-03).
 
 ## Decisions already taken (do not reopen)
 
