@@ -123,7 +123,10 @@ EOF
 - Batch 11 (positions 177–196, session `23eb9334`): every run answered;
   none used its 25 calls (`kg-C4.s0.2` came closest with 20) and no
   subagent reported a violation. Done after batch 11: 196 of 240.
-  **Next:** continue from position 197.
+- Batch 12 (positions 197–218, 22 runs, session `23eb9334`): **launched,
+  in progress.** If this note is still here, check `status`; runs with
+  calls but no answer were cut off (ask the user before resetting them).
+  Batch 13 will be the last 22 (positions 219–240).
 
 ## Decisions already taken (do not reopen)
 
