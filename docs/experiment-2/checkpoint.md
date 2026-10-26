@@ -3,14 +3,14 @@
 Where the work stands, so a new session can resume it without this one's
 conversation. **Update this file whenever the state below changes.**
 
-Last update: 2026-10-26, all 240 runs of G0 done; analysis pending.
+Last update: 2026-10-26, G0 run and analysis done: G0 passes.
 
 ## State
 
 | Phase | State |
 |-------|-------|
 | P0 | done: [questions](questions-draft.md) frozen (`bench/questions/memory/kg.json`), [corpus](corpus.md) (`bench/corpus/kg/`), gates in [requirements](requirements.md) §7 |
-| P1 | harness done ([harness.md](harness.md), `bench/memory.py`, S0 and S2); **the G0 runs are done, analysis pending** |
+| P1 | harness done ([harness.md](harness.md), `bench/memory.py`, S0 and S2); **G0 done and passed** ([g0.md](g0.md)) |
 | P2–P4 | not started |
 
 Branch `experiment-2/agent-context-memory`; issue #71 tracks the checklist.
@@ -130,12 +130,18 @@ EOF
   Done after batch 12: 218 of 240.
 - Batch 13 (positions 219–240, the last 22, session `23eb9334`): 21 runs
   answered. `kg-R1.s0.3` used its 25 calls without answering (scores 0),
-  the same way as the other three S0 runs (several calls chained per shell
-  command); four S0 runs in all, none with S2. `kg-B1.s0.3` piped tool
+  the same way as earlier S0 runs (several calls chained per shell
+  command). `collect` counts six such S0 runs in all (`kg-R1.s0.2` and
+  `kg-R5.s0.2` had not been noted per batch), none with S2. `kg-B1.s0.3` piped tool
   output through grep/cut/head (logged in `violations.tsv`, three in all).
-- **Every run is done: 240 of 240** (2026-10-26). **Next:** the steps
-  under "When every run is done" (`usage` for sessions `8c8f5c90`,
-  `c97e654c` and `23eb9334`, then `collect`, `report` and the G0 check).
+- **Every run is done: 240 of 240** (2026-10-26). `usage` was run for the
+  three sessions (240 runs with usage; `kg-C5.s2.2` has 0 tokens recorded),
+  `collect` wrote `bench/results/memory/20261025T212002Z.jsonl`.
+- **G0 passes.** On the 15 hidden questions: S0 0.387, S2 0.916, difference
+  +0.529 (+0.520 without the three violations; question-level bootstrap
+  95% CI 0.32–0.73, seed 71). The write-up is [g0.md](g0.md).
+  **Next:** the hand audit of abstentions (see the grader note above),
+  then update #71 and start P2.
 
 ## Decisions already taken (do not reopen)
 
