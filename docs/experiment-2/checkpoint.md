@@ -3,7 +3,7 @@
 Where the work stands, so a new session can resume it without this one's
 conversation. **Update this file whenever the state below changes.**
 
-Last update: 2026-10-25, during the first scored run (G0).
+Last update: 2026-10-26, during the first scored run (G0).
 
 ## State
 
@@ -58,7 +58,8 @@ python -m bench.report bench/results/memory/20261025T212002Z.jsonl
 
 - The subagents' transcripts live under the Claude Code session that launched
   them: `8c8f5c90-4496-4460-8c26-1107a306f8e4` for the runs started on
-  2026-10-25. Runs launched from a later session have their transcripts under
+  2026-10-25, `c97e654c-8c88-4590-8da9-24580c3cd0b5` for those started on
+  2026-10-26 (from batch 5 on). Runs launched from a later session have their transcripts under
   that session's ID, so run `usage` once per session directory; it merges
   into `usage.json`.
 - **G0** (requirements §7): on the 15 questions that only GitHub or a session
@@ -92,6 +93,26 @@ EOF
   number of answers that admit not knowing, next to the mechanical score.
 - After batches 1 and 2 (40 runs, 2026-10-25): every run answered except
   none; `kg-R6` scored 0.00 in all three S0 runs and 1.00 with S2.
+- Batch 4 (positions 61–80 of `order.txt`) was cut off at 22:27 on
+  2026-10-25 when the session ran out of tokens: 19 runs had 1–3 calls and
+  no answer. With the user's approval (2026-10-26) their `calls.jsonl` was
+  deleted and they were launched again in batch 6. No subagent had seen a
+  full answer, so the reset does not bias the result.
+- Batch 5 (positions 81–100): `kg-R1.s0.1` used its 25 calls without
+  answering (scores 0, as decided). It had chained several calls per shell
+  command; it used only the allowed command, so it is not a violation.
+- Batch 7 (positions 101–120): `kg-R5.s0.3` and `kg-B1.s0.2` also used their
+  25 calls without answering, the same way (loops and chained calls in one
+  shell command). Three S0 runs so far, none with S2. Report this pattern
+  next to G0: S0 spends more calls searching for what is not in the repo.
+- Batch 8 (positions 121–140): every run answered. `kg-S2.s2.3` piped the
+  tool output through grep (logged in `violations.tsv`, the first S2 one).
+- Done after batch 8: 141 of 240.
+- Batch 9 (positions 141–160) was stopped on 2026-10-26 at the user's request
+  (tokens running out): 15 runs answered, 5 were cut off with 9–12 calls
+  (`kg-B2.s0.3`, `kg-D7.s0.1`, `kg-M7.s0.1`, `kg-M7.s0.2`, `kg-N3.s0.2`).
+  **Next session:** ask the user before deleting their `calls.jsonl`, launch
+  them again, then continue from position 161. Done: 156 of 240.
 
 ## Decisions already taken (do not reopen)
 
