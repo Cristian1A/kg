@@ -119,7 +119,10 @@ EOF
   launched again, together with the 15 pending runs of positions 161–176
   (161 was already done). Every run answered; none used its 25 calls
   (`kg-R5.s0.1` came closest with 20) and no subagent reported a violation.
-  Done after batch 10: 176 of 240. **Next:** continue from position 177.
+  Done after batch 10: 176 of 240.
+- Batch 11 (positions 177–196, session `23eb9334`): **launched, in
+  progress.** If this note is still here, check `status`; runs with calls
+  but no answer were cut off (ask the user before resetting them).
 
 ## Decisions already taken (do not reopen)
 
