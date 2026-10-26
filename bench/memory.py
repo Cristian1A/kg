@@ -6,9 +6,16 @@ carries (N2-01). The context is a function of the question and the store
 (R2-12), the same on every run (N2-03):
 
 - `s0`: no memory.
+- `s1`: every memory, oldest first: the upper bound on recall.
 - `s2`: the K best memories by SQLite FTS5 (BM25) over the question's words,
   as Engram ranks them: each word quoted, joined by OR, title weighted 5 and
   content 1 (`docs/experiment-2/engram.md`).
+- `s4`: graph traversal. The 3 best FTS5 memories are seeds; the typed
+  relations of the store are followed to depth 2, the closest and most
+  telling links first, up to K memories, each shown with its relations.
+- `s8`: hybrid. The 4 best FTS5 memories are seeds; their neighbours at
+  depth 1 fill the K, in FTS5 order, each shown with its relations and its
+  evidence (issues, PRs, commits, files).
 
 The store is the curated corpus (`corpus/kg/`, one kg document per session)
 merged in order up to the session pinned at the question's commit. Runs use
@@ -44,12 +51,30 @@ from bench.tools import search as search_files
 CORPUS = ROOT / "corpus/kg"
 QUESTIONS = ROOT / "questions/memory/kg.json"
 SESSIONS = CACHE.parent / "memory"
-STRATEGIES = ("s0", "s2")
+STRATEGIES = ("s0", "s1", "s2", "s4", "s8")
 MEMORY_TYPES = ("Decision", "Task", "Experiment", "Issue", "Constraint", "Session")
 TOP_K = 8
 # Engram's BM25 column weights (internal/store/store.go): title 5, content 1
 FTS_WEIGHTS = {"id": 0.0, "title": 5.0, "content": 1.0, "type": 0.0}
 MAX_LOG = 200  # commits per git_log call
+# S4 and S8: FTS5 seeds, then the store's relations up to a depth (R2-12)
+SEEDS = {"s4": 3, "s8": 4}
+DEPTH = {"s4": 2, "s8": 1}
+# Relations between two memories a traversal follows, as (link, priority):
+# a recorded reason, replacement or block first, then a shared issue, PR,
+# commit or file, then the session that produced a memory. Components are
+# not followed: one is shared by up to 19 memories, so it links nearly all.
+DIRECT = ("supersedes", "blocked_by", "decided_because")
+ANCHORS = ("supported_by", "invalidated_by")
+PRIORITY = {"direct": 0, "evidence": 1, "session": 2}
+# How an edge reads from its source and from its target
+SHOWN = {
+    "supersedes": ("supersedes", "superseded by"),
+    "blocked_by": ("blocked by", "blocks"),
+    "decided_because": ("decided because of", "reason for"),
+    "invalidated_by": ("invalidated by", "invalidates"),
+    "affects": ("affects", "affected by"),
+}
 
 SYSTEM = """You answer questions about the history of a software project, kg:
 what was decided and why, what was tried, what changed and what is pending.
@@ -69,13 +94,27 @@ REPO_HINT = (
 )
 HINTS = {
     "s0": REPO_HINT + " There is no record of the project's past work sessions.",
-    "s2": REPO_HINT
-    + " The project also keeps a memory: records of its past work sessions and "
-    "what they decided, tried and left pending. A full-text search of that "
-    "memory with your question returned the memories below. They may be "
-    "incomplete, and each says its status: a superseded or invalidated memory "
-    "no longer holds.",
 }
+MEMORY_HINT = (
+    " The project also keeps a memory: records of its past work sessions and "
+    "what they decided, tried and left pending. {how} They may be incomplete, "
+    "and each says its status: a superseded or invalidated memory no longer "
+    "holds."
+)
+HOW = {
+    "s1": "The whole memory is below, oldest first.",
+    "s2": "A full-text search of that memory with your question returned the "
+    "memories below.",
+    "s4": "A full-text search of that memory with your question found the first "
+    "memories below; the rest are linked to them by the memory's recorded "
+    "relations. Under each memory are its relations: what it supersedes, what "
+    "blocks it, what it was decided because of, what it affects.",
+    "s8": "A full-text search of that memory with your question found the first "
+    "memories below; the rest are linked to them by the memory's recorded "
+    "relations. Under each memory are its relations and its evidence: the "
+    "issues, PRs, commits and files that support it.",
+}
+HINTS.update({s: REPO_HINT + MEMORY_HINT.format(how=h) for s, h in HOW.items()})
 
 GIT_LOG = {
     "name": "git_log",
@@ -186,13 +225,117 @@ def fts_search(conn: sqlite3.Connection, text: str, k: int = TOP_K) -> list[str]
     return [r[0] for r in rows]
 
 
+def is_memory(graph: nx.MultiDiGraph, node: str) -> bool:
+    return graph.nodes[node]["type"] in MEMORY_TYPES
+
+
+def linked(graph: nx.MultiDiGraph, node: str) -> dict[str, int]:
+    """The memories one link from `node`, each with its best link's priority."""
+    found: dict[str, int] = {}
+
+    def add(other: str, link: str) -> None:
+        if other != node and is_memory(graph, other):
+            found[other] = min(found.get(other, PRIORITY[link]), PRIORITY[link])
+
+    for u, v, d in [
+        *graph.out_edges(node, data=True),
+        *graph.in_edges(node, data=True),
+    ]:
+        other = v if u == node else u
+        if d["type"] in DIRECT:
+            add(other, "direct")
+        elif d["type"] == "produced":
+            add(other, "session")
+        elif d["type"] in ANCHORS and graph.nodes[other]["type"] == "Evidence":
+            for w, _, e in graph.in_edges(other, data=True):
+                if e["type"] in ANCHORS:
+                    add(w, "evidence")
+    return found
+
+
+def traverse(
+    graph: nx.MultiDiGraph, seeds: list[str], depth: int
+) -> dict[str, tuple[int, int, int]]:
+    """Memories within `depth` links of the seeds: (hops, priority, seed rank).
+
+    Each memory keeps its shortest path, and among those its best link and
+    then the best-ranked seed it was reached from.
+    """
+    found = {s: (0, 0, rank) for rank, s in enumerate(seeds)}
+    frontier = list(seeds)
+    for hop in range(1, depth + 1):
+        reached: dict[str, tuple[int, int, int]] = {}
+        for node in frontier:
+            for other, priority in linked(graph, node).items():
+                if other not in found:
+                    path = (hop, priority, found[node][2])
+                    reached[other] = min(reached.get(other, path), path)
+        found.update(reached)
+        frontier = sorted(reached)
+    return found
+
+
+def relations(graph: nx.MultiDiGraph, node: str) -> list[str]:
+    """A memory's typed relations, as lines under it (S4, S8)."""
+    lines = []
+    edges = [(d["type"], 0, v) for _, v, d in graph.out_edges(node, data=True)]
+    edges += [(d["type"], 1, u) for u, _, d in graph.in_edges(node, data=True)]
+    for kind, side, other in sorted(edges):
+        if kind in SHOWN:
+            label = graph.nodes[other].get("label", "")
+            lines.append(f"- {SHOWN[kind][side]}: [{other}] {label}".rstrip())
+    return lines
+
+
+def evidence(graph: nx.MultiDiGraph, node: str) -> list[str]:
+    """The evidence a memory is anchored to, as lines under it (S8)."""
+    lines = []
+    for _, v, d in sorted(graph.out_edges(node, data=True), key=lambda e: e[1]):
+        if d["type"] == "supported_by" and graph.nodes[v]["type"] == "Evidence":
+            attrs = graph.nodes[v].get("attrs", {})
+            anchor = " ".join(
+                str(attrs[k]) for k in ("kind", "ref", "commit") if attrs.get(k)
+            )
+            lines.append(f"- evidence: {anchor}: {graph.nodes[v].get('label', '')}")
+    return lines
+
+
+def by_age(graph: nx.MultiDiGraph, node: str) -> tuple[str, str]:
+    attrs = graph.nodes[node].get("attrs", {})
+    return (attrs.get("created") or attrs.get("date") or "", node)
+
+
 def context(strategy: str, question: str, graph: nx.MultiDiGraph) -> str:
     """The memory context a strategy puts in the prompt ('' for S0)."""
     if strategy == "s0":
         return ""
+    if strategy == "s1":
+        ids = sorted(memories(graph), key=lambda n: by_age(graph, n))
+        return "\n\n".join(render(graph, n) for n in ids)
     if strategy == "s2":
         ids = fts_search(fts_index(graph), question)
         return "\n\n".join(render(graph, n) for n in ids)
+    if strategy in ("s4", "s8"):
+        conn = fts_index(graph)
+        seeds = fts_search(conn, question, SEEDS[strategy])
+        found = traverse(graph, seeds, DEPTH[strategy])
+        if strategy == "s4":
+            # the graph alone orders the rest: closest, then most telling link
+            ids = sorted(found, key=lambda n: (*found[n], n))[:TOP_K]
+        else:
+            # text relevance orders the neighbours; unmatched ones go last
+            text = {n: r for r, n in enumerate(fts_search(conn, question, len(graph)))}
+            ids = sorted(
+                found,
+                key=lambda n: (found[n][0], text.get(n, len(text)), *found[n][1:], n),
+            )[:TOP_K]
+        parts = []
+        for n in ids:
+            lines = [render(graph, n), *relations(graph, n)]
+            if strategy == "s8":
+                lines += evidence(graph, n)
+            parts.append("\n".join(lines))
+        return "\n\n".join(parts)
     raise ValueError(f"unknown strategy {strategy!r}")
 
 
@@ -488,6 +631,8 @@ def main(argv: list[str] | None = None) -> int:
             "strategies": strategies,
             "repeat": args.repeat,
             "top_k": TOP_K,
+            "seeds": SEEDS,
+            "depth": DEPTH,
             "questions": str(args.questions.resolve().relative_to(REPO_ROOT)),
             "corpus": str(CORPUS.relative_to(REPO_ROOT)),
             "kg_commit": _run(

@@ -5,7 +5,7 @@ P1 of [experiment 2](requirements.md) (#71). `bench/memory.py` runs the
 Claude Code subagents, never an API key (R2-16).
 
 ```bash
-python -m bench.memory prepare --strategies s0,s2 --repeat 3   # prompts
+python -m bench.memory prepare --strategies s4,s8 --repeat 3   # prompts
 python -m bench.memory call <run dir> <tool> '<JSON>'          # a subagent's only tool
 python -m bench.memory collect <session> --usage usage.json    # grade
 python -m bench.report bench/results/memory/<session>.jsonl    # report
@@ -41,7 +41,10 @@ G0 are about.
 | ID | Context | Notes |
 |----|---------|-------|
 | `s0` | none | the repository and its log only |
+| `s1` | every memory, oldest first | the upper bound on recall, about 37 KB |
 | `s2` | the 8 best memories by FTS5 | as Engram ranks them |
+| `s4` | 3 FTS5 seeds, relations to depth 2, 8 memories | each with its relations |
+| `s8` | 4 FTS5 seeds, relations to depth 1, 8 memories | each with its relations and evidence |
 
 **S2 follows Engram** ([engram.md](engram.md)) as far as a fixed query
 allows:
@@ -59,6 +62,35 @@ allows:
   depend on the day.
 - **K = 8**, about 4 to 8 KB of context: the full memories, not 300-character
   previews, since there is no second call to open them.
+
+**S4 and S8 add the store's structure** (P2), with the same budget of 8
+memories and the same text as S2, so what changes is which memories are
+chosen and what is shown under each (R2-09):
+
+- **Seeds.** Both start from S2's FTS5 ranking: the top 3 for S4, the top 4
+  for S8. A traversal needs somewhere to start; using S2's keeps the
+  comparison to one variable.
+- **Links between memories.** A traversal moves from one memory to another
+  through a recorded relation (`supersedes`, `blocked_by`,
+  `decided_because`, in either direction), through a shared piece of
+  evidence (the same issue, PR, commit or file), or through the session that
+  produced both. Components are not followed: `component:bench` alone is
+  shared by 19 memories, so it would link nearly everything.
+- **S4 orders by the graph.** Seeds first, then by number of links from a
+  seed, then by the kind of link (relation, then evidence, then session),
+  then by the seed it came from. Depth 2.
+- **S8 orders by the text.** Seeds first, then its depth-1 neighbours in
+  FTS5 order (neighbours the question's words do not match go last). It can
+  return fewer than 8 when the seeds have few neighbours.
+- **What is shown.** Under each memory, S4 and S8 list its relations
+  (`supersedes`, `blocked by`, `decided because of`, `invalidated by`,
+  `affects`, and their reverse) with the other end's ID and title. S8 also
+  lists the evidence it is supported by (kind, reference, commit, title).
+- **Size.** About 3.9 KB for S2, 4.7 KB for S4 and 5.3 KB for S8 on the 40
+  questions. S4 brings 4 memories S2 does not have, and S8 brings 3.
+
+**S1** puts every memory of the snapshot in the prompt, oldest first, in
+S2's format (about 37 KB). It bounds what retrieval can gain.
 
 ## Results
 

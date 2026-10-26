@@ -130,6 +130,97 @@ def test_context_is_empty_for_s0_and_deterministic_for_s2(corpus):
         memory.context("s9", "?", graph)
 
 
+def _edge(source, target, kind):
+    return {"source": source, "target": target, "type": kind, "provenance": PROV}
+
+
+@pytest.fixture
+def linked_store(tmp_path):
+    """A seed decision with a chain of relations and a shared piece of evidence.
+
+    decision:seed (matches "parser") is blocked by task:block, which supersedes
+    task:old; decision:seed and decision:twin cite the same issue; the session
+    produced decision:seed and decision:far.
+    """
+    s1 = "session:2026-10-01-s1"
+    doc = _session(
+        1,
+        "aaaaaaa",
+        [
+            _memory("decision:seed", "Rewrite the parser", "What: a new parser.", s1),
+            _memory("task:block", "Wait for the lexer", "What: a lexer.", s1),
+            _memory(
+                "task:old", "Old plan", "What: an earlier lexer.", s1, "superseded"
+            ),
+            _memory("decision:twin", "Keep the CLI", "What: through the rewrite.", s1),
+            _memory("decision:far", "Unrelated", "What: about the parser docs.", s1),
+            {
+                "id": "evidence:issue-7",
+                "type": "Evidence",
+                "label": "The rewrite issue",
+                "attrs": {"kind": "issue", "ref": "#7"},
+                "provenance": PROV,
+            },
+        ],
+        [
+            _edge("decision:seed", "task:block", "blocked_by"),
+            _edge("task:block", "task:old", "supersedes"),
+            _edge("decision:seed", "evidence:issue-7", "supported_by"),
+            _edge("decision:twin", "evidence:issue-7", "supported_by"),
+            _edge(s1, "decision:seed", "produced"),
+            _edge(s1, "decision:far", "produced"),
+        ],
+    )
+    root = tmp_path / "linked"
+    root.mkdir()
+    (root / "01-a.json").write_text(json.dumps(doc))
+    return memory.load_memory(memory.snapshot("aaaaaaa", root))
+
+
+def _ids(text):
+    return [line[1:].split("]")[0] for line in text.splitlines() if line[:1] == "["]
+
+
+def test_traversal_follows_relations_to_its_depth(linked_store, monkeypatch):
+    monkeypatch.setitem(memory.SEEDS, "s4", 1)
+    monkeypatch.setitem(memory.SEEDS, "s8", 1)
+    found = memory.traverse(linked_store, ["decision:seed"], 2)
+    assert found["task:block"] == (1, 0, 0)  # a direct relation
+    assert found["decision:twin"] == (1, 1, 0)  # through the shared issue
+    assert found["task:old"] == (2, 0, 0)
+    assert found["session:2026-10-01-s1"] == (1, 2, 0)
+    assert "decision:far" in found  # a sibling through the session, two links away
+
+    s4 = memory.context("s4", "parser rewrite", linked_store)
+    assert _ids(s4)[:4] == [
+        "decision:seed",
+        "task:block",
+        "decision:twin",
+        "session:2026-10-01-s1",
+    ]
+    assert "task:old" in _ids(s4)
+    assert "- blocked by: [task:block] Wait for the lexer" in s4
+    assert "- supersedes: [task:old] Old plan" in s4
+    assert "evidence:" not in s4
+
+    s8 = memory.context("s8", "parser rewrite", linked_store)
+    # depth 1, and the neighbour the question's words match comes first
+    assert _ids(s8) == [
+        "decision:seed",
+        "decision:twin",
+        "task:block",
+        "session:2026-10-01-s1",
+    ]
+    assert "- evidence: issue #7: The rewrite issue" in s8
+    assert s8 == memory.context("s8", "parser rewrite", linked_store)
+
+
+def test_s1_holds_every_memory_oldest_first(linked_store):
+    text = memory.context("s1", "anything", linked_store)
+    assert sorted(_ids(text)) == memory.memories(linked_store)
+    assert _ids(text)[0] == "decision:far"  # same date: ID order
+
+
 @pytest.fixture
 def repo(tmp_path):
     root = tmp_path / "repo"
@@ -218,6 +309,10 @@ def test_the_kg_corpus_answers_its_questions_with_s2():
             graphs[q["commit"]] = memory.load_memory(memory.snapshot(q["commit"]))
         ids = memory.fts_search(memory.fts_index(graphs[q["commit"]]), q["question"])
         assert len(ids) == memory.TOP_K, q["id"]
+        for strategy in ("s4", "s8"):
+            text = memory.context(strategy, q["question"], graphs[q["commit"]])
+            assert 0 < len(_ids(text)) <= memory.TOP_K, (q["id"], strategy)
+            assert _ids(text)[: memory.SEEDS[strategy]] == ids[: memory.SEEDS[strategy]]
 
 
 def test_usage_comes_from_the_subagent_transcripts(tmp_path, capsys):

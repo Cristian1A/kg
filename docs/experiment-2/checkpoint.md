@@ -3,7 +3,7 @@
 Where the work stands, so a new session can resume it without this one's
 conversation. **Update this file whenever the state below changes.**
 
-Last update: 2026-10-26, G0 run and analysis done: G0 passes.
+Last update: 2026-10-26, G0 passed; P2 started (S1, S4, S8 implemented).
 
 ## State
 
@@ -11,7 +11,8 @@ Last update: 2026-10-26, G0 run and analysis done: G0 passes.
 |-------|-------|
 | P0 | done: [questions](questions-draft.md) frozen (`bench/questions/memory/kg.json`), [corpus](corpus.md) (`bench/corpus/kg/`), gates in [requirements](requirements.md) §7 |
 | P1 | harness done ([harness.md](harness.md), `bench/memory.py`, S0 and S2); **G0 done and passed** ([g0.md](g0.md)) |
-| P2–P4 | not started |
+| P2 | in progress: S1, S4 and S8 implemented ([harness.md](harness.md)); their run is next |
+| P3–P4 | not started |
 
 Branch `experiment-2/agent-context-memory`; issue #71 tracks the checklist.
 
@@ -146,6 +147,18 @@ EOF
   no RF-23), not a retrieval failure. #71 updated with the result.
   **Next:** P2 (S4, S8, then S1, S3; gates G1–G3) and the agent-written
   corpus (R2-11).
+
+## P2
+
+- **2026-10-26: S1, S4 and S8 implemented** in `bench/memory.py`, with
+  tests; the design is in [harness.md](harness.md) (FTS5 seeds, relations to
+  depth 2 for S4 and 1 for S8, 8 memories, S8 adds evidence). Not run yet.
+- **Next:** decide with the user the run (S4 and S8 × 40 × 3 = 240 runs,
+  S1 optional), prepare it with `prepare --strategies s4,s8 --repeat 3`,
+  record the session path here and launch it in batches as for G0. S0 and
+  S2 are not run again: G1–G3 compare against the G0 session.
+- **S3** needs the embeddings extra (`all-MiniLM-L6-v2`, runtime to choose,
+  N2-02): ask the user before adding the dependency.
 
 ## Decisions already taken (do not reopen)
 
