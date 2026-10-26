@@ -3,7 +3,7 @@
 Where the work stands, so a new session can resume it without this one's
 conversation. **Update this file whenever the state below changes.**
 
-Last update: 2026-10-26, G0 passed; P2: S4/S8 run in progress.
+Last update: 2026-10-26, G0 passed; P2: S4/S8 run, batch 1 in progress.
 
 ## State
 
@@ -169,9 +169,11 @@ EOF
   20 at a time (at most 20 subagents run at once), ask before resetting a
   cut-off run.
 - **Transcripts:** runs launched from session
-  `23eb9334-2b4d-4205-9750-5e558d746c9e` (batch 1 on).
-- Batch 1 (positions 1–20): **launched, in progress.** If this note is still
-  here, check `status`.
+  `61399e93-a7ac-4b50-8057-5f667d54c9ae` (batch 1 on). Session `23eb9334`
+  marked batch 1 as launched, but no run had any calls on 2026-10-26, so it
+  never started; nothing to reset.
+- Batch 1 (positions 1–20): **launched, in progress** (session `61399e93`).
+  If this note is still here, check `status`.
 - **S3** waits until the S4/S8 run is done (the user's decision,
   2026-10-26). Runtime: `sentence-transformers` with `all-MiniLM-L6-v2`, as
   an optional extra (N2-02, Q2-03).
