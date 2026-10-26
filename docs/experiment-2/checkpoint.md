@@ -120,9 +120,10 @@ EOF
   (161 was already done). Every run answered; none used its 25 calls
   (`kg-R5.s0.1` came closest with 20) and no subagent reported a violation.
   Done after batch 10: 176 of 240.
-- Batch 11 (positions 177–196, session `23eb9334`): **launched, in
-  progress.** If this note is still here, check `status`; runs with calls
-  but no answer were cut off (ask the user before resetting them).
+- Batch 11 (positions 177–196, session `23eb9334`): every run answered;
+  none used its 25 calls (`kg-C4.s0.2` came closest with 20) and no
+  subagent reported a violation. Done after batch 11: 196 of 240.
+  **Next:** continue from position 197.
 
 ## Decisions already taken (do not reopen)
 
