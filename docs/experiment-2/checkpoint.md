@@ -59,7 +59,8 @@ python -m bench.report bench/results/memory/20261025T212002Z.jsonl
 - The subagents' transcripts live under the Claude Code session that launched
   them: `8c8f5c90-4496-4460-8c26-1107a306f8e4` for the runs started on
   2026-10-25, `c97e654c-8c88-4590-8da9-24580c3cd0b5` for those started on
-  2026-10-26 (from batch 5 on). Runs launched from a later session have their transcripts under
+  2026-10-26 (batches 5–9), `23eb9334-2b4d-4205-9750-5e558d746c9e` for
+  batch 10 on. Runs launched from a later session have their transcripts under
   that session's ID, so run `usage` once per session directory; it merges
   into `usage.json`.
 - **G0** (requirements §7): on the 15 questions that only GitHub or a session
@@ -113,6 +114,12 @@ EOF
   (`kg-B2.s0.3`, `kg-D7.s0.1`, `kg-M7.s0.1`, `kg-M7.s0.2`, `kg-N3.s0.2`).
   **Next session:** ask the user before deleting their `calls.jsonl`, launch
   them again, then continue from position 161. Done: 156 of 240.
+- Batch 10 (2026-10-26, session `23eb9334`): with the user's approval the
+  five cut-off runs of batch 9 had their `calls.jsonl` deleted and were
+  launched again, together with the 15 pending runs of positions 161–176
+  (161 was already done). Every run answered; none used its 25 calls
+  (`kg-R5.s0.1` came closest with 20) and no subagent reported a violation.
+  Done after batch 10: 176 of 240. **Next:** continue from position 177.
 
 ## Decisions already taken (do not reopen)
 
