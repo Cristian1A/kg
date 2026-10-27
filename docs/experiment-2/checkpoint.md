@@ -3,7 +3,7 @@
 Where the work stands, so a new session can resume it without this one's
 conversation. **Update this file whenever the state below changes.**
 
-Last update: 2026-10-27, G0 passed; P2: S4/S8 run, batch 10 in progress.
+Last update: 2026-10-27, G0 passed; P2: S4/S8 run, batch 11 in progress.
 
 ## State
 
@@ -203,7 +203,10 @@ EOF
   reported a violation. `kg-T2.s4.3` said after submitting that its answer
   also claims `--depth 0` is still rejected for `kg impact`, citing a test
   it never read; check it in the hand audit. Done after batch 9: 180 of 240.
-- Batch 10 (positions 181–200): **launched, in progress** (session
+- Batch 10 (positions 181–200, session `25cb3c1f`): every run answered;
+  none used its 25 calls (`kg-M4.s8.1` and `kg-M6.s4.1` came closest with
+  6) and no subagent reported a violation. Done after batch 10: 200 of 240.
+- Batch 11 (positions 201–220): **launched, in progress** (session
   `25cb3c1f`). If this note is still here, check `status`.
 - **S3** waits until the S4/S8 run is done (the user's decision,
   2026-10-26). Runtime: `sentence-transformers` with `all-MiniLM-L6-v2`, as
