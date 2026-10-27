@@ -281,8 +281,10 @@ EOF
   `S=bench/.cache/memory/20261027T092553Z`: the same subagent prompt, 20 at
   a time, ask before resetting a cut-off run.
 - **Transcripts:** session `25cb3c1f-27f9-41c3-9fd3-1e8c7a84b257` from batch 1.
-- Batch 1 (positions 1–20): **launched, in progress**. If this note is
-  still here, check `status`.
+- Batch 1 (positions 1–20): first launch (2026-10-27 morning) hit the
+  session limit before any run made a call (0 calls each, nothing to
+  reset); relaunched after the limit reset. **In progress.** If this note
+  is still here, check `status`.
 3. **G1–G3 final**, against the best of S2 and S3; update gates.md and #71.
 4. Hand-check `kg-T2.s4.3` (it cited a test it never read).
 5. **Agent-written corpus (R2-11)**, then P3.
