@@ -3,7 +3,7 @@
 Where the work stands, so a new session can resume it without this one's
 conversation. **Update this file whenever the state below changes.**
 
-Last update: 2026-10-27, G0 passed; P2: S4/S8 run, batch 8 in progress.
+Last update: 2026-10-27, G0 passed; P2: S4/S8 run, batch 9 in progress.
 
 ## State
 
@@ -194,9 +194,12 @@ EOF
   including `kg-R6.s8.1` from batch 6 (11 calls, the most); none used its 25
   calls and no subagent reported a violation. Checked on 2026-10-27: no
   run was cut off, nothing to reset. Done after batch 7: 140 of 240.
-- Batch 8 (positions 141–160): **launched, in progress** (session
-  `25cb3c1f-27f9-41c3-9fd3-1e8c7a84b257`, which holds the transcripts of
-  batch 8 on). If this note is still here, check `status`.
+- Batch 8 (positions 141–160, session `25cb3c1f-27f9-41c3-9fd3-1e8c7a84b257`,
+  which holds the transcripts of batch 8 on): every run answered; none used
+  its 25 calls (`kg-B2.s4.3` came closest with 8) and no subagent reported a
+  violation. Done after batch 8: 160 of 240.
+- Batch 9 (positions 161–180): **launched, in progress** (session
+  `25cb3c1f`). If this note is still here, check `status`.
 - **S3** waits until the S4/S8 run is done (the user's decision,
   2026-10-26). Runtime: `sentence-transformers` with `all-MiniLM-L6-v2`, as
   an optional extra (N2-02, Q2-03).
