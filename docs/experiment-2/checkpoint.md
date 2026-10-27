@@ -293,7 +293,7 @@ EOF
   (`kg-C2.s3.3` and `kg-N1.s3.3` came closest with 8) and no subagent
   reported a violation. Done after batch 4: 80 of 360.
 - Batch 5 (positions 81–100): every run answered; none used its 25 calls
-  (`kg-B1.s1.1` and `kg-R6.s2r.1` came closest with 10) and no subagent
+  (`kg-R6.s2r.1` came closest with 9) and no subagent
   reported a violation. Done after batch 5: 100 of 360.
 - Batch 6 (positions 101–120): **launched, in progress.** If this note is
   still here, check `status`.
