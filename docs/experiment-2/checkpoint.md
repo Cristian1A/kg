@@ -252,7 +252,8 @@ EOF
   1.00): without it G1 fails. Rationale's is S8's evidence recall (kg-R3,
   kg-R7), from the evidence its prompt lists. Multi-hop is 0.06 *below* S2.
   Every bootstrap interval includes 0.
-- **Next:** update #71 (ask the user first), then S3 (makes the gates
+- #71 updated with the result (2026-10-27, comment 6437988283).
+- **Next:** S3 (makes the gates
   final), S1, the R2-09 variant (S2 with relation targets indexed as text,
   the test of the kg-B1 mechanism), the agent-written corpus.
 - **S3** waits until the S4/S8 run is done (the user's decision,
