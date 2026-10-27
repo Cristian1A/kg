@@ -257,17 +257,14 @@ EOF
 
 ### Next steps, in order (agreed with the user, 2026-10-27)
 
-1. **Implement S3 and the R2-09 variant** — *written 2026-10-27, tests pass
-   (`tests/test_bench_memory.py`), documented in harness.md; the `memory`
-   extra is installed (CPU torch, sentence-transformers 6.2.0). Check on
-   the real corpus with the scratchpad script, commit, then prepare.*
-   With tests, in `bench/memory.py`.
-   S3: `sentence-transformers` with `all-MiniLM-L6-v2`, as an optional extra
-   (N2-02, Q2-03), top-K = 8. R2-09 (`s2r`): S2 with each memory's relation
-   targets indexed as text; it tests whether the `blocked by` edge on kg-B1
-   adds anything keywords could not.
-2. **One session with S1 + S3 + R2-09**: 40 questions × 3 strategies × 3
-   repeats = 360 runs, launched in batches of 20 as before.
+1. **Implement S3 and the R2-09 variant** — done (`4720395`): `s3`
+   (`all-MiniLM-L6-v2`, the `memory` extra, K = 8) and `s2r` (S2 with each
+   memory's relation lines indexed and shown), with tests, in harness.md.
+2. **One session with S1 + S3 + S2r**: 40 questions × 3 strategies × 3
+   repeats = 360 runs, in batches of 20 — **in progress**, see below.
+3. **G1–G3 final**, against the best of S2 and S3; update gates.md and #71.
+4. Hand-check `kg-T2.s4.3` (it cited a test it never read).
+5. **Agent-written corpus (R2-11)**, then P3.
 
 ### The S1/S3/S2r run in progress
 
@@ -281,13 +278,13 @@ EOF
   `S=bench/.cache/memory/20261027T092553Z`: the same subagent prompt, 20 at
   a time, ask before resetting a cut-off run.
 - **Transcripts:** session `25cb3c1f-27f9-41c3-9fd3-1e8c7a84b257` from batch 1.
-- Batch 1 (positions 1–20): first launch (2026-10-27 morning) hit the
+- Batch 1 (positions 1–20): the first launch (2026-10-27 morning) hit the
   session limit before any run made a call (0 calls each, nothing to
-  reset); relaunched after the limit reset. **In progress.** If this note
-  is still here, check `status`.
-3. **G1–G3 final**, against the best of S2 and S3; update gates.md and #71.
-4. Hand-check `kg-T2.s4.3` (it cited a test it never read).
-5. **Agent-written corpus (R2-11)**, then P3.
+  reset); relaunched after the reset. Every run answered; none used its 25
+  calls (`kg-B4.s3.2` came closest with 12) and no subagent reported a
+  violation. Done after batch 1: 20 of 360.
+- Batch 2 (positions 21–40): **launched, in progress.** If this note is
+  still here, check `status`.
 
 ## Decisions already taken (do not reopen)
 
