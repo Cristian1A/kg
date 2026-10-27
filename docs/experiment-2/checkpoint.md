@@ -286,7 +286,10 @@ EOF
 - Batch 2 (positions 21–40): every run answered; none used its 25 calls
   (`kg-B1.s3.1` came closest with 22, then `kg-B4.s2r.2` with 16) and no
   subagent reported a violation. Done after batch 2: 40 of 360.
-- Batch 3 (positions 41–60): **launched, in progress.** If this note is
+- Batch 3 (positions 41–60): every run answered; none used its 25 calls
+  (`kg-B4.s1.3` and `kg-R6.s2r.2` came closest with 9) and no subagent
+  reported a violation. Done after batch 3: 60 of 360.
+- Batch 4 (positions 61–80): **launched, in progress.** If this note is
   still here, check `status`.
 
 ## Decisions already taken (do not reopen)
