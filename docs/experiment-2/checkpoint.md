@@ -3,7 +3,7 @@
 Where the work stands, so a new session can resume it without this one's
 conversation. **Update this file whenever the state below changes.**
 
-Last update: 2026-10-27, G0 passed; P2: S4/S8 run, batch 12 (the last) in progress.
+Last update: 2026-10-27, G0 passed; P2: S4/S8 run done (240 of 240); G1–G3 next.
 
 ## State
 
@@ -11,7 +11,7 @@ Last update: 2026-10-27, G0 passed; P2: S4/S8 run, batch 12 (the last) in progre
 |-------|-------|
 | P0 | done: [questions](questions-draft.md) frozen (`bench/questions/memory/kg.json`), [corpus](corpus.md) (`bench/corpus/kg/`), gates in [requirements](requirements.md) §7 |
 | P1 | harness done ([harness.md](harness.md), `bench/memory.py`, S0 and S2); **G0 done and passed** ([g0.md](g0.md)) |
-| P2 | in progress: S1, S4 and S8 implemented ([harness.md](harness.md)); **the S4/S8 run is in progress** |
+| P2 | in progress: S1, S4 and S8 implemented ([harness.md](harness.md)); **the S4/S8 run is done**, G1–G3 to evaluate |
 | P3–P4 | not started |
 
 Branch `experiment-2/agent-context-memory`; issue #71 tracks the checklist.
@@ -209,8 +209,22 @@ EOF
 - Batch 11 (positions 201–220, session `25cb3c1f`): every run answered;
   none used its 25 calls (`kg-B2.s4.2` and `kg-B2.s8.1` came closest with
   8) and no subagent reported a violation. Done after batch 11: 220 of 240.
-- Batch 12 (positions 221–240, the last 20): **launched, in progress**
-  (session `25cb3c1f`). If this note is still here, check `status`.
+- Batch 12 (positions 221–240, the last 20, session `25cb3c1f`): every run
+  answered; none used its 25 calls (`kg-B4.s8.2` came closest with 11) and
+  no subagent reported a violation. For two runs (`kg-S4.s4.1`,
+  `kg-S5.s4.1`) the auto-mode safety classifier was unavailable; their
+  transcripts were checked by hand: only the prompt read and the allowed
+  `bench.memory call` command.
+- **Every run is done: 240 of 240** (2026-10-27). No S4/S8 run used its 25
+  calls in the whole run (the most was 14) and `violations.tsv` is empty.
+  `usage` was run for sessions `61399e93` and `25cb3c1f` (240 runs with
+  usage, none empty); `collect` wrote
+  `bench/results/memory/20261026T154359Z.jsonl`.
+- First look, mechanical score (not yet the gates): all 40 questions S0
+  0.711, S2 0.956, S4 0.951, S8 0.954; the 15 hidden questions S0 0.387,
+  S2 0.916, S4 0.932, S8 0.912. **Next:** evaluate G1–G3 as pre-registered
+  in [requirements](requirements.md) §7 against the G0 session, write it
+  up, update #71; then the S1 run.
 - **S3** waits until the S4/S8 run is done (the user's decision,
   2026-10-26). Runtime: `sentence-transformers` with `all-MiniLM-L6-v2`, as
   an optional extra (N2-02, Q2-03).
