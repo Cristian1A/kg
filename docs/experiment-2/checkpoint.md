@@ -268,6 +268,21 @@ EOF
    adds anything keywords could not.
 2. **One session with S1 + S3 + R2-09**: 40 questions × 3 strategies × 3
    repeats = 360 runs, launched in batches of 20 as before.
+
+### The S1/S3/S2r run in progress
+
+- **Session:** `bench/.cache/memory/20261027T092553Z/` (git-ignored, this
+  machine only): 360 runs = 40 questions × `s1`, `s3`, `s2r` × 3 repeats,
+  prepared at `4720395`. `order.txt`: `random.Random(71).shuffle` of the
+  sorted run names, as before. On the real corpus S2r brings 42 memories
+  S2 does not have and S3 193 (of 320); on kg-B1 S2r shows
+  `blocked by: [task:mcp-server] MCP server (RF-23)`.
+- **Resume and launch exactly as for G0** (section "Resume"), with
+  `S=bench/.cache/memory/20261027T092553Z`: the same subagent prompt, 20 at
+  a time, ask before resetting a cut-off run.
+- **Transcripts:** session `25cb3c1f-27f9-41c3-9fd3-1e8c7a84b257` from batch 1.
+- Batch 1 (positions 1–20): **launched, in progress**. If this note is
+  still here, check `status`.
 3. **G1–G3 final**, against the best of S2 and S3; update gates.md and #71.
 4. Hand-check `kg-T2.s4.3` (it cited a test it never read).
 5. **Agent-written corpus (R2-11)**, then P3.
