@@ -92,6 +92,19 @@ chosen and what is shown under each (R2-09):
 **S1** puts every memory of the snapshot in the prompt, oldest first, in
 S2's format (about 37 KB). It bounds what retrieval can gain.
 
+**S2r** is the R2-09 variant: S2 with each memory's relation lines (as S4
+shows them: kind, the other end's ID and title) appended to its indexed
+content and shown under it. Same FTS5 query, weights and K = 8; no traversal,
+so a related memory is named but not brought in. If S2r matches S4 where S4
+beats S2 (kg-B1: the `blocked by task:mcp-server` line), the edge adds
+nothing that its text could not.
+
+**S3** ranks the memories by cosine similarity between the question and each
+memory's title and body, embedded with `sentence-transformers/all-MiniLM-L6-v2`
+on CPU (N2-02, Q2-03; the `memory` extra). K = 8, ties by ID, shown in S2's
+format. Embeddings are computed when the session is prepared, so every repeat
+gets the same context (N2-03).
+
 ## Results
 
 `collect` writes the fields `bench.report` reads, plus `repeat`,

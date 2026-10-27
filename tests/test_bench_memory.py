@@ -215,6 +215,42 @@ def test_traversal_follows_relations_to_its_depth(linked_store, monkeypatch):
     assert s8 == memory.context("s8", "parser rewrite", linked_store)
 
 
+def test_s2r_searches_and_shows_relations_as_text(linked_store):
+    # "lexer" is only in task:block's text and in decision:seed's relation line
+    plain = memory.fts_search(memory.fts_index(linked_store), "lexer")
+    rich = memory.fts_search(
+        memory.fts_index(linked_store, with_relations=True), "lexer"
+    )
+    assert "decision:seed" not in plain
+    assert "decision:seed" in rich
+    text = memory.context("s2r", "lexer", linked_store)
+    assert "- blocked by: [task:block] Wait for the lexer" in text
+    assert "evidence:" not in text
+    assert text == memory.context("s2r", "lexer", linked_store)
+
+
+def _fake_encode(texts):
+    """Bag-of-words vectors over a tiny vocabulary, unit length."""
+    vocab = ["parser", "lexer", "cli", "plan"]
+    rows = []
+    for t in texts:
+        v = [float(t.lower().count(w)) for w in vocab]
+        norm = sum(x * x for x in v) ** 0.5 or 1.0
+        rows.append([x / norm for x in v])
+    return rows
+
+
+def test_s3_ranks_by_cosine_and_breaks_ties_by_id(linked_store, monkeypatch):
+    ids = memory.semantic_search(linked_store, "the lexer", 3, encode=_fake_encode)
+    # task:block and task:old both mention only "lexer": a tie, ID order
+    assert ids[:2] == ["task:block", "task:old"]
+    monkeypatch.setattr(memory, "embed", _fake_encode)
+    text = memory.context("s3", "the lexer", linked_store)
+    assert _ids(text)[:2] == ["task:block", "task:old"]
+    assert len(_ids(text)) == min(memory.TOP_K, len(memory.memories(linked_store)))
+    assert "- blocked by" not in text  # S3 shows memories alone, as S2 does
+
+
 def test_s1_holds_every_memory_oldest_first(linked_store):
     text = memory.context("s1", "anything", linked_store)
     assert sorted(_ids(text)) == memory.memories(linked_store)

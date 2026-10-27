@@ -253,12 +253,24 @@ EOF
   kg-R7), from the evidence its prompt lists. Multi-hop is 0.06 *below* S2.
   Every bootstrap interval includes 0.
 - #71 updated with the result (2026-10-27, comment 6437988283).
-- **Next:** S3 (makes the gates
-  final), S1, the R2-09 variant (S2 with relation targets indexed as text,
-  the test of the kg-B1 mechanism), the agent-written corpus.
-- **S3** waits until the S4/S8 run is done (the user's decision,
-  2026-10-26). Runtime: `sentence-transformers` with `all-MiniLM-L6-v2`, as
-  an optional extra (N2-02, Q2-03).
+- #71's checklist updated (2026-10-27): P1 ticked, P2's progress recorded.
+
+### Next steps, in order (agreed with the user, 2026-10-27)
+
+1. **Implement S3 and the R2-09 variant** — *written 2026-10-27, tests pass
+   (`tests/test_bench_memory.py`), documented in harness.md; the `memory`
+   extra is installed (CPU torch, sentence-transformers 6.2.0). Check on
+   the real corpus with the scratchpad script, commit, then prepare.*
+   With tests, in `bench/memory.py`.
+   S3: `sentence-transformers` with `all-MiniLM-L6-v2`, as an optional extra
+   (N2-02, Q2-03), top-K = 8. R2-09 (`s2r`): S2 with each memory's relation
+   targets indexed as text; it tests whether the `blocked by` edge on kg-B1
+   adds anything keywords could not.
+2. **One session with S1 + S3 + R2-09**: 40 questions × 3 strategies × 3
+   repeats = 360 runs, launched in batches of 20 as before.
+3. **G1–G3 final**, against the best of S2 and S3; update gates.md and #71.
+4. Hand-check `kg-T2.s4.3` (it cited a test it never read).
+5. **Agent-written corpus (R2-11)**, then P3.
 
 ## Decisions already taken (do not reopen)
 

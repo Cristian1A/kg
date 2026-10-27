@@ -27,6 +27,10 @@ dev = [
 bench = [
     "anthropic>=1.13",
 ]
+# Only for experiment 2's S3 (semantic top-K, all-MiniLM-L6-v2; N2-02, Q2-03)
+memory = [
+    "sentence-transformers>=3",
+]
 
 [project.scripts]
 kg = "kg.cli:main"

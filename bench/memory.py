@@ -10,6 +10,10 @@ carries (N2-01). The context is a function of the question and the store
 - `s2`: the K best memories by SQLite FTS5 (BM25) over the question's words,
   as Engram ranks them: each word quoted, joined by OR, title weighted 5 and
   content 1 (`docs/experiment-2/engram.md`).
+- `s2r`: S2 where each memory's text also holds its relations, written as
+  S4 shows them (R2-09): it tells what the graph adds beyond keywords.
+- `s3`: the K memories nearest the question by cosine similarity of
+  `all-MiniLM-L6-v2` embeddings of title and body (needs the `memory` extra).
 - `s4`: graph traversal. The 3 best FTS5 memories are seeds; the typed
   relations of the store are followed to depth 2, the closest and most
   telling links first, up to K memories, each shown with its relations.
@@ -31,6 +35,7 @@ subagents, as `bench.subagent` does:
 from __future__ import annotations
 
 import argparse
+import functools
 import json
 import sqlite3
 import subprocess
@@ -51,7 +56,8 @@ from bench.tools import search as search_files
 CORPUS = ROOT / "corpus/kg"
 QUESTIONS = ROOT / "questions/memory/kg.json"
 SESSIONS = CACHE.parent / "memory"
-STRATEGIES = ("s0", "s1", "s2", "s4", "s8")
+STRATEGIES = ("s0", "s1", "s2", "s2r", "s3", "s4", "s8")
+EMBEDDING_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
 MEMORY_TYPES = ("Decision", "Task", "Experiment", "Issue", "Constraint", "Session")
 TOP_K = 8
 # Engram's BM25 column weights (internal/store/store.go): title 5, content 1
@@ -105,6 +111,11 @@ HOW = {
     "s1": "The whole memory is below, oldest first.",
     "s2": "A full-text search of that memory with your question returned the "
     "memories below.",
+    "s2r": "A full-text search of that memory with your question returned the "
+    "memories below. Under each memory are its relations: what it supersedes, "
+    "what blocks it, what it was decided because of, what it affects.",
+    "s3": "A semantic search of that memory with your question returned the "
+    "memories below, the closest in meaning first.",
     "s4": "A full-text search of that memory with your question found the first "
     "memories below; the rest are linked to them by the memory's recorded "
     "relations. Under each memory are its relations: what it supersedes, what "
@@ -186,22 +197,25 @@ def render(graph: nx.MultiDiGraph, node: str) -> str:
     return "\n".join([head, d.get("label", ""), d.get("description", "")])
 
 
-def fts_index(graph: nx.MultiDiGraph) -> sqlite3.Connection:
-    """An in-memory FTS5 index of the memories' text, derived from the store."""
+def fts_index(
+    graph: nx.MultiDiGraph, with_relations: bool = False
+) -> sqlite3.Connection:
+    """An in-memory FTS5 index of the memories' text, derived from the store.
+
+    With `with_relations` (S2r), a memory's content also holds its relation
+    lines, so the relation targets' IDs and titles are searchable as text.
+    """
     conn = sqlite3.connect(":memory:")
     conn.execute(f"CREATE VIRTUAL TABLE memories USING fts5({', '.join(FTS_WEIGHTS)})")
-    conn.executemany(
-        "INSERT INTO memories VALUES (?, ?, ?, ?)",
-        [
-            (
-                n,
-                graph.nodes[n].get("label", ""),
-                graph.nodes[n].get("description", ""),
-                graph.nodes[n]["type"],
-            )
-            for n in memories(graph)
-        ],
-    )
+    rows = []
+    for n in memories(graph):
+        content = graph.nodes[n].get("description", "")
+        if with_relations:
+            content = "\n".join([content, *relations(graph, n)])
+        rows.append(
+            (n, graph.nodes[n].get("label", ""), content, graph.nodes[n]["type"])
+        )
+    conn.executemany("INSERT INTO memories VALUES (?, ?, ?, ?)", rows)
     return conn
 
 
@@ -223,6 +237,45 @@ def fts_search(conn: sqlite3.Connection, text: str, k: int = TOP_K) -> list[str]
         (query, k),
     )
     return [r[0] for r in rows]
+
+
+@functools.cache
+def _embedding_model() -> Any:
+    from sentence_transformers import SentenceTransformer
+
+    return SentenceTransformer(EMBEDDING_MODEL, device="cpu")
+
+
+def embed(texts: list[str]) -> Any:
+    """Unit-length `all-MiniLM-L6-v2` embeddings of `texts`, one row each."""
+    return _embedding_model().encode(
+        texts, normalize_embeddings=True, convert_to_numpy=True
+    )
+
+
+def semantic_search(
+    graph: nx.MultiDiGraph, text: str, k: int = TOP_K, encode: Any = None
+) -> list[str]:
+    """The IDs of the `k` memories nearest `text` by cosine similarity (S3).
+
+    A memory is embedded as its title and body. Ties go to the smaller ID, so
+    the result is the same on every run (N2-03). `encode` replaces `embed` in
+    tests.
+    """
+    ids = memories(graph)
+    if not ids:
+        return []
+    texts = [
+        f"{graph.nodes[n].get('label', '')}\n{graph.nodes[n].get('description', '')}"
+        for n in ids
+    ]
+    vectors = (encode or embed)([text, *texts])
+    query, rows = vectors[0], vectors[1:]
+    scores = [
+        round(float(sum(a * b for a, b in zip(query, r, strict=True))), 6) for r in rows
+    ]
+    ranked = sorted(zip(ids, scores, strict=True), key=lambda x: (-x[1], x[0]))
+    return [n for n, _ in ranked[:k]]
 
 
 def is_memory(graph: nx.MultiDiGraph, node: str) -> bool:
@@ -314,6 +367,14 @@ def context(strategy: str, question: str, graph: nx.MultiDiGraph) -> str:
         return "\n\n".join(render(graph, n) for n in ids)
     if strategy == "s2":
         ids = fts_search(fts_index(graph), question)
+        return "\n\n".join(render(graph, n) for n in ids)
+    if strategy == "s2r":
+        ids = fts_search(fts_index(graph, with_relations=True), question)
+        return "\n\n".join(
+            "\n".join([render(graph, n), *relations(graph, n)]) for n in ids
+        )
+    if strategy == "s3":
+        ids = semantic_search(graph, question)
         return "\n\n".join(render(graph, n) for n in ids)
     if strategy in ("s4", "s8"):
         conn = fts_index(graph)
