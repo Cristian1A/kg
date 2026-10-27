@@ -3,7 +3,8 @@
 Where the work stands, so a new session can resume it without this one's
 conversation. **Update this file whenever the state below changes.**
 
-Last update: 2026-10-27, G0 passed; P2: S4/S8 run done (240 of 240); G1–G3 next.
+Last update: 2026-10-27, G0 passed; P2: S4/S8 run done; G1–G3 pass weakly
+(provisional until S3), see [gates.md](gates.md).
 
 ## State
 
@@ -11,7 +12,7 @@ Last update: 2026-10-27, G0 passed; P2: S4/S8 run done (240 of 240); G1–G3 nex
 |-------|-------|
 | P0 | done: [questions](questions-draft.md) frozen (`bench/questions/memory/kg.json`), [corpus](corpus.md) (`bench/corpus/kg/`), gates in [requirements](requirements.md) §7 |
 | P1 | harness done ([harness.md](harness.md), `bench/memory.py`, S0 and S2); **G0 done and passed** ([g0.md](g0.md)) |
-| P2 | in progress: S1, S4 and S8 implemented ([harness.md](harness.md)); **the S4/S8 run is done**, G1–G3 to evaluate |
+| P2 | in progress: S1, S4 and S8 implemented ([harness.md](harness.md)); **S4/S8 run done; G1–G3 pass weakly** ([gates.md](gates.md), provisional until S3) |
 | P3–P4 | not started |
 
 Branch `experiment-2/agent-context-memory`; issue #71 tracks the checklist.
@@ -225,6 +226,35 @@ EOF
   S2 0.916, S4 0.932, S8 0.912. **Next:** evaluate G1–G3 as pre-registered
   in [requirements](requirements.md) §7 against the G0 session, write it
   up, update #71; then the S1 run.
+### G1–G3 (2026-10-27)
+
+- Procedure fixed and committed **before** computing evidence recall or
+  staleness errors: [gates.md](gates.md) (`d614cf5`). Code: `bench/gates.py`
+  with `tests/test_bench_gates.py` (`6b3e18f`).
+- Blind staleness audit done: `bench/results/memory/staleness-audit.tsv`
+  (96 answers, S0/S2/S4/S8 on T1–T4 and S1, S2, S4, S5). **No staleness
+  error in any strategy.**
+- Report: `python -m bench.gates report bench/results/memory/20261025T212002Z.jsonl
+  bench/results/memory/20261026T154359Z.jsonl --audit
+  bench/results/memory/staleness-audit.tsv`. Mechanical verdict:
+  - **G1 passes on 2 categories**, the minimum: rationale (S8 evidence
+    recall +0.111, CI −0.06 to +0.33) and blocked (S4 accuracy +0.250,
+    S8 +0.125 and recall +0.167). Fragile: blocked is likely driven by
+    kg-B1, where S2 scores 0 by a known keyword false negative (g0.md hand
+    audit). Check per question, and report with and without kg-B1.
+  - **G2 passes:** no accuracy loss on direct lookups; time ×1.22 (S4) and
+    ×1.10 (S8) of S2.
+  - **G3 passes trivially:** 0 errors everywhere (S2 has none, so the graph
+    could not halve them). Uninformative: a ceiling effect.
+  - All provisional until S3 runs (gates compare to the best of S2 and S3).
+- **Done:** the write-up is in [gates.md](gates.md) §Results. Per question,
+  blocked's gain is all kg-B1 (S2 0.00, S4 1.00, S8 0.50; B2–B4 tie at
+  1.00): without it G1 fails. Rationale's is S8's evidence recall (kg-R3,
+  kg-R7), from the evidence its prompt lists. Multi-hop is 0.06 *below* S2.
+  Every bootstrap interval includes 0.
+- **Next:** update #71 (ask the user first), then S3 (makes the gates
+  final), S1, the R2-09 variant (S2 with relation targets indexed as text,
+  the test of the kg-B1 mechanism), the agent-written corpus.
 - **S3** waits until the S4/S8 run is done (the user's decision,
   2026-10-26). Runtime: `sentence-transformers` with `all-MiniLM-L6-v2`, as
   an optional extra (N2-02, Q2-03).

@@ -1,5 +1,12 @@
 # Experiment 2: gates G1–G3
 
+**Result (provisional until S3 runs): G1, G2 and G3 pass as pre-registered,
+but weakly.** G1 passes on exactly the two categories it needs, and each
+rests on little: blocked on one question (kg-B1), rationale on evidence
+recall that S8 gets by showing evidence in its prompt. G3 passes only
+because no strategy made a staleness error. The graph does not lose the easy
+cases (G2). [Results](#results) below.
+
 The gates are pre-registered in [requirements](requirements.md) §7. Two of
 the metrics they use, evidence recall and staleness errors (§6.4), had a
 definition but no procedure. The procedure below was written and committed
@@ -69,3 +76,110 @@ only then joined back to their runs. The judgments are stored in
 Means are over runs (questions × repeats) in the category. Per-question
 means and a question-level bootstrap (10,000 resamples, seed 71) are
 reported next to each difference, as for G0.
+
+## Results
+
+Computed on 2026-10-27 with
+
+```bash
+python -m bench.gates report bench/results/memory/20261025T212002Z.jsonl \
+  bench/results/memory/20261026T154359Z.jsonl \
+  --audit bench/results/memory/staleness-audit.tsv
+```
+
+### Per category
+
+Mean accuracy / evidence recall / seconds, over 3 repeats of each question.
+
+| Category | Qs | S0 | S2 | S4 | S8 |
+|----------|----|----|----|----|----|
+| direct | 8 | 0.88 / 0.56 / 37 | 1.00 / 0.58 / 24 | 1.00 / 0.67 / 29 | 1.00 / 0.56 / 26 |
+| rationale | 6 | 0.40 / 0.50 / 67 | 1.00 / 0.81 / 29 | 0.96 / 0.67 / 28 | 0.96 / 0.92 / 27 |
+| multi-hop | 6 | 0.72 / 0.67 / 62 | 0.99 / 0.89 / 28 | 0.93 / 0.90 / 28 | 0.93 / 0.89 / 35 |
+| negative | 4 | 0.85 / 0.21 / 45 | 1.00 / 0.71 / 26 | 1.00 / 0.71 / 26 | 1.00 / 0.46 / 25 |
+| supersession | 4 | 0.67 / 0.75 / 38 | 1.00 / 0.83 / 26 | 1.00 / 0.75 / 29 | 1.00 / 0.92 / 25 |
+| staleness | 4 | 0.94 / 0.94 / 34 | 0.97 / 0.94 / 28 | 0.92 / 0.97 / 34 | 1.00 / 1.00 / 29 |
+| blocked | 4 | 0.54 / 0.79 / 70 | 0.75 / 0.71 / 52 | 1.00 / 0.67 / 46 | 0.88 / 0.88 / 40 |
+| continuation | 4 | 0.67 / 0.38 / 64 | 0.85 / 0.88 / 24 | 0.75 / 0.88 / 31 | 0.82 / 0.88 / 28 |
+
+S2 is at or near the ceiling in accuracy on every category but blocked and
+continuation, so a +0.10 accuracy gain over it was possible only there.
+
+### G1 — passes on 2 of 5 categories (the minimum)
+
+Difference to S2, with the question-level 95% bootstrap interval. A category
+passes on +0.10 in accuracy or in evidence recall.
+
+| Category | S4 accuracy | S4 recall | S8 accuracy | S8 recall | Passes |
+|----------|-------------|-----------|-------------|-----------|--------|
+| rationale | −0.04 [−0.11, 0] | −0.14 [−0.31, 0] | −0.04 [−0.11, 0] | **+0.11** [−0.06, +0.33] | yes (S8 recall) |
+| multi-hop | −0.06 [−0.17, 0] | +0.01 [−0.06, +0.08] | −0.06 [−0.17, 0] | 0.00 | no |
+| supersession | 0.00 | −0.08 [−0.17, 0] | 0.00 | +0.08 [0, +0.25] | no |
+| staleness | −0.06 [−0.17, 0] | +0.03 [0, +0.08] | +0.03 [0, +0.08] | +0.06 [0, +0.11] | no |
+| blocked | **+0.25** [0, +0.75] | −0.04 [−0.12, 0] | **+0.13** [0, +0.38] | **+0.17** [0, +0.50] | yes (S4, S8) |
+
+Every interval includes 0: with 4–6 questions per category, no difference is
+clearly above chance.
+
+- **Blocked rests on kg-B1 alone.** On B2–B4 all three strategies score 1.00.
+  On kg-B1 ("which store decision was left to revisit, and what was it
+  waiting for?") S2 scores 0.00 in all three repeats, S4 1.00 and S8 0.50.
+  The G0 hand audit called S2's zero a keyword false negative: it names the
+  right decision and condition but not the blocker (RF-23, the MCP server).
+  S4 and S8 name the blocker because the `blocked by task:mcp-server` edge
+  brings that memory into the prompt. So the gain has the mechanism the graph
+  is meant to have, but it is one question. **Without kg-B1, blocked shows no
+  difference and G1 fails** (one category).
+- **Rationale passes on evidence recall only.** S8's recall gain comes mostly
+  from kg-R3 (1.00 against S2's 0.33) and kg-R7 (0.67 against 0.50): S8's
+  prompt lists each memory's evidence (issues, commits), so its answers cite
+  it. That is S8's design, not a better retrieval of the facts: in accuracy
+  S8 is 0.04 below S2 (kg-R5, 0.78 against 1.00).
+- **Where the graph was expected to win, it does not.** Multi-hop (H3) is
+  0.06 *below* S2 for both graph strategies, with equal recall.
+
+### G2 — passes
+
+| Strategy | Accuracy loss on direct lookups (≤ 0.03) | Time vs S2 (≤ 1.30×) |
+|----------|------------------------------------------|----------------------|
+| S4 | 0.00 | 1.22× |
+| S8 | 0.00 | 1.10× |
+
+Every strategy scores 1.00 on the 8 direct lookups. S4 takes 22% more time,
+within the margin.
+
+### G3 — passes trivially
+
+The blind audit found **no staleness error** in any of the 96 answers (S0,
+S2, S4 and S8 on T1–T4, S1, S2, S4, S5). Every answer to a staleness question
+says the old claim no longer holds and names the change; every answer to a
+supersession question gives the current state. With S2 at 0 errors, "at most
+half of S2's" can only hold as 0 = 0. The gate says nothing about H4: the 8
+questions were too easy to make any strategy repeat obsolete knowledge,
+including S0, which reads the current files.
+
+Borderline answers, judged not errors and noted in the audit file:
+`kg-S5.s0.*` say the template was not tried, without saying the criterion was
+replaced (an incomplete answer, not an old claim); three answers to kg-S2
+read "fails with every strategy" loosely but report the later lean result.
+
+## What it means
+
+The numbers clear the pre-registered bar, but they do not show that the
+graph earns its place over FTS5 on this corpus:
+
+1. G1's two passing categories rest on one question (kg-B1) and on S8 showing
+   evidence in its prompt. Neither is strong enough to move kg forward as a
+   product on those categories alone (§7: only where G1–G3 pass).
+2. S2 is already at the ceiling on most categories. The curated corpus,
+   written knowing the questions, makes each answer reachable by keywords, so
+   there is little left for relations to add. The agent-written corpus
+   (R2-11) and the Engram and pandas corpora are where a graph could show a
+   difference, if there is one.
+3. The cheapest test of the one real mechanism seen (a `blocked by` edge
+   bringing in the blocker) is the R2-09 variant: S2 with relation targets
+   indexed as text. If it also names RF-23 on kg-B1, the edge adds nothing
+   that keywords could not.
+
+**Next:** S3 (to make the comparison final), S1, the R2-09 text-with-relations
+variant, then the agent-written corpus.
