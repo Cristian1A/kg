@@ -423,6 +423,39 @@ EOF
 - #71 updated (2026-10-28, comment 6481586477): S3/S2r implement and run
   ticked, score table posted.
 
+## R2-11: the agent-written corpus (started 2026-10-28)
+
+**Decided with the user (2026-10-28), the recommendations:**
+
+1. **Sources** per session, as the curated pass: the session's dialogue
+   (user and assistant text, no tool output, credential-looking lines
+   dropped; N2-06), GitHub issues/PRs/comments and the commits reachable
+   from `7dfd6ad` dated after the previous session's pinned commit and up
+   to this session's. Session 12's dialogue is cut at `7dfd6ad`'s time
+   (2026-10-25 13:41:58 +01:00), before the questions existed. The writer
+   **never sees** the questions, the curated corpus or docs/experiment-2.
+2. **Writing:** one `general-purpose` subagent per session, in order
+   01→12, with the accumulated memory listed in its prompt and a command
+   to show any memory in full; Engram's protocol (durable and costly to
+   reconstruct; check before writing; update instead of duplicating); the
+   curated corpus's format (kg input document, same types, statuses and
+   closed edge catalog; status changes as later writes). Output goes to
+   `bench/corpus/kg-agent/`, validated and merged by a submit command.
+3. **Runs:** S2, S2r and S4 on the agent corpus, 40 questions × 3 = 360
+   runs. S0 is not re-run: its prompt has no memory, so the G0 session's
+   S0 runs are the baseline.
+
+**Plan / state** (tick as done):
+
+- [ ] Tooling: `bench/memory_write.py` (sources, prompts, show, submit) with
+  tests; `bench.memory prepare --corpus`.
+- [ ] Analysis fixed in `docs/experiment-2/agent-corpus.md` before any run.
+- [ ] GitHub data fetched (read-only) to `bench/.cache/memory/github/`.
+- [ ] 12 writer subagents, in order (each needs the previous one merged).
+- [ ] Blindness check of the writers' transcripts.
+- [ ] Session of 360 runs, batches of 20; `usage`, `collect`.
+- [ ] Report in agent-corpus.md; #71.
+
 ## Decisions already taken (do not reopen)
 
 - Subagents only, never an API key. Everything versioned in English.
