@@ -77,6 +77,37 @@ Means are over runs (questions × repeats) in the category. Per-question
 means and a question-level bootstrap (10,000 resamples, seed 71) are
 reported next to each difference, as for G0.
 
+## Final evaluation with S3 (procedure)
+
+Fixed and committed on 2026-10-28, **before** any per-category value,
+evidence recall or staleness judgment of the S1/S3/S2r session was
+computed. Only the overall and hidden-question mechanical means had been
+looked at (checkpoint: S3 0.920 / 0.824, below S2).
+
+- **Runs added:** session `20261027T092553Z` (S1, S3, S2r; same 40
+  questions, 3 repeats, model and harness).
+- **Comparator.** §7 compares "per category, against the best non-graph
+  strategy (S2 or S3)". For each category and each metric, the comparator
+  is whichever of S2 and S3 has the higher mean in that category on that
+  metric. S1 (whole memory in the prompt) and S2r (the R2-09 variant) are
+  not comparators: §7 names only S2 and S3. Both are reported next to it.
+- **G1.** A category passes if S4 or S8 minus the comparator is at least
+  0.10 in mean accuracy, or in mean evidence recall. The bootstrap is over
+  per-question differences to that same comparator.
+- **G2.** Accuracy loss on direct lookups against the comparator; time
+  against S2, as §7 says.
+- **G3.** Staleness errors of S4 and of S8 against the fewer of S2's and
+  S3's; with 0 errors in the comparator, the graph must have 0 too.
+- **Staleness audit, extended.** The 72 answers of S1, S3 and S2r on the 8
+  audited questions get a blind sheet of their own (same rules, shuffled
+  with seed 71, codes `b001`…), judged before being joined back, and are
+  appended to `staleness-audit.tsv`. The 96 earlier judgments are kept.
+- **Also reported:** G1 without kg-B1 (the question blocked rested on),
+  S2r on kg-B1 (does a relation indexed as text name the blocker, as the
+  edge does?), and S1 and S2r per category.
+- **Time outlier.** `kg-R6.s1.3` (17,822 s) was resumed after a session
+  limit; its seconds are left out. S1 is in no time gate.
+
 ## Results
 
 Computed on 2026-10-27 with
