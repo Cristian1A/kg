@@ -1,0 +1,1402 @@
+{
+  "version": "1",
+  "nodes": [
+    {
+      "id": "session:2026-10-12-80b8b8eb",
+      "type": "Session",
+      "label": "Store (#4), kg add with ID merge (#5) and migration of the repo to English (#20)",
+      "description": "Goal: resume the MVP: finish issue #4 (kg init and the .kg/ store), then #5 (kg add); then, at the user's request, move the project to English.\nInstructions: commit only when told, open PRs only when told; test the store on samples/basic-python-cli with a standard-schema graph, a custom-type graph and an invalid graph; do not start #6 until the user has merged the English PRs and says so; agents reply to the user in the user's language.\nDiscoveries: the custom-type warnings read like errors and only suggest near-identical names (issue #18); last-write-wins merge let an LLM provenance overwrite the parser's (fixed by keeping parser provenance); kg add needs edges to resolve against store nodes; indent=2 spreads short lists like lines over four lines; kg is a generic, hard-to-find name.\nAccomplished: PR #16 (#3 kg validate) merged; PR #17 (#4 store) merged; PR #19 (#5 kg add plus parser-provenance rule) merged; issue #18 opened; issue #20 opened, PR #21 (docs and process in English, new README, file renames) merged, PR #22 (CLI messages, schema descriptions, docstrings in English) opened stacked on #21; open issues #6-#12 and #18 translated on GitHub.\nNext steps: merge PR #22 (retarget its base to main if the #21 branch was not deleted; the assistant offered to merge via API); user to decide on respuestas_usuario.txt and on renaming the prio:futuro label; then continue with #6 (Python extractor).\nRelevant files: src/kg/store.py, src/kg/merge.py, src/kg/schema/validation.py, src/kg/cli.py, docs/store.md, docs/schema.md, docs/requirements.md, README.md, AGENTS.md, samples/basic-python-cli-kg/ (git-ignored test graphs).",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      },
+      "attrs": {
+        "date": "2026-10-12",
+        "commit": "a0af8e8",
+        "transcript": "80b8b8eb",
+        "order": 3
+      }
+    },
+    {
+      "id": "task:kg-validate-issue-3",
+      "type": "Task",
+      "attrs": {
+        "status": "done"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "task:store-init-issue-4",
+      "type": "Task",
+      "attrs": {
+        "status": "done"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "decision:commit-issue-conventions",
+      "type": "Decision",
+      "attrs": {
+        "status": "superseded"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "task:mvp-issue-plan",
+      "type": "Task",
+      "label": "Deliver the v0.1 MVP: issues #1-#12 in dependency order",
+      "description": "What: 12 MVP issues: #1 CLI skeleton, #2 JSON Schema, #3 kg validate, #4 kg init/.kg, #5 kg add with ID merge, #6 extract Python structure, #7 extract deps/config, #8 extract tests, #9 render PNG/SVG, #10 render HTML pyvis, #11 agent extraction skill, #12 MVP validation on 3 repos.\nWhy: derived from the MVP RF-xx of the approved requirements.\nWhere: GitHub milestone v0.1 (MVP).\nLearned: order #1 -> #2 -> #3 and #4 in parallel -> #5 -> extraction (#6-#8), render (#9, #10) and skill (#11) in parallel -> #12. As of 2026-10-12, #1-#5 are merged; #6 is next but paused until the English migration (#20) is merged.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-07-9f063e5d",
+        "created": "2026-10-07"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "issue:cli-usage-error-quirks",
+      "type": "Issue",
+      "label": "CLI quirks noticed in PR #13 review: command=null on usage errors, stubs exit 3",
+      "description": "What: usage errors set \"command\": null in the JSON envelope even when the subcommand is recognized (kg --json render); unimplemented stubs exit 3 (internal) rather than 2. The third point (English argparse messages next to Spanish kg messages) goes away with PR #22, which puts all CLI text in English.\nWhy: raised as points to confirm before merging #13; none breaks anything.\nWhere: src/kg/cli.py.\nLearned: PR #13 was merged without addressing them; the two remaining points are still open to revisit.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-09-67dcc1db",
+        "created": "2026-10-09"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "decision:single-graph-json-store",
+      "type": "Decision",
+      "label": "The store is a single .kg/graph.json that is itself a valid input document",
+      "description": "What: one graph.json (not nodes.json + edges.json), written atomically (temp file + rename) and validated on load and before save; it uses the input schema's version \"1\" and can be checked with kg validate .kg/graph.json; fields outside the schema such as $schema are not stored.\nWhy: one file allows an atomic write that can never be half-saved, and fixed ordering keeps PR diffs readable; the user accepted it as what is expected inside .kg/.\nWhere: src/kg/store.py, docs/store.md (formerly docs/almacen.md), PR #17.\nLearned: downside accepted: when the store needs something the input schema lacks (e.g. several provenances per element, RF-31) the schema version must be bumped or the two formats split.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-12-80b8b8eb",
+        "created": "2026-10-12"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "decision:deterministic-store-ordering",
+      "type": "Decision",
+      "label": "Deterministic store: nodes by id, edges by (source, target, type), fixed field order, sorted attrs/provenance keys",
+      "description": "What: save_graph sorts nodes by id and edges by (source, target, type), writes each element's fields in a fixed order and sorts only nested keys (attrs, provenance); the same graph always gives the same bytes.\nWhy: RNF-08 and clean git diffs (RF-70/71).\nWhere: src/kg/store.py (_canonical), tests/test_store.py (shuffle test with 5 seeds).\nLearned: a test caught _canonical also sorting top-level fields; fixed to sort only nested objects. Short lists such as lines: [12, 15] take four lines with indent=2 (see issue:short-lists-spread-over-lines).",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-12-80b8b8eb",
+        "created": "2026-10-12"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "decision:edge-identity-source-target-type",
+      "type": "Decision",
+      "label": "An edge is identified by (source, target, type); type is the MultiDiGraph key",
+      "description": "What: the store loads into nx.MultiDiGraph with the edge type as key; two edges with the same source, target and type are rejected as duplicates.\nWhy: gives kg add a stable identity to merge edges on; accepted by the user.\nWhere: src/kg/store.py, src/kg/merge.py.\nLearned: two relations of the same type between the same pair cannot coexist; any per-edge distinction must go in attrs.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-12-80b8b8eb",
+        "created": "2026-10-12"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "task:kg-add-issue-5",
+      "type": "Task",
+      "label": "Issue #5: kg add with basic merge by ID (merged via PR #19)",
+      "description": "What: kg add <file|-> loads the store, validates the document against it, merges by ID and saves; a node with an existing ID combines fields, attrs merge per top-level key, identical edges are not duplicated, a different value makes the new one win and is reported as a conflict; summary of added/merged/unchanged plus conflicts in text and --json.\nWhy: RF-21 and RF-30: without merge, add and extract would create duplicates.\nWhere: src/kg/merge.py, src/kg/cli.py, docs/store.md, tests/test_merge.py.\nLearned: errors leave the store untouched (exit 1); no store gives exit 2 with a hint to run kg init; when nothing changes the file is not rewritten, so repeating an add is byte-identical.",
+      "attrs": {
+        "status": "done",
+        "session": "session:2026-10-12-80b8b8eb",
+        "created": "2026-10-12"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "decision:add-edges-may-reference-store-nodes",
+      "type": "Decision",
+      "label": "In kg add, edges may point to nodes already in the store; kg validate stays file-local",
+      "description": "What: validate_document takes known_ids; in kg add, an edge whose endpoint is not in the file but is in the store is valid; the broken_reference message says 'nor in the store' and suggests similar store IDs. kg validate alone is unchanged and still flags such edges.\nWhy: otherwise an agent could not link docs to functions created by kg extract (the CU-01 flow).\nWhere: src/kg/schema/validation.py, src/kg/merge.py, docs/schema.md.\nLearned: a document that fails kg validate (broken reference) can still be accepted by kg add; in the basic-python-cli test the invalid file went from 11 to 9 errors under add because file:size.py was already in the store.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-12-80b8b8eb",
+        "created": "2026-10-12"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "decision:keep-parser-provenance-on-merge",
+      "type": "Decision",
+      "label": "On merge, parser provenance is kept over llm or manual provenance",
+      "description": "What: if an element already has provenance with method parser and new provenance comes from llm or manual, the old one is kept and reported as a conflict with kept: \"old\" (each conflict in --json has kept: new|old); newer parser provenance still replaces old; if only provenance differed the element counts as unchanged.\nWhy: with last-write-wins, an agent enriching a node (LLM, confidence 0.85) erased the parser's provenance (confidence 1.0, line numbers); the user chose this option over deferring to v0.2. Brings forward part of RF-33.\nWhere: src/kg/merge.py, docs/store.md, commit a306c7c, PR #19.\nLearned: only provenance is protected; other LLM fields (e.g. label main -> main(file)) are still applied while provenance still says parser. Per-field provenance belongs to multi-provenance (RF-31, v0.2).",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-12-80b8b8eb",
+        "created": "2026-10-12"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "experiment:store-cases-on-basic-python-cli",
+      "type": "Experiment",
+      "label": "Store and validation tried on basic-python-cli with standard, custom and invalid graphs",
+      "description": "What: hand-modelled graphs of samples/basic-python-cli (one size.py with main and a __main__ block, README, LICENSE): case 1 standard catalog (9 nodes, 9 edges), case 2 with custom types EntryPoint, Tutorial, invokes, reads_argv, links_to (11 nodes, 13 edges), case 3 with 9 injected agent-style errors; later an agent-style add of a Concept and a documents edge.\nWhy: the user asked to see the logs of the three cases, the last failing as it should.\nWhere: samples/basic-python-cli-kg/ (git-ignored); samples/basic-python-cli/.kg/ already existed, so kg init refused with exit 2.\nLearned: case 1 valid; case 2 valid with 5 warnings; case 3 gave 11 errors (2 extra broken references cascade from the broken file ID, and their suggestion points at the broken ID itself), store hash unchanged; reversing node/edge order gave a byte-identical file; under kg add the agent doc gave 1 added, 1 merged, 2 edges, 2 conflicts and a repeated add was unchanged.",
+      "attrs": {
+        "status": "done",
+        "session": "session:2026-10-12-80b8b8eb",
+        "created": "2026-10-12"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "issue:custom-type-warnings-alarming",
+      "type": "Issue",
+      "label": "Custom-type warnings read like errors, are rarely actionable and repeat per occurrence (#18)",
+      "description": "What: kg validate prints custom types as warning with 'expected: a standard entity type', suggests a standard type only for near-identical names (difflib cutoff 0.8), and emits one warning per occurrence. Proposal: name the similar standard type via a small deterministic synonym table (Tutorial~Document, invokes~calls, links_to~documents), otherwise a single note listing the added custom types, grouped with counts, maybe an info/note severity.\nWhy: the user felt it makes people think they did invalid work, although custom types are valid by design (RF-02).\nWhere: src/kg/schema/validation.py (_check_custom_types, Report.summary), issue #18, milestone v0.2.\nLearned: no LLM allowed for the synonyms (RF-24); changing the custom_type code or adding a severity affects --json consumers.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-12-80b8b8eb",
+        "created": "2026-10-12"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "issue:short-lists-spread-over-lines",
+      "type": "Issue",
+      "label": "Short lists like lines: [12, 15] take four lines in graph.json",
+      "description": "What: json indent=2 writes each element of short lists on its own line.\nWhy: works but adds noise to store diffs.\nWhere: src/kg/store.py.\nLearned: the assistant offered to keep them on one line during #5; it was not done and no issue was opened.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-12-80b8b8eb",
+        "created": "2026-10-12"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "decision:repository-in-english",
+      "type": "Decision",
+      "label": "Everything versioned or published is in English; agents reply in the user's language",
+      "description": "What: code, CLI messages, JSON Schema descriptions, docs, commits, issues and PRs in English; English only in the CLI, no i18n; docs renamed (requisitos-funcionales.md -> requirements.md, esquema.md -> schema.md, almacen.md -> store.md, repo-basico.json -> basic-repo.json, minimo.json -> minimal.json); new README.md, also the package readme; RF/RNF/CU/S/PA kept as legacy IDs; git history and closed issues/PRs not rewritten; open issues #6-#12 and #18 translated.\nWhy: the user wants the project more visible; agents rely on the machine-readable code fields, already English, and two languages would double texts and tests; renaming requirement IDs would break traceability.\nWhere: AGENTS.md rule 8, issue #20, PR #21 (docs/process), PR #22 (product).\nLearned: machine-readable fields (code, path, severity, --json keys) and exit codes were left unchanged. The name kg was flagged as too generic to find on GitHub/PyPI; no decision taken.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-12-80b8b8eb",
+        "created": "2026-10-12"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "decision:commit-conventions-in-english",
+      "type": "Decision",
+      "label": "Conventional Commits in English with Closes/RF footers, feat/N-slug branches, [area] issue titles",
+      "description": "What: same conventions as before ('type(scope): summary', footers 'Closes: #N' and 'RF: RF-xx', branches like feat/4-kg-init-store or docs/20-english, '[area] description' issue titles, templates and labels) but written in English from issue #20 on.\nWhy: part of moving the repository to English; every branch/commit must reference an issue, so tracking issue #20 was opened for the migration itself.\nWhere: CONTRIBUTING.md, .gitmessage, .github/ templates, AGENTS.md rule 9.\nLearned: GitHub labels were not renamed (prio:futuro still Spanish, pending the user's decision).",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-12-80b8b8eb",
+        "created": "2026-10-12"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "task:english-migration-issue-20",
+      "type": "Task",
+      "label": "Issue #20: translate the project to English (PR #21 merged, PR #22 open)",
+      "description": "What: PR #21 (docs, process, README, renames) merged into main; PR #22 (CLI messages, schema descriptions, docstrings, tests) is stacked on #21 and closes #20.\nWhy: decision:repository-in-english.\nWhere: branch docs/20-english and the PR #22 branch.\nLearned: GitHub retargets #22 to main only if the #21 branch is deleted, otherwise change its base by hand; until #22 lands the README/docs examples show English CLI output that main does not produce yet; the assistant offered to merge via the REST API, awaiting the user.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-12-80b8b8eb",
+        "created": "2026-10-12"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "task:decide-respuestas-usuario-txt",
+      "type": "Task",
+      "label": "User to decide what to do with respuestas_usuario.txt",
+      "description": "What: the user's personal answers to the initial questionnaire are versioned, in Spanish; options: remove from the repo (e.g. .gitignore), translate, or leave as is.\nWhy: the repo is meant to become public-facing; it is the only Spanish file excluded from issue #20's acceptance criterion.\nWhere: respuestas_usuario.txt at the repo root.\nLearned: asked twice in this session; no answer yet.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-12-80b8b8eb",
+        "created": "2026-10-12"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "task:rename-prio-futuro-label",
+      "type": "Task",
+      "label": "Rename the GitHub label prio:futuro to prio:future (awaiting the user)",
+      "description": "What: GitHub labels were not translated in the English migration.\nWhy: consistency with the English repository.\nWhere: GitHub labels, CONTRIBUTING.md.\nLearned: proposed by the assistant; no answer yet.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-12-80b8b8eb",
+        "created": "2026-10-12"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "task:python-extractor-issue-6",
+      "type": "Task",
+      "label": "Issue #6: Python extractor (code structure), next MVP step",
+      "description": "What: next issue in the MVP order after #5.\nWhy: task:mvp-issue-plan.\nWhere: src/kg/ extract, issue #6.\nLearned: the user said not to start it until the English PRs are merged and they give the go-ahead.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-12-80b8b8eb",
+        "created": "2026-10-12"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "component:docs",
+      "type": "Component",
+      "label": "docs",
+      "description": "README.md and docs/ (requirements, schema, store).",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:issue-5",
+      "type": "Evidence",
+      "label": "[merge] kg add with basic merge by ID",
+      "attrs": {
+        "kind": "issue",
+        "ref": "5"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:issue-18",
+      "type": "Evidence",
+      "label": "[schema] Clearer, less alarming warnings for custom types",
+      "attrs": {
+        "kind": "issue",
+        "ref": "18"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:issue-20",
+      "type": "Evidence",
+      "label": "[docs] Translate the project to English",
+      "attrs": {
+        "kind": "issue",
+        "ref": "20"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:pr-17",
+      "type": "Evidence",
+      "label": "feat(store): kg init and .kg/ store with deterministic JSON",
+      "attrs": {
+        "kind": "pr",
+        "ref": "17"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:pr-19",
+      "type": "Evidence",
+      "label": "feat(merge): kg add with basic merge by ID",
+      "attrs": {
+        "kind": "pr",
+        "ref": "19"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:pr-21",
+      "type": "Evidence",
+      "label": "docs: translate docs and contributor guides to English",
+      "attrs": {
+        "kind": "pr",
+        "ref": "21"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:pr-22",
+      "type": "Evidence",
+      "label": "refactor(cli): translate CLI messages, schema and code to English",
+      "attrs": {
+        "kind": "pr",
+        "ref": "22"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:commit-9de4200",
+      "type": "Evidence",
+      "label": "Merge PR #16 (kg validate)",
+      "attrs": {
+        "kind": "commit",
+        "ref": "9de4200"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:commit-2d5d634",
+      "type": "Evidence",
+      "label": "feat(store): kg init and .kg/ store with deterministic JSON",
+      "attrs": {
+        "kind": "commit",
+        "ref": "2d5d634"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:commit-01dfc43",
+      "type": "Evidence",
+      "label": "Merge PR #17 (store)",
+      "attrs": {
+        "kind": "commit",
+        "ref": "01dfc43"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:commit-e70f520",
+      "type": "Evidence",
+      "label": "feat(merge): kg add with basic merge by ID",
+      "attrs": {
+        "kind": "commit",
+        "ref": "e70f520"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:commit-a306c7c",
+      "type": "Evidence",
+      "label": "feat(merge): keep parser provenance over llm or manual",
+      "attrs": {
+        "kind": "commit",
+        "ref": "a306c7c"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:commit-4f66cd8",
+      "type": "Evidence",
+      "label": "Merge PR #19 (kg add)",
+      "attrs": {
+        "kind": "commit",
+        "ref": "4f66cd8"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:commit-cb17d98",
+      "type": "Evidence",
+      "label": "docs: translate docs and contributor guides to English",
+      "attrs": {
+        "kind": "commit",
+        "ref": "cb17d98"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:commit-0769387",
+      "type": "Evidence",
+      "label": "refactor(cli): translate CLI messages, schema and code to English",
+      "attrs": {
+        "kind": "commit",
+        "ref": "0769387"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:commit-a0af8e8",
+      "type": "Evidence",
+      "label": "Merge PR #21 (English docs)",
+      "attrs": {
+        "kind": "commit",
+        "ref": "a0af8e8"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:file-docs-store-md",
+      "type": "Evidence",
+      "label": "Store format, ordering and kg add merge rules",
+      "attrs": {
+        "kind": "file",
+        "ref": "docs/store.md",
+        "commit": "a0af8e8"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:file-docs-schema-md",
+      "type": "Evidence",
+      "label": "Schema documentation (renamed from docs/esquema.md)",
+      "attrs": {
+        "kind": "file",
+        "ref": "docs/schema.md",
+        "commit": "a0af8e8"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:file-readme-md",
+      "type": "Evidence",
+      "label": "Project README and package readme",
+      "attrs": {
+        "kind": "file",
+        "ref": "README.md",
+        "commit": "a0af8e8"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    }
+  ],
+  "edges": [
+    {
+      "source": "session:2026-10-12-80b8b8eb",
+      "target": "decision:single-graph-json-store",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-12-80b8b8eb",
+      "target": "decision:deterministic-store-ordering",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-12-80b8b8eb",
+      "target": "decision:edge-identity-source-target-type",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-12-80b8b8eb",
+      "target": "task:kg-add-issue-5",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-12-80b8b8eb",
+      "target": "decision:add-edges-may-reference-store-nodes",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-12-80b8b8eb",
+      "target": "decision:keep-parser-provenance-on-merge",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-12-80b8b8eb",
+      "target": "experiment:store-cases-on-basic-python-cli",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-12-80b8b8eb",
+      "target": "issue:custom-type-warnings-alarming",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-12-80b8b8eb",
+      "target": "issue:short-lists-spread-over-lines",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-12-80b8b8eb",
+      "target": "decision:repository-in-english",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-12-80b8b8eb",
+      "target": "decision:commit-conventions-in-english",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-12-80b8b8eb",
+      "target": "task:english-migration-issue-20",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-12-80b8b8eb",
+      "target": "task:decide-respuestas-usuario-txt",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-12-80b8b8eb",
+      "target": "task:rename-prio-futuro-label",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-12-80b8b8eb",
+      "target": "task:python-extractor-issue-6",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:kg-validate-issue-3",
+      "target": "evidence:commit-9de4200",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:store-init-issue-4",
+      "target": "evidence:pr-17",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:store-init-issue-4",
+      "target": "evidence:commit-01dfc43",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:single-graph-json-store",
+      "target": "decision:kg-store-json-in-git",
+      "type": "decided_because",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:single-graph-json-store",
+      "target": "evidence:pr-17",
+      "type": "decided_because",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:single-graph-json-store",
+      "target": "component:store",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:single-graph-json-store",
+      "target": "component:schema",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:single-graph-json-store",
+      "target": "evidence:file-docs-store-md",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:single-graph-json-store",
+      "target": "evidence:commit-2d5d634",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:deterministic-store-ordering",
+      "target": "component:store",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:deterministic-store-ordering",
+      "target": "evidence:commit-2d5d634",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:deterministic-store-ordering",
+      "target": "evidence:file-docs-store-md",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:edge-identity-source-target-type",
+      "target": "component:store",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:edge-identity-source-target-type",
+      "target": "component:merge",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:edge-identity-source-target-type",
+      "target": "evidence:pr-17",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:kg-add-issue-5",
+      "target": "component:merge",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:kg-add-issue-5",
+      "target": "component:cli",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:kg-add-issue-5",
+      "target": "evidence:issue-5",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:kg-add-issue-5",
+      "target": "evidence:pr-19",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:kg-add-issue-5",
+      "target": "evidence:commit-e70f520",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:kg-add-issue-5",
+      "target": "evidence:commit-4f66cd8",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:add-edges-may-reference-store-nodes",
+      "target": "evidence:pr-19",
+      "type": "decided_because",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:add-edges-may-reference-store-nodes",
+      "target": "component:merge",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:add-edges-may-reference-store-nodes",
+      "target": "component:schema",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:add-edges-may-reference-store-nodes",
+      "target": "evidence:commit-e70f520",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:keep-parser-provenance-on-merge",
+      "target": "experiment:store-cases-on-basic-python-cli",
+      "type": "decided_because",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:keep-parser-provenance-on-merge",
+      "target": "component:merge",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:keep-parser-provenance-on-merge",
+      "target": "evidence:commit-a306c7c",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:keep-parser-provenance-on-merge",
+      "target": "evidence:pr-19",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:keep-parser-provenance-on-merge",
+      "target": "evidence:file-docs-store-md",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "experiment:store-cases-on-basic-python-cli",
+      "target": "evidence:pr-17",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "experiment:store-cases-on-basic-python-cli",
+      "target": "evidence:pr-19",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "issue:custom-type-warnings-alarming",
+      "target": "component:schema",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "issue:custom-type-warnings-alarming",
+      "target": "evidence:issue-18",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "issue:short-lists-spread-over-lines",
+      "target": "component:store",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:repository-in-english",
+      "target": "evidence:issue-20",
+      "type": "decided_because",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:repository-in-english",
+      "target": "component:repo-workflow",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:repository-in-english",
+      "target": "component:cli",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:repository-in-english",
+      "target": "component:docs",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:repository-in-english",
+      "target": "component:requirements",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:repository-in-english",
+      "target": "evidence:pr-21",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:repository-in-english",
+      "target": "evidence:pr-22",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:repository-in-english",
+      "target": "evidence:file-agents-md",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:repository-in-english",
+      "target": "evidence:file-readme-md",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:commit-conventions-in-english",
+      "target": "decision:commit-issue-conventions",
+      "type": "supersedes",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:commit-conventions-in-english",
+      "target": "evidence:issue-20",
+      "type": "decided_because",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:commit-conventions-in-english",
+      "target": "component:repo-workflow",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:commit-conventions-in-english",
+      "target": "evidence:commit-cb17d98",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:commit-conventions-in-english",
+      "target": "evidence:file-contributing-md",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:english-migration-issue-20",
+      "target": "component:docs",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:english-migration-issue-20",
+      "target": "component:cli",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:english-migration-issue-20",
+      "target": "evidence:issue-20",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:english-migration-issue-20",
+      "target": "evidence:pr-21",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:english-migration-issue-20",
+      "target": "evidence:pr-22",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:english-migration-issue-20",
+      "target": "evidence:commit-cb17d98",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:english-migration-issue-20",
+      "target": "evidence:commit-0769387",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:english-migration-issue-20",
+      "target": "evidence:commit-a0af8e8",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:english-migration-issue-20",
+      "target": "constraint:confirm-before-commit-push-delete",
+      "type": "blocked_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:decide-respuestas-usuario-txt",
+      "target": "component:repo-workflow",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:decide-respuestas-usuario-txt",
+      "target": "evidence:issue-20",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:rename-prio-futuro-label",
+      "target": "component:repo-workflow",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:python-extractor-issue-6",
+      "target": "component:extract",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:python-extractor-issue-6",
+      "target": "task:english-migration-issue-20",
+      "type": "blocked_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "issue:cli-usage-error-quirks",
+      "target": "evidence:pr-22",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    }
+  ]
+}
