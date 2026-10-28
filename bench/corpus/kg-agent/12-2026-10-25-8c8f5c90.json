@@ -1,0 +1,820 @@
+{
+  "version": "1",
+  "nodes": [
+    {
+      "id": "session:2026-10-25-8c8f5c90",
+      "type": "Session",
+      "label": "Experiment 2 opened (#71): agent context memory requirements, open questions answered, branch cleanup",
+      "description": "Goal: reopen kg as a second experiment testing whether an explicit memory of what an agent knows about a project (decisions, tasks, experiments, constraints, evidence, sessions) helps it recover context across sessions, and clean up the branches.\nInstructions: user approved the requirements v1.0 and asked to commit, open an issue, then debate and record the open questions Q2-01..Q2-05; keep experiment 1 preserved in its own branch; Engram is a reference, not a dependency; no rebuilding Engram, find which memory architecture works best and when.\nDiscoveries: samples/ repos have only 1-4 commits (useless for cross-session memory); 13 local Claude Code transcripts of this project (~192 MB); branch docs/66-roadmap-v0.3 held an unpushed roadmap commit 6421040; scrapy history is likely in model training data, which would inflate the no-memory control.\nAccomplished: branches experiment-1/code-graph-negative-result (copy of main e066c56) and experiment-2/agent-context-memory created; 35 remote and 38 local branches deleted; docs/experiment-2/requirements.md written and approved (commit 77f4b80); issue #71 opened; open questions answered and recorded (commit 7dfd6ad), Engram and pandas cloned into samples/ and listed in samples/README.md and AGENTS.md.\nNext steps: P0 of #71: build the corpus (kg, Engram, pandas), 30+ questions with reference answers and evidence across 8 categories, freeze gates G0-G3 in a commit before any run; study Engram; then P1 (shared store, write modes, S0, S2, measure G0).\nRelevant files: docs/experiment-2/requirements.md, AGENTS.md, samples/README.md, docs/report.md, bench/",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      },
+      "attrs": {
+        "date": "2026-10-25",
+        "commit": "7dfd6ad",
+        "transcript": "8c8f5c90",
+        "order": 12
+      }
+    },
+    {
+      "id": "component:experiment-2",
+      "type": "Component",
+      "label": "experiment 2: agent context memory",
+      "description": "The second experiment (#71): a memory of decisions, tasks, experiments, constraints, evidence and sessions kept in the .kg/ store and retrieved by interchangeable strategies S0-S8, evaluated with the bench/ harness.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "decision:reopen-as-experiment-2-agent-memory",
+      "type": "Decision",
+      "label": "Reopen kg as experiment 2: a graph of agent context memory across sessions, not of code",
+      "description": "What: hypothesis: representing explicitly what an agent knows about a project (decisions, tasks, experiments, constraints, issues, evidence, sessions) improves recovery of relevant context across sessions; research question: on which tasks and conditions does a relational (graph) memory beat full-text and semantic retrieval for coding-agent continuity.\nWhy: experiment 1 showed a code graph loses to reading the code; knowledge the code does not hold (why, what failed, what is pending) cannot be recovered by grep, so the graph may earn its place there.\nWhere: docs/experiment-2/requirements.md (H1-H6, R2-01..R2-16, N2-01..N2-06, gates G0-G3), issue #71, branch experiment-2/agent-context-memory\nLearned: compare architectures over one shared store rather than build another Engram; graph is the knowledge index, files are evidence; phases P0-P4 and the report is published whatever the result.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-25-8c8f5c90",
+        "created": "2026-10-25"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "decision:exp2-controls-and-pre-registered-gates",
+      "type": "Decision",
+      "label": "Experiment 2 design: mandatory no-memory control S0, strategies differ only in retrieval, gates frozen before the first run",
+      "description": "What: S0 = agent with repo and git log but no memory; 9 strategies S0-S8 (text FTS5, embeddings, graph traversal, recency, hierarchy, iterative, hybrid...) over one store, S0/S2/S4/S8 mandatory; same prompt, model and budget for all; >=30 questions in 8 fixed categories, >=1/3 with answers in no repo file, plus 5 'resume yesterday's work' tasks; gates: G0 memory beats S0 by >=0.15 or the experiment stops, G1 graph beats by >=0.10 on multi-memory categories, G2 graph does not lose on direct lookups, G3 graph makes at most half the stale-as-current errors.\nWhy: in experiment 1 the equivalent of the plain control (code reading) won; changing prompt, model, retrieval and budget at once would make any gain unattributable; question mix and pass criteria fixed beforehand avoid tuning to the result.\nWhere: docs/experiment-2/requirements.md\nLearned: S1 and S3 only run if G0 passes; S7 and continuation tasks are P3.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-25-8c8f5c90",
+        "created": "2026-10-25"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "decision:exp2-corpora-kg-engram-pandas",
+      "type": "Decision",
+      "label": "Experiment 2 corpora: kg's own history first, plus Engram and pandas (Q2-01)",
+      "description": "What: kg's history (~70 PRs, superseded decisions, failed approaches, stale knowledge) is the main corpus; Engram and pandas are cloned into samples/ as further corpora.\nWhy: samples/ repos have 1-4 commits; Engram is recent (less likely in training data), keeps decisions in PRs/issues and does the same job being studied; scrapy's history is likely memorised, which inflates S0; the user added pandas from repos unused in experiment 1.\nWhere: samples/README.md, AGENTS.md, docs/experiment-2/requirements.md section 11\nLearned: watch for training-data contamination of S0 on well-known repos such as pandas.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-25-8c8f5c90",
+        "created": "2026-10-25"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "decision:exp2-session-sources-and-ablations",
+      "type": "Decision",
+      "label": "Experiment 2 sessions: kg rebuilt from PRs/issues/commits, external repos via subagents; ablations and a router strategy (Q2-02)",
+      "description": "What: for kg, sessions are reconstructed from PRs, issues and commits, with the local Claude Code transcripts used only as a reviewed source for negative knowledge and loose ends, never copied verbatim; for external repos, sessions are generated by subagents; ablations added (with/without graph, with/without memory records, large context windows, subagents, multiple sessions) and a router strategy.\nWhy: negative knowledge rarely reaches a PR; verbatim transcripts raise privacy and noise issues (N2-06); external repos have no transcripts.\nWhere: docs/experiment-2/requirements.md section 11, bench/.cache/memory/ (writer prompts per session)\nLearned: manual reconstruction costs effort and adds author bias.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-25-8c8f5c90",
+        "created": "2026-10-25"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "decision:exp2-embeddings-all-minilm",
+      "type": "Decision",
+      "label": "S3 embeddings use all-MiniLM-L6-v2, run locally (Q2-03)",
+      "description": "What: the semantic strategy S3 uses the small local model all-MiniLM-L6-v2, as an optional extra.\nWhy: local and cheap; avoid sentence-transformers because it pulls torch, too heavy for N2-02; ONNX via fastembed was the suggested route.\nWhere: docs/experiment-2/requirements.md section 11\nLearned: S3 is only mandatory if G0 passes, so its implementation can wait until P2.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-25-8c8f5c90",
+        "created": "2026-10-25"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "decision:exp2-memory-in-kg-store",
+      "type": "Decision",
+      "label": "Experiment 2 memory lives in the .kg/ store with its schema, new types added (Q2-04)",
+      "description": "What: reuse .kg/graph.json and its schema with the memory catalog (Decision, Task, Experiment, Constraint, Issue, Evidence, Session, Component; edges decided_because, affects, supported_by, supersedes, invalidated_by, blocked_by, produced) as new types; FTS5 index and vectors are derived from it (R2-10).\nWhy: reuses tested provenance, validation, kg add/kg edit and kg status staleness checks.\nWhere: docs/experiment-2/requirements.md, docs/store.md\nLearned: trade-off: the schema carries decisions made for code graphs.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-25-8c8f5c90",
+        "created": "2026-10-25"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "decision:engram-studied-p0-measured-p3",
+      "type": "Decision",
+      "label": "Engram is studied in P0 and measured in P3 as an external system, not a dependency (Q2-05)",
+      "description": "What: study Engram's design (SQLite + FTS5, relations between memories) in P0; run it in P3 through the harness's 'measure your own tool' path.\nWhy: a sanity check against a real system: if our text strategy clearly loses to Engram, the fault is the implementation, not the approach; measuring earlier would force adapting its write format to the corpus.\nWhere: docs/experiment-2/requirements.md section 11, bench/README.md 'Measure your own tool'\nLearned: user agreed with the recommendation unchanged.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-25-8c8f5c90",
+        "created": "2026-10-25"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "decision:kg-direction-follows-exp2-results",
+      "type": "Decision",
+      "label": "What kg becomes is decided only after experiment 2's results",
+      "description": "What: section 12 records a possible future: kg as a store offering several ways to hold and retrieve knowledge depending on the type of question, possibly an improvement over Engram.\nWhy: the user wants the research to inspire the product, but only once the evidence is in.\nWhere: docs/experiment-2/requirements.md section 12\nLearned: do not build product features ahead of the gates.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-25-8c8f5c90",
+        "created": "2026-10-25"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "decision:experiment-branches-and-cleanup",
+      "type": "Decision",
+      "label": "Only three branches: main, experiment-1/code-graph-negative-result, experiment-2/agent-context-memory",
+      "description": "What: experiment-1/code-graph-negative-result is an exact copy of main (e066c56) holding docs/report.md, docs/benchmark.md and bench/results/; experiment 2 work happens on experiment-2/agent-context-memory; 35 remote and 38 local branches deleted after checking no PRs were open; tags v0.1.0 and v0.2.0 kept.\nWhy: the user wanted the failed experiment's essence visible in its own named branch and the repo cleared of useless branches.\nWhere: git branches on origin and locally\nLearned: all deleted branches were merged except docs/66-roadmap-v0.3, whose unpushed commit 6421040 (v0.3 roadmap reorder) is recoverable only on this machine for ~90 days: git branch docs/66-roadmap-v0.3 6421040.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-25-8c8f5c90",
+        "created": "2026-10-25"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "task:experiment-2-issue-71",
+      "type": "Task",
+      "label": "Issue #71: experiment 2, agent context memory across sessions",
+      "description": "What: requirements approved and open questions answered; remaining: P0 corpus with 30+ questions, reference answers and evidence, gates frozen in a commit; P1 shared store, write modes, S0 and S2, measure G0; P2 S4 and S8 (S1, S3 if G0 passes), G1-G3; P3 S7, continuation tasks, second corpus, Engram; P4 report published whatever the result.\nWhy: tracks experiment 2 per CONTRIBUTING.md.\nWhere: issue #71, branch experiment-2/agent-context-memory\nLearned: the bench/ harness (subagents, graders, result files) is reused; next step is P0.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-25-8c8f5c90",
+        "created": "2026-10-25"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "task:delete-merged-branches",
+      "type": "Task",
+      "attrs": {
+        "status": "done"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "constraint:project-concluded-no-v0-3-work",
+      "type": "Constraint",
+      "label": "Experiment 1 concluded 2026-10-20: no v0.3 code-graph work; the project continues only as experiment 2",
+      "description": "What: no MCP server, export, calls edges, docs-vs-code checks or other v0.3 code-graph features; experiment 1 is preserved on branch experiment-1/code-graph-negative-result; the project was reopened 2026-10-25 as experiment 2 (agent context memory, #71).\nWhy: the scrapy and step-0 results closed the code-graph hypothesis; the user reopened the project with a different hypothesis.\nWhere: user memory project-concluded.md, docs/roadmap.md, docs/report.md, issue #71\nLearned: the reopening did not revive the dotted-path string-reference idea; work follows #71's phases.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-25-8c8f5c90",
+        "created": "2026-10-25"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:issue-71",
+      "type": "Evidence",
+      "label": "[docs] Experiment 2: agent context memory across sessions",
+      "attrs": {
+        "kind": "issue",
+        "ref": "71"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:commit-77f4b80",
+      "type": "Evidence",
+      "label": "docs: add the requirements of experiment 2, agent context memory",
+      "attrs": {
+        "kind": "commit",
+        "ref": "77f4b80"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:commit-7dfd6ad",
+      "type": "Evidence",
+      "label": "docs: answer the open questions of experiment 2",
+      "attrs": {
+        "kind": "commit",
+        "ref": "7dfd6ad"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:file-docs-experiment-2-requirements-md",
+      "type": "Evidence",
+      "label": "Experiment 2 requirements v1.0 with answered open questions and kg's future (section 12)",
+      "attrs": {
+        "kind": "file",
+        "ref": "docs/experiment-2/requirements.md",
+        "commit": "7dfd6ad"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    }
+  ],
+  "edges": [
+    {
+      "source": "session:2026-10-25-8c8f5c90",
+      "target": "decision:reopen-as-experiment-2-agent-memory",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-25-8c8f5c90",
+      "target": "decision:exp2-controls-and-pre-registered-gates",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-25-8c8f5c90",
+      "target": "decision:exp2-corpora-kg-engram-pandas",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-25-8c8f5c90",
+      "target": "decision:exp2-session-sources-and-ablations",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-25-8c8f5c90",
+      "target": "decision:exp2-embeddings-all-minilm",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-25-8c8f5c90",
+      "target": "decision:exp2-memory-in-kg-store",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-25-8c8f5c90",
+      "target": "decision:engram-studied-p0-measured-p3",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-25-8c8f5c90",
+      "target": "decision:kg-direction-follows-exp2-results",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-25-8c8f5c90",
+      "target": "decision:experiment-branches-and-cleanup",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-25-8c8f5c90",
+      "target": "task:experiment-2-issue-71",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:reopen-as-experiment-2-agent-memory",
+      "target": "evidence:issue-71",
+      "type": "decided_because",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:reopen-as-experiment-2-agent-memory",
+      "target": "evidence:file-docs-report-md",
+      "type": "decided_because",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:reopen-as-experiment-2-agent-memory",
+      "target": "evidence:commit-77f4b80",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:reopen-as-experiment-2-agent-memory",
+      "target": "evidence:file-docs-experiment-2-requirements-md",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:reopen-as-experiment-2-agent-memory",
+      "target": "component:experiment-2",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:reopen-as-experiment-2-agent-memory",
+      "target": "component:requirements",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:exp2-controls-and-pre-registered-gates",
+      "target": "experiment:lean-control-scrapy",
+      "type": "decided_because",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:exp2-controls-and-pre-registered-gates",
+      "target": "experiment:bench-scrapy-large-repo",
+      "type": "decided_because",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:exp2-controls-and-pre-registered-gates",
+      "target": "evidence:file-docs-experiment-2-requirements-md",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:exp2-controls-and-pre-registered-gates",
+      "target": "evidence:commit-77f4b80",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:exp2-controls-and-pre-registered-gates",
+      "target": "component:experiment-2",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:exp2-controls-and-pre-registered-gates",
+      "target": "component:bench",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:exp2-corpora-kg-engram-pandas",
+      "target": "evidence:commit-7dfd6ad",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:exp2-corpora-kg-engram-pandas",
+      "target": "evidence:file-docs-experiment-2-requirements-md",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:exp2-corpora-kg-engram-pandas",
+      "target": "component:experiment-2",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:exp2-session-sources-and-ablations",
+      "target": "evidence:commit-7dfd6ad",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:exp2-session-sources-and-ablations",
+      "target": "evidence:file-docs-experiment-2-requirements-md",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:exp2-session-sources-and-ablations",
+      "target": "component:experiment-2",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:exp2-embeddings-all-minilm",
+      "target": "evidence:commit-7dfd6ad",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:exp2-embeddings-all-minilm",
+      "target": "evidence:file-docs-experiment-2-requirements-md",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:exp2-embeddings-all-minilm",
+      "target": "component:experiment-2",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:exp2-memory-in-kg-store",
+      "target": "evidence:commit-7dfd6ad",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:exp2-memory-in-kg-store",
+      "target": "evidence:file-docs-experiment-2-requirements-md",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:exp2-memory-in-kg-store",
+      "target": "component:experiment-2",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:engram-studied-p0-measured-p3",
+      "target": "evidence:commit-7dfd6ad",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:engram-studied-p0-measured-p3",
+      "target": "evidence:file-docs-experiment-2-requirements-md",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:engram-studied-p0-measured-p3",
+      "target": "component:experiment-2",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:kg-direction-follows-exp2-results",
+      "target": "evidence:commit-7dfd6ad",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:kg-direction-follows-exp2-results",
+      "target": "evidence:file-docs-experiment-2-requirements-md",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:kg-direction-follows-exp2-results",
+      "target": "component:experiment-2",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:exp2-corpora-kg-engram-pandas",
+      "target": "evidence:file-samples-readme-md",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:exp2-memory-in-kg-store",
+      "target": "component:store",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:exp2-memory-in-kg-store",
+      "target": "component:schema",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:exp2-session-sources-and-ablations",
+      "target": "component:bench",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:engram-studied-p0-measured-p3",
+      "target": "evidence:file-bench-readme-md",
+      "type": "decided_because",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:kg-direction-follows-exp2-results",
+      "target": "component:requirements",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:experiment-branches-and-cleanup",
+      "target": "component:repo-workflow",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:experiment-branches-and-cleanup",
+      "target": "evidence:issue-71",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:delete-merged-branches",
+      "target": "evidence:issue-71",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:experiment-2-issue-71",
+      "target": "evidence:issue-71",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:experiment-2-issue-71",
+      "target": "component:experiment-2",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:experiment-2-issue-71",
+      "target": "component:bench",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:experiment-2-issue-71",
+      "target": "component:store",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "constraint:project-concluded-no-v0-3-work",
+      "target": "evidence:issue-71",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    }
+  ]
+}
