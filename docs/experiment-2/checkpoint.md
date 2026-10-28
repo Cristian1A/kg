@@ -270,6 +270,7 @@ EOF
    added as `b001`–`b072` in `staleness-audit.tsv`).
 4. Hand-check `kg-T2.s4.3` — **done**: its `kg impact --depth 0` claim is
    true at `e066c56` (test at line 545); noted in gates.md.
+   #71 updated (checklist + comment 6481691993).
 5. **Agent-written corpus (R2-11)**, then P3.
 
 ### The S1/S3/S2r run (done)
