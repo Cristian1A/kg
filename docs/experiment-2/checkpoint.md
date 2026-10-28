@@ -457,7 +457,7 @@ EOF
   subagent with: `Read the file /home/cris/networkx/bench/.cache/memory/
   writers/<stem>/prompt.md and follow its instructions exactly.` Wait for
   `bench/corpus/kg-agent/<stem>.json` before the next. Commit each.
-  Writers done: 01, 02, 03, 04, 05 (transcripts in session `5f715828`, blindness OK).
+  Writers done: 01, 02, 03, 04, 05, 06 (transcripts in session `5f715828`, blindness OK).
   Writer 04 built its JSON with a Python script of its own (in the
   scratchpad) that reads no file: not a blindness issue.
 - [ ] Blindness check of the writers' transcripts.
