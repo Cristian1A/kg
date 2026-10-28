@@ -3,8 +3,9 @@
 Where the work stands, so a new session can resume it without this one's
 conversation. **Update this file whenever the state below changes.**
 
-Last update: 2026-10-27, G0 passed; P2: S4/S8 run done; G1–G3 pass weakly
-(provisional until S3), see [gates.md](gates.md).
+Last update: 2026-10-28, G0 passed; P2: S4/S8 and S1/S3/S2r runs done;
+G1–G3 pass weakly against S2 (final evaluation with S3 pending), see
+[gates.md](gates.md).
 
 ## State
 
@@ -12,7 +13,7 @@ Last update: 2026-10-27, G0 passed; P2: S4/S8 run done; G1–G3 pass weakly
 |-------|-------|
 | P0 | done: [questions](questions-draft.md) frozen (`bench/questions/memory/kg.json`), [corpus](corpus.md) (`bench/corpus/kg/`), gates in [requirements](requirements.md) §7 |
 | P1 | harness done ([harness.md](harness.md), `bench/memory.py`, S0 and S2); **G0 done and passed** ([g0.md](g0.md)) |
-| P2 | in progress: S1, S4 and S8 implemented ([harness.md](harness.md)); **S4/S8 run done; G1–G3 pass weakly** ([gates.md](gates.md), provisional until S3) |
+| P2 | in progress: S1, S3, S2r, S4, S8 implemented and run ([harness.md](harness.md)); G1–G3 pass weakly against S2 ([gates.md](gates.md)); **final G1–G3 with S3 pending** |
 | P3–P4 | not started |
 
 Branch `experiment-2/agent-context-memory`; issue #71 tracks the checklist.
@@ -261,7 +262,7 @@ EOF
    (`all-MiniLM-L6-v2`, the `memory` extra, K = 8) and `s2r` (S2 with each
    memory's relation lines indexed and shown), with tests, in harness.md.
 2. **One session with S1 + S3 + S2r**: 40 questions × 3 strategies × 3
-   repeats = 360 runs, in batches of 20 — **in progress**, see below.
+   repeats = 360 runs — **done** (2026-10-28), see below.
 3. **G1–G3 final**, against the best of S2 and S3; update gates.md and #71.
 4. Hand-check `kg-T2.s4.3` (it cited a test it never read).
 5. **Agent-written corpus (R2-11)**, then P3.
@@ -371,8 +372,24 @@ EOF
   13) and no subagent reported a violation.
 - **Every run is done: 360 of 360** (2026-10-28). No S1/S3/S2r run used its
   25 calls in the whole run; `violations.tsv` has one entry
-  (`kg-T3.s3.3`, relaunched in batch 10). **Next:** `usage` for sessions
-  `25cb3c1f`, `9c9734c1` and `5f715828`, then `collect`, then G1–G3 final.
+  (`kg-T3.s3.3`, relaunched in batch 10).
+- **`usage` bug found and fixed** (`abfd608`): a session-limit notice is a
+  `<synthetic>` reply with 0 tokens, and it was taken as the run's usage
+  (15 runs had 0 tokens); a run launched twice kept whichever transcript
+  sorted last. Now synthetic replies are skipped and the latest transcript
+  wins (`started` in `usage.json`). The G0 session's `kg-C5.s2.2` (0
+  tokens) is likely the same bug: re-run `usage` + `collect` for the G0
+  and S4/S8 sessions and check that only usage fields change.
+- `usage` run for sessions `25cb3c1f`, `9c9734c1`, `5f715828` (360 runs,
+  none empty); `collect` wrote `bench/results/memory/20261027T092553Z.jsonl`
+  (`666e084`). **Outlier:** `kg-R6.s1.3` has 17 822 s, because it was
+  resumed after the session limit (batch 11); leave it out of time
+  comparisons or report it apart.
+- First look, mechanical score (all 40 / 15 hidden): S0 0.711 / 0.387,
+  S1 0.952 / 0.914, S2 0.956 / 0.916, **S2r 0.969 / 0.946**, S3 0.920 /
+  0.824, S4 0.951 / 0.932, S8 0.954 / 0.912. S3 is below S2, so "best of
+  S2 and S3" is S2 overall (check per category, as gates.md defines it).
+  **Next:** G1–G3 final (step 3 below).
 
 ## Decisions already taken (do not reopen)
 
