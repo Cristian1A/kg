@@ -299,8 +299,11 @@ EOF
 - Batch 6 (positions 101–120): first marked as launched from session
   `25cb3c1f`, but no run made a call (nothing to reset). Relaunched on
   2026-10-28 from session `9c9734c1-8c92-4fdf-9549-6cb00299cdce`, which
-  holds the transcripts of batch 6 on. **In progress.** If this note is
-  still here, check `status`.
+  holds the transcripts of batch 6 on. Every run answered; none used its
+  25 calls (`kg-R6.s3.3` came closest with 19, then `kg-B4.s2r.1` with 9)
+  and no subagent reported a violation. Done after batch 6: 120 of 360.
+- Batch 7 (positions 121–140, session `9c9734c1`): **launched, in
+  progress.** If this note is still here, check `status`.
 
 ## Decisions already taken (do not reopen)
 
