@@ -344,7 +344,10 @@ EOF
 - **Resuming a cut-off subagent** (session limit): send it a message
   (SendMessage to its agent ID) once the limit resets, instead of
   resetting the run; it continues with its context.
-- Batch 13 (positions 241–260, session `9c9734c1`): **launched, in
+- Batch 13 (positions 241–260, session `9c9734c1`): every run answered;
+  none used its 25 calls (`kg-B1.s1.2` came closest with 9) and no
+  subagent reported a violation. Done after batch 13: 260 of 360.
+- Batch 14 (positions 261–280, session `9c9734c1`): **launched, in
   progress.** If this note is still here, check `status`.
 
 ## Decisions already taken (do not reopen)
