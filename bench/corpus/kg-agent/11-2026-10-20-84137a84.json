@@ -1,0 +1,1433 @@
+{
+  "version": "1",
+  "nodes": [
+    {
+      "id": "session:2026-10-20-84137a84",
+      "type": "Session",
+      "label": "Unofficial LLM council on the scrapy loss, step 0 of the re-evaluation (#67, PR #68), lean control, and project concluded with a published report (#69, PR #70)",
+      "description": "Goal: decide whether to revive kg after the graph lost on scrapy; then run the cheapest decisive test and close or continue.\nInstructions: council analysis was unofficial (nothing to the repo) until the user said 'write it as an issue and start'; no API keys, subagents only; user merges PRs himself; user asked to close v0.3 issues and the v0.3 and v0.1 milestones, and to record that the project is concluded.\nDiscoveries: load_graph re-validated the 11.5 MB scrapy store on every read (5-10 s) and matplotlib was always imported; agents tried --depth 0 19 times; with kg fast, companion (code tools + kg) scores 0.96 vs code 0.98, -40% context, +45% time, so the step-0 gate fails on time; the lean control shows the context saving outside kg-using runs comes from a prompt line; where kg is used it halves context at equal score but costs a third more time; kg never improves accuracy.\nAccomplished: issue #67 and PR #68 (validation cache, lazy render import, --depth 0, companion and lean strategies, 96 subagent runs) merged; issue #69 and PR #70 (docs/report.md, bench README 'Measure your own tool', README/roadmap/site say concluded) merged; #35, #52, #55, #60, #66 closed; milestones v0.1 and v0.3 closed; no open issues remain.\nNext steps: none planned; the project is concluded. If reopened, start from the open idea of dotted-path string reference edges, preferably contributed to an existing tool.\nRelevant files: docs/report.md, docs/benchmark.md, docs/roadmap.md, bench/README.md, src/kg/store.py, src/kg/render/__init__.py, bench/tools.py",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      },
+      "attrs": {
+        "date": "2026-10-20",
+        "commit": "e066c56",
+        "transcript": "84137a84",
+        "order": 11
+      }
+    },
+    {
+      "id": "experiment:llm-council-on-scrapy-loss",
+      "type": "Experiment",
+      "label": "LLM council (Karpathy protocol via subagents): 5 of 5 experts say PIVOT; cheapest decisive step is fix speed and rerun the same questions",
+      "description": "What: karpathy/llm-council's 3-stage protocol (independent opinions, anonymous cross-review and ranking, chairman) run with mixed-model subagents instead of OpenRouter; 5 experts (evidence auditor, landscape, KG beyond code, devil's advocate, graph engineer), 5 reviewers, chairman.\nWhy: the user wanted an unofficial analysis of whether to revive kg after scrapy, and what similar tools exist; llm-council is a FastAPI app needing an OpenRouter key, so only its protocol was reused.\nWhere: session scratchpad council/ (FINAL.md, stage1/, stage2/, aggregate_rankings.md), not in the repo; the plan became issue #67.\nLearned: verdict bounded PIVOT (65%): test kg as a complement to grep, not a replacement; reviewers ranked engineer and auditor first, KG-beyond-code last; split between enriching the code layer (A, E) and keeping only a docs/decisions drift layer (B, C, D); code-graph-for-agents space is crowded (codegraph, GitNexus, codebase-memory-mcp, Serena); Codebase-Memory paper: graph 83% vs file exploration 92%; RepoGraph's +32.8% is relative (~2 points absolute); TYPE_CHECKING import flags already exist in grimp; possibly novel: dotted-path string edges (~50%) and documented-vs-code defaults check (~40%); main risk: all participants share the model family with the benchmark agent and question author, and demand rests on one client.",
+      "attrs": {
+        "status": "done",
+        "session": "session:2026-10-20-84137a84",
+        "created": "2026-10-20"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "decision:staged-reevaluation-with-kill-gates",
+      "type": "Decision",
+      "label": "Re-evaluate the graph in staged steps with numeric kill criteria (step 0: fast reads + companion rerun)",
+      "description": "What: step 0 (~1 day) fix kg's read latency and rerun the 16 scrapy questions with a companion strategy, kill if score drops > 0.03 or context > +15% or time > +30% vs code; step 1 (3-5 days) TYPE_CHECKING, inherits, settings/dotted-path facts on 12 externally checked hard questions; step 2 (~1 week) MCP server and a docs/settings drift check.\nWhy: the council found part of the scrapy loss was kg's implementation, and the old benchmark tested graph instead of grep, which no published system claims.\nWhere: issue #67\nLearned: step 0 failed on time, so steps 1 and 2 were never run.",
+      "attrs": {
+        "status": "superseded",
+        "session": "session:2026-10-20-84137a84",
+        "created": "2026-10-20"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "decision:validation-cache-content-addressed",
+      "type": "Decision",
+      "label": "load_graph skips schema validation for content kg already validated, via a content-addressed marker in the user cache",
+      "description": "What: marker in $XDG_CACHE_HOME/kg/validated/ keyed by SHA-256 of the contents, kg's version and the schema; written on save or after a full validation on load; any edit triggers full validation; unwritable cache means full validation every time; store format unchanged.\nWhy: re-validating scrapy's 11.5 MB store took 5-10 s per command, about half of the graph strategies' wall time.\nWhere: src/kg/store.py, src/kg/schema/validation.py (validate_bytes), docs/store.md, tests/conftest.py (autouse fixture so tests never write the real cache)\nLearned: kg query on scrapy 4.94 s -> 0.84 s; first read of an unseen document still validates (7-11 s on scrapy); benchmark prepare warms the cache because saving marks the store as validated.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-20-84137a84",
+        "created": "2026-10-20"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "decision:lazy-render-import",
+      "type": "Decision",
+      "label": "kg.render loads matplotlib only when something is rendered; parser defaults moved to kg.render.defaults",
+      "description": "What: module-level __getattr__ in kg.render loads the renderers on first use; defaults the CLI parser needs live in kg.render.defaults.\nWhy: matplotlib cost ~0.35 s of every command, even kg query.\nWhere: src/kg/render/__init__.py, src/kg/render/defaults.py\nLearned: start-up 0.64 s -> 0.47 s, below RNF-06's 0.5 s target.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-20-84137a84",
+        "created": "2026-10-20"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "decision:companion-and-lean-strategies",
+      "type": "Decision",
+      "label": "Benchmark adds companion (code tools + kg --brief) and the lean control (code tools + the same 'fewer calls' prompt line)",
+      "description": "What: companion gives list_files, read_file, search plus kg with --brief and the report counts runs that call kg; lean is code with companion's prompt line, to separate prompt effect from graph effect.\nWhy: earlier graph strategies forbade free reading, testing 'graph instead of grep'; companion runs read less even without calling kg, so a control was needed.\nWhere: bench/tools.py, bench/run.py, bench/report.py, bench/README.md\nLearned: when measuring any tool, compare against both code and lean and fix the win criterion before running.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-20-84137a84",
+        "created": "2026-10-20"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "experiment:step0-companion-scrapy",
+      "type": "Experiment",
+      "label": "Step 0 on scrapy: companion 0.96 vs code 0.98, -40% context, +45% time; gate fails on time",
+      "description": "What: 80 Opus subagent runs (companion x2, cards x2, code x1) on the 16 scrapy questions with the fast kg, plus the earlier code run: code 0.98 / 8 731 chars / 31.8 s, companion 0.96 / 5 199 / 46.0 s, cards 0.95 / 19 166 / 50.4 s.\nWhy: separate 'the concept failed' from 'the implementation failed'.\nWhere: bench/results/20261020T090411Z-subagent-scrapy-step0.jsonl, ...090412Z..., docs/benchmark.md 'Update: a large repo, scrapy'\nLearned: companion called kg in 15/32 runs (impact, path, test questions), 63.6 s vs 30.5 s without kg; scr-impact-job-runtime fails with every strategy (needs TYPE_CHECKING-aware imports); one run cut by the session limit was resumed and its time (146 s) estimated without the outage; two runs hit the 25-call cap and count as failures.",
+      "attrs": {
+        "status": "done",
+        "session": "session:2026-10-20-84137a84",
+        "created": "2026-10-20"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "experiment:lean-control-scrapy",
+      "type": "Experiment",
+      "label": "lean control: prompt line explains the saving where kg is unused; where used, kg halves context at equal score but costs ~1/3 more time",
+      "description": "What: 16 lean runs on scrapy. 8 questions where companion never called kg: lean 1.00 / 2 851 chars / 25.7 s vs companion 0.99 / 2 851 / 30.3 s. 7 where it did: lean 0.99 / 9 816 / 35.1 s vs companion 0.98 / 4 299 (-56%) / 47.4 s (+35%). job-runtime: lean 1.00 / 104 s, companion 0.50 / 163 s.\nWhy: test the hypothesis that companion's context saving came from the prompt line, not the graph.\nWhere: bench/results/20261020T130120Z-subagent-scrapy-lean.jsonl, docs/benchmark.md, #67 comment\nLearned: corrected the earlier claim that the saving is not kg's: it is the prompt where kg is unused, kg where it is used; the graph never improves accuracy and hurts on the type-only-imports question; gate still fails.",
+      "attrs": {
+        "status": "done",
+        "session": "session:2026-10-20-84137a84",
+        "created": "2026-10-20"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "decision:conclude-kg-publish-negative-result",
+      "type": "Decision",
+      "label": "Conclude kg as a code-graph tool for agents and publish the negative result (option 1); v0.3 not pursued",
+      "description": "What: stop the code layer, publish docs/report.md (method, 7 strategies, small repos, stale graph, scrapy, step 0, lean control, limits, open idea of dotted-path string edges) and a reusable harness; README/roadmap/site say concluded; open v0.3 issues closed as not planned; milestones v0.1 and v0.3 closed.\nWhy: step-0 gate failed on time and the graph never improved accuracy; a negative result with checked references, seven strategies and a reusable harness is the one output with guaranteed value (most published numbers come from vendors).\nWhere: docs/report.md, docs/roadmap.md 'How v0.3 ended', README.md, docs/index.html, bench/README.md 'Measure your own tool'\nLearned: option 3 (bring string-reference edges to another tool) was left as an optional open idea; README's Why no longer claims the graph beats grep.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-20-84137a84",
+        "created": "2026-10-20"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "constraint:project-concluded-no-v0-3-work",
+      "type": "Constraint",
+      "label": "Project concluded 2026-10-20: do not propose v0.3 features unless the user reopens it",
+      "description": "What: no MCP server, export, calls edges, docs-vs-code checks or other v0.3 work; the benchmark harness remains usable to measure other tools with subagents.\nWhy: the user asked to record that the project is concluded after the scrapy and step-0 results.\nWhere: user memory project-concluded.md, docs/roadmap.md, README.md\nLearned: if reopened, start from dotted-path string reference edges, preferably as a contribution to an existing tool.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-20-84137a84",
+        "created": "2026-10-20"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "task:string-reference-edges-open-idea",
+      "type": "Task",
+      "label": "Open idea: references edges from settings/dotted-path strings to the classes they load",
+      "description": "What: a heuristic references edge (file:line, confidence < 1) from a setting or string like 'scrapy.downloadermiddlewares.retry.RetryMiddleware' to the class loaded via load_object; same pattern in Django INSTALLED_APPS/MIDDLEWARE and plugin entry points.\nWhy: import graphs miss these dependencies; it decided about 5 of the 16 scrapy questions; council estimated ~50% that it does not exist yet.\nWhere: docs/report.md (open idea); candidate hosts: code-review-graph, codebase-memory-mcp, grimp/import-linter\nLearned: never measured (step 1 not run); acceptance by another project is outside the user's control.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-20-84137a84",
+        "created": "2026-10-20"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "task:fast-reads-step0-issue-67",
+      "type": "Task",
+      "label": "Issue #67: step 0, fast kg reads and companion benchmark run on scrapy (merged via PR #68)",
+      "description": "What: validation cache, lazy render import, --depth 0, companion and lean strategies, step-0 runs and gate recorded in docs/benchmark.md.\nWhy: cheapest decisive test from the council.\nWhere: PR #68 (stacked on feat/52-scrapy, so its 3 scrapy commits reached main with it)\nLearned: 499 tests pass; closed by PR #70.",
+      "attrs": {
+        "status": "done",
+        "session": "session:2026-10-20-84137a84",
+        "created": "2026-10-20"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "task:publish-result-issue-69",
+      "type": "Task",
+      "label": "Issue #69: publish the result, the graph does not beat reading the code (merged via PR #70)",
+      "description": "What: docs/report.md, bench README section, README/roadmap/site updates; docs only.\nWhy: option 1 of the #67 decision.\nWhere: PR #70\nLearned: site HTML validated with html-validate and tests/test_site.py; v0.3 issues listed for the maintainer, then closed on request.",
+      "attrs": {
+        "status": "done",
+        "session": "session:2026-10-20-84137a84",
+        "created": "2026-10-20"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "task:close-v0-3-issues-and-milestones",
+      "type": "Task",
+      "label": "Close the remaining v0.3 issues and the v0.1 and v0.3 milestones",
+      "description": "What: #52 closed as completed; #35, #55, #60, #66 closed as not planned with comments linking the report; milestones v0.3 (14 closed) and v0.1 MVP (16 closed) closed.\nWhy: the user asked after merging PR #70.\nWhere: GitHub issues and milestones\nLearned: all three milestones closed, no open issues remain.",
+      "attrs": {
+        "status": "done",
+        "session": "session:2026-10-20-84137a84",
+        "created": "2026-10-20"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "constraint:claude-code-blocks-unreviewed-merge",
+      "type": "Constraint",
+      "label": "Claude Code's permission classifier blocks merging a PR via the API without review; the user merges",
+      "description": "What: an attempted merge of PR #68 was blocked as an unreviewed merge; nothing in the same script ran.\nWhy: harness permission rule; the assistant did not try to bypass it.\nWhere: GitHub REST merge calls\nLearned: leave PRs ready (CI green, out of draft) and ask the user to merge, or the user adds a permission rule; do not bundle the merge with other steps in one script.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-20-84137a84",
+        "created": "2026-10-20"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "decision:v0-2-benchmark-verdict-v0-3-order",
+      "type": "Decision",
+      "attrs": {
+        "status": "superseded"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "decision:plan-html-35-with-overview-55",
+      "type": "Decision",
+      "attrs": {
+        "status": "superseded"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "issue:cli-startup-matplotlib-import",
+      "type": "Issue",
+      "attrs": {
+        "status": "done"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "task:decide-v0-3-direction-after-scrapy",
+      "type": "Task",
+      "attrs": {
+        "status": "done"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "task:scrapy-repetitions-and-report",
+      "type": "Task",
+      "attrs": {
+        "status": "done"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "task:benchmark-v2-issue-52",
+      "type": "Task",
+      "attrs": {
+        "status": "done"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "task:benchmark-v3-issue-66",
+      "type": "Task",
+      "attrs": {
+        "status": "invalidated"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "task:graph-drift-issue-60",
+      "type": "Task",
+      "attrs": {
+        "status": "invalidated"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "task:html-main-view-issue-35",
+      "type": "Task",
+      "attrs": {
+        "status": "invalidated"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "task:large-graph-overview-issue-55",
+      "type": "Task",
+      "attrs": {
+        "status": "invalidated"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "task:review-v0-3-roadmap",
+      "type": "Task",
+      "attrs": {
+        "status": "invalidated"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "task:search-limited-to-changed-files",
+      "type": "Task",
+      "attrs": {
+        "status": "invalidated"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "task:approve-requirements-1-2-and-v0-3-setup",
+      "type": "Task",
+      "attrs": {
+        "status": "invalidated"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:issue-67",
+      "type": "Evidence",
+      "label": "[query] Re-evaluate the graph, step 0: fast reads and a code+kg benchmark run on scrapy",
+      "attrs": {
+        "kind": "issue",
+        "ref": "67"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:comment-issue-67-step0-gate",
+      "type": "Evidence",
+      "label": "#67 comment: step 0 result, the gate fails on time",
+      "attrs": {
+        "kind": "comment",
+        "ref": "67"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:comment-issue-67-lean-control",
+      "type": "Evidence",
+      "label": "#67 comment: lean control, 16 runs, corrects the earlier reading",
+      "attrs": {
+        "kind": "comment",
+        "ref": "67"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:pr-68",
+      "type": "Evidence",
+      "label": "perf: fast kg reads and a companion benchmark strategy (step 0 of #67)",
+      "attrs": {
+        "kind": "pr",
+        "ref": "68"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:issue-69",
+      "type": "Evidence",
+      "label": "[docs] Publish the result: the graph does not beat reading the code",
+      "attrs": {
+        "kind": "issue",
+        "ref": "69"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:pr-70",
+      "type": "Evidence",
+      "label": "docs: publish the result, the graph does not beat reading the code",
+      "attrs": {
+        "kind": "pr",
+        "ref": "70"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:commit-7947ba7",
+      "type": "Evidence",
+      "label": "perf(store): validate a store's contents only once",
+      "attrs": {
+        "kind": "commit",
+        "ref": "7947ba7"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:commit-e5dfc6a",
+      "type": "Evidence",
+      "label": "perf(cli): import the renderers only to render",
+      "attrs": {
+        "kind": "commit",
+        "ref": "e5dfc6a"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:commit-97f3741",
+      "type": "Evidence",
+      "label": "feat(query): show a node alone with --depth 0",
+      "attrs": {
+        "kind": "commit",
+        "ref": "97f3741"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:commit-7d8d8ac",
+      "type": "Evidence",
+      "label": "feat(bench): add the companion strategy, code tools plus kg",
+      "attrs": {
+        "kind": "commit",
+        "ref": "7d8d8ac"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:commit-32da19f",
+      "type": "Evidence",
+      "label": "test(bench): record the step-0 scrapy runs; the gate fails on time",
+      "attrs": {
+        "kind": "commit",
+        "ref": "32da19f"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:commit-c0cc05a",
+      "type": "Evidence",
+      "label": "feat(bench): add the lean control, code with companion's call hint",
+      "attrs": {
+        "kind": "commit",
+        "ref": "c0cc05a"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:commit-e2fc75b",
+      "type": "Evidence",
+      "label": "test(bench): record the lean control on scrapy",
+      "attrs": {
+        "kind": "commit",
+        "ref": "e2fc75b"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:commit-8509a4a",
+      "type": "Evidence",
+      "label": "Merge PR #68 (fast reads, companion)",
+      "attrs": {
+        "kind": "commit",
+        "ref": "8509a4a"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:commit-b663f17",
+      "type": "Evidence",
+      "label": "docs: publish the result, the graph does not beat reading the code",
+      "attrs": {
+        "kind": "commit",
+        "ref": "b663f17"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:commit-e066c56",
+      "type": "Evidence",
+      "label": "Merge PR #70 (report)",
+      "attrs": {
+        "kind": "commit",
+        "ref": "e066c56"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:file-docs-report-md",
+      "type": "Evidence",
+      "label": "Self-contained write-up of the benchmark result",
+      "attrs": {
+        "kind": "file",
+        "ref": "docs/report.md",
+        "commit": "b663f17"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    }
+  ],
+  "edges": [
+    {
+      "source": "session:2026-10-20-84137a84",
+      "target": "experiment:llm-council-on-scrapy-loss",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-20-84137a84",
+      "target": "decision:staged-reevaluation-with-kill-gates",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-20-84137a84",
+      "target": "decision:validation-cache-content-addressed",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-20-84137a84",
+      "target": "decision:lazy-render-import",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-20-84137a84",
+      "target": "decision:companion-and-lean-strategies",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-20-84137a84",
+      "target": "experiment:step0-companion-scrapy",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-20-84137a84",
+      "target": "experiment:lean-control-scrapy",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-20-84137a84",
+      "target": "decision:conclude-kg-publish-negative-result",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-20-84137a84",
+      "target": "constraint:project-concluded-no-v0-3-work",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-20-84137a84",
+      "target": "task:string-reference-edges-open-idea",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-20-84137a84",
+      "target": "task:fast-reads-step0-issue-67",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-20-84137a84",
+      "target": "task:publish-result-issue-69",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-20-84137a84",
+      "target": "task:close-v0-3-issues-and-milestones",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-20-84137a84",
+      "target": "constraint:claude-code-blocks-unreviewed-merge",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "experiment:llm-council-on-scrapy-loss",
+      "target": "evidence:issue-67",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:staged-reevaluation-with-kill-gates",
+      "target": "experiment:llm-council-on-scrapy-loss",
+      "type": "decided_because",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:staged-reevaluation-with-kill-gates",
+      "target": "experiment:bench-scrapy-large-repo",
+      "type": "decided_because",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:staged-reevaluation-with-kill-gates",
+      "target": "evidence:issue-67",
+      "type": "decided_because",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:staged-reevaluation-with-kill-gates",
+      "target": "component:bench",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:staged-reevaluation-with-kill-gates",
+      "target": "evidence:issue-67",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:validation-cache-content-addressed",
+      "target": "component:store",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:validation-cache-content-addressed",
+      "target": "component:schema",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:validation-cache-content-addressed",
+      "target": "evidence:commit-7947ba7",
+      "type": "decided_because",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:validation-cache-content-addressed",
+      "target": "evidence:commit-7947ba7",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:validation-cache-content-addressed",
+      "target": "evidence:pr-68",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:lazy-render-import",
+      "target": "component:render",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:lazy-render-import",
+      "target": "component:cli",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:lazy-render-import",
+      "target": "evidence:commit-e5dfc6a",
+      "type": "decided_because",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:lazy-render-import",
+      "target": "evidence:commit-e5dfc6a",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "issue:cli-startup-matplotlib-import",
+      "target": "evidence:commit-e5dfc6a",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:companion-and-lean-strategies",
+      "target": "component:bench",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:companion-and-lean-strategies",
+      "target": "experiment:llm-council-on-scrapy-loss",
+      "type": "decided_because",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:companion-and-lean-strategies",
+      "target": "evidence:commit-7d8d8ac",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:companion-and-lean-strategies",
+      "target": "evidence:commit-c0cc05a",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "experiment:step0-companion-scrapy",
+      "target": "evidence:commit-32da19f",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "experiment:step0-companion-scrapy",
+      "target": "evidence:comment-issue-67-step0-gate",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "experiment:step0-companion-scrapy",
+      "target": "evidence:file-docs-benchmark-md",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "experiment:lean-control-scrapy",
+      "target": "evidence:commit-e2fc75b",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "experiment:lean-control-scrapy",
+      "target": "evidence:comment-issue-67-lean-control",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:conclude-kg-publish-negative-result",
+      "target": "experiment:step0-companion-scrapy",
+      "type": "decided_because",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:conclude-kg-publish-negative-result",
+      "target": "experiment:lean-control-scrapy",
+      "type": "decided_because",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:conclude-kg-publish-negative-result",
+      "target": "evidence:issue-69",
+      "type": "decided_because",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:conclude-kg-publish-negative-result",
+      "target": "component:docs",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:conclude-kg-publish-negative-result",
+      "target": "component:requirements",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:conclude-kg-publish-negative-result",
+      "target": "evidence:pr-70",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:conclude-kg-publish-negative-result",
+      "target": "evidence:file-docs-report-md",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:conclude-kg-publish-negative-result",
+      "target": "decision:staged-reevaluation-with-kill-gates",
+      "type": "supersedes",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:conclude-kg-publish-negative-result",
+      "target": "decision:v0-2-benchmark-verdict-v0-3-order",
+      "type": "supersedes",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:conclude-kg-publish-negative-result",
+      "target": "decision:plan-html-35-with-overview-55",
+      "type": "supersedes",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "constraint:project-concluded-no-v0-3-work",
+      "target": "evidence:file-docs-roadmap-md",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "constraint:project-concluded-no-v0-3-work",
+      "target": "evidence:file-docs-report-md",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:string-reference-edges-open-idea",
+      "target": "component:extract",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:string-reference-edges-open-idea",
+      "target": "constraint:project-concluded-no-v0-3-work",
+      "type": "blocked_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:string-reference-edges-open-idea",
+      "target": "evidence:file-docs-report-md",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:fast-reads-step0-issue-67",
+      "target": "component:store",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:fast-reads-step0-issue-67",
+      "target": "component:query",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:fast-reads-step0-issue-67",
+      "target": "component:bench",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:fast-reads-step0-issue-67",
+      "target": "evidence:issue-67",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:fast-reads-step0-issue-67",
+      "target": "evidence:pr-68",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:fast-reads-step0-issue-67",
+      "target": "evidence:commit-97f3741",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:fast-reads-step0-issue-67",
+      "target": "evidence:commit-8509a4a",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:publish-result-issue-69",
+      "target": "component:docs",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:publish-result-issue-69",
+      "target": "evidence:issue-69",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:publish-result-issue-69",
+      "target": "evidence:pr-70",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:publish-result-issue-69",
+      "target": "evidence:commit-b663f17",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:publish-result-issue-69",
+      "target": "evidence:commit-e066c56",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:close-v0-3-issues-and-milestones",
+      "target": "component:repo-workflow",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:close-v0-3-issues-and-milestones",
+      "target": "evidence:pr-70",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "constraint:claude-code-blocks-unreviewed-merge",
+      "target": "evidence:pr-68",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:scrapy-repetitions-and-report",
+      "target": "evidence:pr-68",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:benchmark-v2-issue-52",
+      "target": "evidence:pr-68",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:decide-v0-3-direction-after-scrapy",
+      "target": "evidence:issue-69",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:benchmark-v3-issue-66",
+      "target": "evidence:commit-b663f17",
+      "type": "invalidated_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:graph-drift-issue-60",
+      "target": "evidence:commit-b663f17",
+      "type": "invalidated_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:html-main-view-issue-35",
+      "target": "evidence:commit-b663f17",
+      "type": "invalidated_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:large-graph-overview-issue-55",
+      "target": "evidence:commit-b663f17",
+      "type": "invalidated_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:review-v0-3-roadmap",
+      "target": "evidence:commit-b663f17",
+      "type": "invalidated_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:search-limited-to-changed-files",
+      "target": "evidence:commit-b663f17",
+      "type": "invalidated_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:approve-requirements-1-2-and-v0-3-setup",
+      "target": "evidence:commit-b663f17",
+      "type": "invalidated_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    }
+  ]
+}
