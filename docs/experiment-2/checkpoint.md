@@ -338,6 +338,9 @@ EOF
   run is repeated. Done: 219 of 360.
   If `kg-R6.s1.3` still has no `answer.json`, ask the user before
   resetting it.
+- Batch 12 (positions 221–240, session `9c9734c1`): 221–239 launched at
+  14:30 on 2026-10-28, 240 (`kg-R7.s2r.2`) to follow when a slot frees.
+  **In progress.** If this note is still here, check `status`.
 
 ## Decisions already taken (do not reopen)
 
