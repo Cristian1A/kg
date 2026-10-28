@@ -390,6 +390,10 @@ EOF
   0.824, S4 0.951 / 0.932, S8 0.954 / 0.912. S3 is below S2, so "best of
   S2 and S3" is S2 overall (check per category, as gates.md defines it).
   **Next:** G1–G3 final (step 3 below).
+- **#71 not updated yet** (2026-10-28: the write to GitHub was blocked by
+  the auto-mode classifier, pending the user's go-ahead). To do: tick
+  "S3 … implement" (4720395) and "Run S1 + S3 + R2-09" (results file
+  above), and comment the score table above.
 
 ## Decisions already taken (do not reopen)
 
