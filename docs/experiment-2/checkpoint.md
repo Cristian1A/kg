@@ -277,7 +277,8 @@ EOF
 - **Resume and launch exactly as for G0** (section "Resume"), with
   `S=bench/.cache/memory/20261027T092553Z`: the same subagent prompt, 20 at
   a time, ask before resetting a cut-off run.
-- **Transcripts:** session `25cb3c1f-27f9-41c3-9fd3-1e8c7a84b257` from batch 1.
+- **Transcripts:** session `25cb3c1f-27f9-41c3-9fd3-1e8c7a84b257` for batches 1–5,
+  `9c9734c1-8c92-4fdf-9549-6cb00299cdce` from batch 6.
 - Batch 1 (positions 1–20): the first launch (2026-10-27 morning) hit the
   session limit before any run made a call (0 calls each, nothing to
   reset); relaunched after the reset. Every run answered; none used its 25
@@ -295,7 +296,10 @@ EOF
 - Batch 5 (positions 81–100): every run answered; none used its 25 calls
   (`kg-R6.s2r.1` came closest with 9) and no subagent
   reported a violation. Done after batch 5: 100 of 360.
-- Batch 6 (positions 101–120): **launched, in progress.** If this note is
+- Batch 6 (positions 101–120): first marked as launched from session
+  `25cb3c1f`, but no run made a call (nothing to reset). Relaunched on
+  2026-10-28 from session `9c9734c1-8c92-4fdf-9549-6cb00299cdce`, which
+  holds the transcripts of batch 6 on. **In progress.** If this note is
   still here, check `status`.
 
 ## Decisions already taken (do not reopen)
