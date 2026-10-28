@@ -335,12 +335,17 @@ EOF
   with 4 calls.** It was not reset: after the limit reset (14:30) the same
   subagent was resumed with its context (SendMessage to it), so the run
   continues rather than restarts. No bias: it had seen no answer, and no
-  run is repeated. Done: 219 of 360.
-  If `kg-R6.s1.3` still has no `answer.json`, ask the user before
-  resetting it.
-- Batch 12 (positions 221–240, session `9c9734c1`): 221–239 launched at
-  14:30 on 2026-10-28, 240 (`kg-R7.s2r.2`) to follow when a slot frees.
-  **In progress.** If this note is still here, check `status`.
+  run is repeated. It answered after the resume (10 calls in all). Done
+  after batch 11: 220 of 360.
+- Batch 12 (positions 221–240, session `9c9734c1`): every run answered;
+  none used its 25 calls (`kg-B2.s3.2` and `kg-D5.s3.1` came closest with
+  9) and no subagent reported a violation. Done after batch 12: 240 of
+  360, none pending among positions 1–240.
+- **Resuming a cut-off subagent** (session limit): send it a message
+  (SendMessage to its agent ID) once the limit resets, instead of
+  resetting the run; it continues with its context.
+- Batch 13 (positions 241–260, session `9c9734c1`): **launched, in
+  progress.** If this note is still here, check `status`.
 
 ## Decisions already taken (do not reopen)
 
