@@ -1,0 +1,23 @@
+{
+  "version": "1",
+  "nodes": [
+    {
+      "id": "session:2026-10-15-735af7cf",
+      "type": "Session",
+      "label": "Short check-in: how to resume a previous Claude Code session (no project work)",
+      "description": "Goal: the user asked how to recover the previous conversation.\nInstructions: none new.\nDiscoveries: no issues, PRs, comments or commits since the previous session; the branch was feat/52-node-cards, clean, last commit e09903b (docs(bench): report the node-card runs).\nAccomplished: explained claude --continue, claude --resume [id] and /resume (sessions are per directory); no code or doc changes.\nNext steps: resume issue #52 (benchmark v2) from feat/52-node-cards; open work is unchanged from the previous session.\nRelevant files: none.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      },
+      "attrs": {
+        "date": "2026-10-15",
+        "commit": "e09903b",
+        "transcript": "735af7cf",
+        "order": 7
+      }
+    }
+  ],
+  "edges": []
+}
