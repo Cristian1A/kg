@@ -366,8 +366,13 @@ EOF
   25 calls (`kg-B2.s3.1` came closest with 12) and no subagent reported a
   violation. Done after batch 17: 340 of 360, none pending among positions
   1–340.
-- Batch 18 (positions 341–360, the last 20, session `5f715828`):
-  **launched, in progress.** If this note is still here, check `status`.
+- Batch 18 (positions 341–360, the last 20, session `5f715828`): every
+  run answered; none used its 25 calls (`kg-B2.s2r.1` came closest with
+  13) and no subagent reported a violation.
+- **Every run is done: 360 of 360** (2026-10-28). No S1/S3/S2r run used its
+  25 calls in the whole run; `violations.tsv` has one entry
+  (`kg-T3.s3.3`, relaunched in batch 10). **Next:** `usage` for sessions
+  `25cb3c1f`, `9c9734c1` and `5f715828`, then `collect`, then G1–G3 final.
 
 ## Decisions already taken (do not reopen)
 
