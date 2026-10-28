@@ -19,6 +19,27 @@ pre-registered but the graph does not earn its place (see
 
 Branch `experiment-2/agent-context-memory`; issue #71 tracks the checklist.
 
+## Cost (measured 2026-10-28)
+
+- **`total_tokens` in the result files is not a run's consumption.** It is
+  the context size of the run's *last* request (about 43k per run on
+  average, `usage_from_transcripts`). Say so wherever the report quotes it:
+  it compares strategies fairly, but it is not what a run costs.
+- **What a run costs:** summing every request of the 40 runs of batch 18
+  (session `5f715828`, subagent transcripts) gives about **225k tokens
+  processed per run**: about 190k cache reads, 34k uncached input and cache
+  writes, 1.3k output. S0 runs take more turns and likely cost more.
+- **So far:** 840 runs ≈ 190M tokens processed. A batch of 20 runs ≈ 4.5M.
+  The plan's session limit, not the total, sets the pace: about 200–360
+  runs a day.
+- **Estimate for the rest of #71** (R2-11 + P3 + P4, about 2 weeks, made
+  2026-10-28): about 1,300 runs (≈ 290M), writer and generated-session
+  subagents (≈ 25–50M), the orchestrating session (≈ 50–100M, the least
+  certain): **≈ 350–450M tokens processed**, 80–85% cache reads. The pandas
+  corpus would add ≈ 120–150M. Ways to save: P3 with S0, S2, S2r and S4
+  only; 2 repeats for secondary strategies; start fresh orchestrating
+  sessions from this checkpoint instead of growing one.
+
 ## The G0 run in progress
 
 - **Session:** `bench/.cache/memory/20261025T212002Z/` (git-ignored, on this
