@@ -457,7 +457,7 @@ EOF
   subagent with: `Read the file /home/cris/networkx/bench/.cache/memory/
   writers/<stem>/prompt.md and follow its instructions exactly.` Wait for
   `bench/corpus/kg-agent/<stem>.json` before the next. Commit each.
-  Writers done: 01, 02, 03 (transcripts in session `5f715828`, blindness OK).
+  Writers done: 01, 02, 03, 04 (transcripts in session `5f715828`, blindness OK).
 - [ ] Blindness check of the writers' transcripts.
 - [ ] Session of 360 runs, batches of 20; `usage`, `collect`.
 - [ ] Report in agent-corpus.md; #71.

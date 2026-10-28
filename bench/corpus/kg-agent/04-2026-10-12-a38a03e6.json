@@ -1,0 +1,3095 @@
+{
+  "version": "1",
+  "nodes": [
+    {
+      "id": "session:2026-10-12-a38a03e6",
+      "type": "Session",
+      "label": "MVP completed: extraction (#6-#8), render PNG/SVG and HTML (#9, #10), kg remove/edit (#28), agent guide (#11), MVP validation (#12), cleanup (#33) and v0.2 planning",
+      "description": "Goal: finish the v0.1 MVP after the English migration (#20) and plan v0.2.\nInstructions: user works issue by issue, merges PRs himself and confirms each commit/PR; graph texts in a single language (English for published examples); credit authors of example repos and use only licensed repos; no prio on new issues until asked, then prio:v0.2 for #35-#40.\nDiscoveries: the samples/basic-python-cli store holds hand-written nodes with false parser provenance (kg add never deletes); 3 hues is the max palette passing all-pairs CVD; HTML layout of 292 visible nodes blocks 2.9 s; CLI start-up ~1 s is the matplotlib import; GitHub Pages needed a public repo and the .env token returns 403 for Pages, so the user enabled it by hand; the assistant once committed 9790c4d without asking and then left the cleanup uncommitted until told.\nAccomplished: PRs #23-#34 merged (issues #20, #6, #7, #8, #9, #28, #10, #11, #12, #33 closed); RF-75/RF-76 added; docs/extract.md, docs/render.md, docs/mvp-validation.md, docs/discovery.md written; examples published at cristian1a.github.io/kg/examples/; issues #35-#40 opened with prio:v0.2; About description proposed.\nNext steps: v0.2 in order #37 (consistency) -> #38 (kg query/impact) -> #39 benchmark / #40 demo, plus #35 (HTML performance) and #36 (mandatory descriptions); decide how to clean the samples/basic-python-cli store.\nRelevant files: src/kg/extract/, src/kg/render/, src/kg/edit.py, src/kg/agents/guide.md, src/kg/analysis.py, docs/mvp-validation.md, docs/examples/, examples/agent/*.json, tests/test_flow.py.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      },
+      "attrs": {
+        "date": "2026-10-12",
+        "commit": "8b9d7b2",
+        "transcript": "a38a03e6",
+        "order": 4
+      }
+    },
+    {
+      "id": "component:query",
+      "type": "Component",
+      "label": "query",
+      "description": "kg query and kg impact (v0.2) plus kg.analysis helpers such as untested().",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "component:bench",
+      "type": "Component",
+      "label": "bench",
+      "description": "Benchmark outside the kg package comparing an agent answering from code vs. from the graph.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:issue-6",
+      "type": "Evidence",
+      "label": "[extract] Python extractor: code structure",
+      "attrs": {
+        "kind": "issue",
+        "ref": "6"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:issue-7",
+      "type": "Evidence",
+      "label": "[extract] Python extractor: dependencies and configuration",
+      "attrs": {
+        "kind": "issue",
+        "ref": "7"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:issue-8",
+      "type": "Evidence",
+      "label": "[extract] Test detection and tests relation",
+      "attrs": {
+        "kind": "issue",
+        "ref": "8"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:issue-9",
+      "type": "Evidence",
+      "label": "[render] Static PNG/SVG render",
+      "attrs": {
+        "kind": "issue",
+        "ref": "9"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:issue-10",
+      "type": "Evidence",
+      "label": "[render] Interactive HTML with pyvis",
+      "attrs": {
+        "kind": "issue",
+        "ref": "10"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:issue-11",
+      "type": "Evidence",
+      "label": "[agents] Guidelines/skill for agent-based extraction",
+      "attrs": {
+        "kind": "issue",
+        "ref": "11"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:issue-28",
+      "type": "Evidence",
+      "label": "[store] Remove and edit nodes and edges",
+      "attrs": {
+        "kind": "issue",
+        "ref": "28"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:issue-33",
+      "type": "Evidence",
+      "label": "[chore] Remove exploration prototypes and Spanish leftovers",
+      "attrs": {
+        "kind": "issue",
+        "ref": "33"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:issue-35",
+      "type": "Evidence",
+      "label": "[render] Large graphs take long to lay out in the HTML",
+      "attrs": {
+        "kind": "issue",
+        "ref": "35"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:issue-36",
+      "type": "Evidence",
+      "label": "[agents] Make descriptions mandatory for agent-created nodes",
+      "attrs": {
+        "kind": "issue",
+        "ref": "36"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:issue-37",
+      "type": "Evidence",
+      "label": "[extract] Keep the graph consistent when the code changes",
+      "attrs": {
+        "kind": "issue",
+        "ref": "37"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:issue-38",
+      "type": "Evidence",
+      "label": "[query] Add kg query and kg impact",
+      "attrs": {
+        "kind": "issue",
+        "ref": "38"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:issue-39",
+      "type": "Evidence",
+      "label": "[agents] Reproducible benchmark: code vs. knowledge graph",
+      "attrs": {
+        "kind": "issue",
+        "ref": "39"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:issue-40",
+      "type": "Evidence",
+      "label": "[docs] Reproducible demo with queries on a real repository",
+      "attrs": {
+        "kind": "issue",
+        "ref": "40"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:pr-23",
+      "type": "Evidence",
+      "label": "refactor: translate the project to English",
+      "attrs": {
+        "kind": "pr",
+        "ref": "23"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:pr-24",
+      "type": "Evidence",
+      "label": "feat(extract): extract Python code structure with kg extract",
+      "attrs": {
+        "kind": "pr",
+        "ref": "24"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:pr-25",
+      "type": "Evidence",
+      "label": "feat(extract): extract dependencies and configuration from manifests",
+      "attrs": {
+        "kind": "pr",
+        "ref": "25"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:pr-26",
+      "type": "Evidence",
+      "label": "feat(extract): detect pytest tests and link them with tests edges",
+      "attrs": {
+        "kind": "pr",
+        "ref": "26"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:pr-27",
+      "type": "Evidence",
+      "label": "feat(render): render the graph as a static PNG or SVG image",
+      "attrs": {
+        "kind": "pr",
+        "ref": "27"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:pr-29",
+      "type": "Evidence",
+      "label": "feat(store): remove and edit nodes and edges with kg remove and kg edit",
+      "attrs": {
+        "kind": "pr",
+        "ref": "29"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:pr-30",
+      "type": "Evidence",
+      "label": "feat(render): render the graph as an interactive offline HTML page",
+      "attrs": {
+        "kind": "pr",
+        "ref": "30"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:pr-31",
+      "type": "Evidence",
+      "label": "feat(agents): add kg guide for agents that enrich the graph",
+      "attrs": {
+        "kind": "pr",
+        "ref": "31"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:pr-32",
+      "type": "Evidence",
+      "label": "docs: validate the MVP on three public repos and publish examples",
+      "attrs": {
+        "kind": "pr",
+        "ref": "32"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:pr-34",
+      "type": "Evidence",
+      "label": "chore: remove exploration prototypes and Spanish leftovers",
+      "attrs": {
+        "kind": "pr",
+        "ref": "34"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:commit-dcf0111",
+      "type": "Evidence",
+      "label": "feat(extract): kg extract code structure",
+      "attrs": {
+        "kind": "commit",
+        "ref": "dcf0111"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:commit-50978d6",
+      "type": "Evidence",
+      "label": "feat(extract): dependencies and configuration from manifests",
+      "attrs": {
+        "kind": "commit",
+        "ref": "50978d6"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:commit-9c4cc10",
+      "type": "Evidence",
+      "label": "feat(extract): pytest tests and tests edges",
+      "attrs": {
+        "kind": "commit",
+        "ref": "9c4cc10"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:commit-3553b35",
+      "type": "Evidence",
+      "label": "feat(render): static PNG/SVG",
+      "attrs": {
+        "kind": "commit",
+        "ref": "3553b35"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:commit-eb55f5b",
+      "type": "Evidence",
+      "label": "feat(store): kg remove and kg edit",
+      "attrs": {
+        "kind": "commit",
+        "ref": "eb55f5b"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:commit-5314fb7",
+      "type": "Evidence",
+      "label": "feat(render): interactive offline HTML",
+      "attrs": {
+        "kind": "commit",
+        "ref": "5314fb7"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:commit-ebd078d",
+      "type": "Evidence",
+      "label": "feat(agents): kg guide",
+      "attrs": {
+        "kind": "commit",
+        "ref": "ebd078d"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:commit-9790c4d",
+      "type": "Evidence",
+      "label": "fix(extract): sibling imports of scripts inside a package",
+      "attrs": {
+        "kind": "commit",
+        "ref": "9790c4d"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:commit-f2600b7",
+      "type": "Evidence",
+      "label": "fix(render): label agent types in large static images",
+      "attrs": {
+        "kind": "commit",
+        "ref": "f2600b7"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:commit-1b1407c",
+      "type": "Evidence",
+      "label": "docs(agents): agents may add config the parser does not read",
+      "attrs": {
+        "kind": "commit",
+        "ref": "1b1407c"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:commit-722a6e4",
+      "type": "Evidence",
+      "label": "docs: MVP validation on three public repos",
+      "attrs": {
+        "kind": "commit",
+        "ref": "722a6e4"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:commit-5748ae8",
+      "type": "Evidence",
+      "label": "chore: remove prototypes and Spanish leftovers",
+      "attrs": {
+        "kind": "commit",
+        "ref": "5748ae8"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:comment-issue-12-licensed-repos",
+      "type": "Evidence",
+      "label": "#12 comment: MIT-licensed repos only, one per difficulty level",
+      "attrs": {
+        "kind": "comment",
+        "ref": "12"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:comment-issue-11-single-language",
+      "type": "Evidence",
+      "label": "#11 comment: a single language for all graph texts",
+      "attrs": {
+        "kind": "comment",
+        "ref": "11"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:comment-issue-10-details-zoom",
+      "type": "Evidence",
+      "label": "#10 comment: details panel, zoom/pan, reuse style.py",
+      "attrs": {
+        "kind": "comment",
+        "ref": "10"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:file-docs-extract-md",
+      "type": "Evidence",
+      "label": "kg extract: files, IDs, relations, tests, limits",
+      "attrs": {
+        "kind": "file",
+        "ref": "docs/extract.md",
+        "commit": "8b9d7b2"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:file-docs-render-md",
+      "type": "Evidence",
+      "label": "kg render: encoding, large graphs, determinism, HTML",
+      "attrs": {
+        "kind": "file",
+        "ref": "docs/render.md",
+        "commit": "8b9d7b2"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:file-docs-mvp-validation-md",
+      "type": "Evidence",
+      "label": "MVP validation report on three repos plus kg",
+      "attrs": {
+        "kind": "file",
+        "ref": "docs/mvp-validation.md",
+        "commit": "8b9d7b2"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:file-docs-discovery-md",
+      "type": "Evidence",
+      "label": "Requirements interview in English (was respuestas_usuario.txt)",
+      "attrs": {
+        "kind": "file",
+        "ref": "docs/discovery.md",
+        "commit": "8b9d7b2"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:file-src-kg-agents-guide-md",
+      "type": "Evidence",
+      "label": "Agent guide shipped with the package (kg guide)",
+      "attrs": {
+        "kind": "file",
+        "ref": "src/kg/agents/guide.md",
+        "commit": "8b9d7b2"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "task:python-extractor-issue-6",
+      "type": "Task",
+      "attrs": {
+        "status": "done"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "task:english-migration-issue-20",
+      "type": "Task",
+      "attrs": {
+        "status": "done"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "task:mvp-issue-plan",
+      "type": "Task",
+      "attrs": {
+        "status": "done"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "task:remove-example-graphs-module",
+      "type": "Task",
+      "attrs": {
+        "status": "done"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "task:decide-respuestas-usuario-txt",
+      "type": "Task",
+      "attrs": {
+        "status": "done"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "task:kg-validate-issue-3",
+      "type": "Task",
+      "attrs": {
+        "status": "done"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "decision:ruff-excludes-root-prototypes",
+      "type": "Decision",
+      "attrs": {
+        "status": "invalidated"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "decision:requirements-v1-approved",
+      "type": "Decision",
+      "label": "Functional requirements v1.0 approved: name kg, <type>:<slug> IDs, interactive HTML",
+      "description": "What: requirements v1.0 approved 2026-10-07 (~40 RF-xx MVP/v0.2/Future, 9 RNF, 6 use cases, 5 MVP acceptance criteria); PA-01 name 'kg', PA-02 IDs <type>:<slug>, PA-03 interactive HTML (originally pyvis/vis.js).\nWhy: requirements gathered by an interview where the user played the client; now condensed in English in docs/discovery.md.\nWhere: docs/requirements.md (sections 9 and 10); docs/discovery.md.\nLearned: PA-03 was amended on 2026-10-12 to embed vis-network directly instead of pyvis (decision:embed-vis-network-not-pyvis); RF-75/RF-76 (kg remove/edit) were added to the MVP.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-07-9f063e5d",
+        "created": "2026-10-07"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "issue:cli-usage-error-quirks",
+      "type": "Issue",
+      "label": "CLI quirk noticed in PR #13 review: command=null on usage errors",
+      "description": "What: usage errors set \"command\": null in the JSON envelope even when the subcommand is recognized (kg --json render). The stub exit-code point is gone (PR #30 removed _not_implemented) and the language point went away with PR #22.\nWhy: raised as points to confirm before merging #13; none breaks anything.\nWhere: src/kg/cli.py.\nLearned: only the command=null point remains open.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-09-67dcc1db",
+        "created": "2026-10-09"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "task:deps-config-issue-7",
+      "type": "Task",
+      "label": "Issue #7: dependencies and configuration from manifests (merged via PR #25)",
+      "description": "What: Config and Dependency nodes from pyproject.toml and requirements*.txt.\nWhy: MVP extraction RF-11.\nWhere: src/kg/extract/deps.py\nLearned: Poetry, setup.py and setup.cfg are not read.",
+      "attrs": {
+        "status": "done",
+        "session": "session:2026-10-12-a38a03e6",
+        "created": "2026-10-12"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "task:tests-relation-issue-8",
+      "type": "Task",
+      "label": "Issue #8: pytest test detection and tests edges (merged via PR #26)",
+      "description": "What: Test nodes and tests edges; kg.analysis.untested().\nWhy: MVP extraction RF-12, CU-02.\nWhere: src/kg/extract/references.py, src/kg/analysis.py\nLearned: On kg itself: 456 nodes, 862 edges, 39 public definitions with no direct test.",
+      "attrs": {
+        "status": "done",
+        "session": "session:2026-10-12-a38a03e6",
+        "created": "2026-10-12"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "task:static-render-issue-9",
+      "type": "Task",
+      "label": "Issue #9: kg render --png/--svg (merged via PR #27)",
+      "description": "What: Static render with --types, --max-nodes, --dpi.\nWhy: RF-50; first visualization of CU-01.\nWhere: src/kg/render/static.py, style.py\nLearned: --dpi was added at the user's request as a zoom stopgap; the basic-python-cli image was not put in the README because of mixed languages.",
+      "attrs": {
+        "status": "done",
+        "session": "session:2026-10-12-a38a03e6",
+        "created": "2026-10-12"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "task:remove-edit-issue-28",
+      "type": "Task",
+      "label": "Issue #28: kg remove and kg edit (merged via PR #29)",
+      "description": "What: Delete nodes/edges and modify nodes from the CLI; RF-75/RF-76.\nWhy: Client asked for it after seeing stale nodes in the basic-python-cli store; the store only grew.\nWhere: src/kg/edit.py, docs/store.md\nLearned: Tried on a copy of the sample store only.",
+      "attrs": {
+        "status": "done",
+        "session": "session:2026-10-12-a38a03e6",
+        "created": "2026-10-12"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "task:html-render-issue-10",
+      "type": "Task",
+      "label": "Issue #10: interactive offline HTML (merged via PR #30)",
+      "description": "What: kg render --html with zoom/pan, legend-filters, search, details panel, deep links, dark theme.\nWhy: RF-51..55; MVP acceptance criterion 4; user explicitly asked for zoom and click-for-details.\nWhere: src/kg/render/html.py, src/kg/render/assets/template.html\nLearned: Verified in headless Chrome; tests/test_html.py has a Chrome test skipped without Chrome.",
+      "attrs": {
+        "status": "done",
+        "session": "session:2026-10-12-a38a03e6",
+        "created": "2026-10-12"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "task:agent-guide-issue-11",
+      "type": "Task",
+      "label": "Issue #11: kg guide for agents (merged via PR #31)",
+      "description": "What: Agent guidelines shipped in the package plus kg add --dry-run; trial examples/agent/kg.json on kg itself.\nWhy: RF-20, RF-24: kg never calls an LLM, agents need testable instructions.\nWhere: src/kg/agents/guide.md, .agents/skills/kg-graph/SKILL.md\nLearned: Trial validated on the first --dry-run and found a stale sentence in docs/render.md (CU-03 in action).",
+      "attrs": {
+        "status": "done",
+        "session": "session:2026-10-12-a38a03e6",
+        "created": "2026-10-12"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "task:mvp-validation-issue-12",
+      "type": "Task",
+      "label": "Issue #12: MVP validation on three repos (merged via PR #32)",
+      "description": "What: Full CU-01 flow on three MIT repos plus kg; report and published examples.\nWhy: MVP acceptance (section 8 of requirements).\nWhere: docs/mvp-validation.md, docs/examples/, examples/agent/*.json, tests/test_flow.py\nLearned: All five acceptance criteria pass; see experiment:mvp-validation-three-repos.",
+      "attrs": {
+        "status": "done",
+        "session": "session:2026-10-12-a38a03e6",
+        "created": "2026-10-12"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "task:repo-cleanup-issue-33",
+      "type": "Task",
+      "label": "Issue #33: remove prototypes and Spanish leftovers (merged via PR #34)",
+      "description": "What: Removed root prototypes, lib/, root requirements.txt, src/kg/graphs.py; respuestas_usuario.txt became docs/discovery.md in English.\nWhy: Keep the repo to the tool, docs and tests, all in English; the root requirements.txt also polluted kg's own graph with transitive deps (numpy, six).\nWhere: repo root, docs/discovery.md, .agents/tools/graph_summary.py\nLearned: Non-ASCII Spanish test data (Tamaño en MB) stays on purpose to test UTF-8; .gitignore now ignores kg-graph.*.",
+      "attrs": {
+        "status": "done",
+        "session": "session:2026-10-12-a38a03e6",
+        "created": "2026-10-12"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "decision:extract-file-discovery-via-git",
+      "type": "Decision",
+      "label": "kg extract discovers files with git ls-files, fallback to a simplified .gitignore walk",
+      "description": "What: git ls-files --cached --others --exclude-standard inside a work tree; otherwise walk with a root-.gitignore matcher; env/, .venv/, .git/, __pycache__/, caches and any dir with pyvenv.cfg always skipped; unparsable files reported and skipped.\nWhy: Respect every .gitignore without reimplementing it; never abort the whole extraction.\nWhere: src/kg/extract/files.py\nLearned: Python 3.12 raises SyntaxError (not ValueError) for null bytes.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-12-a38a03e6",
+        "created": "2026-10-12"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "decision:dependency-ids-normalized-stdlib-ignored",
+      "type": "Decision",
+      "label": "Dependencies: one node per PEP 503 normalized name, stdlib imports ignored, manifest provenance wins",
+      "description": "What: Dependency IDs use the normalized name; code imports use the import name; stdlib imports create no node; kg extract combines manifests first, so a dep declared and imported is one node with joined attrs (spec/extras/markers from first declaration, groups, declared_in, import_name).\nWhy: Avoid noise from stdlib and duplicates across manifests and code.\nWhere: src/kg/extract/deps.py, extract_repo()/combine()\nLearned: Import name != distribution name (yaml vs PyYAML) still gives two nodes until RF-32 (v0.2).",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-12-a38a03e6",
+        "created": "2026-10-12"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "decision:shared-add-document-merge-path",
+      "type": "Decision",
+      "label": "kg add and kg extract share merge.add_document()",
+      "description": "What: One validation and merge path for both commands, so re-extracting leaves the store byte-identical.\nWhy: MVP acceptance criterion 5 (no duplicates on re-extraction).\nWhere: src/kg/merge.py\nLearned: Moved functions are reported as conflicts on every re-extraction; text output lists at most 10, --json all.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-12-a38a03e6",
+        "created": "2026-10-12"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "decision:test-nodes-replace-code-nodes",
+      "type": "Decision",
+      "label": "Tests become Test nodes (test:<qualname>) replacing Module/Class/Function; tests edges are static and direct",
+      "description": "What: pytest conventions detect test modules/classes/functions; each entity keeps a single node; tests edges go from test modules to imported internal modules and from test functions to code their body references, never to tests, helpers or conftest.\nWhy: Basis for CU-02 'which tests are missing'.\nWhere: src/kg/extract/python.py, src/kg/extract/references.py\nLearned: untested means 'no test references it directly', not 'never executed'; fixtures, indirect calls (needs calls, RF-13), getattr/importlib and string monkeypatch are invisible; old stores keep stale module:/function: test nodes and should be recreated (not marked breaking: no release yet).",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-12-a38a03e6",
+        "created": "2026-10-12"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "decision:render-color-family-shape-type",
+      "type": "Decision",
+      "label": "Render encoding: color = family (3 hues), marker shape = type",
+      "description": "What: Code blue, tests green, context orange, other gray; shape per type, custom types get a stable name-derived shape (10 shapes, 1-in-10 collisions possible); shared style.py with dark variants for HTML.\nWhy: Only 3 hues pass all-pairs distinguishability incl. CVD; type must never rely on color alone.\nWhere: src/kg/render/style.py\nLearned: First version had Function and Module (and two custom types) with identical markers; fixed after looking at real renders.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-12-a38a03e6",
+        "created": "2026-10-12"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "decision:static-render-deterministic-figure-api",
+      "type": "Decision",
+      "label": "Static render uses matplotlib Figure API (no pyplot), seed 42 layout and hides whole types down to 150 nodes",
+      "description": "What: spring layout seed=42 with nodes sorted by ID; PNG without Software metadata, SVG without date and fixed IDs; above --max-nodes (default 150) hide Function, Test, File, Class in that order; agent types (Document, Decision, Concept, Service, Endpoint) always labeled.\nWhy: RNF-08 determinism and AGENTS.md rule 7 (no plt.show()); with 300 nodes the tests swamped the structure.\nWhere: src/kg/render/static.py\nLearned: Above 500 nodes NetworkX spring layout needs scipy, not a dependency; kg fails with a clear message.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-12-a38a03e6",
+        "created": "2026-10-12"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "decision:embed-vis-network-not-pyvis",
+      "type": "Decision",
+      "label": "Embed vis-network 9.1.2 inline instead of depending on pyvis (PA-03 amended)",
+      "description": "What: kg render --html writes one self-contained ~500 KB page with graph JSON (</>/& escaped), page code and vis-network inline; works offline from file://.\nWhy: pyvis's template lacks filters, search and the details panel, so it would be rewritten anyway, and pyvis pulls ipython, jinja2 and jsonpickle.\nWhere: src/kg/render/html.py, src/kg/render/assets/ (README keeps license header)\nLearned: The bundled vis-network.min.js is the same file pyvis 0.3.2 ships; user may revert if he prefers pyvis.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-12-a38a03e6",
+        "created": "2026-10-12"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "decision:html-read-only-shows-cli-commands",
+      "type": "Decision",
+      "label": "The HTML is read-only and shows copyable kg edit/kg remove commands",
+      "description": "What: Edits and deletions happen through the CLI; the details panel offers the matching command for the selected element.\nWhy: A self-contained offline HTML has no server and cannot write to the store (out of scope, section 9); the JSON-patch export alternative was not chosen.\nWhere: src/kg/render/assets/template.html\nLearned: All repo text is inserted with textContent.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-12-a38a03e6",
+        "created": "2026-10-12"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "decision:remove-edit-all-or-nothing",
+      "type": "Decision",
+      "label": "kg remove / kg edit are all-or-nothing, validated before saving, with suggestions",
+      "description": "What: Unknown ID, edge or attribute changes nothing and suggests the closest match; --id rewrites edges via nx.relabel_nodes; empty string removes label/description; provenance kept; --dry-run and --json; no-op edits don't rewrite the file.\nWhy: Same actionable-error style as kg validate; deterministic store and clean diffs.\nWhere: src/kg/edit.py, docs/store.md (RF-75, RF-76)\nLearned: Edits are not protected from later merges: kg extract restores parser values for elements it produces (RF-31/RF-33, v0.2).",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-12-a38a03e6",
+        "created": "2026-10-12"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "decision:agent-guide-in-package",
+      "type": "Decision",
+      "label": "Agent guide ships as package data: kg guide, --skill export kept in sync by a test, plus kg add --dry-run",
+      "description": "What: guide.md covers the loop extract -> write JSON -> kg add --dry-run --json -> fix -> kg add -> render, reusing extracted IDs, llm provenance with a confidence rubric, the minimal catalog (Document, Decision, Concept, Service, Endpoint, Issue, Person) and a single-language rule; agents may add Config nodes for files the parser doesn't read (CI workflows, docker-compose, .env.example).\nWhy: kg never calls an LLM (RF-24); kg validate is file-local and flags edges to extracted nodes as broken, so agents need a store-aware dry run.\nWhere: src/kg/agents/guide.md, .agents/skills/kg-graph/SKILL.md\nLearned: The guide initially forbade agent Config nodes; relaxed during #12 validation (1b1407c).",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-12-a38a03e6",
+        "created": "2026-10-12"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "decision:single-language-graph-texts",
+      "type": "Decision",
+      "label": "All human-readable graph texts in one language; published examples in English",
+      "description": "What: label, description and free-text attrs use a single language (the user's or the project docs'); IDs keep their normal form; agent enrichments of the published examples are in English.\nWhy: The basic-python-cli render mixed Spanish and English labels and looked inconsistent.\nWhere: guide.md single-language rule; examples/agent/*.json\nLearned: Requested by the user after seeing the render; the #11 criterion originally said Spanish for that sample, then #12 settled on English for published examples.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-12-a38a03e6",
+        "created": "2026-10-12"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "decision:mvp-validation-mit-repos",
+      "type": "Decision",
+      "label": "MVP validation and published examples use only MIT-licensed repos, with credits",
+      "description": "What: alfredodeza/basic-python-cli (easy, d0379bb), bramvdklinkenberg/my_first_data_project (intermediate, 3d57177), wesleey/python-clean-architecture (complex, 6f58de5, 104 files, size exception noted); kg itself as dogfooding. Credits (link, author, license, commit) in README, docs/mvp-validation.md, each page title; license texts in docs/examples/licenses/.\nWhy: Avoid licensing problems: the first candidates jit-karki/small-python-projects and borys25ol/fastapi-realworld-backend had no license (all rights reserved), so they were dropped and deleted from samples/.\nWhere: docs/examples/, README Examples section\nLearned: my_first_data_project's LICENSE keeps the template placeholder, credited to the account owner; README image is my_first_data_project.png, chosen by the client.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-12-a38a03e6",
+        "created": "2026-10-12"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "decision:github-pages-from-docs",
+      "type": "Decision",
+      "label": "Publish example pages with GitHub Pages from main:/docs",
+      "description": "What: Repo made public; Pages serves docs/ (docs/.nojekyll) so pages live at cristian1a.github.io/kg/examples/<repo>.html, linked from the README.\nWhy: Needs a public URL for the interactive examples; private-repo Pages needs a paid plan.\nWhere: docs/.nojekyll, docs/examples/\nLearned: The site root 404s (no docs/index.html) by design; the user enabled Pages by hand.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-12-a38a03e6",
+        "created": "2026-10-12"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "decision:v0-2-issue-order",
+      "type": "Decision",
+      "label": "v0.2 plan: #37 consistency -> #38 kg query/impact -> #39 benchmark / #40 demo, plus #35 and #36",
+      "description": "What: External suggestions turned into four prio:v0.2 issues; #35 and #36 also moved to prio:v0.2 and milestone v0.2.\nWhy: Consistency is a correctness problem seen in the sample store; queries are needed before a fair code-vs-graph benchmark and a demo with queries.\nWhere: GitHub milestone v0.2\nLearned: Benchmark must live outside the kg package (bench/) to respect RF-24; 15-30 questions orient but are not statistically conclusive.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-12-a38a03e6",
+        "created": "2026-10-12"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "experiment:palette-three-hues-cvd",
+      "type": "Experiment",
+      "label": "Palette validation: 3 family hues pass all-pairs incl. CVD, 4 do not",
+      "description": "What: Ran the dataviz palette validator on family colors, light and dark.\nWhy: In a node graph every color pair is visible at once.\nWhere: src/kg/render/style.py\nLearned: 3 hues: CVD dE >= 9.2, normal-vision dE >= 24; with 4 some pair fails; dark palette also validated.",
+      "attrs": {
+        "status": "done",
+        "session": "session:2026-10-12-a38a03e6",
+        "created": "2026-10-12"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "experiment:mvp-validation-three-repos",
+      "type": "Experiment",
+      "label": "MVP validation on three MIT repos plus kg: all five criteria pass",
+      "description": "What: Full init -> extract -> add -> render with agent enrichment (Claude Code following kg guide), reference questions answered from the graph only, an invalid doc fixed in one iteration, HTML checked in Chrome.\nWhy: Close the MVP (#12) with evidence.\nWhere: docs/mvp-validation.md, examples/agent/*.json, tests/test_flow.py\nLearned: Every command < 2 s (~1 s is matplotlib import); agent docs passed --dry-run first time; found real doc drift in the sample repos (README says four workflows but lists five; broken link); fixes 9790c4d (sibling imports of scripts inside a package became external deps) and f2600b7 (unlabeled agent types).",
+      "attrs": {
+        "status": "done",
+        "session": "session:2026-10-12-a38a03e6",
+        "created": "2026-10-12"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "experiment:html-layout-timing",
+      "type": "Experiment",
+      "label": "HTML layout timing on python-clean-architecture: 2.9 s blocked; full Python layout too slow",
+      "description": "What: Measured vis-network stabilization (400 iterations) on the code-only graph (376 nodes, 292 visible) via Chrome DevTools; timed nx.forceatlas2_layout seed 42.\nWhy: Investigate the 'Laying out the graph...' hang reported by the user.\nWhere: issue #35\nLearned: 2.9 s with no progress and unresponsive page on a 16-core desktop; forceatlas2: 2.7 s/398 nodes, 3.2 s/609, 35 s/~2000 (O(n^2)), so only the main view should be precomputed.",
+      "attrs": {
+        "status": "done",
+        "session": "session:2026-10-12-a38a03e6",
+        "created": "2026-10-12"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "issue:cli-startup-matplotlib-import",
+      "type": "Issue",
+      "label": "CLI start-up takes ~1 s because matplotlib is always imported",
+      "description": "What: Every kg command pays ~1 s importing matplotlib.\nWhy: Found during MVP timing (RNF-06).\nWhere: src/kg/cli.py, src/kg/render\nLearned: Fix: lazy import; listed as v0.2 open point in the report.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-12-a38a03e6",
+        "created": "2026-10-12"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "issue:untested-false-positives",
+      "type": "Issue",
+      "label": "untested() reports false positives (__init__, interfaces)",
+      "description": "What: Static direct-reference heuristic flags __init__ and interface methods as untested.\nWhy: Seen during MVP validation.\nWhere: src/kg/analysis.py\nLearned: Open point for v0.2.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-12-a38a03e6",
+        "created": "2026-10-12"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "issue:import-vs-distribution-name-duplicates",
+      "type": "Issue",
+      "label": "Import name vs distribution name yields duplicate Dependency nodes (RF-32)",
+      "description": "What: yaml (import) and PyYAML (distribution) become two nodes.\nWhy: No mapping from import names to distributions yet.\nWhere: src/kg/extract/deps.py, python.py\nLearned: Planned as RF-32 in v0.2.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-12-a38a03e6",
+        "created": "2026-10-12"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "issue:scipy-needed-above-500-nodes",
+      "type": "Issue",
+      "label": "Static layout above 500 nodes needs scipy, which is not a dependency",
+      "description": "What: NetworkX spring layout requires scipy for >500 nodes; kg errors clearly.\nWhy: Adding scipy was not justified for MVP sizes.\nWhere: src/kg/render/static.py\nLearned: Defaults (150 nodes) never get there.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-12-a38a03e6",
+        "created": "2026-10-12"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "task:html-main-view-issue-35",
+      "type": "Task",
+      "label": "Issue #35: HTML main view by default, details on demand (prio:v0.2)",
+      "description": "What: Show main nodes (Repo, Package, Module, Dependency, Config, test modules, agent types) by default, rank by degree/PageRank within ~150; expand modules on double-click with local layout; precompute the main view layout in Python (seeded); progress bar and Stop layout.\nWhy: Large graphs block the page during layout (user's idea first).\nWhere: src/kg/render/html.py, template.html\nLearned: Alternatives considered: vis clustering by package (RF-56) and WebGL renderer (new dependency).",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-12-a38a03e6",
+        "created": "2026-10-12"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "task:mandatory-descriptions-issue-36",
+      "type": "Task",
+      "label": "Issue #36: mandatory descriptions for agent-created nodes (prio:v0.2)",
+      "description": "What: Guide requires a 1-2 sentence description on every agent node and on main extracted nodes lacking one; missing_description warning in kg validate/kg add for llm nodes; HTML search also matches descriptions.\nWhy: Descriptions make the graph fast to search; the client asked for them to be mandatory.\nWhere: src/kg/agents/guide.md, schema/validate, template.html\nLearned: examples/agent/*.json already comply.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-12-a38a03e6",
+        "created": "2026-10-12"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "task:graph-consistency-issue-37",
+      "type": "Task",
+      "label": "Issue #37: keep the graph consistent when the code changes (prio:v0.2, first)",
+      "description": "What: Stale parser nodes (deleted/moved files and symbols) must disappear without losing llm/manual knowledge; failures must not leave a partial store.\nWhy: Today nodes of deleted files stay (RF-72) and kg add never deletes.\nWhere: src/kg/extract, src/kg/merge.py\nLearned: Proposal: compare with a full rebuild of the parser layer (~1 s for 100 files) keeping llm/manual elements and warning about orphaned agent edges; moving/renaming = delete + add because IDs derive from paths.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-12-a38a03e6",
+        "created": "2026-10-12"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "task:query-impact-issue-38",
+      "type": "Task",
+      "label": "Issue #38: kg query and kg impact (prio:v0.2)",
+      "description": "What: Lookups by ID/name/type, in/out relations with depth, impact exploration with relation chain and provenance; stable JSON.\nWhy: RF-40..42; agents should not read graph.json by hand.\nWhere: src/kg (new query module), CLI\nLearned: kg impact must say 'may be affected', never present a possible effect as certain; guide must explain both commands.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-12-a38a03e6",
+        "created": "2026-10-12"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "task:benchmark-issue-39",
+      "type": "Task",
+      "label": "Issue #39: reproducible benchmark, code vs. knowledge graph (prio:v0.2)",
+      "description": "What: Same model and 15-30 verifiable questions, baseline agent on code vs. agent on graph; accuracy, traceability, tokens, time, failures.\nWhy: Decide with data which queries benefit from the graph and at what cost.\nWhere: bench/ (outside the kg package)\nLearned: Results orient but are not conclusive; separate quality from cost; mechanical grading preferred.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-12-a38a03e6",
+        "created": "2026-10-12"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "task:demo-issue-40",
+      "type": "Task",
+      "label": "Issue #40: reproducible demo with queries on a real repo (prio:v0.2)",
+      "description": "What: Documented demo from source to three queries with reference answers, runnable without LLM credentials using examples/agent/*.json.\nWhy: Mostly covered by docs/examples and the report; missing piece is queries.\nWhere: docs/\nLearned: Could be folded into #38's acceptance.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-12-a38a03e6",
+        "created": "2026-10-12"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "task:clean-basic-python-cli-sample-store",
+      "type": "Task",
+      "label": "Decide how to clean the samples/basic-python-cli store with stale parser-provenance nodes",
+      "description": "What: Store has dependency:os, dependency:sys, document:README.md, document:LICENSE, entrypoint:size and old-model edges (file contains module) marked as parser though the extractor never produced them; options: recreate (init, extract, re-add agent knowledge as llm) or keep as is.\nWhy: They came from hand-written JSON in samples/basic-python-cli-kg/ added with parser provenance; kg add never deletes.\nWhere: samples/basic-python-cli/.kg (ignored by git)\nLearned: User has not chosen; the assistant must not touch his store until then; kg remove/edit now make cleanup possible.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-12-a38a03e6",
+        "created": "2026-10-12"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "constraint:token-lacks-pages-permission",
+      "type": "Constraint",
+      "label": "The .env GitHub token cannot configure Pages or repo administration (403)",
+      "description": "What: REST calls to configure GitHub Pages return 403 'Resource not accessible by personal access token'.\nWhy: Fine-grained token lacks Pages and Administration write permissions.\nWhere: GitHub REST API\nLearned: User enabled Pages manually (Settings -> Pages -> main, /docs); to automate, the token needs Pages: RW and Administration: RW.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-12-a38a03e6",
+        "created": "2026-10-12"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    }
+  ],
+  "edges": [
+    {
+      "source": "task:python-extractor-issue-6",
+      "target": "evidence:pr-24",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:english-migration-issue-20",
+      "target": "evidence:pr-23",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:mvp-issue-plan",
+      "target": "evidence:pr-32",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:remove-example-graphs-module",
+      "target": "evidence:commit-5748ae8",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:decide-respuestas-usuario-txt",
+      "target": "evidence:file-docs-discovery-md",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:ruff-excludes-root-prototypes",
+      "target": "evidence:commit-5748ae8",
+      "type": "invalidated_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:requirements-v1-approved",
+      "target": "evidence:file-docs-discovery-md",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "issue:cli-usage-error-quirks",
+      "target": "evidence:pr-30",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-12-a38a03e6",
+      "target": "task:deps-config-issue-7",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:deps-config-issue-7",
+      "target": "component:extract",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:deps-config-issue-7",
+      "target": "evidence:issue-7",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:deps-config-issue-7",
+      "target": "evidence:pr-25",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-12-a38a03e6",
+      "target": "task:tests-relation-issue-8",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:tests-relation-issue-8",
+      "target": "component:extract",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:tests-relation-issue-8",
+      "target": "component:query",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:tests-relation-issue-8",
+      "target": "evidence:issue-8",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:tests-relation-issue-8",
+      "target": "evidence:pr-26",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-12-a38a03e6",
+      "target": "task:static-render-issue-9",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:static-render-issue-9",
+      "target": "component:render",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:static-render-issue-9",
+      "target": "evidence:issue-9",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:static-render-issue-9",
+      "target": "evidence:pr-27",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-12-a38a03e6",
+      "target": "task:remove-edit-issue-28",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:remove-edit-issue-28",
+      "target": "component:store",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:remove-edit-issue-28",
+      "target": "component:cli",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:remove-edit-issue-28",
+      "target": "evidence:issue-28",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:remove-edit-issue-28",
+      "target": "evidence:pr-29",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-12-a38a03e6",
+      "target": "task:html-render-issue-10",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:html-render-issue-10",
+      "target": "component:render",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:html-render-issue-10",
+      "target": "evidence:issue-10",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:html-render-issue-10",
+      "target": "evidence:pr-30",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:html-render-issue-10",
+      "target": "evidence:comment-issue-10-details-zoom",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-12-a38a03e6",
+      "target": "task:agent-guide-issue-11",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:agent-guide-issue-11",
+      "target": "component:agents",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:agent-guide-issue-11",
+      "target": "evidence:issue-11",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:agent-guide-issue-11",
+      "target": "evidence:pr-31",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-12-a38a03e6",
+      "target": "task:mvp-validation-issue-12",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:mvp-validation-issue-12",
+      "target": "component:docs",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:mvp-validation-issue-12",
+      "target": "evidence:issue-12",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:mvp-validation-issue-12",
+      "target": "evidence:pr-32",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:mvp-validation-issue-12",
+      "target": "evidence:commit-722a6e4",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-12-a38a03e6",
+      "target": "task:repo-cleanup-issue-33",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:repo-cleanup-issue-33",
+      "target": "component:repo-workflow",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:repo-cleanup-issue-33",
+      "target": "component:docs",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:repo-cleanup-issue-33",
+      "target": "evidence:issue-33",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:repo-cleanup-issue-33",
+      "target": "evidence:pr-34",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:repo-cleanup-issue-33",
+      "target": "evidence:commit-5748ae8",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-12-a38a03e6",
+      "target": "decision:extract-file-discovery-via-git",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:extract-file-discovery-via-git",
+      "target": "component:extract",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:extract-file-discovery-via-git",
+      "target": "evidence:pr-24",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:extract-file-discovery-via-git",
+      "target": "evidence:file-docs-extract-md",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-12-a38a03e6",
+      "target": "decision:dependency-ids-normalized-stdlib-ignored",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:dependency-ids-normalized-stdlib-ignored",
+      "target": "component:extract",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:dependency-ids-normalized-stdlib-ignored",
+      "target": "component:merge",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:dependency-ids-normalized-stdlib-ignored",
+      "target": "evidence:pr-24",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:dependency-ids-normalized-stdlib-ignored",
+      "target": "evidence:pr-25",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-12-a38a03e6",
+      "target": "decision:shared-add-document-merge-path",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:shared-add-document-merge-path",
+      "target": "component:merge",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:shared-add-document-merge-path",
+      "target": "component:extract",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:shared-add-document-merge-path",
+      "target": "evidence:pr-24",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-12-a38a03e6",
+      "target": "decision:test-nodes-replace-code-nodes",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:test-nodes-replace-code-nodes",
+      "target": "component:extract",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:test-nodes-replace-code-nodes",
+      "target": "component:query",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:test-nodes-replace-code-nodes",
+      "target": "evidence:pr-26",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:test-nodes-replace-code-nodes",
+      "target": "evidence:file-docs-extract-md",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-12-a38a03e6",
+      "target": "decision:render-color-family-shape-type",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:render-color-family-shape-type",
+      "target": "component:render",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:render-color-family-shape-type",
+      "target": "evidence:pr-27",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:render-color-family-shape-type",
+      "target": "evidence:file-docs-render-md",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:render-color-family-shape-type",
+      "target": "experiment:palette-three-hues-cvd",
+      "type": "decided_because",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-12-a38a03e6",
+      "target": "decision:static-render-deterministic-figure-api",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:static-render-deterministic-figure-api",
+      "target": "component:render",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:static-render-deterministic-figure-api",
+      "target": "evidence:pr-27",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:static-render-deterministic-figure-api",
+      "target": "evidence:commit-f2600b7",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-12-a38a03e6",
+      "target": "decision:embed-vis-network-not-pyvis",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:embed-vis-network-not-pyvis",
+      "target": "component:render",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:embed-vis-network-not-pyvis",
+      "target": "component:requirements",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:embed-vis-network-not-pyvis",
+      "target": "evidence:pr-30",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:embed-vis-network-not-pyvis",
+      "target": "evidence:commit-5314fb7",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-12-a38a03e6",
+      "target": "decision:html-read-only-shows-cli-commands",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:html-read-only-shows-cli-commands",
+      "target": "component:render",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:html-read-only-shows-cli-commands",
+      "target": "component:store",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:html-read-only-shows-cli-commands",
+      "target": "evidence:pr-30",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:html-read-only-shows-cli-commands",
+      "target": "evidence:issue-28",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-12-a38a03e6",
+      "target": "decision:remove-edit-all-or-nothing",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:remove-edit-all-or-nothing",
+      "target": "component:store",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:remove-edit-all-or-nothing",
+      "target": "component:cli",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:remove-edit-all-or-nothing",
+      "target": "evidence:pr-29",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:remove-edit-all-or-nothing",
+      "target": "evidence:commit-eb55f5b",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-12-a38a03e6",
+      "target": "decision:agent-guide-in-package",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:agent-guide-in-package",
+      "target": "component:agents",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:agent-guide-in-package",
+      "target": "component:merge",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:agent-guide-in-package",
+      "target": "evidence:pr-31",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:agent-guide-in-package",
+      "target": "evidence:commit-1b1407c",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:agent-guide-in-package",
+      "target": "evidence:file-src-kg-agents-guide-md",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:agent-guide-in-package",
+      "target": "decision:llm-in-external-agent-no-api-keys",
+      "type": "decided_because",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-12-a38a03e6",
+      "target": "decision:single-language-graph-texts",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:single-language-graph-texts",
+      "target": "component:agents",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:single-language-graph-texts",
+      "target": "evidence:comment-issue-11-single-language",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:single-language-graph-texts",
+      "target": "evidence:comment-issue-12-licensed-repos",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:single-language-graph-texts",
+      "target": "decision:repository-in-english",
+      "type": "decided_because",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-12-a38a03e6",
+      "target": "decision:mvp-validation-mit-repos",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:mvp-validation-mit-repos",
+      "target": "component:docs",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:mvp-validation-mit-repos",
+      "target": "evidence:comment-issue-12-licensed-repos",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:mvp-validation-mit-repos",
+      "target": "evidence:pr-32",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-12-a38a03e6",
+      "target": "decision:github-pages-from-docs",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:github-pages-from-docs",
+      "target": "component:docs",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:github-pages-from-docs",
+      "target": "component:repo-workflow",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:github-pages-from-docs",
+      "target": "evidence:pr-32",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:github-pages-from-docs",
+      "target": "constraint:token-lacks-pages-permission",
+      "type": "decided_because",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-12-a38a03e6",
+      "target": "decision:v0-2-issue-order",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:v0-2-issue-order",
+      "target": "component:requirements",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:v0-2-issue-order",
+      "target": "component:query",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:v0-2-issue-order",
+      "target": "component:bench",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:v0-2-issue-order",
+      "target": "evidence:issue-37",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:v0-2-issue-order",
+      "target": "evidence:issue-38",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:v0-2-issue-order",
+      "target": "evidence:issue-39",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:v0-2-issue-order",
+      "target": "evidence:issue-40",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-12-a38a03e6",
+      "target": "experiment:palette-three-hues-cvd",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "experiment:palette-three-hues-cvd",
+      "target": "evidence:pr-27",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-12-a38a03e6",
+      "target": "experiment:mvp-validation-three-repos",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "experiment:mvp-validation-three-repos",
+      "target": "evidence:file-docs-mvp-validation-md",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "experiment:mvp-validation-three-repos",
+      "target": "evidence:pr-32",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "experiment:mvp-validation-three-repos",
+      "target": "evidence:commit-9790c4d",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "experiment:mvp-validation-three-repos",
+      "target": "evidence:commit-f2600b7",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-12-a38a03e6",
+      "target": "experiment:html-layout-timing",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "experiment:html-layout-timing",
+      "target": "evidence:issue-35",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-12-a38a03e6",
+      "target": "issue:cli-startup-matplotlib-import",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "issue:cli-startup-matplotlib-import",
+      "target": "component:cli",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "issue:cli-startup-matplotlib-import",
+      "target": "component:render",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "issue:cli-startup-matplotlib-import",
+      "target": "evidence:file-docs-mvp-validation-md",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-12-a38a03e6",
+      "target": "issue:untested-false-positives",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "issue:untested-false-positives",
+      "target": "component:query",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "issue:untested-false-positives",
+      "target": "component:extract",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "issue:untested-false-positives",
+      "target": "evidence:file-docs-mvp-validation-md",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-12-a38a03e6",
+      "target": "issue:import-vs-distribution-name-duplicates",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "issue:import-vs-distribution-name-duplicates",
+      "target": "component:extract",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "issue:import-vs-distribution-name-duplicates",
+      "target": "evidence:pr-25",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "issue:import-vs-distribution-name-duplicates",
+      "target": "evidence:file-docs-mvp-validation-md",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-12-a38a03e6",
+      "target": "issue:scipy-needed-above-500-nodes",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "issue:scipy-needed-above-500-nodes",
+      "target": "component:render",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "issue:scipy-needed-above-500-nodes",
+      "target": "evidence:pr-27",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-12-a38a03e6",
+      "target": "task:html-main-view-issue-35",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:html-main-view-issue-35",
+      "target": "component:render",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:html-main-view-issue-35",
+      "target": "evidence:issue-35",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-12-a38a03e6",
+      "target": "task:mandatory-descriptions-issue-36",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:mandatory-descriptions-issue-36",
+      "target": "component:agents",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:mandatory-descriptions-issue-36",
+      "target": "component:schema",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:mandatory-descriptions-issue-36",
+      "target": "component:render",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:mandatory-descriptions-issue-36",
+      "target": "evidence:issue-36",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-12-a38a03e6",
+      "target": "task:graph-consistency-issue-37",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:graph-consistency-issue-37",
+      "target": "component:extract",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:graph-consistency-issue-37",
+      "target": "component:merge",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:graph-consistency-issue-37",
+      "target": "component:store",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:graph-consistency-issue-37",
+      "target": "evidence:issue-37",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-12-a38a03e6",
+      "target": "task:query-impact-issue-38",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:query-impact-issue-38",
+      "target": "component:query",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:query-impact-issue-38",
+      "target": "component:cli",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:query-impact-issue-38",
+      "target": "evidence:issue-38",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:query-impact-issue-38",
+      "target": "task:graph-consistency-issue-37",
+      "type": "blocked_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-12-a38a03e6",
+      "target": "task:benchmark-issue-39",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:benchmark-issue-39",
+      "target": "component:bench",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:benchmark-issue-39",
+      "target": "evidence:issue-39",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:benchmark-issue-39",
+      "target": "task:query-impact-issue-38",
+      "type": "blocked_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-12-a38a03e6",
+      "target": "task:demo-issue-40",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:demo-issue-40",
+      "target": "component:docs",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:demo-issue-40",
+      "target": "evidence:issue-40",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:demo-issue-40",
+      "target": "task:query-impact-issue-38",
+      "type": "blocked_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-12-a38a03e6",
+      "target": "task:clean-basic-python-cli-sample-store",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:clean-basic-python-cli-sample-store",
+      "target": "component:store",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:clean-basic-python-cli-sample-store",
+      "target": "evidence:issue-28",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-12-a38a03e6",
+      "target": "constraint:token-lacks-pages-permission",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "constraint:token-lacks-pages-permission",
+      "target": "evidence:pr-32",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    }
+  ]
+}
