@@ -362,8 +362,12 @@ EOF
 - Batch 17 (positions 321–340): first marked as launched from session
   `9c9734c1`, but no run made a call (nothing to reset). Relaunched on
   2026-10-28 from session `5f715828-a178-4fed-b71d-6ee385ec0731`, which
-  holds the transcripts of batch 17 on. **In progress.** If this note is
-  still here, check `status`.
+  holds the transcripts of batch 17 on. Every run answered; none used its
+  25 calls (`kg-B2.s3.1` came closest with 12) and no subagent reported a
+  violation. Done after batch 17: 340 of 360, none pending among positions
+  1–340.
+- Batch 18 (positions 341–360, the last 20, session `5f715828`):
+  **launched, in progress.** If this note is still here, check `status`.
 
 ## Decisions already taken (do not reopen)
 
