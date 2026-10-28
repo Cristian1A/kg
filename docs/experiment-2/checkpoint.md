@@ -264,6 +264,14 @@ EOF
 2. **One session with S1 + S3 + S2r**: 40 questions × 3 strategies × 3
    repeats = 360 runs — **done** (2026-10-28), see below.
 3. **G1–G3 final**, against the best of S2 and S3; update gates.md and #71.
+   **In progress (2026-10-28):** procedure fixed in gates.md §"Final
+   evaluation with S3" (`53c2a06`), code in `bench/gates.py` (`2e59708`).
+   Next: blind staleness audit of S1/S3/S2r — `python -m bench.gates sheet
+   bench/results/memory/20261027T092553Z.jsonl --strategies s1,s3,s2r
+   --prefix b` (72 rows), judge each code, join back to runs with
+   `audit_sheet(..., strategies=("s1","s3","s2r"), prefix="b")`, append to
+   `staleness-audit.tsv`; then `python -m bench.gates report` over the three
+   result files with `--audit` (and `--exclude kg-B1`), write §Results.
 4. Hand-check `kg-T2.s4.3` (it cited a test it never read).
 5. **Agent-written corpus (R2-11)**, then P3.
 
