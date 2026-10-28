@@ -1,0 +1,1771 @@
+{
+  "version": "1",
+  "nodes": [
+    {
+      "id": "session:2026-10-13-265f3d59",
+      "type": "Session",
+      "label": "v0.2 re-scoped to an evidence phase; CI (#42), graph consistency and kg status (#37), mandatory descriptions (#36), kg query/impact (#38) and the benchmark harness (#39)",
+      "description": "Goal: turn external feedback into a short v0.2 'evidence phase' and deliver its reliability and query prerequisites before the benchmark.\nInstructions: user writes in Spanish, everything versioned in English; commit per issue on its own branch, push/PR only when the user says so; stop before anything that costs money (LLM calls); do not touch the chore/33-cleanup branch.\nDiscoveries: RF-77 git-commit staleness fails when graph.json is committed (content digests instead); kg edit --id cannot fix kept nodes; WORKFLOWS_TOKEN first lacked Contents write; extraction time is linear (~0.7 ms/function); kg impact without --depth is very broad (120 elements for kg.store.load_graph); no Anthropic credentials on the machine.\nAccomplished: issues #41 (site proposal), #42, #43 opened; #37/#38/#39 extended; PRs #44 (requirements 1.2 + roadmap), #45 (CI), #46 (#37 + kg status), #47 (#36), #48 (#38) merged; three demo queries posted on #40; bench/ harness with 6 pilot questions committed on feat/39-benchmark (ac0e96b), pushed, no PR.\nNext steps: user installs .[bench] and provides ANTHROPIC_API_KEY, then run the pilot, report and open the #39 PR; client approval of requirements 1.2 then v0.3 milestone/label and move #35/#18; demo #40; decide #41; regenerate docs/examples HTML.\nRelevant files: docs/requirements.md, docs/roadmap.md, docs/query.md, docs/store.md, src/kg/update.py, src/kg/cli.py, .github/workflows/ci.yml, .github/smoke-test.sh, bench/",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      },
+      "attrs": {
+        "date": "2026-10-13",
+        "commit": "1a342c4",
+        "transcript": "265f3d59",
+        "order": 5
+      }
+    },
+    {
+      "id": "decision:v0-2-evidence-phase",
+      "type": "Decision",
+      "label": "v0.2 is a time-boxed evidence phase (requirements 1.2 draft); order #43 -> #42/#37/#36 -> #38 -> #39 pilot -> #40, then #41",
+      "description": "What: requirements 1.2 (draft, pending client approval) cut v0.2 to RF-40-43, RF-72 (rebuild of parser layer is enough), RF-77 stale graph, RNF-03 user install, RNF-07 CI, RNF-10 benchmark outside the package; RF-13, RF-23, RF-31-33, RF-60-61, RF-73-74 and the Dockerfile move to v0.3; RF-44 topic views and RF-78 incremental extraction planned for v0.3; new section 8.2 success criteria, PA-05 and a change log; #35 and #18 move to v0.3.\nWhy: external feedback: go from 'an MVP that works on three repos' to evidence that kg solves a problem; old v0.2 was too broad and lacked stale graphs, coverage limits, CI and the benchmark.\nWhere: docs/requirements.md, docs/roadmap.md (issue order, Mermaid dependency diagram, benchmark design, exit questions, tentative v0.3 ordered by benchmark outcomes).\nLearned: ~2-week time box, cut scope rather than extend; a negative benchmark result is valid; RF-13 (calls) comes back to v0.2 if impact with imports alone falls short; if the graph adds no value v0.3 starts with a redesign.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-13-265f3d59",
+        "created": "2026-10-13"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "decision:v0-2-issue-order",
+      "type": "Decision",
+      "attrs": {
+        "status": "superseded"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "task:requirements-1-2-issue-43",
+      "type": "Task",
+      "label": "Issue #43: re-scope v0.2 requirements and plan v0.3 (merged via PR #44)",
+      "description": "What: requirements 1.2 draft, docs/roadmap.md, README roadmap, extract.md, store.md, merge.py docstring, CONTRIBUTING (prio:v0.3 label, v0.3 milestone), AGENTS.md.\nWhy: the approved v0.2 did not match the evidence-phase plan.\nWhere: docs/requirements.md, docs/roadmap.md\nLearned: docs/mvp-validation.md still says 'Open, for v0.2' on purpose: it is a historical record.",
+      "attrs": {
+        "status": "done",
+        "session": "session:2026-10-13-265f3d59",
+        "created": "2026-10-13"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "task:approve-requirements-1-2-and-v0-3-setup",
+      "type": "Task",
+      "label": "Get client approval of requirements 1.2, then create v0.3 milestone and prio:v0.3 label and move #35 and #18",
+      "description": "What: after approval create the v0.3 milestone and prio:v0.3 label on GitHub, move #35 and #18, open v0.3 issues when v0.3 starts.\nWhy: requirements v1.0 were client-approved, so changes are a pending version 1.2; CONTRIBUTING already names the label and milestone that do not exist yet.\nWhere: GitHub labels/milestones; docs/requirements.md\nLearned: PR #44 was merged while 1.2 still reads as pending approval.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-13-265f3d59",
+        "created": "2026-10-13"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "task:ci-issue-42",
+      "type": "Task",
+      "label": "Issue #42: CI, user install and edge-case tests (merged via PR #45)",
+      "description": "What: GitHub Actions workflow, clean-install smoke test, README user install and CI badge, 9 new edge-case tests (no store, empty graph.json, invalid UTF-8, coding: latin-1, broken/looping symlinks).\nWhy: tests only ran locally and the user install was undocumented and untested; protect behaviour before #38/#39.\nWhere: .github/workflows/ci.yml, .github/smoke-test.sh, README.md, tests/\nLearned: error handling was already good (no tracebacks, corrupt stores give actionable errors), so this was about automating and covering it; first CI run was green.",
+      "attrs": {
+        "status": "done",
+        "session": "session:2026-10-13-265f3d59",
+        "created": "2026-10-13"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "decision:ci-matrix-and-clean-install-smoke",
+      "type": "Decision",
+      "label": "CI runs ruff + pytest on Python 3.12 and 3.13, plus a non-editable clean install with a smoke test",
+      "description": "What: on every push to main and every PR: ruff check, ruff format --check, pytest on 3.12 and 3.13; a separate job does pip install . (no dev extras) in a fresh venv and runs .github/smoke-test.sh (init, extract, add, validate, render HTML/PNG/SVG, status, query, impact, --json contract, bundled vis-network assets).\nWhy: requires-python is >=3.12 so 3.13 is free coverage; the user install path must be tested, not only the dev one.\nWhere: .github/workflows/ci.yml, .github/smoke-test.sh (also runnable locally)\nLearned: every new CLI command should be added to the smoke test.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-13-265f3d59",
+        "created": "2026-10-13"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "constraint:workflow-files-need-workflows-token",
+      "type": "Constraint",
+      "label": "Pushing .github/workflows needs WORKFLOWS_TOKEN (Contents + Workflows write), used via a temporary askpass",
+      "description": "What: a separate fine-grained token WORKFLOWS_TOKEN in .env is used to push branches that touch .github/workflows/; it must have Contents and Workflows read/write on Cristian1A/kg.\nWhy: the regular GITHUB_TOKEN lacks the workflow scope; the first WORKFLOWS_TOKEN returned 403 even on --dry-run pushes because it lacked Contents write; the user fixed its permissions.\nWhere: .env (read variable names only, never values)\nLearned: push through a temporary askpass script with credential cache off so the token never lands in the URL or git config; test permissions with git push --dry-run.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-13-265f3d59",
+        "created": "2026-10-13"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "experiment:large-file-extraction-scaling",
+      "type": "Experiment",
+      "label": "Extraction time on a 50,000-function file: 37 s, 515 MB, linear at ~0.7 ms per function",
+      "description": "What: edge-case probe during #42 with a very large generated Python file.\nWhy: check whether a huge file is a bug or just slow.\nWhere: kg extract (src/kg/extract/python.py)\nLearned: growth is linear, not a bug; revisit only if RNF-06 targets require it.",
+      "attrs": {
+        "status": "done",
+        "session": "session:2026-10-13-265f3d59",
+        "created": "2026-10-13"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "issue:spanish-leftovers-in-test-store",
+      "type": "Issue",
+      "label": "Spanish leftovers in tests/test_store.py break rule 8",
+      "description": "What: the comment '# --- errores ---' and the string 'contenido previo' remain in tests/test_store.py.\nWhy: missed by the English migration and #33 cleanup.\nWhere: tests/test_store.py\nLearned: one-line fix offered during #42; the user did not ask for it, so it is still open.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-13-265f3d59",
+        "created": "2026-10-13"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "decision:extract-replaces-derived-layer",
+      "type": "Decision",
+      "label": "kg extract prunes kg's own parser elements it no longer produces, in one atomic write with the merge",
+      "description": "What: before merging, remove elements with method parser from extractors python-ast, pyproject and requirements that the new extraction does not produce; never remove llm/manual knowledge, parser elements of other tools, elements of files skipped this time (syntax error), or a derived node still used by an agent edge (kept and reported); if the store holds another repo's extraction nothing is removed and a warning is shown; kg extract --dry-run shows added/merged/removed; --json gains changed, dry_run, removed.\nWhy: kg add never removes, so deleted/renamed/moved code stayed in the store; full rebuild of the parser layer chosen over incremental update because extraction is ~1 s per 100 files and correctness comes first (incremental is RF-78, v0.3).\nWhere: src/kg/update.py, src/kg/cli.py, docs/store.md, docs/extract.md\nLearned: a move or rename is a delete plus an add because IDs come from paths and qualified names; with pruning disabled 9 of 26 scenario tests fail; on a copy of samples/basic-python-cli it removed 4 stale nodes and 10 edges and kept the one node with agent edges.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-13-265f3d59",
+        "created": "2026-10-13"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "decision:orphan-agent-edges-fix-add-then-remove",
+      "type": "Decision",
+      "label": "Kept derived nodes with agent edges are fixed by re-adding the edges to the new ID with kg add, then kg remove of the old node",
+      "description": "What: the extract report, docs and agent guide tell the user to resend the agent edges pointing to the new ID with kg add and then kg remove the old node.\nWhy: the first documented fix, kg edit --id, fails because the new ID already exists after the extract.\nWhere: src/kg/update.py messages, docs/store.md, src/kg/agents/guide.md\nLearned: the add-then-remove path was tested end to end.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-13-265f3d59",
+        "created": "2026-10-13"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "decision:stale-detection-by-content-digest",
+      "type": "Decision",
+      "label": "Stale-graph detection (RF-77) uses per-file content digests and a new kg status, not the git commit",
+      "description": "What: File and Config nodes store attrs.digest (short SHA-256); kg status [path] lists files modified, added or deleted since the last extraction; kg query/impact reuse it as the stale_graph note.\nWhy: the drafted design recorded the git commit, but committing graph.json moves HEAD so a versioned graph would look stale forever; digests also work without git. kg validate has no --kg-dir, so the warning could not live there as #37/RF-77 first said.\nWhere: src/kg/update.py, src/kg/extract/files.py, docs/store.md, RF-77 in docs/requirements.md\nLearned: an unparseable file keeps its previous digest so it stays 'modified' until fixed; a changed digest is not reported as a merge conflict.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-13-265f3d59",
+        "created": "2026-10-13"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "task:graph-consistency-issue-37",
+      "type": "Task",
+      "label": "Issue #37: keep the graph consistent when the code changes (merged via PR #46)",
+      "description": "What: derived-layer pruning on kg extract, --dry-run, kg status with content digests; 26 scenario tests in tests/test_update.py.\nWhy: stale parser nodes made queries and the benchmark unreliable.\nWhere: src/kg/update.py, tests/test_update.py\nLearned: done 2026-10-13; see decision:extract-replaces-derived-layer and decision:stale-detection-by-content-digest.",
+      "attrs": {
+        "status": "done",
+        "session": "session:2026-10-12-a38a03e6",
+        "created": "2026-10-12"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "decision:missing-description-warning",
+      "type": "Decision",
+      "label": "Agent-created nodes must have a description: missing_description warning, guide section, HTML search over descriptions",
+      "description": "What: kg validate and kg add warn missing_description for llm nodes with no or empty description; the guide makes descriptions mandatory and explains describing undocumented extracted nodes (send the existing ID and type with llm provenance; parser provenance is kept, a later docstring wins); HTML search also matches descriptions, ranked after names and IDs.\nWhy: a node with only an ID and label sends the reader back to the source; descriptions make the graph searchable by meaning and matter for the benchmark.\nWhere: src/kg/schema/validation.py, src/kg/agents/guide.md, src/kg/render/assets/template.html, docs/schema.md, docs/render.md\nLearned: a warning, not an error; the search is tested in headless Chrome and fails without the change; a test checks examples/agent/*.json have descriptions.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-13-265f3d59",
+        "created": "2026-10-13"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "task:mandatory-descriptions-issue-36",
+      "type": "Task",
+      "label": "Issue #36: mandatory descriptions for agent-created nodes (merged via PR #47)",
+      "description": "What: missing_description warning, guide Descriptions section, HTML search over descriptions, two descriptions added to examples/basic-repo.json.\nWhy: needed before measuring in the benchmark.\nWhere: src/kg/schema/validation.py, src/kg/agents/guide.md\nLearned: done 2026-10-13; touched the same guide lines as #37 but merged without conflicts (371 tests on the combined tree).",
+      "attrs": {
+        "status": "done",
+        "session": "session:2026-10-12-a38a03e6",
+        "created": "2026-10-12"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "task:regenerate-published-example-html",
+      "type": "Task",
+      "label": "Regenerate the HTML pages in docs/examples so they search descriptions",
+      "description": "What: rerun kg render --html for the published examples.\nWhy: they were generated before #36 changed the template, so their search ignores descriptions.\nWhere: docs/examples/*.html (GitHub Pages)\nLearned: left out of #36 on purpose because it was not in scope.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-13-265f3d59",
+        "created": "2026-10-13"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "decision:kg-query-impact-design",
+      "type": "Decision",
+      "label": "kg query (node/find/path/untested/undocumented) and kg impact walk relations backwards with containment and coverage-limit notes",
+      "description": "What: kg query node|find|path|untested|undocumented; path tries forward, backward, then mixed and says which; kg impact walks calls, depends_on, documents, implements, imports, justifies, tests backwards, plus containment (a changed function/class reaches its defining module/class; --no-containment), --relation replaces the list and custom relations propagate only when listed; each result has depth, direct flag, justifying path, provenance and weakest confidence; every answer carries notes stale_graph, freshness_unknown, unread_files, missing_relations; empty answers say 'no relation found in the graph'; unknown IDs exit 2 with the closest ID.\nWhy: RF-40-43 and the benchmark/demo need a query interface; impact must never present possible effects as certain.\nWhere: src/kg/analysis.py, src/kg/cli.py, docs/query.md (--json output documented as stable), guide section 'Answering questions with the graph'\nLearned: find ranks like the HTML short() rule (unlabeled nodes tie and sort by ID); with containment disabled 4 tests fail; no external query engine.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-13-265f3d59",
+        "created": "2026-10-13"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "task:query-impact-issue-38",
+      "type": "Task",
+      "label": "Issue #38: kg query and kg impact (merged via PR #48)",
+      "description": "What: query and impact commands, docs/query.md, guide section, smoke test, 27 tests in tests/test_query.py.\nWhy: prerequisite of the benchmark (#39) and demo (#40).\nWhere: src/kg/analysis.py, src/kg/cli.py\nLearned: done 2026-10-13; three example queries posted on #40.",
+      "attrs": {
+        "status": "done",
+        "session": "session:2026-10-12-a38a03e6",
+        "created": "2026-10-12"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "issue:kg-impact-broad-without-depth",
+      "type": "Issue",
+      "label": "kg impact with no --depth follows imports transitively and returns very broad results",
+      "description": "What: on kg itself a change to kg.store.load_graph reaches 120 elements; --depth 2 or 3 is usually more useful to agents.\nWhy: impact follows imports transitively by default; correct but noisy.\nWhere: src/kg/analysis.py (kg impact default depth)\nLearned: whether to limit the default depth is to be decided from the benchmark (#39).",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-13-265f3d59",
+        "created": "2026-10-13"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "task:demo-issue-40",
+      "type": "Task",
+      "label": "Issue #40: reproducible demo with queries on a real repo (prio:v0.2)",
+      "description": "What: demo flow on a docs/examples repo: clone, kg init/extract, kg add the committed examples/agent layer, render, three queries with reference answers; no LLM needed.\nWhy: a new user should see how kg answers questions without a long explanation.\nWhere: GitHub issue #40 comment; future demo doc\nLearned: three queries already posted on #40 for my_first_data_project at 3d57177: kg query untested, kg impact function:etl.utils.get_postgres_connection --depth 2, kg query node module:etl.utils; comes after the benchmark in the roadmap.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-12-a38a03e6",
+        "created": "2026-10-12"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "decision:bench-harness-design",
+      "type": "Decision",
+      "label": "Benchmark harness: same model/prompt/turn limit for code and graph agents, manual tool loop, mechanical grading, no fallback model",
+      "description": "What: bench/ runs each question twice: code strategy (list/read/search tools) and graph strategy (read-only kg tool over the store); manual tool-use loop records token usage per request, caps turns, ends with submit_answer; prepare clones the three example repos at pinned commits into bench/.cache and builds stores with kg extract plus examples/agent layers; grading is F1 over normalized names for list questions (etl/utils.py, module:etl.utils, etl.utils equal), keyword groups otherwise, traceability = share of cited evidence that exists; runs appended to JSONL with full config; bench.report shows quality and cost separately.\nWhy: RNF-10/RF-24 keep LLM calls out of kg; mechanical grading avoids an LLM judge; no fallback model so both strategies always use the same model (a refusal counts as failure).\nWhere: bench/agent.py, bench/tools.py, bench/grading.py, bench/run.py, bench/report.py, bench/questions/pilot.json, bench/repos.json; anthropic is an optional extra 'bench'\nLearned: 6 pilot questions with references checked against the code, not the graph (the graph links two test files to sqlalchemy they do not import); tests use a fake client so CI needs no key; SDK 1.13 accepts all request parameters.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-13-265f3d59",
+        "created": "2026-10-13"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "decision:bench-topic-views-and-commit-variants",
+      "type": "Decision",
+      "label": "Benchmark also compares topic-specific graphs and old vs. recent commits, including a stale graph",
+      "description": "What: questions tagged by topic (documentation, tests, development, decisions); at least one topic graph or view compared with the full graph and the baseline; at least one repo measured on two commits, including an old graph queried about recent code.\nWhy: user request: a single generic graph could hide where the graph helps; across commits shows whether value holds as the repo grows and whether stale warnings prevent wrong claims.\nWhere: issue #39 'Additional variants to evaluate'; docs/roadmap.md benchmark design\nLearned: views of one store filtered by node/edge type are preferred over separate graphs (no repeated extraction, kg render already filters); fewer questions per cell, so the report must state sample-size limits; topic views as a product feature are RF-44 in v0.3 only if the benchmark shows value.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-13-265f3d59",
+        "created": "2026-10-13"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "task:benchmark-issue-39",
+      "type": "Task",
+      "label": "Issue #39: reproducible benchmark, code vs. knowledge graph (prio:v0.2)",
+      "description": "What: harness and 6 pilot questions committed on feat/39-benchmark (ac0e96b, stacked on #38, pushed, no PR, commit uses Refs: #39); next run the pilot (6 questions x 2 strategies, claude-opus-5-5, medium effort), then grow to 15-30 questions with topic and commit variants and write the report.\nWhy: the most valuable v0.2 item: evidence of whether kg helps an agent; a negative result is valid.\nWhere: bench/, bench/README.md\nLearned: running needs pip install -e .[bench] (not done in env/) and Anthropic credentials, which do not exist on the machine; the run costs money so it waits for the user's go-ahead; PR opens with the results.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-12-a38a03e6",
+        "created": "2026-10-12"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "constraint:bench-run-needs-user-key-and-approval",
+      "type": "Constraint",
+      "label": "Benchmark runs call a paid LLM: wait for the user's go-ahead and credentials",
+      "description": "What: do not run anything that calls an LLM without the user's explicit OK; no ANTHROPIC_API_KEY, .env entry or ant CLI exists on the machine.\nWhy: LLM calls cost money; the user said to do only what can be done without him.\nWhere: bench/run.py, .env\nLearned: estimated a few dollars for the 12-run pilot, unmeasured.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-13-265f3d59",
+        "created": "2026-10-13"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "task:project-site-issue-41",
+      "type": "Task",
+      "label": "Issue #41 (proposal, not validated): project-wide Pages landing page or a Streamlit app for results",
+      "description": "What: option A a static landing page at cristian1a.github.io/kg/ linking docs and examples; option B a Streamlit app (e.g. Community Cloud) presenting example graphs and later demo/benchmark results; both compatible.\nWhy: Pages only serves example graphs and the root URL shows nothing.\nWhere: docs/ (Pages from main:/docs), README, repo About\nLearned: labeled type:docs, prio:futuro, no milestone; a hosted app conflicts with requirements section 9 ('a web server or graph hosting' out of scope) and would need an explicit exception; decide after the demo (#40); existing example URLs must keep working.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-13-265f3d59",
+        "created": "2026-10-13"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "task:clean-basic-python-cli-sample-store",
+      "type": "Task",
+      "label": "Decide how to clean the samples/basic-python-cli store with stale parser-provenance nodes",
+      "description": "What: store has stale parser-provenance nodes and old-model edges from hand-written JSON; options were recreate or keep.\nWhy: kg add never deleted, so stale elements stayed.\nWhere: samples/basic-python-cli/.kg (ignored by git)\nLearned: since #37 a plain kg extract cleans it: on a copy it removed 4 stale nodes and 10 edges and kept the one node used by agent edges; the real store has still not been touched, pending the user.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-12-a38a03e6",
+        "created": "2026-10-12"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "component:ci",
+      "type": "Component",
+      "label": "ci",
+      "description": "GitHub Actions workflow and the clean-install smoke test script (.github/).",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:issue-41",
+      "type": "Evidence",
+      "label": "[docs] Project site: a landing page on GitHub Pages for users and the client",
+      "attrs": {
+        "kind": "issue",
+        "ref": "41"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:issue-42",
+      "type": "Evidence",
+      "label": "[chore] Add CI and harden the install path and edge-case tests",
+      "attrs": {
+        "kind": "issue",
+        "ref": "42"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:issue-43",
+      "type": "Evidence",
+      "label": "[docs] Re-scope v0.2 requirements to the evidence phase and plan v0.3",
+      "attrs": {
+        "kind": "issue",
+        "ref": "43"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:comment-issue-39-priority",
+      "type": "Evidence",
+      "label": "#39 comment: benchmark is the top v0.2 item; order #38 -> #39 -> #40, two-week time box",
+      "attrs": {
+        "kind": "comment",
+        "ref": "39"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:comment-issue-40-example-queries",
+      "type": "Evidence",
+      "label": "#40 comment: three example queries on my_first_data_project",
+      "attrs": {
+        "kind": "comment",
+        "ref": "40"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:pr-44",
+      "type": "Evidence",
+      "label": "docs: re-scope v0.2 to the evidence phase and plan v0.3",
+      "attrs": {
+        "kind": "pr",
+        "ref": "44"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:pr-45",
+      "type": "Evidence",
+      "label": "chore(ci): run tests, lint and a clean-install smoke test in CI",
+      "attrs": {
+        "kind": "pr",
+        "ref": "45"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:pr-46",
+      "type": "Evidence",
+      "label": "feat(extract): keep the graph consistent with the code and add kg status",
+      "attrs": {
+        "kind": "pr",
+        "ref": "46"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:pr-47",
+      "type": "Evidence",
+      "label": "feat(agents): make descriptions mandatory for agent-created nodes",
+      "attrs": {
+        "kind": "pr",
+        "ref": "47"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:pr-48",
+      "type": "Evidence",
+      "label": "feat(query): add kg query and kg impact",
+      "attrs": {
+        "kind": "pr",
+        "ref": "48"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:commit-caf4fb9",
+      "type": "Evidence",
+      "label": "docs: re-scope v0.2 to the evidence phase and plan v0.3",
+      "attrs": {
+        "kind": "commit",
+        "ref": "caf4fb9"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:commit-abfbcef",
+      "type": "Evidence",
+      "label": "chore(ci): run tests, lint and a clean-install smoke test in CI",
+      "attrs": {
+        "kind": "commit",
+        "ref": "abfbcef"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:commit-1a3b7ed",
+      "type": "Evidence",
+      "label": "feat(extract): keep the graph consistent with the code and add kg status",
+      "attrs": {
+        "kind": "commit",
+        "ref": "1a3b7ed"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:commit-d751da1",
+      "type": "Evidence",
+      "label": "feat(agents): make descriptions mandatory for agent-created nodes",
+      "attrs": {
+        "kind": "commit",
+        "ref": "d751da1"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:commit-a4065d9",
+      "type": "Evidence",
+      "label": "feat(query): add kg query and kg impact",
+      "attrs": {
+        "kind": "commit",
+        "ref": "a4065d9"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:commit-ac0e96b",
+      "type": "Evidence",
+      "label": "feat(bench): add the code-vs-graph benchmark harness and pilot questions",
+      "attrs": {
+        "kind": "commit",
+        "ref": "ac0e96b"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:file-docs-roadmap-md",
+      "type": "Evidence",
+      "label": "Action plan for v0.2 and v0.3",
+      "attrs": {
+        "kind": "file",
+        "ref": "docs/roadmap.md",
+        "commit": "caf4fb9"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:file-docs-requirements-md",
+      "type": "Evidence",
+      "label": "Functional requirements 1.2 draft (pending client approval)",
+      "attrs": {
+        "kind": "file",
+        "ref": "docs/requirements.md",
+        "commit": "caf4fb9"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:file-docs-query-md",
+      "type": "Evidence",
+      "label": "kg query and kg impact: lookups, paths, impact rules, coverage limits, JSON output",
+      "attrs": {
+        "kind": "file",
+        "ref": "docs/query.md",
+        "commit": "a4065d9"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:file-src-kg-update-py",
+      "type": "Evidence",
+      "label": "Derived-layer pruning and stale-graph status",
+      "attrs": {
+        "kind": "file",
+        "ref": "src/kg/update.py",
+        "commit": "1a3b7ed"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:file-bench-readme-md",
+      "type": "Evidence",
+      "label": "Benchmark harness usage and configuration",
+      "attrs": {
+        "kind": "file",
+        "ref": "bench/README.md",
+        "commit": "ac0e96b"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:file-github-workflows-ci-yml",
+      "type": "Evidence",
+      "label": "CI workflow",
+      "attrs": {
+        "kind": "file",
+        "ref": ".github/workflows/ci.yml",
+        "commit": "abfbcef"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    }
+  ],
+  "edges": [
+    {
+      "source": "session:2026-10-13-265f3d59",
+      "target": "decision:v0-2-evidence-phase",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-13-265f3d59",
+      "target": "task:requirements-1-2-issue-43",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-13-265f3d59",
+      "target": "task:approve-requirements-1-2-and-v0-3-setup",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-13-265f3d59",
+      "target": "task:ci-issue-42",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-13-265f3d59",
+      "target": "decision:ci-matrix-and-clean-install-smoke",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-13-265f3d59",
+      "target": "constraint:workflow-files-need-workflows-token",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-13-265f3d59",
+      "target": "experiment:large-file-extraction-scaling",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-13-265f3d59",
+      "target": "issue:spanish-leftovers-in-test-store",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-13-265f3d59",
+      "target": "decision:extract-replaces-derived-layer",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-13-265f3d59",
+      "target": "decision:orphan-agent-edges-fix-add-then-remove",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-13-265f3d59",
+      "target": "decision:stale-detection-by-content-digest",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-13-265f3d59",
+      "target": "decision:missing-description-warning",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-13-265f3d59",
+      "target": "task:regenerate-published-example-html",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-13-265f3d59",
+      "target": "decision:kg-query-impact-design",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-13-265f3d59",
+      "target": "issue:kg-impact-broad-without-depth",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-13-265f3d59",
+      "target": "decision:bench-harness-design",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-13-265f3d59",
+      "target": "decision:bench-topic-views-and-commit-variants",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-13-265f3d59",
+      "target": "constraint:bench-run-needs-user-key-and-approval",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-13-265f3d59",
+      "target": "task:project-site-issue-41",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:v0-2-evidence-phase",
+      "target": "decision:v0-2-issue-order",
+      "type": "supersedes",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:v0-2-evidence-phase",
+      "target": "evidence:comment-issue-39-priority",
+      "type": "decided_because",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:v0-2-evidence-phase",
+      "target": "evidence:issue-43",
+      "type": "decided_because",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:v0-2-evidence-phase",
+      "target": "evidence:file-docs-roadmap-md",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:v0-2-evidence-phase",
+      "target": "evidence:file-docs-requirements-md",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:v0-2-evidence-phase",
+      "target": "evidence:pr-44",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:v0-2-evidence-phase",
+      "target": "component:requirements",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:v0-2-evidence-phase",
+      "target": "component:docs",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:requirements-1-2-issue-43",
+      "target": "component:requirements",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:requirements-1-2-issue-43",
+      "target": "evidence:issue-43",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:requirements-1-2-issue-43",
+      "target": "evidence:pr-44",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:requirements-1-2-issue-43",
+      "target": "evidence:commit-caf4fb9",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:approve-requirements-1-2-and-v0-3-setup",
+      "target": "component:repo-workflow",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:approve-requirements-1-2-and-v0-3-setup",
+      "target": "component:requirements",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:approve-requirements-1-2-and-v0-3-setup",
+      "target": "evidence:pr-44",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:ci-issue-42",
+      "target": "component:ci",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:ci-issue-42",
+      "target": "evidence:issue-42",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:ci-issue-42",
+      "target": "evidence:pr-45",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:ci-issue-42",
+      "target": "evidence:commit-abfbcef",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:ci-matrix-and-clean-install-smoke",
+      "target": "component:ci",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:ci-matrix-and-clean-install-smoke",
+      "target": "evidence:issue-42",
+      "type": "decided_because",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:ci-matrix-and-clean-install-smoke",
+      "target": "evidence:file-github-workflows-ci-yml",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:ci-matrix-and-clean-install-smoke",
+      "target": "evidence:pr-45",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "constraint:workflow-files-need-workflows-token",
+      "target": "evidence:pr-45",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "constraint:workflow-files-need-workflows-token",
+      "target": "evidence:file-agents-md",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "experiment:large-file-extraction-scaling",
+      "target": "evidence:pr-45",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "issue:spanish-leftovers-in-test-store",
+      "target": "component:repo-workflow",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "issue:spanish-leftovers-in-test-store",
+      "target": "evidence:file-agents-md",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:extract-replaces-derived-layer",
+      "target": "component:extract",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:extract-replaces-derived-layer",
+      "target": "component:store",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:extract-replaces-derived-layer",
+      "target": "evidence:issue-37",
+      "type": "decided_because",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:extract-replaces-derived-layer",
+      "target": "evidence:file-src-kg-update-py",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:extract-replaces-derived-layer",
+      "target": "evidence:pr-46",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:extract-replaces-derived-layer",
+      "target": "evidence:commit-1a3b7ed",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:orphan-agent-edges-fix-add-then-remove",
+      "target": "component:store",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:orphan-agent-edges-fix-add-then-remove",
+      "target": "component:agents",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:orphan-agent-edges-fix-add-then-remove",
+      "target": "evidence:pr-46",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:stale-detection-by-content-digest",
+      "target": "component:extract",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:stale-detection-by-content-digest",
+      "target": "component:cli",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:stale-detection-by-content-digest",
+      "target": "evidence:pr-46",
+      "type": "decided_because",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:stale-detection-by-content-digest",
+      "target": "evidence:file-src-kg-update-py",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:stale-detection-by-content-digest",
+      "target": "evidence:commit-1a3b7ed",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:graph-consistency-issue-37",
+      "target": "evidence:pr-46",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:graph-consistency-issue-37",
+      "target": "evidence:commit-1a3b7ed",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:missing-description-warning",
+      "target": "component:agents",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:missing-description-warning",
+      "target": "component:schema",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:missing-description-warning",
+      "target": "component:render",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:missing-description-warning",
+      "target": "evidence:issue-36",
+      "type": "decided_because",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:missing-description-warning",
+      "target": "evidence:pr-47",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:missing-description-warning",
+      "target": "evidence:commit-d751da1",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:mandatory-descriptions-issue-36",
+      "target": "evidence:pr-47",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:mandatory-descriptions-issue-36",
+      "target": "evidence:commit-d751da1",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:regenerate-published-example-html",
+      "target": "component:render",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:regenerate-published-example-html",
+      "target": "component:docs",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:regenerate-published-example-html",
+      "target": "evidence:pr-47",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:kg-query-impact-design",
+      "target": "component:query",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:kg-query-impact-design",
+      "target": "component:cli",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:kg-query-impact-design",
+      "target": "evidence:issue-38",
+      "type": "decided_because",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:kg-query-impact-design",
+      "target": "evidence:file-docs-query-md",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:kg-query-impact-design",
+      "target": "evidence:pr-48",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:kg-query-impact-design",
+      "target": "evidence:commit-a4065d9",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:query-impact-issue-38",
+      "target": "evidence:pr-48",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:query-impact-issue-38",
+      "target": "evidence:commit-a4065d9",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "issue:kg-impact-broad-without-depth",
+      "target": "component:query",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "issue:kg-impact-broad-without-depth",
+      "target": "evidence:pr-48",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:demo-issue-40",
+      "target": "evidence:comment-issue-40-example-queries",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:demo-issue-40",
+      "target": "task:benchmark-issue-39",
+      "type": "blocked_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:bench-harness-design",
+      "target": "component:bench",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:bench-harness-design",
+      "target": "evidence:issue-39",
+      "type": "decided_because",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:bench-harness-design",
+      "target": "evidence:commit-ac0e96b",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:bench-harness-design",
+      "target": "evidence:file-bench-readme-md",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:bench-topic-views-and-commit-variants",
+      "target": "component:bench",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:bench-topic-views-and-commit-variants",
+      "target": "evidence:issue-39",
+      "type": "decided_because",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:bench-topic-views-and-commit-variants",
+      "target": "evidence:file-docs-roadmap-md",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:benchmark-issue-39",
+      "target": "evidence:commit-ac0e96b",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:benchmark-issue-39",
+      "target": "evidence:comment-issue-39-priority",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:benchmark-issue-39",
+      "target": "constraint:bench-run-needs-user-key-and-approval",
+      "type": "blocked_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "constraint:bench-run-needs-user-key-and-approval",
+      "target": "evidence:file-bench-readme-md",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:project-site-issue-41",
+      "target": "component:docs",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:project-site-issue-41",
+      "target": "evidence:issue-41",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:project-site-issue-41",
+      "target": "task:demo-issue-40",
+      "type": "blocked_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:clean-basic-python-cli-sample-store",
+      "target": "evidence:pr-46",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    }
+  ]
+}
