@@ -1,0 +1,858 @@
+{
+  "version": "1",
+  "nodes": [
+    {
+      "id": "session:2026-10-09-67dcc1db",
+      "type": "Session",
+      "label": "Merge of the CLI skeleton (#1), samples/ folder, JSON Schema (#2) and kg validate (#3)",
+      "description": "Goal: verify and merge PR #13 (issue #1), document samples/ for manual tests on third-party repos, then implement issue #2 (JSON Schema) and issue #3 (kg validate).\nInstructions: user asked for a manual test plan for #1/PR #13, wanted samples/ documented separately, approved commits, pushes and PR creation step by step; PRs opened via the GitHub REST API with the token from .env.\nDiscoveries: the author cannot approve own PRs on GitHub, so the user merges directly; argparse usage errors are in English, set command=null in the JSON envelope and stubs exit 3; tests for #3 found two real bugs (suggesting 'file:file:' for ID 'file:', duplicated errors when several required fields are missing).\nAccomplished: PR #13 merged (closes #1); PR #14 merged (samples/, Refs #12); PR #15 merged (JSON Schema + kg schema, closes #2, 60 tests); kg validate implemented on feat/3-kg-validate, commit c6efcf1, PR #16 opened (104 tests); worktree ../networkx-feat-2 removed.\nNext steps: user merges PR #16; then issue #4 (kg init and the .kg/ store), base for #5 and #6; optionally delete merged local branches feat/1-cli-base, feat/2-json-schema, docs/12-samples (awaiting user).\nRelevant files: src/kg/schema/kg.schema.json, src/kg/schema/__init__.py, src/kg/schema/validation.py, src/kg/cli.py, docs/esquema.md, examples/minimo.json, examples/repo-basico.json, samples/README.md, .gitignore, tests/test_schema.py, tests/test_validation.py.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      },
+      "attrs": {
+        "date": "2026-10-09",
+        "commit": "58989a9",
+        "transcript": "67dcc1db",
+        "order": 2
+      }
+    },
+    {
+      "id": "task:cli-skeleton-issue-1",
+      "type": "Task",
+      "label": "Issue #1: kg package and base CLI (merged via PR #13)",
+      "description": "What: package renamed to kg, argparse CLI with stub subcommands, --json/--kg-dir global options; PR #13 merged into main (merge commit 30096fe), issue #1 closed.\nWhy: base for every other MVP issue.\nWhere: src/kg/cli.py, src/kg/__main__.py, pyproject.toml, tests/test_cli.py.\nLearned: merged with a merge commit, not squash; the user could not approve the PR because they are its author.",
+      "attrs": {
+        "status": "done",
+        "session": "session:2026-10-09-67dcc1db",
+        "created": "2026-10-07"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "task:json-schema-issue-2",
+      "type": "Task",
+      "label": "Issue #2: JSON Schema with the standard catalog (merged via PR #15)",
+      "description": "What: JSON Schema draft 2020-12 for the input format (version, nodes, edges, attrs, provenance) with 16 standard entity types and 11 relation types, kg schema subcommand (--path, --json), helpers load_schema/schema_path/validator/find_custom_types, examples and docs; commit a22a3e2, PR #15 merged, issue #2 closed.\nWhy: RF-01 (official schema readable by agents) and RF-02 (standard catalog plus custom types that warn).\nWhere: src/kg/schema/kg.schema.json, src/kg/schema/__init__.py, docs/esquema.md, examples/, tests/test_schema.py.\nLearned: catalogs are read from the JSON itself; ID-prefix vs type consistency, dangling edges and duplicate IDs were deliberately left to kg validate (#3).",
+      "attrs": {
+        "status": "done",
+        "session": "session:2026-10-09-67dcc1db",
+        "created": "2026-10-07"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "decision:jsonschema-dependency",
+      "type": "Decision",
+      "label": "Use the jsonschema library (>=4.18) with draft 2020-12",
+      "description": "What: new runtime dependency jsonschema>=4.18, justified in pyproject.toml; the schema ships as package-data.\nWhy: draft 2020-12 validation with JSON error paths, needed for the actionable messages of kg validate (RF-04).\nWhere: pyproject.toml, src/kg/schema/.\nLearned: the schema $id is a URL used only as an identifier; that path does not exist on GitHub.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-09-67dcc1db",
+        "created": "2026-10-09"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "decision:strict-node-edge-fields",
+      "type": "Decision",
+      "label": "Nodes and edges reject extra fields; custom data goes in attrs",
+      "description": "What: additionalProperties false on nodes and edges; anything project-specific lives under attrs.\nWhy: catches agent typos (e.g. 'lable') instead of silently storing them.\nWhere: src/kg/schema/kg.schema.json.\nLearned: flagged to the user as a decision to review in PR #15; it was merged as is.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-09-67dcc1db",
+        "created": "2026-10-09"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "decision:provenance-timestamp-optional",
+      "type": "Decision",
+      "label": "Provenance: method, extractor and confidence required; timestamp optional",
+      "description": "What: provenance requires method, extractor and confidence; source, lines and timestamp are optional.\nWhy: a mandatory timestamp would break byte-for-byte determinism of the store (RNF-08).\nWhere: src/kg/schema/kg.schema.json, docs/esquema.md.\nLearned: extractors should avoid writing timestamps if output must be reproducible.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-09-67dcc1db",
+        "created": "2026-10-09"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "decision:custom-types-warn-not-fail",
+      "type": "Decision",
+      "label": "Custom types are valid but warned: PascalCase entities, snake_case relations",
+      "description": "What: types outside the standard catalog pass the schema if they follow PascalCase (nodes) or snake_case (edges); find_custom_types returns their JSON path so kg validate emits a warning.\nWhy: RF-02 hybrid schema (standard catalog plus free types).\nWhere: src/kg/schema/__init__.py, src/kg/schema/validation.py.\nLearned: examples/repo-basico.json includes a custom type on purpose and validates with 2 warnings.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-09-67dcc1db",
+        "created": "2026-10-09"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "decision:validate-all-errors-with-suggestions",
+      "type": "Decision",
+      "label": "kg validate reports every problem in one pass with path, got, expected and a suggestion",
+      "description": "What: each error carries JSON path, received value, expected value and a concrete suggestion (typo fixes, standard type casing, missing ID prefix, nearest existing node ID); whole-file checks for duplicate IDs (pointing to the first) and dangling edges; custom types and ID-prefix/type mismatch are warnings; exit 0 valid (even with warnings), 1 errors incl. malformed JSON or non-UTF-8, 2 file missing/unreadable; stdin via 'kg validate -'; never touches the store.\nWhy: an agent must be able to fix everything in one iteration (MVP criterion 3, RF-03/04/05, RNF-07).\nWhere: src/kg/schema/validation.py, src/kg/cli.py, docs/esquema.md (Validation section), tests/test_validation.py.\nLearned: jsonschema emits one error per missing required field, so messages must be deduplicated; prefix suggestions must not double the prefix ('file:' -> 'file:file:' bug).",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-09-67dcc1db",
+        "created": "2026-10-09"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "task:kg-validate-issue-3",
+      "type": "Task",
+      "label": "Issue #3: kg validate (PR #16 awaiting merge)",
+      "description": "What: kg validate implemented on branch feat/3-kg-validate, commit c6efcf1, PR #16 opened to main; 104 tests, ruff check and format pass.\nWhy: next MVP issue after #2; #5 (kg add) depends on it.\nWhere: src/kg/schema/validation.py, src/kg/cli.py, tests/test_validation.py, tests/test_cli.py, docs/esquema.md.\nLearned: waiting for the user to merge PR #16.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-09-67dcc1db",
+        "created": "2026-10-09"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "task:store-init-issue-4",
+      "type": "Task",
+      "label": "Issue #4: kg init and the .kg/ store with deterministic JSON (next)",
+      "description": "What: next MVP issue once PR #16 is merged: kg init creating .kg/, load/save between JSON and nx.MultiDiGraph with deterministic ordering, documented store format.\nWhy: base for kg add (#5) and kg extract (#6).\nWhere: GitHub issue #4, area store.\nLearned: open choice in the issue between a single graph.json and nodes.json + edges.json, thinking of readable PR diffs.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-09-67dcc1db",
+        "created": "2026-10-09"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "decision:samples-folder-for-test-repos",
+      "type": "Decision",
+      "label": "samples/ holds third-party repos cloned for manual tests, ignored by git except its README",
+      "description": "What: .gitignore ignores samples/* except samples/README.md, which lists test repos (alfredodeza/basic-python-cli) and usage commands; row added to AGENTS.md.\nWhy: a standard unversioned place to try kg on real repos for MVP criterion 1 (3 repos) and RNF-06 timings.\nWhere: .gitignore, samples/README.md, AGENTS.md (PR #14, commit 197cb36).\nLearned: kept out of PR #13 (one logical change per PR); it only references issue #12, which stays open until the MVP validation is done.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-09-67dcc1db",
+        "created": "2026-10-09"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "issue:cli-usage-error-quirks",
+      "type": "Issue",
+      "label": "CLI quirks noticed in PR #13 review: English argparse messages, command=null, stubs exit 3",
+      "description": "What: argparse usage errors come out in English while kg's own messages were in Spanish; usage errors set \"command\": null in the JSON envelope even when the subcommand is recognized (kg --json render); unimplemented stubs exit 3 (internal) rather than 2.\nWhy: raised as points to confirm before merging #13; none breaks anything.\nWhere: src/kg/cli.py.\nLearned: PR #13 was merged without addressing them; still open to revisit.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-09-67dcc1db",
+        "created": "2026-10-09"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "constraint:no-self-approval-of-prs",
+      "type": "Constraint",
+      "label": "GitHub does not let the user approve their own PRs; they merge directly",
+      "description": "What: PRs are authored under the user's account, so review approval is impossible; the user merges directly (branch protection does not require review).\nWhy: GitHub rule for PR authors.\nWhere: GitHub repo Cristian1A/kg.\nLearned: do not wait for or ask about an approval step; open the PR and let the user merge.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-09-67dcc1db",
+        "created": "2026-10-09"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "task:delete-merged-branches",
+      "type": "Task",
+      "label": "Delete merged local branches feat/1-cli-base, feat/2-json-schema, docs/12-samples",
+      "description": "What: branches already merged into main were kept.\nWhy: deletions need the user's confirmation, which was not given.\nWhere: local git repo.\nLearned: command offered: git branch -d feat/2-json-schema docs/12-samples feat/1-cli-base.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-09-67dcc1db",
+        "created": "2026-10-09"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:pr-14",
+      "type": "Evidence",
+      "label": "docs: document samples/ as the folder for test repos",
+      "attrs": {
+        "kind": "pr",
+        "ref": "14"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:pr-15",
+      "type": "Evidence",
+      "label": "feat(schema): JSON Schema with standard catalog and custom types",
+      "attrs": {
+        "kind": "pr",
+        "ref": "15"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:pr-16",
+      "type": "Evidence",
+      "label": "feat(schema): kg validate with clear, actionable errors",
+      "attrs": {
+        "kind": "pr",
+        "ref": "16"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:issue-3",
+      "type": "Evidence",
+      "label": "[schema] kg validate with clear, actionable errors",
+      "attrs": {
+        "kind": "issue",
+        "ref": "3"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:issue-4",
+      "type": "Evidence",
+      "label": "[store] kg init and .kg/ store with deterministic JSON",
+      "attrs": {
+        "kind": "issue",
+        "ref": "4"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:commit-a22a3e2",
+      "type": "Evidence",
+      "label": "feat(schema): JSON Schema with standard catalog",
+      "attrs": {
+        "kind": "commit",
+        "ref": "a22a3e2"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:commit-197cb36",
+      "type": "Evidence",
+      "label": "docs: samples/ folder for test repos",
+      "attrs": {
+        "kind": "commit",
+        "ref": "197cb36"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:commit-c6efcf1",
+      "type": "Evidence",
+      "label": "feat(schema): kg validate with clear, actionable errors",
+      "attrs": {
+        "kind": "commit",
+        "ref": "c6efcf1"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:commit-30096fe",
+      "type": "Evidence",
+      "label": "Merge PR #13 (CLI skeleton)",
+      "attrs": {
+        "kind": "commit",
+        "ref": "30096fe"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:file-docs-esquema-md",
+      "type": "Evidence",
+      "label": "Schema documentation: format, IDs, catalog, provenance",
+      "attrs": {
+        "kind": "file",
+        "ref": "docs/esquema.md",
+        "commit": "a22a3e2"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:file-samples-readme-md",
+      "type": "Evidence",
+      "label": "samples/ purpose and test repo list",
+      "attrs": {
+        "kind": "file",
+        "ref": "samples/README.md",
+        "commit": "197cb36"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    }
+  ],
+  "edges": [
+    {
+      "source": "session:2026-10-09-67dcc1db",
+      "target": "decision:jsonschema-dependency",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-09-67dcc1db",
+      "target": "decision:strict-node-edge-fields",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-09-67dcc1db",
+      "target": "decision:provenance-timestamp-optional",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-09-67dcc1db",
+      "target": "decision:custom-types-warn-not-fail",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-09-67dcc1db",
+      "target": "decision:validate-all-errors-with-suggestions",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-09-67dcc1db",
+      "target": "task:kg-validate-issue-3",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-09-67dcc1db",
+      "target": "task:store-init-issue-4",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-09-67dcc1db",
+      "target": "decision:samples-folder-for-test-repos",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-09-67dcc1db",
+      "target": "issue:cli-usage-error-quirks",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-09-67dcc1db",
+      "target": "constraint:no-self-approval-of-prs",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-09-67dcc1db",
+      "target": "task:delete-merged-branches",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:cli-skeleton-issue-1",
+      "target": "evidence:commit-30096fe",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:json-schema-issue-2",
+      "target": "evidence:pr-15",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:json-schema-issue-2",
+      "target": "evidence:commit-a22a3e2",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:jsonschema-dependency",
+      "target": "component:schema",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:jsonschema-dependency",
+      "target": "evidence:pr-15",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:jsonschema-dependency",
+      "target": "evidence:issue-2",
+      "type": "decided_because",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:strict-node-edge-fields",
+      "target": "component:schema",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:strict-node-edge-fields",
+      "target": "evidence:pr-15",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:strict-node-edge-fields",
+      "target": "decision:hybrid-schema-with-provenance",
+      "type": "decided_because",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:provenance-timestamp-optional",
+      "target": "component:schema",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:provenance-timestamp-optional",
+      "target": "evidence:file-docs-esquema-md",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:provenance-timestamp-optional",
+      "target": "evidence:pr-15",
+      "type": "decided_because",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:custom-types-warn-not-fail",
+      "target": "component:schema",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:custom-types-warn-not-fail",
+      "target": "evidence:commit-a22a3e2",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:custom-types-warn-not-fail",
+      "target": "evidence:issue-2",
+      "type": "decided_because",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:validate-all-errors-with-suggestions",
+      "target": "component:schema",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:validate-all-errors-with-suggestions",
+      "target": "component:cli",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:validate-all-errors-with-suggestions",
+      "target": "evidence:issue-3",
+      "type": "decided_because",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:validate-all-errors-with-suggestions",
+      "target": "evidence:pr-16",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:validate-all-errors-with-suggestions",
+      "target": "evidence:commit-c6efcf1",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:kg-validate-issue-3",
+      "target": "component:schema",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:kg-validate-issue-3",
+      "target": "component:cli",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:kg-validate-issue-3",
+      "target": "evidence:issue-3",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:kg-validate-issue-3",
+      "target": "evidence:pr-16",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:store-init-issue-4",
+      "target": "component:store",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:store-init-issue-4",
+      "target": "evidence:issue-4",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:store-init-issue-4",
+      "target": "task:kg-validate-issue-3",
+      "type": "blocked_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:samples-folder-for-test-repos",
+      "target": "component:repo-workflow",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:samples-folder-for-test-repos",
+      "target": "evidence:pr-14",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:samples-folder-for-test-repos",
+      "target": "evidence:file-samples-readme-md",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:samples-folder-for-test-repos",
+      "target": "evidence:issue-12",
+      "type": "decided_because",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "issue:cli-usage-error-quirks",
+      "target": "component:cli",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "issue:cli-usage-error-quirks",
+      "target": "evidence:pr-13",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "constraint:no-self-approval-of-prs",
+      "target": "evidence:pr-13",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:delete-merged-branches",
+      "target": "component:repo-workflow",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:delete-merged-branches",
+      "target": "constraint:confirm-before-commit-push-delete",
+      "type": "blocked_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    }
+  ]
+}
