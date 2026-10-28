@@ -377,9 +377,11 @@ EOF
   `<synthetic>` reply with 0 tokens, and it was taken as the run's usage
   (15 runs had 0 tokens); a run launched twice kept whichever transcript
   sorted last. Now synthetic replies are skipped and the latest transcript
-  wins (`started` in `usage.json`). The G0 session's `kg-C5.s2.2` (0
-  tokens) is likely the same bug: re-run `usage` + `collect` for the G0
-  and S4/S8 sessions and check that only usage fields change.
+  wins (`started` in `usage.json`). The same bug had zeroed `kg-C5.s2.2`
+  in the G0 session and five runs of the S4/S8 session (whose note above
+  said "none empty"): `usage` and `collect` were re-run for both; only
+  `usage`/`model` of those six runs changed (seconds and scores did not).
+  g0.md's S2 token mean is now 40,444 (was 40,152).
 - `usage` run for sessions `25cb3c1f`, `9c9734c1`, `5f715828` (360 runs,
   none empty); `collect` wrote `bench/results/memory/20261027T092553Z.jsonl`
   (`666e084`). **Outlier:** `kg-R6.s1.3` has 17 822 s, because it was
