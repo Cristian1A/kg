@@ -586,7 +586,10 @@ def usage_from_transcripts(session: Path, transcripts: Path) -> dict[str, Any]:
     A Claude Code subagent's transcript (`subagents/agent-*.jsonl`) starts with
     the message that names its run's `prompt.md`. Tokens are those of its last
     request, as the subagent notification reports them; seconds go from its
-    first event to its last. Runs with no transcript are left out.
+    first event to its last. Replies Claude Code writes itself (`<synthetic>`,
+    such as a session-limit notice) carry no usage and are skipped. A run
+    launched twice keeps its latest transcript, the one that answered. Runs
+    with no transcript are left out.
     """
     usage = {}
     for path in sorted(transcripts.glob("*.jsonl")):
@@ -603,7 +606,12 @@ def usage_from_transcripts(session: Path, transcripts: Path) -> dict[str, Any]:
             ),
             None,
         )
-        replies = [e["message"] for e in events if e.get("type") == "assistant"]
+        replies = [
+            e["message"]
+            for e in events
+            if e.get("type") == "assistant"
+            and e["message"].get("model") != "<synthetic>"
+        ]
         if name is None or not replies:
             continue
         u = replies[-1]["usage"]
@@ -612,6 +620,9 @@ def usage_from_transcripts(session: Path, transcripts: Path) -> dict[str, Any]:
             for e in events
             if e.get("timestamp")
         )
+        started = times[0].isoformat()
+        if name in usage and usage[name]["started"] > started:
+            continue
         usage[name] = {
             "total_tokens": u["input_tokens"]
             + u["cache_creation_input_tokens"]
@@ -619,6 +630,7 @@ def usage_from_transcripts(session: Path, transcripts: Path) -> dict[str, Any]:
             + u["output_tokens"],
             "seconds": round((times[-1] - times[0]).total_seconds(), 2),
             "model": replies[-1]["model"],
+            "started": started,
         }
     return usage
 
@@ -654,7 +666,9 @@ def main(argv: list[str] | None = None) -> int:
         session = args.session.resolve()
         out = session / "usage.json"
         usage = json.loads(out.read_text()) if out.exists() else {}
-        usage.update(usage_from_transcripts(session, args.transcripts))
+        for name, row in usage_from_transcripts(session, args.transcripts).items():
+            if usage.get(name, {}).get("started", "") <= row["started"]:
+                usage[name] = row
         out.write_text(json.dumps(usage, indent=2, sort_keys=True) + "\n")
         print(f"{len(usage)} runs with usage: {out}")
         return 0

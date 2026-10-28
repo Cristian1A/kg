@@ -2,6 +2,7 @@
 
 import json
 import subprocess
+from pathlib import Path
 
 import pytest
 
@@ -387,6 +388,7 @@ def test_usage_comes_from_the_subagent_transcripts(tmp_path, capsys):
             "total_tokens": 30152,
             "seconds": 30.5,
             "model": "claude-opus-5-5",
+            "started": "2026-10-25T10:00:00+00:00",
         }
     }
     assert memory.main(["usage", str(session), str(transcripts)]) == 0
@@ -397,3 +399,79 @@ def test_usage_comes_from_the_subagent_transcripts(tmp_path, capsys):
     assert memory.main(["status", str(session)]) == 0
     out = capsys.readouterr().out
     assert "done 1, pending 1" in out and "pending: kg-X1.s2.1 (0 calls)" in out
+
+
+def _transcript(prompt: Path, start: str, replies: list[tuple[str, str, int]]) -> str:
+    """A subagent transcript: the launch message, then (time, model, tokens) replies."""
+    events = [
+        {"type": "user", "timestamp": start, "message": {"content": f"Read {prompt}"}}
+    ]
+    for time, model, tokens in replies:
+        events.append(
+            {
+                "type": "assistant",
+                "timestamp": time,
+                "message": {
+                    "model": model,
+                    "usage": {
+                        "input_tokens": tokens,
+                        "cache_creation_input_tokens": 0,
+                        "cache_read_input_tokens": 0,
+                        "output_tokens": 0,
+                    },
+                },
+            }
+        )
+    return "\n".join(json.dumps(e) for e in events) + "\n"
+
+
+def test_usage_skips_session_limit_notices_and_keeps_the_relaunch(tmp_path):
+    session = tmp_path / "session"
+    for run in ("kg-X1.s3.1", "kg-X2.s1.1"):
+        (session / run).mkdir(parents=True)
+    transcripts = tmp_path / "subagents"
+    transcripts.mkdir()
+    # Answered, then the session limit hit: the notice has no usage.
+    (transcripts / "agent-a.jsonl").write_text(
+        _transcript(
+            session / "kg-X1.s3.1" / "prompt.md",
+            "2026-10-28T08:00:00Z",
+            [
+                ("2026-10-28T08:00:20Z", "claude-opus-5-5", 40000),
+                ("2026-10-28T08:00:21Z", "<synthetic>", 0),
+            ],
+        )
+    )
+    # Launched, cut off at once, launched again later: the relaunch counts,
+    # whichever file name sorts first.
+    prompt = session / "kg-X2.s1.1" / "prompt.md"
+    (transcripts / "agent-z.jsonl").write_text(
+        _transcript(
+            prompt,
+            "2026-10-27T09:28:00Z",
+            [
+                ("2026-10-27T09:28:05Z", "claude-opus-5-5", 9000),
+                ("2026-10-27T09:28:06Z", "<synthetic>", 0),
+            ],
+        )
+    )
+    (transcripts / "agent-b.jsonl").write_text(
+        _transcript(
+            prompt,
+            "2026-10-27T13:42:00Z",
+            [("2026-10-27T13:42:30Z", "claude-opus-5-5", 50000)],
+        )
+    )
+    usage = memory.usage_from_transcripts(session, transcripts)
+    assert usage["kg-X1.s3.1"]["total_tokens"] == 40000
+    assert usage["kg-X1.s3.1"]["model"] == "claude-opus-5-5"
+    assert usage["kg-X2.s1.1"]["total_tokens"] == 50000
+    assert usage["kg-X2.s1.1"]["seconds"] == 30.0
+    # An older transcript read later (another session) does not overwrite it.
+    old = tmp_path / "older"
+    old.mkdir()
+    (old / "agent-z.jsonl").write_text((transcripts / "agent-z.jsonl").read_text())
+    assert memory.main(["usage", str(session), str(transcripts)]) == 0
+    assert memory.main(["usage", str(session), str(old)]) == 0
+    saved = json.loads((session / "usage.json").read_text())
+    assert saved["kg-X2.s1.1"]["total_tokens"] == 50000
