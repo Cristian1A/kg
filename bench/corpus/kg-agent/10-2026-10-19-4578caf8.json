@@ -1,0 +1,918 @@
+{
+  "version": "1",
+  "nodes": [
+    {
+      "id": "session:2026-10-19-4578caf8",
+      "type": "Session",
+      "label": "Benchmark v3 issue (#66) and the scrapy run of #52 step 3: the graph does not beat the code on the large repo",
+      "description": "Goal: place an external proposal to expand the benchmark, then run #52 step 3 (scrapy) and tell the user where the project stands.\nInstructions: user wants drafts reviewed before publishing; roadmap edit on a separate branch; run repetitions then write the report; user ran out of session tokens and asked to abort and save a checkpoint to resume next day.\nDiscoveries: on scrapy code 0.99 vs cards 0.98 / hybrid 0.97 / graph 0.93, and code is cheapest and fastest; graph only pays off on relation questions (impact, multi-hop, which tests); kg treats TYPE_CHECKING imports as real dependencies; no inheritance edges; non-Python templates not indexed; bench search uses fnmatch so scrapy/**/*.py misses top-level files; one reference error in scr-manager-subclasses.\nAccomplished: issue #66 opened and #52 commented with the method; v0.3 roadmap table committed on local branch docs/66-roadmap-v0.3; on feat/52-scrapy: question category field + per-category and run-spread report (62529de), scrapy in repos.json with 16 checked questions (e661007), 64 raw runs (c4953bf); none pushed.\nNext steps: re-run the 24 repetitions (most failed on the session limit; about 6 code runs finished but are not committed), write the scrapy section of docs/benchmark.md, push both branches and open PRs, then recommend to the user what v0.3 does (user is doubtful the graph idea helps). The requested checkpoint.md was probably not written because the session limit hit first.\nRelevant files: bench/questions/scrapy.json, bench/repos.json, bench/report.py, bench/subagent.py, bench/results/20261019T213916Z-subagent-scrapy.jsonl, docs/roadmap.md, docs/benchmark.md",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      },
+      "attrs": {
+        "date": "2026-10-19",
+        "commit": "c4953bf",
+        "transcript": "4578caf8",
+        "order": 10
+      }
+    },
+    {
+      "id": "experiment:bench-scrapy-large-repo",
+      "type": "Experiment",
+      "label": "Scrapy (large repo): code 0.99, cards 0.98, hybrid 0.97, graph 0.93; code cheapest and fastest; graph wins only on relation questions",
+      "description": "What: 16 questions x 4 strategies, 64 subagent runs in random order (seed 52) on scrapy 2.19.0; mean context chars code 9,638 / cards 17,516 / hybrid 48,704 / graph 28,638; time 29 / 92 / 85 / 115 s; calls 5.8 / 7.9 / 8.7 / 8.8.\nWhy: #52 step 3, the decisive large-repo test from the v0.2 verdict; also pilots the #66 method.\nWhere: bench/results/20261019T213916Z-subagent-scrapy.jsonl, bench/questions/scrapy.json (report not yet written)\nLearned: cards loads 82% more context than code here (it loaded 63% less on small repos); cards beats code on impact (8,231 vs 17,619), multi-hop (2,222 vs 4,910) and tests (2,491 vs 23,771 on scr-tests-middleware), 6 of 16 questions, all module relations; loses on docs (47,407 vs 10,808), uncertainty (22,290 vs 8,728) and simple lookups (8,448 vs 3,825); graph agents spent 16-21 calls where code used 3; scr-impact-job-runtime: code 1.00, cards 0.78, hybrid 0.62, graph 0.43 due to TYPE_CHECKING imports; single run per question until repetitions finish.",
+      "attrs": {
+        "status": "done",
+        "session": "session:2026-10-19-4578caf8",
+        "created": "2026-10-19"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "decision:scrapy-pilots-v3-method",
+      "type": "Decision",
+      "label": "Run #52 step 3 (scrapy) with the #66 method: categories A-E, references fixed before runs, random order, repeated subset",
+      "description": "What: each question has a category (navigation, multi-hop, impact, docs, uncertainty) besides its topic; references with path:start-end checked before any run, built from an AST import graph independent of kg, grep and docs; strategies code/graph/hybrid/cards; random order; ~20% of questions run three times; graph build cost reported apart.\nWhy: lets scrapy validate the method before scaling to more repos; avoids writing references after seeing results.\nWhere: bench/questions/scrapy.json, bench/report.py, bench/run.py, bench/subagent.py; #52 comment\nLearned: reference mistakes still slip in (scr-manager-subclasses); handled like the v0.2 src. prefix case: official score kept, corrected score reported alongside.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-19-4578caf8",
+        "created": "2026-10-19"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "decision:benchmark-v3-scope-issue-66",
+      "type": "Decision",
+      "label": "External benchmark proposal trimmed into issue #66 (benchmark v3), excluding scrapy (#52) and stale graphs (#60)",
+      "description": "What: #66 adds pytest (second large repo, tests in testing/), Requests and Flask as small controls, one repo at a time after scrapy; category field, repeated runs, abstention and unsupported-claim scoring, per-repo metadata, report with intervals and graph build-cost break-even; HTTPX/FastAPI/Pydantic only later; pandas out (Cython/C not extracted); kg stays a self-test, not independent evidence.\nWhy: over half the proposal was already covered by #52, #60 and the existing harness; subagents give only total tokens, so context_chars stays the cost metric and the limit is 25 calls, not a token budget; each new repo needs its own agent layer, a separate cost.\nWhere: issue #66 (milestone v0.3, type:feature, area:agents, prio:v0.3), RNF-10\nLearned: no new RF needed; report stays docs/benchmark.md.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-19-4578caf8",
+        "created": "2026-10-19"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "decision:no-extractor-changes-for-score",
+      "type": "Decision",
+      "label": "From #66 on, do not change the extractor just to raise benchmark scores; missing capabilities get focused issues",
+      "description": "What: if a fair comparison needs a missing capability (e.g. calls, RF-13), document it and open a focused issue instead of patching kg inside the benchmark work.\nWhy: the proposal asked for it to keep the benchmark honest.\nWhere: issue #66 technical notes\nLearned: this changes earlier practice: #49 and #52 step 2 modified kg because of benchmark results.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-19-4578caf8",
+        "created": "2026-10-19"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "task:benchmark-v3-issue-66",
+      "type": "Task",
+      "label": "Issue #66: benchmark v3 on pytest, Requests and Flask with question categories",
+      "description": "What: add repos one at a time with pinned commit, size, languages, node/edge counts, extraction time and agent layer; 10-15 checked questions each; abstention and unsupported-claim scoring in bench/grading.py; random order and repeats in bench.subagent; per-category report.\nWhy: say where, when and why the graph helps instead of one overall score.\nWhere: bench/, docs/benchmark.md, examples/agent/\nLearned: starts only once scrapy has results, and its plan should adapt to them; given scrapy, its value depends on the v0.3 direction the user picks.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-19-4578caf8",
+        "created": "2026-10-19"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "task:scrapy-repetitions-and-report",
+      "type": "Task",
+      "label": "Finish #52 step 3: re-run the 24 scrapy repetitions, write the report, push feat/52-scrapy and open a PR",
+      "description": "What: 2 rounds x 12 runs repeating scr-impact-job-runtime, scr-manager-subclasses and scr-docs-download-delay on all four strategies; then the scrapy section of docs/benchmark.md (per-category table, run spread, build cost, reference correction, tool limits); then PR with Refs #52.\nWhy: the user chose repetitions before the report so the conclusion does not rest on single runs.\nWhere: feat/52-scrapy (3 local commits, unpushed), bench/results/, docs/benchmark.md\nLearned: about 6 repetitions (code) finished before the subscription session limit killed the rest; their results are not committed; one code repeat of scr-impact-job-runtime ran out of calls without answering (counts as a failure, not re-run); failed agents may be resumed with SendMessage after the limit resets.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-19-4578caf8",
+        "created": "2026-10-19"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "task:decide-v0-3-direction-after-scrapy",
+      "type": "Task",
+      "label": "Recommend what v0.3 does now that the graph did not beat the code on scrapy",
+      "description": "What: after the report, give the user a recommendation; the assistant's reading so far is a bounded redesign: the agent uses the graph for relation questions (impact, import chains, which tests to run) and reads code for the rest, plus fixing TYPE_CHECKING imports.\nWhy: the roadmap says v0.3 starts a redesign if the graph does not win on the large repo; the user now thinks the graph idea is not helping models and does not know what they need to trust the graph over code, and asked to be told what to do.\nWhere: docs/roadmap.md, docs/benchmark.md, issues #66, #60\nLearned: the result is not 'the graph is useless': it is cheaper only on relation questions and expensive elsewhere.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-19-4578caf8",
+        "created": "2026-10-19"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "constraint:subscription-session-limit-on-subagent-runs",
+      "type": "Constraint",
+      "label": "Benchmark subagent runs share the user's subscription session limit; at most 20 concurrent subagents",
+      "description": "What: launching 64 + 24 subagent runs in one session exhausted the session limit (HTTP 429, resets at a fixed hour) and killed every in-flight run.\nWhy: subagent runs replace the API key, so they draw on the user's own plan.\nWhere: bench.subagent workflow\nLearned: budget runs per session, launch in batches of at most 20, and commit results as they arrive so a limit does not lose them.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-19-4578caf8",
+        "created": "2026-10-19"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "issue:type-checking-imports-as-dependencies",
+      "type": "Issue",
+      "label": "kg counts imports under if TYPE_CHECKING as real dependencies, inflating kg impact",
+      "description": "What: in scrapy almost every module imports scrapy.crawler for type hints, so kg impact on scrapy/utils/job.py returns 230+ modules while only 11 are affected at run time (154 modules reachable from almost any module with these imports).\nWhy: the extractor does not mark type-only imports.\nWhere: src/kg extract (imports), question scr-impact-job-runtime\nLearned: graph agents noticed and said so but could not filter; assistant rates it an easy extraction fix; per the new rule it needs its own focused issue.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-19-4578caf8",
+        "created": "2026-10-19"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "issue:no-inheritance-edges",
+      "type": "Issue",
+      "label": "No inheritance edges: finding subclasses means filtering attrs.bases (16-18 calls vs 3 for code)",
+      "description": "What: graph agents had to scan class attrs.bases to find MiddlewareManager subclasses.\nWhy: the extractor stores bases as attributes, not as edges.\nWhere: src/kg extract, question scr-manager-subclasses\nLearned: a major reason the graph strategies were slower on scrapy.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-19-4578caf8",
+        "created": "2026-10-19"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "issue:non-python-files-not-indexed",
+      "type": "Issue",
+      "label": "The graph does not index non-Python, non-document files such as settings.py.tmpl",
+      "description": "What: the graph agent declined to answer the template part of a question; one hybrid agent gave the path from general knowledge and the grader did not penalise it; cards found it legitimately via scrapy/commands/startproject.py:21.\nWhy: extraction covers Python and documents only.\nWhere: src/kg extract; bench grading (unsupported claims not scored yet)\nLearned: supports adding unsupported-claim checks (#66).",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-19-4578caf8",
+        "created": "2026-10-19"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "issue:bench-search-fnmatch-misses-top-level",
+      "type": "Issue",
+      "label": "Benchmark search tool uses fnmatch, so scrapy/**/*.py misses top-level files",
+      "description": "What: a code agent ran out of calls on scr-impact-job-runtime partly because the glob did not match files directly under scrapy/.\nWhy: fnmatch has no ** semantics.\nWhere: bench/ search tool\nLearned: to be stated as a limitation in the scrapy report; affects the code baseline.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-19-4578caf8",
+        "created": "2026-10-19"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "task:benchmark-v2-issue-52",
+      "type": "Task",
+      "label": "Issue #52 (first v0.3 item): benchmark v2, graph-guided reading, node cards and scrapy",
+      "description": "What: step 1 (PR #56) and step 2 cards/stale reads (PRs #57, #58) done; step 3 scrapy: harness categories, 16 questions and 64 runs committed on feat/52-scrapy; repetitions and report pending; still open from step 2: Section nodes, quoted claims, CI workflow triggers (do not block step 3).\nWhy: scrapy is the decisive large-repo test for v0.3.\nWhere: bench/, docs/benchmark.md; milestone v0.3\nLearned: on scrapy the graph does not beat the code; PRs use Refs #52, not Closes.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-19-4578caf8",
+        "created": "2026-10-15"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "task:review-v0-3-roadmap",
+      "type": "Task",
+      "label": "Review the v0.3 table in docs/roadmap.md after closing v0.2",
+      "description": "What: v0.3 table updated with #52, #66 and #60 first; committed on local branch docs/66-roadmap-v0.3.\nWhy: the roadmap asks to revisit the v0.3 order when v0.2 closes.\nWhere: docs/roadmap.md\nLearned: still needs push and a PR; may need another edit once the v0.3 direction is chosen after scrapy.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-19-4578caf8",
+        "created": "2026-10-15"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:issue-66",
+      "type": "Evidence",
+      "label": "[agents] Benchmark v3: diverse repos and question categories",
+      "attrs": {
+        "kind": "issue",
+        "ref": "66"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:comment-issue-52-step3-method",
+      "type": "Evidence",
+      "label": "#52 comment: status of steps 1-2 and how step 3 (scrapy) follows the #66 method",
+      "attrs": {
+        "kind": "comment",
+        "ref": "52#issuecomment-6277615685"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:commit-62529de",
+      "type": "Evidence",
+      "label": "feat(bench): add question categories and report them with run spread",
+      "attrs": {
+        "kind": "commit",
+        "ref": "62529de"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:commit-e661007",
+      "type": "Evidence",
+      "label": "feat(bench): add scrapy and 16 questions with checked references",
+      "attrs": {
+        "kind": "commit",
+        "ref": "e661007"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:commit-c4953bf",
+      "type": "Evidence",
+      "label": "test(bench): record the scrapy runs of code, graph, hybrid and cards",
+      "attrs": {
+        "kind": "commit",
+        "ref": "c4953bf"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:results-scrapy",
+      "type": "Evidence",
+      "label": "Scrapy benchmark raw results (64 runs)",
+      "attrs": {
+        "kind": "file",
+        "ref": "bench/results/20261019T213916Z-subagent-scrapy.jsonl",
+        "commit": "c4953bf"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:file-bench-questions-scrapy-json",
+      "type": "Evidence",
+      "label": "Scrapy benchmark questions with categories and checked references",
+      "attrs": {
+        "kind": "file",
+        "ref": "bench/questions/scrapy.json",
+        "commit": "e661007"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    }
+  ],
+  "edges": [
+    {
+      "source": "session:2026-10-19-4578caf8",
+      "target": "experiment:bench-scrapy-large-repo",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-19-4578caf8",
+      "target": "decision:scrapy-pilots-v3-method",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-19-4578caf8",
+      "target": "decision:benchmark-v3-scope-issue-66",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-19-4578caf8",
+      "target": "decision:no-extractor-changes-for-score",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-19-4578caf8",
+      "target": "task:benchmark-v3-issue-66",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-19-4578caf8",
+      "target": "task:scrapy-repetitions-and-report",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-19-4578caf8",
+      "target": "task:decide-v0-3-direction-after-scrapy",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-19-4578caf8",
+      "target": "constraint:subscription-session-limit-on-subagent-runs",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-19-4578caf8",
+      "target": "issue:type-checking-imports-as-dependencies",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-19-4578caf8",
+      "target": "issue:no-inheritance-edges",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-19-4578caf8",
+      "target": "issue:non-python-files-not-indexed",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-19-4578caf8",
+      "target": "issue:bench-search-fnmatch-misses-top-level",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-19-4578caf8",
+      "target": "task:benchmark-v2-issue-52",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-19-4578caf8",
+      "target": "task:review-v0-3-roadmap",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "experiment:bench-scrapy-large-repo",
+      "target": "evidence:results-scrapy",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "experiment:bench-scrapy-large-repo",
+      "target": "evidence:commit-c4953bf",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "experiment:bench-scrapy-large-repo",
+      "target": "evidence:file-bench-questions-scrapy-json",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:scrapy-pilots-v3-method",
+      "target": "evidence:comment-issue-52-step3-method",
+      "type": "decided_because",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:scrapy-pilots-v3-method",
+      "target": "evidence:commit-62529de",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:scrapy-pilots-v3-method",
+      "target": "evidence:commit-e661007",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:scrapy-pilots-v3-method",
+      "target": "component:bench",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:benchmark-v3-scope-issue-66",
+      "target": "evidence:issue-66",
+      "type": "decided_because",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:benchmark-v3-scope-issue-66",
+      "target": "constraint:impact-questions-are-the-goal",
+      "type": "decided_because",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:benchmark-v3-scope-issue-66",
+      "target": "experiment:bench-cards",
+      "type": "decided_because",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:benchmark-v3-scope-issue-66",
+      "target": "component:bench",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:benchmark-v3-scope-issue-66",
+      "target": "evidence:issue-66",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:no-extractor-changes-for-score",
+      "target": "evidence:issue-66",
+      "type": "decided_because",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:no-extractor-changes-for-score",
+      "target": "component:extract",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:no-extractor-changes-for-score",
+      "target": "component:bench",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:benchmark-v3-issue-66",
+      "target": "evidence:issue-66",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:benchmark-v3-issue-66",
+      "target": "component:bench",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:benchmark-v3-issue-66",
+      "target": "task:scrapy-repetitions-and-report",
+      "type": "blocked_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:benchmark-v3-issue-66",
+      "target": "task:decide-v0-3-direction-after-scrapy",
+      "type": "blocked_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:scrapy-repetitions-and-report",
+      "target": "constraint:subscription-session-limit-on-subagent-runs",
+      "type": "blocked_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:scrapy-repetitions-and-report",
+      "target": "component:bench",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:scrapy-repetitions-and-report",
+      "target": "component:docs",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:scrapy-repetitions-and-report",
+      "target": "evidence:results-scrapy",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:decide-v0-3-direction-after-scrapy",
+      "target": "task:scrapy-repetitions-and-report",
+      "type": "blocked_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:decide-v0-3-direction-after-scrapy",
+      "target": "experiment:bench-scrapy-large-repo",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:decide-v0-3-direction-after-scrapy",
+      "target": "evidence:file-docs-roadmap-md",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:decide-v0-3-direction-after-scrapy",
+      "target": "component:requirements",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "constraint:subscription-session-limit-on-subagent-runs",
+      "target": "evidence:file-bench-subagent-py",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "issue:type-checking-imports-as-dependencies",
+      "target": "component:extract",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "issue:type-checking-imports-as-dependencies",
+      "target": "component:query",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "issue:type-checking-imports-as-dependencies",
+      "target": "evidence:results-scrapy",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "issue:no-inheritance-edges",
+      "target": "component:extract",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "issue:no-inheritance-edges",
+      "target": "evidence:results-scrapy",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "issue:non-python-files-not-indexed",
+      "target": "component:extract",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "issue:non-python-files-not-indexed",
+      "target": "evidence:results-scrapy",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "issue:bench-search-fnmatch-misses-top-level",
+      "target": "component:bench",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "issue:bench-search-fnmatch-misses-top-level",
+      "target": "evidence:file-bench-subagent-py",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:benchmark-v2-issue-52",
+      "target": "evidence:commit-62529de",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:benchmark-v2-issue-52",
+      "target": "evidence:commit-e661007",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:benchmark-v2-issue-52",
+      "target": "evidence:commit-c4953bf",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:benchmark-v2-issue-52",
+      "target": "evidence:comment-issue-52-step3-method",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:benchmark-v2-issue-52",
+      "target": "task:scrapy-repetitions-and-report",
+      "type": "blocked_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:review-v0-3-roadmap",
+      "target": "evidence:file-docs-roadmap-md",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    }
+  ]
+}
