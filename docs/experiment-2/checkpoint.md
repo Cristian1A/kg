@@ -452,7 +452,7 @@ EOF
 - [x] Analysis fixed in `docs/experiment-2/agent-corpus.md` before any run.
 - [x] GitHub data fetched (read-only) to `bench/.cache/memory/github/`
   (`fetch`, with bodies' edit history), sources built (`sources`).
-- [ ] 12 writer subagents, in order (each needs the previous one merged).
+- [x] 12 writer subagents, in order (each needs the previous one merged).
   For session NN: `python -m bench.memory_write prompt <stem>`, then one
   subagent with: `Read the file /home/cris/networkx/bench/.cache/memory/
   writers/<stem>/prompt.md and follow its instructions exactly.` Wait for
@@ -460,8 +460,22 @@ EOF
   Writers done: 01, 02, 03, 04, 05, 06, 07, 08, 09, 10, 11, 12 (transcripts in session `5f715828`, blindness OK).
   Writer 04 built its JSON with a Python script of its own (in the
   scratchpad) that reads no file: not a blindness issue.
-- [ ] Blindness check of the writers' transcripts.
+- [x] Blindness check of the writers' transcripts (2026-10-29): all 12 OK,
+  no read or command beyond their sources, `show` and `submit` (and the
+  harness's saved output of their own `cat`). Writers' cost: 4.39M tokens
+  processed in all (164k–524k per session).
+  Corpus: 172 memories (77 decisions, 52 tasks, 17 issues, 14 experiments,
+  12 constraints), 183 evidence, 14 components; 24 `blocked_by`, 6
+  `supersedes`, 9 `invalidated_by` (curated: 78 memories, 76 evidence, 3/3/4).
+  Lexical coverage of the 15 hidden questions' keyword groups: 50/50, as
+  the curated corpus.
 - [ ] Session of 360 runs, batches of 20; `usage`, `collect`.
+  **Session:** `bench/.cache/memory/20261028T230736Z/` (S2, S2r, S4 on
+  `bench/corpus/kg-agent`, prepared at `132fc11`); `order.txt` shuffled with
+  seed 71 as before. Launch and resume exactly as for G0 ("Resume" above),
+  20 at a time; ask before resetting a cut-off run (or resume it with
+  SendMessage). Transcripts: session `5f715828` from batch 1.
+  Batches done: (none yet).
 - [ ] Report in agent-corpus.md; #71.
 
 ## Decisions already taken (do not reopen)
