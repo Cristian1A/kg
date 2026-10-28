@@ -1,11 +1,14 @@
 # Experiment 2: gates G1–G3
 
-**Result (provisional until S3 runs): G1, G2 and G3 pass as pre-registered,
-but weakly.** G1 passes on exactly the two categories it needs, and each
-rests on little: blocked on one question (kg-B1), rationale on evidence
-recall that S8 gets by showing evidence in its prompt. G3 passes only
-because no strategy made a staleness error. The graph does not lose the easy
-cases (G2). [Results](#results) below.
+**Final result (2026-10-28, against the best of S2 and S3): G1, G2 and G3
+pass as pre-registered, but the graph does not earn its place.** G1 passes on
+exactly the two categories it needs: blocked rests on one question (kg-B1),
+and S2r, plain FTS5 with each memory's relation lines indexed as text, scores
+1.00 there too; rationale rests on evidence recall that S8 gets by listing
+evidence in its prompt. Without kg-B1, G1 fails. G3 passes only because no
+strategy made a staleness error. The graph does not lose the easy cases (G2).
+[Final results](#final-results-with-s3) below; the first,
+[provisional results](#results) against S2 alone are kept.
 
 The gates are pre-registered in [requirements](requirements.md) §7. Two of
 the metrics they use, evidence recall and staleness errors (§6.4), had a
@@ -18,10 +21,9 @@ accuracy had been looked at (checkpoint, 2026-10-27).
 - S0 and S2: the G0 session `20261025T212002Z`.
 - S4 and S8: session `20261026T154359Z`.
 - Same 40 frozen questions, 3 repeats each, the same model and harness.
-- **S3 has not run.** §7 compares against the best non-graph strategy (S2
-  or S3), so for now the comparison is against S2 alone. A gate that fails
-  against S2 fails for good (the best of S2 and S3 is at least S2); a gate
-  that passes must be checked again once S3 has run.
+- **S3 had not run** for the [provisional results](#results), which
+  compare against S2 alone. The [final results](#final-results-with-s3)
+  add session `20261027T092553Z` (S1, S3, S2r).
 
 ## Metrics
 
@@ -194,10 +196,91 @@ Borderline answers, judged not errors and noted in the audit file:
 replaced (an incomplete answer, not an old claim); three answers to kg-S2
 read "fails with every strategy" loosely but report the later lean result.
 
+## Final results with S3
+
+Computed on 2026-10-28, with the procedure fixed in
+[Final evaluation with S3](#final-evaluation-with-s3-procedure), with
+
+```bash
+python -m bench.gates report bench/results/memory/20261025T212002Z.jsonl \
+  bench/results/memory/20261026T154359Z.jsonl \
+  bench/results/memory/20261027T092553Z.jsonl \
+  --audit bench/results/memory/staleness-audit.tsv   # and --exclude kg-B1
+```
+
+### Per category
+
+Mean accuracy / evidence recall, over 3 repeats of each question. S1 and S2r
+are not comparators (§7) and are shown for reference.
+
+| Category | S0 | S1 | S2 | S2r | S3 | S4 | S8 |
+|----------|----|----|----|-----|----|----|----|
+| direct | 0.88 / 0.56 | 1.00 / 0.65 | 1.00 / 0.58 | 1.00 / 0.67 | 0.97 / 0.70 | 1.00 / 0.67 | 1.00 / 0.56 |
+| rationale | 0.40 / 0.50 | 0.99 / 0.67 | 1.00 / 0.81 | 0.93 / 0.78 | 0.88 / 0.75 | 0.96 / 0.67 | 0.96 / 0.92 |
+| multi-hop | 0.72 / 0.67 | 0.96 / 0.93 | 0.99 / 0.89 | 1.00 / 0.89 | 1.00 / 0.92 | 0.93 / 0.90 | 0.93 / 0.89 |
+| negative | 0.85 / 0.21 | 1.00 / 0.79 | 1.00 / 0.71 | 0.97 / 0.46 | 1.00 / 0.62 | 1.00 / 0.71 | 1.00 / 0.46 |
+| supersession | 0.67 / 0.75 | 1.00 / 0.75 | 1.00 / 0.83 | 1.00 / 0.83 | 1.00 / 0.79 | 1.00 / 0.75 | 1.00 / 0.92 |
+| staleness | 0.94 / 0.94 | 0.97 / 1.00 | 0.97 / 0.94 | 0.97 / 0.92 | 0.94 / 0.97 | 0.92 / 0.97 | 1.00 / 1.00 |
+| blocked | 0.54 / 0.79 | 0.75 / 0.71 | 0.75 / 0.71 | 1.00 / 0.75 | 0.79 / 0.75 | 1.00 / 0.67 | 0.88 / 0.88 |
+| continuation | 0.67 / 0.38 | 0.88 / 0.88 | 0.85 / 0.88 | 0.85 / 0.88 | 0.72 / 0.88 | 0.75 / 0.88 | 0.82 / 0.88 |
+
+S3 (embeddings) is the comparator only where it beats S2: accuracy on
+multi-hop (1.00 against 0.99) and blocked (0.79 against 0.75), recall on
+multi-hop, staleness and blocked. Overall it is below S2 (0.920 against
+0.956), weakest on rationale (kg-R6: 0.25) and continuation.
+
+### G1 — passes on 2 of 5 categories; fails without kg-B1
+
+Difference to the comparator (S2 or S3, per category and metric), with the
+question-level 95% bootstrap interval.
+
+| Category | Comparator (acc / rec) | S4 accuracy | S4 recall | S8 accuracy | S8 recall | Passes |
+|----------|------------------------|-------------|-----------|-------------|-----------|--------|
+| rationale | S2 / S2 | −0.04 [−0.11, 0] | −0.14 [−0.31, 0] | −0.04 [−0.11, 0] | **+0.11** [−0.06, +0.33] | yes (S8 recall) |
+| multi-hop | S3 / S3 | −0.07 [−0.20, 0] | −0.02 [−0.06, 0] | −0.07 [−0.20, 0] | −0.03 [−0.08, 0] | no |
+| supersession | S2 / S2 | 0.00 | −0.08 [−0.17, 0] | 0.00 | +0.08 [0, +0.25] | no |
+| staleness | S2 / S3 | −0.06 [−0.17, 0] | 0.00 | +0.03 [0, +0.08] | +0.03 [0, +0.08] | no |
+| blocked | S3 / S3 | **+0.21** [0, +0.62] | −0.08 [−0.25, 0] | +0.08 [0, +0.25] | **+0.13** [0, +0.38] | yes (S4 acc., S8 recall) |
+
+Every interval includes 0. Without kg-B1, blocked shows no difference
+(B2–B4 all at 1.00) and **G1 fails** with one category, as against S2.
+
+- **The edge adds nothing its text could not (R2-09).** On kg-B1, S2r scores
+  1.00 in all three repeats and names RF-23 and the MCP server, as S4 does
+  (S2 0.00, S3 0.17, S8 0.50). S2r has no traversal: it only indexes and
+  shows the relation line `blocked by: [task:mcp-server] MCP server (RF-23)`.
+  So the one gain G1's blocked category rests on comes from the relation's
+  text being retrievable and visible, not from walking the graph.
+- **The whole memory does not help either.** S1, every memory in the prompt
+  in S2's format (no relation lines), scores 0.00 on kg-B1, like S2. Having
+  the blocker's memory in context is not enough; the link has to be stated.
+- **Rationale is unchanged:** S8's recall gain over S2 (kg-R3, kg-R7) comes
+  from listing evidence in its prompt; in accuracy it is 0.04 below S2.
+- **Multi-hop** (H3), where the graph was expected to win, is 0.07 below S3
+  for both graph strategies (kg-M1: S4 and S8 0.60, S2r and S3 1.00).
+
+### G2 — passes
+
+| Strategy | Accuracy loss on direct lookups (≤ 0.03, to S2) | Time vs S2 (≤ 1.30×) |
+|----------|-------------------------------------------------|----------------------|
+| S4 | 0.00 | 1.22× |
+| S8 | 0.00 | 1.10× |
+
+S2 is the comparator on direct lookups (S3 scores 0.97 there).
+
+### G3 — passes trivially
+
+The blind audit of the 72 answers of S1, S3 and S2r (codes `b001`–`b072`)
+found no staleness error either: **0 errors in 168 answers**, every strategy.
+Against the fewer of S2's and S3's (0), the graph's 0 passes. As before, the
+gate says nothing about H4: the 8 questions do not make any strategy repeat
+obsolete knowledge.
+
 ## What it means
 
 The numbers clear the pre-registered bar, but they do not show that the
-graph earns its place over FTS5 on this corpus:
+graph earns its place over FTS5 on this corpus. The final run with S3, S1
+and S2r makes this firmer, not weaker:
 
 1. G1's two passing categories rest on one question (kg-B1) and on S8 showing
    evidence in its prompt. Neither is strong enough to move kg forward as a
@@ -210,7 +293,15 @@ graph earns its place over FTS5 on this corpus:
 3. The cheapest test of the one real mechanism seen (a `blocked by` edge
    bringing in the blocker) is the R2-09 variant: S2 with relation targets
    indexed as text. If it also names RF-23 on kg-B1, the edge adds nothing
-   that keywords could not.
+   that keywords could not. **It does** (S2r 1.00 on kg-B1, every repeat):
+   on this corpus the useful part of the graph is its typed links written
+   next to each memory, not traversal. S1 (every memory, no relation lines)
+   scores 0.00 there, so what matters is that the link is stated.
+4. S3 (embeddings) does not change the picture: it is below S2 overall and
+   is the comparator only on multi-hop and blocked, where the graph does not
+   beat it either once kg-B1 is set aside.
 
-**Next:** S3 (to make the comparison final), S1, the R2-09 text-with-relations
-variant, then the agent-written corpus.
+**Next:** the agent-written corpus (R2-11), the control for the curated
+corpus having been written knowing the questions; then P3 (S7,
+continuation tasks, the Engram and pandas corpora), where relations might
+matter more than here.
