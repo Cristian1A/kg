@@ -21,8 +21,9 @@ carries (N2-01). The context is a function of the question and the store
   depth 1 fill the K, in FTS5 order, each shown with its relations and its
   evidence (issues, PRs, commits, files).
 
-The store is the curated corpus (`corpus/kg/`, one kg document per session)
-merged in order up to the session pinned at the question's commit. Runs use
+The store is the curated corpus (`corpus/kg/`, one kg document per session;
+`--corpus corpus/kg-agent` for the agent-written one, R2-11) merged in order
+up to the session pinned at the question's commit. Runs use
 subagents, as `bench.subagent` does:
 
     python -m bench.memory prepare --strategies s0,s2 --repeat 3
@@ -647,6 +648,12 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--strategies", default=",".join(STRATEGIES))
     p.add_argument("--only", help="question IDs, comma-separated")
     p.add_argument("--repeat", type=int, default=3, help="runs per question (R2-15)")
+    p.add_argument(
+        "--corpus",
+        type=Path,
+        default=CORPUS,
+        help="session files to merge (default: the curated corpus)",
+    )
     c = sub.add_parser("call", help="run one tool call for a subagent")
     c.add_argument("run_dir", type=Path)
     c.add_argument("tool")
@@ -698,7 +705,8 @@ def main(argv: list[str] | None = None) -> int:
         if args.only:
             questions = [q for q in questions if q["id"] in set(args.only.split(","))]
         session = SESSIONS / f"{datetime.now(UTC):%Y%m%dT%H%M%SZ}"
-        runs = prepare_session(questions, strategies, args.repeat, session)
+        corpus = args.corpus.resolve()
+        runs = prepare_session(questions, strategies, args.repeat, session, corpus)
         config = {
             "runner": "subagent",
             "experiment": 2,
@@ -709,7 +717,7 @@ def main(argv: list[str] | None = None) -> int:
             "seeds": SEEDS,
             "depth": DEPTH,
             "questions": str(args.questions.resolve().relative_to(REPO_ROOT)),
-            "corpus": str(CORPUS.relative_to(REPO_ROOT)),
+            "corpus": str(corpus.relative_to(REPO_ROOT)),
             "kg_commit": _run(
                 ["git", "-C", str(REPO_ROOT), "rev-parse", "--short", "HEAD"]
             ).strip(),
