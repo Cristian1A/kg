@@ -1,0 +1,968 @@
+{
+  "version": "1",
+  "nodes": [
+    {
+      "id": "session:2026-10-07-9f063e5d",
+      "type": "Session",
+      "label": "Project bootstrap: agent structure, functional requirements, GitHub setup, MVP issues and CLI skeleton (#1)",
+      "description": "Goal: set up the repo for agents, write the functional requirements with the user acting as client, publish the repo on GitHub and start the MVP.\nInstructions: no commits/pushes without the user's confirmation; secrets only in .env, never printed; no gh CLI, use git + GitHub REST API with curl; conventions in CONTRIBUTING.md; rule 1 of AGENTS.md (read the skill first).\nDiscoveries: the user's success moment is asking impact questions ('what are the implications of changing X'); the token could create labels and milestones; pytest was not installed in env/ until pip install -e .[dev].\nAccomplished: agent structure (AGENTS.md, .agents/skills, .agents/tools, .mcp.json); docs/requisitos-funcionales.md v1.0 approved (sections 9 and 10 closed); git repo initialised and pushed to private GitHub repo Cristian1A/kg (commit 7d4bd49); 19 labels, milestones v0.1 (MVP) and v0.2, 12 MVP issues (#1-#12); issue #1 implemented (package renamed to kg, argparse CLI skeleton, 21 new tests) and PR #13 opened.\nNext steps: user reviews and merges PR #13; then issue #2 (JSON Schema with standard catalog), ideally branching from main after the merge; follow order #1 -> #2 -> #3/#4 -> #5 -> rest in parallel -> #12.\nRelevant files: docs/requisitos-funcionales.md, CONTRIBUTING.md, AGENTS.md, src/kg/cli.py, tests/test_cli.py, pyproject.toml, .env.example.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      },
+      "attrs": {
+        "date": "2026-10-07",
+        "commit": "7d4bd49",
+        "transcript": "9f063e5d",
+        "order": 1
+      }
+    },
+    {
+      "id": "component:cli",
+      "type": "Component",
+      "label": "cli",
+      "description": "The kg command-line interface (src/kg/cli.py), entry point kg.cli:main and python -m kg.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "component:schema",
+      "type": "Component",
+      "label": "schema",
+      "description": "JSON input schema with standard catalog of entity/relation types plus free types; kg validate.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "component:store",
+      "type": "Component",
+      "label": "store",
+      "description": "The .kg/ store created by kg init: JSON files versioned with git, deterministic.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "component:merge",
+      "type": "Component",
+      "label": "merge",
+      "description": "kg add: merging incoming nodes into the store by stable ID.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "component:extract",
+      "type": "Component",
+      "label": "extract",
+      "description": "kg extract: deterministic extraction of Python code structure, dependencies/config and tests.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "component:render",
+      "type": "Component",
+      "label": "render",
+      "description": "kg render: PNG/SVG and interactive HTML (pyvis/vis.js).",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "component:agents",
+      "type": "Component",
+      "label": "agents",
+      "description": "Skill/guide that tells external agents how to add knowledge (docs, decisions, concepts) to the graph.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "component:requirements",
+      "type": "Component",
+      "label": "functional requirements",
+      "description": "docs/requisitos-funcionales.md: vision, use cases CU-01..06, RF-xx/RNF-xx with priority, CLI commands, release plan, MVP acceptance criteria.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "component:repo-workflow",
+      "type": "Component",
+      "label": "repo workflow and conventions",
+      "description": "Git/GitHub workflow: CONTRIBUTING.md conventions, issue/PR templates, labels, milestones, AGENTS.md rules, .env secrets.",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:commit-7d4bd49",
+      "type": "Evidence",
+      "label": "Initial project structure and functional requirements",
+      "attrs": {
+        "kind": "commit",
+        "ref": "7d4bd49"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:file-docs-requisitos-funcionales-md",
+      "type": "Evidence",
+      "label": "Functional requirements document v1.0",
+      "attrs": {
+        "kind": "file",
+        "ref": "docs/requisitos-funcionales.md",
+        "commit": "7d4bd49"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:file-contributing-md",
+      "type": "Evidence",
+      "label": "Commit, branch, issue and label conventions",
+      "attrs": {
+        "kind": "file",
+        "ref": "CONTRIBUTING.md",
+        "commit": "7d4bd49"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:file-agents-md",
+      "type": "Evidence",
+      "label": "General rules for agents",
+      "attrs": {
+        "kind": "file",
+        "ref": "AGENTS.md",
+        "commit": "7d4bd49"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:issue-1",
+      "type": "Evidence",
+      "label": "[cli] kg package skeleton and base CLI",
+      "attrs": {
+        "kind": "issue",
+        "ref": "1"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:issue-2",
+      "type": "Evidence",
+      "label": "[schema] JSON Schema with standard catalog",
+      "attrs": {
+        "kind": "issue",
+        "ref": "2"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:issue-12",
+      "type": "Evidence",
+      "label": "[docs] MVP validation on 3 repos",
+      "attrs": {
+        "kind": "issue",
+        "ref": "12"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:pr-13",
+      "type": "Evidence",
+      "label": "feat(cli): kg package skeleton and base CLI",
+      "attrs": {
+        "kind": "pr",
+        "ref": "13"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "decision:requirements-v1-approved",
+      "type": "Decision",
+      "label": "Functional requirements v1.0 approved: name kg, <type>:<slug> IDs, pyvis/vis.js HTML",
+      "description": "What: docs/requisitos-funcionales.md v1.0 approved 2026-10-07 with ~40 RF-xx (MVP / v0.2 / Future), 9 RNF, 6 use cases, 5 MVP acceptance criteria; open questions closed: PA-01 name stays 'kg', PA-02 IDs are <type>:<slug>, PA-03 interactive HTML with pyvis (vis.js); assumptions S-01..S-03 accepted; proposed out-of-scope list (section 9) accepted as is.\nWhy: requirements gathered by an interview where the user played the client, in 4 blocks recorded in respuestas_usuario.txt.\nWhere: docs/requisitos-funcionales.md (sections 9 and 10).\nLearned: the user's example questions became use cases CU-02..CU-04 and drive acceptance.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-07-9f063e5d",
+        "created": "2026-10-07"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "constraint:impact-questions-are-the-goal",
+      "type": "Constraint",
+      "label": "Success = answering impact questions like 'what changes if I change X'",
+      "description": "What: the user's success moment is asking the tool about the implications of changing a part of the project.\nWhy: it is the client's stated main need in the requirements interview (block 1).\nWhere: docs/requisitos-funcionales.md use cases.\nLearned: this is the requirement that most shapes the design (CLI graph queries vs. an agent reading the graph and reasoning).",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-07-9f063e5d",
+        "created": "2026-10-07"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "decision:llm-in-external-agent-no-api-keys",
+      "type": "Decision",
+      "label": "The LLM lives in the external agent; kg itself needs no API keys",
+      "description": "What: kg is a deterministic CLI used by humans and AI agents; any LLM reasoning or extraction is done by the calling agent, which feeds JSON to kg.\nWhy: keeps the tool free of API keys and providers; agreed in requirements block 4.\nWhere: docs/requisitos-funcionales.md; component agents (skill for extraction).\nLearned: hence the need for a strict JSON schema with actionable validation errors.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-07-9f063e5d",
+        "created": "2026-10-07"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "decision:kg-store-json-in-git",
+      "type": "Decision",
+      "label": "Store the graph as JSON in a .kg/ folder versioned with git",
+      "description": "What: kg init creates a .kg/ directory with deterministic JSON files meant to be committed.\nWhy: diffable, reviewable, no database; recommended in block 4 and adopted in RF-70/RF-71.\nWhere: .kg/ store, issue #4.\nLearned: determinism (stable ordering) is required for clean git diffs.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-07-9f063e5d",
+        "created": "2026-10-07"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "decision:hybrid-schema-with-provenance",
+      "type": "Decision",
+      "label": "Hybrid schema: standard catalog plus free types, stable IDs and provenance",
+      "description": "What: entities and relations use a standard catalog but free types are allowed; every entity has a stable ID to avoid duplicates and every datum records its provenance.\nWhy: repos differ; a closed catalog is too rigid and a free one cannot be queried consistently.\nWhere: docs/requisitos-funcionales.md data model; issues #2, #3.\nLearned: multi-source provenance and advanced dedup were left for v0.2.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-07-9f063e5d",
+        "created": "2026-10-07"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "decision:id-merge-in-mvp",
+      "type": "Decision",
+      "label": "Basic merge by ID moved into the MVP (RF-30)",
+      "description": "What: kg add merges nodes by ID already in v0.1.\nWhy: the user had not marked it for v0.1, but without it kg add and kg extract would create duplicate nodes.\nWhere: RF-30, issue #5.\nLearned: multi-provenance and advanced dedup stay in v0.2; the post-commit hook was put in v0.2 because it depends on incremental update.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-07-9f063e5d",
+        "created": "2026-10-07"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "decision:commit-issue-conventions",
+      "type": "Decision",
+      "label": "Conventional Commits (in Spanish) with Closes/RF footers, feat/N-slug branches, [area] issue titles",
+      "description": "What: commits 'type(scope): summary' in Spanish with footers 'Closes: #N' and 'RF: RF-xx'; scopes are modules (schema, extract, store, render...); branches like feat/3-json-schema; issue titles '[area] description'; issue templates feature/bug, PR template with pytest+ruff checklist; labels type:*, prio:mvp|v0.2|futuro, area:*, status:blocked; milestones v0.1 (MVP) and v0.2.\nWhy: link every change to an issue and a requirement; proposed by the assistant and accepted by the user.\nWhere: CONTRIBUTING.md, .gitmessage, .github/ templates, AGENTS.md rule 9.\nLearned: GitHub default labels (bug, enhancement...) were left in place pending the user's call.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-07-9f063e5d",
+        "created": "2026-10-07"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "constraint:github-via-rest-and-env-token",
+      "type": "Constraint",
+      "label": "No gh CLI: push with git, GitHub operations via REST API with the token from .env",
+      "description": "What: gh is not installed; pushes use git and issues/labels/PRs use curl against the GitHub REST API; the fine-grained token (GITHUB_TOKEN, GITHUB_OWNER, GITHUB_REPO) lives in .env (mode 600, gitignored), is loaded only for the operation and never printed; the origin remote URL does not contain the token.\nWhy: keep the secret out of the chat, .git/config and history (AGENTS.md rule 10).\nWhere: .env, .env.example, repo github.com/Cristian1A/kg (private).\nLearned: the token turned out to have enough permission to create labels and milestones too.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-07-9f063e5d",
+        "created": "2026-10-07"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "constraint:confirm-before-commit-push-delete",
+      "type": "Constraint",
+      "label": "No commits, pushes or file deletions without the user's confirmation",
+      "description": "What: the assistant prepares changes and asks before committing, pushing, opening PRs or deleting files; merges are left to the user unless asked (squash/merge/rebase to be chosen).\nWhy: AGENTS.md rule; the user wants control over history.\nWhere: AGENTS.md.\nLearned: also verify before each commit that .env, env/ and local instruction files are not staged.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-07-9f063e5d",
+        "created": "2026-10-07"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "task:mvp-issue-plan",
+      "type": "Task",
+      "label": "Deliver the v0.1 MVP: issues #1-#12 in dependency order",
+      "description": "What: 12 MVP issues: #1 CLI skeleton, #2 JSON Schema, #3 kg validate, #4 kg init/.kg, #5 kg add with ID merge, #6 extract Python structure, #7 extract deps/config, #8 extract tests, #9 render PNG/SVG, #10 render HTML pyvis, #11 agent extraction skill, #12 MVP validation on 3 repos.\nWhy: derived from the MVP RF-xx of the approved requirements.\nWhere: GitHub milestone v0.1 (MVP).\nLearned: order #1 -> #2 -> #3 and #4 in parallel -> #5 -> extraction (#6-#8), render (#9, #10) and skill (#11) in parallel -> #12 closes the milestone.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-07-9f063e5d",
+        "created": "2026-10-07"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "task:cli-skeleton-issue-1",
+      "type": "Task",
+      "label": "Issue #1: kg package and base CLI (PR #13 awaiting merge)",
+      "description": "What: package renamed networkx_project -> kg with git mv; argparse CLI with stub subcommands init/extract/add/validate/render; --json and --kg-dir accepted before or after the subcommand; 21 tests in tests/test_cli.py; commit 42067c5 on feat/1-cli-base, PR #13 opened to main.\nWhy: base for every other MVP issue.\nWhere: src/kg/cli.py, src/kg/__main__.py, pyproject.toml, tests/test_cli.py.\nLearned: implemented and pushed; the user must review and merge PR #13 (merge mode not chosen yet).",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-07-9f063e5d",
+        "created": "2026-10-07"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "decision:argparse-cli-json-envelope",
+      "type": "Decision",
+      "label": "CLI on stdlib argparse with a single JSON envelope and fixed exit codes",
+      "description": "What: argparse (no Click/Typer); with --json the output is always one object {ok, command, result|error} on stdout; exit codes 0 OK, 1 validation, 2 usage, 3 internal; unexpected errors never show a traceback.\nWhy: no new dependencies (AGENTS.md rule 5) and machine-readable output for agents (RF-22, RNF-01, RNF-07).\nWhere: src/kg/cli.py.\nLearned: argparse prints some messages in English ('show this help message'); translating them was left optional.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-07-9f063e5d",
+        "created": "2026-10-07"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "decision:ruff-excludes-root-prototypes",
+      "type": "Decision",
+      "label": "Exclude the root prototype scripts from ruff instead of fixing them",
+      "description": "What: graph.py, di_graph.py, tuto.py, the notebook etc. at the root are excluded from ruff.\nWhy: they are exploration scripts; new code lives in src/kg/.\nWhere: pyproject.toml ruff config.\nLearned: ruff format also touched .agents/skills/testing/SKILL.md (only a blank line in an example).",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-07-9f063e5d",
+        "created": "2026-10-07"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "task:remove-example-graphs-module",
+      "type": "Task",
+      "label": "Remove the example module src/kg/graphs.py and its test once real code exists",
+      "description": "What: delete the leftover build_tech_graph() example (taken from the prototype graph.py) and its test.\nWhy: placeholder from the initial structure; not part of kg.\nWhere: src/kg/graphs.py, tests/test_graphs.py.\nLearned: needs the user's approval (no deletions without confirmation).",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-07-9f063e5d",
+        "created": "2026-10-07"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "task:json-schema-issue-2",
+      "type": "Task",
+      "label": "Issue #2: JSON Schema with the standard catalog (next)",
+      "description": "What: next MVP issue after #1.\nWhy: #3, #4 and everything after depend on the schema.\nWhere: GitHub issue #2, area schema.\nLearned: cleaner to branch from main after PR #13 is merged.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-07-9f063e5d",
+        "created": "2026-10-07"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    }
+  ],
+  "edges": [
+    {
+      "source": "session:2026-10-07-9f063e5d",
+      "target": "decision:requirements-v1-approved",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-07-9f063e5d",
+      "target": "constraint:impact-questions-are-the-goal",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-07-9f063e5d",
+      "target": "decision:llm-in-external-agent-no-api-keys",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-07-9f063e5d",
+      "target": "decision:kg-store-json-in-git",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-07-9f063e5d",
+      "target": "decision:hybrid-schema-with-provenance",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-07-9f063e5d",
+      "target": "decision:id-merge-in-mvp",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-07-9f063e5d",
+      "target": "decision:commit-issue-conventions",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-07-9f063e5d",
+      "target": "constraint:github-via-rest-and-env-token",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-07-9f063e5d",
+      "target": "constraint:confirm-before-commit-push-delete",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-07-9f063e5d",
+      "target": "task:mvp-issue-plan",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-07-9f063e5d",
+      "target": "task:cli-skeleton-issue-1",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-07-9f063e5d",
+      "target": "decision:argparse-cli-json-envelope",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-07-9f063e5d",
+      "target": "decision:ruff-excludes-root-prototypes",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-07-9f063e5d",
+      "target": "task:remove-example-graphs-module",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-07-9f063e5d",
+      "target": "task:json-schema-issue-2",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:requirements-v1-approved",
+      "target": "evidence:file-docs-requisitos-funcionales-md",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:requirements-v1-approved",
+      "target": "evidence:file-docs-requisitos-funcionales-md",
+      "type": "decided_because",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:requirements-v1-approved",
+      "target": "component:requirements",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "constraint:impact-questions-are-the-goal",
+      "target": "evidence:file-docs-requisitos-funcionales-md",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:llm-in-external-agent-no-api-keys",
+      "target": "evidence:file-docs-requisitos-funcionales-md",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:llm-in-external-agent-no-api-keys",
+      "target": "constraint:impact-questions-are-the-goal",
+      "type": "decided_because",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:llm-in-external-agent-no-api-keys",
+      "target": "component:agents",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:kg-store-json-in-git",
+      "target": "evidence:file-docs-requisitos-funcionales-md",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:kg-store-json-in-git",
+      "target": "component:store",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:hybrid-schema-with-provenance",
+      "target": "evidence:file-docs-requisitos-funcionales-md",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:hybrid-schema-with-provenance",
+      "target": "component:schema",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:id-merge-in-mvp",
+      "target": "evidence:file-docs-requisitos-funcionales-md",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:id-merge-in-mvp",
+      "target": "component:merge",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:id-merge-in-mvp",
+      "target": "component:extract",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:commit-issue-conventions",
+      "target": "evidence:file-contributing-md",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:commit-issue-conventions",
+      "target": "component:repo-workflow",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "constraint:github-via-rest-and-env-token",
+      "target": "evidence:file-agents-md",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "constraint:confirm-before-commit-push-delete",
+      "target": "evidence:file-agents-md",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:mvp-issue-plan",
+      "target": "evidence:issue-1",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:mvp-issue-plan",
+      "target": "evidence:issue-12",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:mvp-issue-plan",
+      "target": "component:requirements",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:cli-skeleton-issue-1",
+      "target": "evidence:issue-1",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:cli-skeleton-issue-1",
+      "target": "evidence:pr-13",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:cli-skeleton-issue-1",
+      "target": "component:cli",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:argparse-cli-json-envelope",
+      "target": "evidence:pr-13",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:argparse-cli-json-envelope",
+      "target": "evidence:file-agents-md",
+      "type": "decided_because",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:argparse-cli-json-envelope",
+      "target": "component:cli",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:ruff-excludes-root-prototypes",
+      "target": "evidence:pr-13",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:ruff-excludes-root-prototypes",
+      "target": "component:repo-workflow",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:remove-example-graphs-module",
+      "target": "evidence:pr-13",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:remove-example-graphs-module",
+      "target": "constraint:confirm-before-commit-push-delete",
+      "type": "blocked_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:json-schema-issue-2",
+      "target": "evidence:issue-2",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:json-schema-issue-2",
+      "target": "component:schema",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:json-schema-issue-2",
+      "target": "task:cli-skeleton-issue-1",
+      "type": "blocked_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    }
+  ]
+}
