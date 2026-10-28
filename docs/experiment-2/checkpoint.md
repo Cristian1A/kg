@@ -305,7 +305,11 @@ EOF
 - Batch 7 (positions 121–140, session `9c9734c1`): every run answered;
   none used its 25 calls (`kg-B2.s2r.2` came closest with 11) and no
   subagent reported a violation. Done after batch 7: 140 of 360.
-- Batch 8 (positions 141–160, session `9c9734c1`): **launched, in
+- Batch 8 (positions 141–160, session `9c9734c1`): every run answered;
+  none used its 25 calls (`kg-B1.s3.2` came closest with 18, then
+  `kg-R6.s1.2` with 12) and no subagent reported a violation. Done after
+  batch 8: 160 of 360.
+- Batch 9 (positions 161–180, session `9c9734c1`): **launched, in
   progress.** If this note is still here, check `status`.
 
 ## Decisions already taken (do not reopen)
