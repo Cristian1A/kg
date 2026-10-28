@@ -1,0 +1,520 @@
+{
+  "version": "1",
+  "nodes": [
+    {
+      "id": "session:2026-10-19-87cb8ed3",
+      "type": "Session",
+      "label": "Project site for #41: docs/index.html landing page on GitHub Pages, PR #65 merged and deployed",
+      "description": "Goal: implement issue #41, a polished public landing page for kg at cristian1a.github.io/kg/ served by GitHub Pages.\nInstructions: user pasted a detailed brief (option A static page, no new deps, no invented metrics, keep example URLs, research agent skills, validate a11y/responsive); later asked to commit and push, give an updated repo About text, and check slow workflows.\nDiscoveries: README 'Ask the graph' output was stale (real left-out line is Document 1, Issue 2, Test 13 plus a calls note); npx skills CLI needs Node >= 22, skills@1.4.0 works on Node 21; headless Chrome clamps windows to 500 px so narrow widths need a same-origin iframe; grids need minmax(0, 1fr) or long pre lines overflow on phones; a GitHub incident (Actions, Pages, Webhooks degraded) slowed CI and Pages, and the legacy Pages build deployed while the Pages workflow still showed queued.\nAccomplished: docs/index.html (self-contained, light/dark, real kg output) plus tests/test_site.py (8 link/asset tests, mutation-checked) and README site link; pytest 482 passed, ruff clean, html-validate clean, axe 0 violations, no overflow 320-1440 px; PR #65 opened on docs/41-project-site and merged (eb360b2); site live and byte-identical to main; example URLs still 200.\nNext steps: user sets repo About website and description by hand; confirm the remaining main CI jobs for eb360b2 finish green; delete merged branch docs/41-project-site after confirmation; user to git switch main && git pull locally.\nRelevant files: docs/index.html, tests/test_site.py, README.md, CONTRIBUTING.md, docs/benchmark.md, docs/mvp-validation.md, docs/examples/",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      },
+      "attrs": {
+        "date": "2026-10-19",
+        "commit": "eb360b2",
+        "transcript": "87cb8ed3",
+        "order": 9
+      }
+    },
+    {
+      "id": "task:project-site-issue-41",
+      "type": "Task",
+      "label": "Issue #41: project site, a static landing page on GitHub Pages (merged via PR #65, live)",
+      "description": "What: docs/index.html, one self-contained page (inline CSS, ~20 lines of JS for copy buttons, no external requests, light/dark): what kg is, a real node card, how it works, quick start, the five example graphs, what we have learned (observed behaviour, limits, open questions), the benchmark with caveats, a docs index and project status; tests/test_site.py; README links to the site.\nWhy: the Pages root was a 404 and only example graphs had URLs.\nWhere: docs/index.html, tests/test_site.py, README.md, PR #65, merge eb360b2\nLearned: benchmark shown as results with limits (17 + 6 stale questions, one run each, repos of 4-104 files; cards 1.00 vs code 0.94, 1.00 after a grading fix, 63% less context, slower 35 s vs 30 s); scrapy large-repo test shown as next experiment, not a result; deployment verified (site 200, same SHA-256 as main); only the repo About update remains, by hand.",
+      "attrs": {
+        "status": "done",
+        "session": "session:2026-10-19-87cb8ed3",
+        "created": "2026-10-19"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "decision:site-single-page-real-output",
+      "type": "Decision",
+      "label": "Project site is one self-contained docs/index.html with real kg output, colour = provenance, docs linked on GitHub",
+      "description": "What: no build step or generator; the hero shows real kg query node module:etl.utils --brief output (re-run on a fresh clone) linking to the graph at that node; render's palette reused (blue parser, orange agent, green tests); every number sourced from docs/benchmark.md, docs/examples/README.md or docs/mvp-validation.md and said so.\nWhy: brief forbade new deps, fake output and invented metrics; Pages with .nojekyll serves Markdown as plain text, so docs link to GitHub; same colour code as the graph images.\nWhere: docs/index.html\nLearned: skills used read-only, nothing installed: anthropics/skills frontend-design, vercel-labs web-design-guidelines, addyosmani accessibility; publish-to-pages skipped since Pages was already set up.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-19-87cb8ed3",
+        "created": "2026-10-19"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "decision:site-link-tests",
+      "type": "Decision",
+      "label": "tests/test_site.py guards the site: local links, anchors, #node= deep links, examples linked, no root-relative or external URLs",
+      "description": "What: 8 tests: every local link, image and in-page anchor exists; no URL starts with / (breaks under /kg/); repo-file links and Markdown headings resolve; #node= deep links name real nodes; every docs/examples/*.html is linked; images have alt and dimensions; nothing loaded from outside.\nWhy: #41 acceptance asks for a link test, so a renamed example or doc breaks CI instead of the site.\nWhere: tests/test_site.py\nLearned: six deliberate breakages on a temp copy were each caught; renaming docs or examples now requires updating docs/index.html.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-19-87cb8ed3",
+        "created": "2026-10-19"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "decision:github-pages-from-docs",
+      "type": "Decision",
+      "label": "Publish the project site and example pages with GitHub Pages from main:/docs",
+      "description": "What: Repo public; Pages serves docs/ (docs/.nojekyll): landing page docs/index.html at cristian1a.github.io/kg/, examples at /kg/examples/<repo>.html.\nWhy: Needs a public URL for the site and interactive examples; private-repo Pages needs a paid plan.\nWhere: docs/.nojekyll, docs/index.html, docs/examples/\nLearned: The root 404 ended with PR #65; the user enabled Pages by hand; the legacy Pages build publishes on merge to main in about 30-60 s normally.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-12-a38a03e6",
+        "created": "2026-10-12"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "task:update-repo-about",
+      "type": "Task",
+      "label": "User to update the repo About: website to the site root, new description",
+      "description": "What: set Website to https://cristian1a.github.io/kg/ (was .../examples/my_first_data_project.html) and Description to 'Turn a codebase into a knowledge graph: a deterministic parser plus your AI agent, with provenance on every edge. Query it, see what a change may affect, or explore it as PNG/SVG or interactive HTML.'; topics unchanged.\nWhy: the site is live; the old description only said 'rendered as PNG/SVG or interactive HTML' and missed v0.2 query/impact and provenance.\nWhere: GitHub repo page, gear next to About.\nLearned: must be done manually; the .env token cannot change repo settings. Not yet done at session end.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-19-87cb8ed3",
+        "created": "2026-10-19"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "task:verify-main-ci-eb360b2",
+      "type": "Task",
+      "label": "Confirm all three CI jobs on main (eb360b2) finish green after the GitHub incident",
+      "description": "What: after merging PR #65, the main CI run reported success with only the Python 3.13 job run; the 3.12 job and clean-install smoke were still queued, and the Pages workflow stayed queued although the legacy build had published.\nWhy: GitHub incident 'Degraded availability for GitHub Actions, GitHub Pages and Webhooks' (from 15:49 UTC, 2026-10-19) made API statuses inconsistent.\nWhere: GitHub Actions for eb360b2.\nLearned: the same three jobs passed on the PR with the same code (~1.5 min); no re-run needed, the queue drains on its own.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-19-87cb8ed3",
+        "created": "2026-10-19"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "constraint:main-only-via-pr",
+      "type": "Constraint",
+      "label": "Changes reach main only through a PR, even when the user says commit and push",
+      "description": "What: a 'commit and push' request is done as a branch (type/N-slug) plus a PR from the template; the user merges.\nWhy: CONTRIBUTING.md says main is reached only by PR.\nWhere: CONTRIBUTING.md\nLearned: applied for #41 (branch docs/41-project-site, PR #65); the site goes live only after merge since Pages serves main.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-19-87cb8ed3",
+        "created": "2026-10-19"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "constraint:local-web-tooling-limits",
+      "type": "Constraint",
+      "label": "Local web tooling: headless Chrome min 500 px window, skills@1.4.0 on Node 21, html-validate/axe via npx",
+      "description": "What: headless Chrome clamps window width to 500 px, so narrower layouts are measured in a same-origin iframe; the current npx skills CLI needs Node >= 22, pin skills@1.4.0; html-validate and axe-core run via npx without adding deps.\nWhy: machine has Node 21; screenshots below 500 px are crop artefacts.\nWhere: local environment\nLearned: serve the page under a /kg/ base path to mimic Pages when checking layout and links.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-19-87cb8ed3",
+        "created": "2026-10-19"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "task:delete-merged-branches",
+      "type": "Task",
+      "label": "Delete merged branches feat/1-cli-base, feat/2-json-schema, docs/12-samples, docs/41-project-site",
+      "description": "What: branches already merged into main were kept, now including docs/41-project-site (local and remote).\nWhy: deletions need the user's confirmation, which was not given.\nWhere: local git repo and origin.\nLearned: command offered: git branch -d feat/2-json-schema docs/12-samples feat/1-cli-base docs/41-project-site; the user's local main is behind origin/main (git switch main && git pull).",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-09-67dcc1db",
+        "created": "2026-10-09"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:pr-65",
+      "type": "Evidence",
+      "label": "docs: add a project site as the GitHub Pages landing page",
+      "attrs": {
+        "kind": "pr",
+        "ref": "65"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:commit-7db12c5",
+      "type": "Evidence",
+      "label": "docs: add a project site as the GitHub Pages landing page",
+      "attrs": {
+        "kind": "commit",
+        "ref": "7db12c5"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:commit-eb360b2",
+      "type": "Evidence",
+      "label": "Merge PR #65 (project site)",
+      "attrs": {
+        "kind": "commit",
+        "ref": "eb360b2"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:file-docs-index-html",
+      "type": "Evidence",
+      "label": "Project site landing page",
+      "attrs": {
+        "kind": "file",
+        "ref": "docs/index.html",
+        "commit": "eb360b2"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:file-tests-test-site-py",
+      "type": "Evidence",
+      "label": "Site link, anchor and asset tests",
+      "attrs": {
+        "kind": "file",
+        "ref": "tests/test_site.py",
+        "commit": "eb360b2"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    }
+  ],
+  "edges": [
+    {
+      "source": "session:2026-10-19-87cb8ed3",
+      "target": "task:project-site-issue-41",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-19-87cb8ed3",
+      "target": "decision:site-single-page-real-output",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-19-87cb8ed3",
+      "target": "decision:site-link-tests",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-19-87cb8ed3",
+      "target": "task:update-repo-about",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-19-87cb8ed3",
+      "target": "task:verify-main-ci-eb360b2",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-19-87cb8ed3",
+      "target": "constraint:main-only-via-pr",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-19-87cb8ed3",
+      "target": "constraint:local-web-tooling-limits",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:project-site-issue-41",
+      "target": "evidence:pr-65",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:project-site-issue-41",
+      "target": "evidence:commit-eb360b2",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:project-site-issue-41",
+      "target": "evidence:file-docs-index-html",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:site-single-page-real-output",
+      "target": "component:docs",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:site-single-page-real-output",
+      "target": "evidence:file-docs-index-html",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:site-single-page-real-output",
+      "target": "evidence:commit-7db12c5",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:site-single-page-real-output",
+      "target": "evidence:issue-41",
+      "type": "decided_because",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:site-single-page-real-output",
+      "target": "experiment:bench-cards",
+      "type": "decided_because",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:site-link-tests",
+      "target": "component:docs",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:site-link-tests",
+      "target": "component:ci",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:site-link-tests",
+      "target": "evidence:file-tests-test-site-py",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:site-link-tests",
+      "target": "evidence:issue-41",
+      "type": "decided_because",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:github-pages-from-docs",
+      "target": "evidence:pr-65",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:update-repo-about",
+      "target": "component:repo-workflow",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:update-repo-about",
+      "target": "constraint:token-lacks-pages-permission",
+      "type": "blocked_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:update-repo-about",
+      "target": "evidence:pr-65",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:verify-main-ci-eb360b2",
+      "target": "component:ci",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:verify-main-ci-eb360b2",
+      "target": "evidence:commit-eb360b2",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "constraint:main-only-via-pr",
+      "target": "evidence:file-contributing-md",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "constraint:main-only-via-pr",
+      "target": "evidence:pr-65",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "constraint:local-web-tooling-limits",
+      "target": "evidence:pr-65",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    }
+  ]
+}
