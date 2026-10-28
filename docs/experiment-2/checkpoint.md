@@ -447,11 +447,17 @@ EOF
 
 **Plan / state** (tick as done):
 
-- [ ] Tooling: `bench/memory_write.py` (sources, prompts, show, submit) with
-  tests; `bench.memory prepare --corpus`.
-- [ ] Analysis fixed in `docs/experiment-2/agent-corpus.md` before any run.
-- [ ] GitHub data fetched (read-only) to `bench/.cache/memory/github/`.
+- [x] Tooling: `bench/memory_write.py` (sources, prompts, show, submit) with
+  tests; `bench.memory prepare --corpus` (`882f776`).
+- [x] Analysis fixed in `docs/experiment-2/agent-corpus.md` before any run.
+- [x] GitHub data fetched (read-only) to `bench/.cache/memory/github/`
+  (`fetch`, with bodies' edit history), sources built (`sources`).
 - [ ] 12 writer subagents, in order (each needs the previous one merged).
+  For session NN: `python -m bench.memory_write prompt <stem>`, then one
+  subagent with: `Read the file /home/cris/networkx/bench/.cache/memory/
+  writers/<stem>/prompt.md and follow its instructions exactly.` Wait for
+  `bench/corpus/kg-agent/<stem>.json` before the next. Commit each.
+  Writers done: (none yet).
 - [ ] Blindness check of the writers' transcripts.
 - [ ] Session of 360 runs, batches of 20; `usage`, `collect`.
 - [ ] Report in agent-corpus.md; #71.
