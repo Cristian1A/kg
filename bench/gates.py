@@ -25,13 +25,16 @@ from bench.memory import QUESTIONS
 
 SEED = 71
 GRAPH = ("s4", "s8")
-BASELINE = "s2"
+BASELINES = ("s2", "s3")  # §7: the best non-graph strategy, per category
+TIME_BASELINE = "s2"  # §7: G2's time is against S2
 G1_CATEGORIES = ("rationale", "multi-hop", "supersession", "staleness", "blocked")
 G1_MARGIN = 0.10
 G2_ACCURACY = 0.03
 G2_TIME = 1.30
 STALE_CATEGORIES = ("staleness", "supersession")
-AUDITED = ("s0", "s2", "s4", "s8")
+AUDITED = ("s0", "s2", "s4", "s8")  # the first blind sheet (codes a001…)
+# Seconds left out of every mean: resumed after a session limit (gates.md).
+SECONDS_OUTLIERS = frozenset({"kg-R6.s1.3"})
 RESAMPLES = 10_000
 
 HEX = re.compile(r"\b[0-9a-f]{7,40}\b")
@@ -101,16 +104,22 @@ def load(paths: list[Path]) -> list[dict[str, Any]]:
     ]
 
 
+def run_name(r: dict[str, Any]) -> str:
+    return f"{r['question']}.{r['strategy']}.{r['repeat']}"
+
+
 def audit_sheet(
     records: list[dict[str, Any]],
     questions: dict[str, dict[str, Any]],
     seed: int = SEED,
+    strategies: tuple[str, ...] = AUDITED,
+    prefix: str = "a",
 ) -> list[dict[str, str]]:
     """The blind staleness-audit rows: shuffled, without strategy or repeat."""
     picked = [
         r
         for r in records
-        if r["category"] in STALE_CATEGORIES and r["strategy"] in AUDITED
+        if r["category"] in STALE_CATEGORIES and r["strategy"] in strategies
     ]
     picked.sort(key=lambda r: (r["question"], r["strategy"], r["repeat"]))
     random.Random(seed).shuffle(picked)
@@ -119,8 +128,8 @@ def audit_sheet(
         q = questions[r["question"]]
         rows.append(
             {
-                "code": f"a{n:03d}",
-                "run": f"{r['question']}.{r['strategy']}.{r['repeat']}",
+                "code": f"{prefix}{n:03d}",
+                "run": run_name(r),
                 "question": q["question"],
                 "reference": q["reference"],
                 "answer": (r["answer"] or {}).get("answer", "(no answer)"),
@@ -178,7 +187,12 @@ def table(
             "accuracy": _mean([r["grade"]["score"] for r in rows]),
             "recall": _mean([rec for _, rec in recalls if rec is not None]),
             "seconds": _mean(
-                [r["seconds"] for r in rows if r.get("seconds") is not None]
+                [
+                    r["seconds"]
+                    for r in rows
+                    if r.get("seconds") is not None
+                    and run_name(r) not in SECONDS_OUTLIERS
+                ]
             ),
             "per_question": {
                 q: {k: _mean(v) for k, v in m.items()} for q, m in sorted(per_q.items())
@@ -201,35 +215,49 @@ def gates(
     questions: dict[str, dict[str, Any]],
     audit: dict[str, bool] | None,
 ) -> dict[str, Any]:
-    """The verdict of G1, G2 and G3, with the numbers behind each."""
+    """The verdict of G1, G2 and G3, with the numbers behind each.
+
+    The comparator of each category and metric is the best of the baselines
+    present (S2, S3), as §7 says; G2's time is against S2.
+    """
     t = table(records, questions)
+    present = [s for s in BASELINES if any(s in cells for cells in t.values())]
+
+    def best(category: str, metric: str) -> str:
+        return max(present, key=lambda s: t[category][s][metric])
+
     g1 = {}
     for category in G1_CATEGORIES:
-        base = t[category][BASELINE]
+        acc_base, rec_base = best(category, "accuracy"), best(category, "recall")
         rows = {}
         for s in GRAPH:
             cell = t[category][s]
-            d_acc = cell["accuracy"] - base["accuracy"]
-            d_rec = cell["recall"] - base["recall"]
+            d_acc = cell["accuracy"] - t[category][acc_base]["accuracy"]
+            d_rec = cell["recall"] - t[category][rec_base]["recall"]
             rows[s] = {
                 "accuracy": d_acc,
                 "recall": d_rec,
-                "accuracy_ci": bootstrap(_diffs(cell, base, "accuracy")),
-                "recall_ci": bootstrap(_diffs(cell, base, "recall")),
+                "accuracy_ci": bootstrap(
+                    _diffs(cell, t[category][acc_base], "accuracy")
+                ),
+                "recall_ci": bootstrap(_diffs(cell, t[category][rec_base], "recall")),
                 "pass": d_acc >= G1_MARGIN or d_rec >= G1_MARGIN,
             }
         g1[category] = {
+            "baseline": {"accuracy": acc_base, "recall": rec_base},
             "strategies": rows,
             "pass": any(r["pass"] for r in rows.values()),
         }
     passed = [c for c, v in g1.items() if v["pass"]]
 
     direct = t["direct"]
+    g2_base = best("direct", "accuracy")
     g2 = {}
     for s in GRAPH:
-        loss = direct[BASELINE]["accuracy"] - direct[s]["accuracy"]
-        ratio = direct[s]["seconds"] / direct[BASELINE]["seconds"]
+        loss = direct[g2_base]["accuracy"] - direct[s]["accuracy"]
+        ratio = direct[s]["seconds"] / direct[TIME_BASELINE]["seconds"]
         g2[s] = {
+            "baseline": g2_base,
             "loss": loss,
             "time_ratio": ratio,
             "pass": loss <= G2_ACCURACY and ratio <= G2_TIME,
@@ -237,21 +265,22 @@ def gates(
 
     g3: dict[str, Any] | None = None
     if audit is not None:
-        errors = {s: 0 for s in AUDITED}
-        judged = {s: 0 for s in AUDITED}
+        errors: dict[str, int] = defaultdict(int)
+        judged: dict[str, int] = defaultdict(int)
         for r in records:
-            name = f"{r['question']}.{r['strategy']}.{r['repeat']}"
+            name = run_name(r)
             if r["category"] in STALE_CATEGORIES and name in audit:
                 judged[r["strategy"]] += 1
                 errors[r["strategy"]] += audit[name]
+        judged_bases = [s for s in present if judged[s]]
+        g3_base = min(judged_bases, key=lambda s: errors[s])
+        least = errors[g3_base]
         g3 = {
-            "errors": errors,
-            "judged": judged,
+            "baseline": g3_base,
+            "errors": dict(errors),
+            "judged": dict(judged),
             "pass": {
-                s: errors[s] <= errors[BASELINE] / 2
-                if errors[BASELINE]
-                else errors[s] == 0
-                for s in GRAPH
+                s: errors[s] <= least / 2 if least else errors[s] == 0 for s in GRAPH
             },
         }
     return {
@@ -285,9 +314,11 @@ def _print_report(result: dict[str, Any]) -> None:
         f"{', '.join(g1['passed']) or 'none'})"
     )
     for category, v in g1["categories"].items():
+        base = v["baseline"]
         for s, r in v["strategies"].items():
             print(
-                f"  {category:<13} {s} − s2: accuracy {r['accuracy']:+.3f} "
+                f"  {category:<13} {s} − {base['accuracy']}/{base['recall']}: "
+                f"accuracy {r['accuracy']:+.3f} "
                 f"[{r['accuracy_ci'][0]:+.2f}, {r['accuracy_ci'][1]:+.2f}], "
                 f"recall {r['recall']:+.3f} "
                 f"[{r['recall_ci'][0]:+.2f}, {r['recall_ci'][1]:+.2f}]"
@@ -297,7 +328,8 @@ def _print_report(result: dict[str, Any]) -> None:
     print(f"G2: {'PASS' if g2['pass'] else 'FAIL'}")
     for s, r in g2["strategies"].items():
         print(
-            f"  {s}: accuracy loss {r['loss']:+.3f}, time × {r['time_ratio']:.2f}"
+            f"  {s}: accuracy loss to {r['baseline']} {r['loss']:+.3f}, "
+            f"time × {r['time_ratio']:.2f} of {TIME_BASELINE}"
             f"{'  pass' if r['pass'] else '  fail'}"
         )
     g3 = result["g3"]
@@ -305,8 +337,8 @@ def _print_report(result: dict[str, Any]) -> None:
         print("G3: not evaluated (no --audit)")
     else:
         ok = all(g3["pass"].values())
-        print(f"G3: {'PASS' if ok else 'FAIL'}")
-        for s in AUDITED:
+        print(f"G3: {'PASS' if ok else 'FAIL'} (against {g3['baseline']})")
+        for s in sorted(g3["judged"]):
             print(f"  {s}: {g3['errors'][s]} errors in {g3['judged'][s]} runs")
 
 
@@ -324,6 +356,16 @@ def main(argv: list[str] | None = None) -> int:
         p = sub.add_parser(name, help=help_)
         p.add_argument("results", type=Path, nargs="+")
         p.add_argument("--questions", type=Path, default=QUESTIONS)
+        p.add_argument(
+            "--exclude", default="", help="question IDs to leave out, comma-separated"
+        )
+        if name == "sheet":
+            p.add_argument(
+                "--strategies",
+                default=",".join(AUDITED),
+                help="strategies to audit, comma-separated",
+            )
+            p.add_argument("--prefix", default="a", help="prefix of the row codes")
         if name == "report":
             p.add_argument(
                 "--audit", type=Path, help="staleness audit TSV (run, error)"
@@ -333,9 +375,15 @@ def main(argv: list[str] | None = None) -> int:
     questions = {
         q["id"]: q for q in json.loads(args.questions.read_text(encoding="utf-8"))
     }
-    records = load(args.results)
+    excluded = {q for q in args.exclude.split(",") if q}
+    records = [r for r in load(args.results) if r["question"] not in excluded]
     if args.command == "sheet":
-        rows = audit_sheet(records, questions)
+        rows = audit_sheet(
+            records,
+            questions,
+            strategies=tuple(args.strategies.split(",")),
+            prefix=args.prefix,
+        )
         writer = csv.DictWriter(
             sys.stdout,
             fieldnames=["code", "question", "reference", "answer"],

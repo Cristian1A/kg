@@ -1,5 +1,7 @@
 """Experiment 2's gates (bench/gates.py), on hand-made result records."""
 
+import pytest
+
 from bench import gates
 
 
@@ -103,3 +105,44 @@ def test_audit_sheet_is_blind_and_deterministic():
     assert sorted(r["run"] for r in rows) == sorted(
         f"kg-T1.{s}.{n}" for s in ("s0", "s2", "s4", "s8") for n in (1, 2, 3)
     )
+
+
+def test_comparator_is_the_best_of_s2_and_s3_per_category_and_metric():
+    questions = _questions()
+    records = []
+    for qid, q in questions.items():
+        s3_better = q["category"] == "rationale"
+        records.append(_record(qid, q["category"], "s2", 0.5, False))
+        records.append(
+            _record(qid, q["category"], "s3", 0.9 if s3_better else 0.4, True)
+        )
+        for s in gates.GRAPH:
+            records.append(_record(qid, q["category"], s, 0.6, False))
+    audit = {"kg-T1.s2.1": True, "kg-T1.s3.1": False, "kg-T1.s4.1": False}
+    result = gates.gates(records, questions, audit)
+    rationale = result["g1"]["categories"]["rationale"]
+    # S3 is best in accuracy on rationale; S3 cites #1, so it is best in recall
+    assert rationale["baseline"] == {"accuracy": "s3", "recall": "s3"}
+    assert rationale["strategies"]["s4"]["accuracy"] == pytest.approx(-0.3)
+    multi = result["g1"]["categories"]["multi-hop"]
+    assert multi["baseline"]["accuracy"] == "s2"
+    assert multi["strategies"]["s4"]["accuracy"] == pytest.approx(0.1)
+    # G3 compares against the fewer errors of S2 and S3 (S3: 0)
+    assert result["g3"]["baseline"] == "s3"
+    assert result["g3"]["pass"] == {"s4": True, "s8": True}
+
+
+def test_audit_sheet_of_other_strategies_and_seconds_outlier():
+    questions = _questions()
+    records = [
+        _record("kg-T1", "staleness", s, 1.0, True, repeat=n)
+        for s in ("s1", "s2", "s3")
+        for n in (1, 2, 3)
+    ]
+    rows = gates.audit_sheet(records, questions, strategies=("s1", "s3"), prefix="b")
+    questions["kg-R6"] = {**questions["kg-rationale"], "id": "kg-R6"}
+    assert [r["code"] for r in rows] == [f"b{n:03d}" for n in range(1, 7)]
+    assert not any(".s2." in r["run"] for r in rows)
+    slow = _record("kg-R6", "rationale", "s1", 1.0, True, seconds=17822.0, repeat=3)
+    fast = _record("kg-R6", "rationale", "s1", 1.0, True, seconds=20.0)
+    assert gates.table([slow, fast], questions)["rationale"]["s1"]["seconds"] == 20.0
