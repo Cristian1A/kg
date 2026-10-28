@@ -310,12 +310,20 @@ EOF
   `kg-R6.s1.2` with 12). **`kg-T3.s3.3` did not answer:** after 5 calls
   (several chained per shell command, one piped through `head`) it
   replied `submitted` without ever calling `submit_answer`. Logged in
-  `violations.tsv` (the first of this session). It is neither done nor
-  cut off by a limit; **ask the user** whether to reset it (delete its
-  `calls.jsonl`) and launch it again, or score it 0. Done after batch 8:
-  159 of 360.
-- Batch 9 (positions 161–180, session `9c9734c1`): **launched, in
-  progress.** If this note is still here, check `status`.
+  `violations.tsv` (the first of this session). With the user's approval
+  (2026-10-28) its `calls.jsonl` was deleted and it was launched again
+  with batch 10: the failure was the subagent's, not the strategy's, so
+  scoring it 0 would penalise S3 for nothing. Done after batch 8: 159 of
+  360.
+- **Check `answer.json`, not the subagent's `submitted`,** before calling a
+  batch done (`status` does this).
+- Batch 9 (positions 161–180, session `9c9734c1`): 19 runs answered
+  (`kg-B4.s2r.3` and `kg-R6.s2r.3` came closest with 9 calls); no
+  subagent reported a violation. `kg-R6.s3.1` was still running (14
+  calls) when batch 10 was launched.
+- Batch 10 (positions 181–200, plus the relaunch of `kg-T3.s3.3`, session
+  `9c9734c1`): **launched, in progress.** If this note is still here,
+  check `status`.
 
 ## Decisions already taken (do not reopen)
 
