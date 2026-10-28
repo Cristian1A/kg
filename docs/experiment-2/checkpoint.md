@@ -3,7 +3,7 @@
 Where the work stands, so a new session can resume it without this one's
 conversation. **Update this file whenever the state below changes.**
 
-Last update: 2026-10-28, G0 passed; P2 runs done; final G1–G3 pass as
+Last update: 2026-10-28, G0 passed; **P2 closed**; final G1–G3 pass as
 pre-registered but the graph does not earn its place (see
 [gates.md](gates.md)). Next: agent-written corpus (R2-11).
 
@@ -13,7 +13,8 @@ pre-registered but the graph does not earn its place (see
 |-------|-------|
 | P0 | done: [questions](questions-draft.md) frozen (`bench/questions/memory/kg.json`), [corpus](corpus.md) (`bench/corpus/kg/`), gates in [requirements](requirements.md) §7 |
 | P1 | harness done ([harness.md](harness.md), `bench/memory.py`, S0 and S2); **G0 done and passed** ([g0.md](g0.md)) |
-| P2 | in progress: S1, S3, S2r, S4, S8 implemented and run ([harness.md](harness.md)); **final G1–G3 done**: pass, but G1 rests on kg-B1, which S2r also solves; the agent-written corpus (R2-11) is left |
+| P2 | **done** (2026-10-28): S1, S3, S2r, S4, S8 implemented and run ([harness.md](harness.md)); final G1–G3 pass as pre-registered, but G1 rests on kg-B1, which S2r also solves ([gates.md](gates.md)) |
+| R2-11 | not started: the agent-written corpus, its own item since 2026-10-28 (it was P1's second write mode, deferred until after P2's runs); the control for the curated corpus. Design pending the user's choices (sources, write protocol, strategies to re-run) |
 | P3–P4 | not started |
 
 Branch `experiment-2/agent-context-memory`; issue #71 tracks the checklist.
@@ -271,7 +272,7 @@ EOF
 4. Hand-check `kg-T2.s4.3` — **done**: its `kg impact --depth 0` claim is
    true at `e066c56` (test at line 545); noted in gates.md.
    #71 updated (checklist + comment 6481691993).
-5. **Agent-written corpus (R2-11)**, then P3.
+5. **Agent-written corpus (R2-11)**, its own item (P2 closed 2026-10-28), then P3.
 
 ### The S1/S3/S2r run (done)
 
