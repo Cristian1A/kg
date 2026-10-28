@@ -328,8 +328,16 @@ EOF
   by mistake at launch and launched on its own afterwards (it had no
   calls, nothing to reset). Done after batch 10: 200 of 360, none pending
   among positions 1–200.
-- Batch 11 (positions 201–220, session `9c9734c1`): **launched, in
-  progress.** If this note is still here, check `status`.
+- Batch 11 (positions 201–220, session `9c9734c1`): the session limit hit
+  at about 13:00 on 2026-10-28, while the batch was finishing. Nine
+  subagents were reported as failed, but all of them except one had
+  already submitted (each has `answer.json`). **`kg-R6.s1.3` was cut off
+  with 4 calls.** It was not reset: after the limit reset (14:30) the same
+  subagent was resumed with its context (SendMessage to it), so the run
+  continues rather than restarts. No bias: it had seen no answer, and no
+  run is repeated. Done: 219 of 360.
+  If `kg-R6.s1.3` still has no `answer.json`, ask the user before
+  resetting it.
 
 ## Decisions already taken (do not reopen)
 
