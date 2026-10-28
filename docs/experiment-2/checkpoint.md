@@ -322,8 +322,14 @@ EOF
   subagent reported a violation. `kg-R6.s3.1` was still running (14
   calls) when batch 10 was launched.
 - Batch 10 (positions 181–200, plus the relaunch of `kg-T3.s3.3`, session
-  `9c9734c1`): **launched, in progress.** If this note is still here,
-  check `status`.
+  `9c9734c1`): every run answered, `kg-R6.s3.1` of batch 9 (17 calls) and
+  `kg-T3.s3.3` too; none used its 25 calls (`kg-D7.s3.1` came closest
+  with 12) and no subagent reported a violation. `kg-S2.s2r.1` was skipped
+  by mistake at launch and launched on its own afterwards (it had no
+  calls, nothing to reset). Done after batch 10: 200 of 360, none pending
+  among positions 1–200.
+- Batch 11 (positions 201–220, session `9c9734c1`): **launched, in
+  progress.** If this note is still here, check `status`.
 
 ## Decisions already taken (do not reopen)
 
