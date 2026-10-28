@@ -3,9 +3,9 @@
 Where the work stands, so a new session can resume it without this one's
 conversation. **Update this file whenever the state below changes.**
 
-Last update: 2026-10-28, G0 passed; P2: S4/S8 and S1/S3/S2r runs done;
-G1–G3 pass weakly against S2 (final evaluation with S3 pending), see
-[gates.md](gates.md).
+Last update: 2026-10-28, G0 passed; P2 runs done; final G1–G3 pass as
+pre-registered but the graph does not earn its place (see
+[gates.md](gates.md)). Next: agent-written corpus (R2-11).
 
 ## State
 
@@ -13,7 +13,7 @@ G1–G3 pass weakly against S2 (final evaluation with S3 pending), see
 |-------|-------|
 | P0 | done: [questions](questions-draft.md) frozen (`bench/questions/memory/kg.json`), [corpus](corpus.md) (`bench/corpus/kg/`), gates in [requirements](requirements.md) §7 |
 | P1 | harness done ([harness.md](harness.md), `bench/memory.py`, S0 and S2); **G0 done and passed** ([g0.md](g0.md)) |
-| P2 | in progress: S1, S3, S2r, S4, S8 implemented and run ([harness.md](harness.md)); G1–G3 pass weakly against S2 ([gates.md](gates.md)); **final G1–G3 with S3 pending** |
+| P2 | in progress: S1, S3, S2r, S4, S8 implemented and run ([harness.md](harness.md)); **final G1–G3 done**: pass, but G1 rests on kg-B1, which S2r also solves; the agent-written corpus (R2-11) is left |
 | P3–P4 | not started |
 
 Branch `experiment-2/agent-context-memory`; issue #71 tracks the checklist.
@@ -263,19 +263,16 @@ EOF
    memory's relation lines indexed and shown), with tests, in harness.md.
 2. **One session with S1 + S3 + S2r**: 40 questions × 3 strategies × 3
    repeats = 360 runs — **done** (2026-10-28), see below.
-3. **G1–G3 final**, against the best of S2 and S3; update gates.md and #71.
-   **In progress (2026-10-28):** procedure fixed in gates.md §"Final
-   evaluation with S3" (`53c2a06`), code in `bench/gates.py` (`2e59708`).
-   Next: blind staleness audit of S1/S3/S2r — `python -m bench.gates sheet
-   bench/results/memory/20261027T092553Z.jsonl --strategies s1,s3,s2r
-   --prefix b` (72 rows), judge each code, join back to runs with
-   `audit_sheet(..., strategies=("s1","s3","s2r"), prefix="b")`, append to
-   `staleness-audit.tsv`; then `python -m bench.gates report` over the three
-   result files with `--audit` (and `--exclude kg-B1`), write §Results.
-4. Hand-check `kg-T2.s4.3` (it cited a test it never read).
+3. **G1–G3 final** — **done** (2026-10-28, gates.md §"Final results with
+   S3", `12de3d6`). G1–G3 pass as pre-registered, but G1 rests on kg-B1,
+   where S2r (FTS5 + relation lines as text) scores 1.00 like S4; without
+   kg-B1 G1 fails. 0 staleness errors in 168 audited answers (S1/S3/S2r
+   added as `b001`–`b072` in `staleness-audit.tsv`).
+4. Hand-check `kg-T2.s4.3` — **done**: its `kg impact --depth 0` claim is
+   true at `e066c56` (test at line 545); noted in gates.md.
 5. **Agent-written corpus (R2-11)**, then P3.
 
-### The S1/S3/S2r run in progress
+### The S1/S3/S2r run (done)
 
 - **Session:** `bench/.cache/memory/20261027T092553Z/` (git-ignored, this
   machine only): 360 runs = 40 questions × `s1`, `s3`, `s2r` × 3 repeats,

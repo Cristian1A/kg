@@ -276,6 +276,12 @@ Against the fewer of S2's and S3's (0), the graph's 0 passes. As before, the
 gate says nothing about H4: the 8 questions do not make any strategy repeat
 obsolete knowledge.
 
+`kg-T2.s4.3` added that `--depth 0` is still rejected for `kg impact`,
+citing `tests/test_query.py:547`, which its transcript never read. Checked by
+hand: at the question's commit (`e066c56`) the test does list
+`impact x --depth 0` as a usage error (line 545). The claim is true, not an
+error.
+
 ## What it means
 
 The numbers clear the pre-registered bar, but they do not show that the
