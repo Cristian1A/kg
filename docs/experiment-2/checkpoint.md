@@ -305,10 +305,15 @@ EOF
 - Batch 7 (positions 121–140, session `9c9734c1`): every run answered;
   none used its 25 calls (`kg-B2.s2r.2` came closest with 11) and no
   subagent reported a violation. Done after batch 7: 140 of 360.
-- Batch 8 (positions 141–160, session `9c9734c1`): every run answered;
+- Batch 8 (positions 141–160, session `9c9734c1`): 19 runs answered;
   none used its 25 calls (`kg-B1.s3.2` came closest with 18, then
-  `kg-R6.s1.2` with 12) and no subagent reported a violation. Done after
-  batch 8: 160 of 360.
+  `kg-R6.s1.2` with 12). **`kg-T3.s3.3` did not answer:** after 5 calls
+  (several chained per shell command, one piped through `head`) it
+  replied `submitted` without ever calling `submit_answer`. Logged in
+  `violations.tsv` (the first of this session). It is neither done nor
+  cut off by a limit; **ask the user** whether to reset it (delete its
+  `calls.jsonl`) and launch it again, or score it 0. Done after batch 8:
+  159 of 360.
 - Batch 9 (positions 161–180, session `9c9734c1`): **launched, in
   progress.** If this note is still here, check `status`.
 
