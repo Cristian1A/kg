@@ -1,0 +1,1308 @@
+{
+  "version": "1",
+  "nodes": [
+    {
+      "id": "session:2026-10-15-4381279d",
+      "type": "Session",
+      "label": "v0.2 closed: stale reads in the benchmark (#58), keep the graph fresh (#59), custom-type notes (#18), Ask the graph (#40), drift issue #60, #41 scoped, tags v0.1.0/v0.2.0 and Release",
+      "description": "Goal: finish the stale-graph weak spot of #52, then close every open v0.2 issue and release v0.2.0.\nInstructions: user speaks Spanish; PRs need user merge; tags/pushes only after confirmation; #35 to be done together with #55; #18 and #35 moved to v0.3; close #40 with a README section; close #59 without committing kg's own graph.\nDiscoveries: hybrid/cards reading stale-reported files lifts stale score 0.50-0.65 -> 0.83 but costs 3-4x the context of code; bench called bare kg, failing in subagents without venv; kg's graph.json is 1.17 MB (78 KB compressed) and diffs ~6 lines per code line, so committing it means merge conflicts per PR; Repo ID comes from the clone folder name, so kg add of a published agent layer fails in a differently named folder; __version__ was still 0.1.0.dev0.\nAccomplished: PRs #57, #58, #61, #62, #63, #64 merged; issues #59, #60 opened (#59 closed, #60 open); #18, #40 closed; #35 and #18 moved to v0.3 with cross comments on #35/#55; #41 rewritten (static landing, Streamlit parked) and moved to v0.3; tags v0.1.0 (8b9d7b2) and v0.2.0 (05cef90) pushed; GitHub Release v0.2.0 published with tag-pinned absolute links; v0.2 milestone closed (15/15).\nNext steps: review the v0.3 table in docs/roadmap.md, then #52 step 3 (scrapy, the decisive test), then rest of #52 (document sections, quoted claims, search limited to changed files); #60 drift; #41 landing; #35+#55 together; optional issue for Repo ID from git remote.\nRelevant files: bench/tools.py, docs/benchmark.md, .pre-commit-hooks.yaml, docs/store.md, src/kg/cli.py, src/kg/schema/validation.py, docs/schema.md, README.md, docs/requirements.md, docs/roadmap.md, src/kg/__init__.py",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      },
+      "attrs": {
+        "date": "2026-10-15",
+        "commit": "05cef90",
+        "transcript": "4381279d",
+        "order": 8
+      }
+    },
+    {
+      "id": "evidence:pr-58",
+      "type": "Evidence",
+      "label": "feat(bench): let hybrid read the files a stale graph reports",
+      "attrs": {
+        "kind": "pr",
+        "ref": "58"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:pr-61",
+      "type": "Evidence",
+      "label": "feat(store): keep the graph fresh with kg status --check and pre-commit hooks",
+      "attrs": {
+        "kind": "pr",
+        "ref": "61"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:pr-62",
+      "type": "Evidence",
+      "label": "feat(schema): name the standard type a custom one means, note the rest",
+      "attrs": {
+        "kind": "pr",
+        "ref": "62"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:pr-63",
+      "type": "Evidence",
+      "label": "docs: show the graph answering questions on a published example",
+      "attrs": {
+        "kind": "pr",
+        "ref": "63"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:pr-64",
+      "type": "Evidence",
+      "label": "chore: release 0.2.0",
+      "attrs": {
+        "kind": "pr",
+        "ref": "64"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:issue-59",
+      "type": "Evidence",
+      "label": "[store] Keep the graph fresh: kg status --check, a pre-commit hook and a CI template",
+      "attrs": {
+        "kind": "issue",
+        "ref": "59"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:issue-60",
+      "type": "Evidence",
+      "label": "[query] Measure graph drift: what a stale graph puts at risk, and how accuracy falls with commits",
+      "attrs": {
+        "kind": "issue",
+        "ref": "60"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:comment-issue-59-no-own-graph",
+      "type": "Evidence",
+      "label": "#59 comment: kg does not commit its own .kg/ (measurements, merge conflicts, revisit with MCP)",
+      "attrs": {
+        "kind": "comment",
+        "ref": "59"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:comment-issue-35-plan-with-55",
+      "type": "Evidence",
+      "label": "#35/#55 comments: plan the two together in one design",
+      "attrs": {
+        "kind": "comment",
+        "ref": "35"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:commit-df9beee",
+      "type": "Evidence",
+      "label": "fix(bench): run kg with the benchmark's own interpreter",
+      "attrs": {
+        "kind": "commit",
+        "ref": "df9beee"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:commit-d0f4dd8",
+      "type": "Evidence",
+      "label": "feat(bench): let hybrid read the files a stale graph reports",
+      "attrs": {
+        "kind": "commit",
+        "ref": "d0f4dd8"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:commit-0c858d5",
+      "type": "Evidence",
+      "label": "feat(store): keep the graph fresh with kg status --check and hooks",
+      "attrs": {
+        "kind": "commit",
+        "ref": "0c858d5"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:commit-e72a49d",
+      "type": "Evidence",
+      "label": "feat(schema): name the standard type a custom one means, note the rest",
+      "attrs": {
+        "kind": "commit",
+        "ref": "e72a49d"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:commit-845b8a9",
+      "type": "Evidence",
+      "label": "docs: show the graph answering questions on a published example",
+      "attrs": {
+        "kind": "commit",
+        "ref": "845b8a9"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:commit-053bd2a",
+      "type": "Evidence",
+      "label": "chore: release 0.2.0",
+      "attrs": {
+        "kind": "commit",
+        "ref": "053bd2a"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:commit-05cef90",
+      "type": "Evidence",
+      "label": "Merge PR #64 (release 0.2.0), tagged v0.2.0",
+      "attrs": {
+        "kind": "commit",
+        "ref": "05cef90"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:file-pre-commit-hooks-yaml",
+      "type": "Evidence",
+      "label": "pre-commit hooks kg-extract and kg-status",
+      "attrs": {
+        "kind": "file",
+        "ref": ".pre-commit-hooks.yaml",
+        "commit": "0c858d5"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "evidence:results-stale-reads",
+      "type": "Evidence",
+      "label": "Stale-reads benchmark results",
+      "attrs": {
+        "kind": "file",
+        "ref": "bench/results/20261015T200647Z-subagent-stale-reads.jsonl",
+        "commit": "d0f4dd8"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "experiment:bench-stale-reads",
+      "type": "Experiment",
+      "label": "Stale reads: hybrid and cards reach 0.83 on stale questions, at 3-4x the context of code",
+      "description": "What: re-ran the 6 stale questions with hybrid and cards able to read files kg status / stale_graph report; hybrid 0.65->0.83, cards 0.50->0.83; context mean 58,676 (hybrid) and 50,750 (cards) vs code 8,460; tokens 39,174/36,912 vs 33,095.\nWhy: the stale graph was the weak spot: it warned correctly but the agent could not open files no node cites (e.g. added after the graph).\nWhere: bench/results/20261015T200647Z-subagent-stale-reads.jsonl, docs/benchmark.md, bench/tools.py (Citations.add_from)\nLearned: every answer was right; the two failures ran out of the 25 calls (recorded as max_turns, not re-run to avoid bias); cost comes from reading changed files one by one where code uses one search; next fix is a search limited to changed files; in two runs the agent grep-filtered its own output, which grants no new file; one run per question.",
+      "attrs": {
+        "status": "done",
+        "session": "session:2026-10-15-4381279d",
+        "created": "2026-10-15"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "task:hybrid-read-files-kg-status-reports",
+      "type": "Task",
+      "attrs": {
+        "status": "done"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "decision:bench-runs-kg-via-sys-executable",
+      "type": "Decision",
+      "label": "The benchmark runs kg as sys.executable -m kg, never a bare kg",
+      "description": "What: bench run_kg calls the current interpreter with -m kg.\nWhy: subagents run env/bin/python without activating the venv, so a bare kg is not on PATH and every call failed with FileNotFoundError.\nWhere: bench/tools.py\nLearned: the first batch of 12 stale subagents failed for this and was discarded and re-run in a new session (20261015T200647Z).",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-15-4381279d",
+        "created": "2026-10-15"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "decision:max-turns-failures-not-rerun",
+      "type": "Decision",
+      "label": "Benchmark runs that exhaust the call limit count as failures and are not repeated",
+      "description": "What: a subagent that runs out of its 25 calls is recorded as max_turns with score 0, even if it had found the answer.\nWhy: repeating until it succeeds would bias the comparison; reading whole files legitimately costs calls.\nWhere: bench results, docs/benchmark.md\nLearned: applied to kgs-tests-update.cards (read 12 changed test files one by one) and kgs-impact-validation.hybrid.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-15-4381279d",
+        "created": "2026-10-15"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "task:search-limited-to-changed-files",
+      "type": "Task",
+      "label": "Add a search limited to the files a stale graph reports as changed",
+      "description": "What: give hybrid/cards a search tool scoped to modified/added files from kg status, instead of reading them whole.\nWhy: stale reads now answer correctly but cost 3-4x the context of the code strategy; this would make uncovered files cost the same as code.\nWhere: bench/tools.py, part of #52\nLearned: proposed in PR #58; not started.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-15-4381279d",
+        "created": "2026-10-15"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "task:benchmark-v2-issue-52",
+      "type": "Task",
+      "label": "Issue #52 (first v0.3 item): benchmark v2, graph-guided reading, node cards and scrapy",
+      "description": "What: step 1 context metric + hybrid (done, PR #56); step 2 node cards (PR #57) and stale reads (PR #58) done; pending: Section nodes for documents, quoted claims with source:lines, config facts such as workflow triggers, a search limited to changed files; step 3 scrapy with 15-20 checked questions, code vs cards vs hybrid.\nWhy: v0.2 never tested graph-guided reading nor a repo too large to read; scrapy is the decisive test that decides the rest of v0.3.\nWhere: bench/, src/kg/, docs/benchmark.md; milestone v0.3\nLearned: proposed next order at session end: review docs/roadmap.md v0.3 table, then scrapy, then the rest of step 2; PRs use Refs #52, not Closes.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-15-4381279d",
+        "created": "2026-10-15"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "decision:keep-graph-fresh-check-and-hooks",
+      "type": "Decision",
+      "label": "Keep the graph fresh with kg status --check and pre-commit hooks, not a kg hook command or a committing bot",
+      "description": "What: kg status --check exits 1 on modified/added/deleted files (output unchanged); .pre-commit-hooks.yaml publishes kg-extract (re-extracts, fails the commit like a formatter if graph.json changes) and kg-status (check only); docs/store.md 'Keeping the graph fresh' gives a GitHub Actions template with --check.\nWhy: the stale benchmark shows a stale graph is safe but costly; the parser layer is deterministic and takes seconds, so it can be automated; the agent layer cannot (no LLM in kg, RF-24) and is reviewed instead; the pre-commit framework already handles install/uninstall/stash, so no kg hook command; a workflow that commits the graph adds history noise, loops with other workflows and needs write permissions.\nWhere: src/kg/cli.py, .pre-commit-hooks.yaml, docs/store.md, README, agent guide + skill; RF-73 moved up to v0.3\nLearned: unknown files (unparseable) do not fail --check, else CI fails forever; a no-op kg extract does not rewrite graph.json; tried with pre-commit try-repo on a demo repo; test reads entry: lines by regex to avoid adding PyYAML; incremental extraction (RF-78) not needed.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-15-4381279d",
+        "created": "2026-10-15"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "decision:kg-does-not-commit-own-graph",
+      "type": "Decision",
+      "label": "kg does not commit its own .kg/ graph or run the CI freshness check on itself",
+      "description": "What: #59 closed without dogfooding the CI template; the pre-commit try-repo trial replaces that criterion.\nWhy: measured on main: graph.json 1.17 MB, 47,000 lines, 78 KB compressed; a merge with 166 code lines gives a 991-line graph diff (line ranges shift, ~6 graph lines per code line), docs-only 0; rebuild with extract + kg add examples/agent/kg.json takes ~2 s. Size is fine, but parallel PRs touching code would conflict on graph.json almost every time; every contributor has kg and rebuilds in 2 s.\nWhere: issue #59 closing comment\nLearned: committing a graph pays off when building it is expensive or readers lack kg; revisit when the MCP server (RF-23) lands and agents on kg should query its graph without building it.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-15-4381279d",
+        "created": "2026-10-15"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "task:keep-graph-fresh-issue-59",
+      "type": "Task",
+      "label": "Issue #59: keep the graph fresh (merged via PR #61)",
+      "description": "What: kg status --check, pre-commit hooks, CI template and docs.\nWhy: stale graph is the costly case in the benchmark.\nWhere: see decision:keep-graph-fresh-check-and-hooks\nLearned: closed with the CI-on-own-repo criterion replaced on purpose.",
+      "attrs": {
+        "status": "done",
+        "session": "session:2026-10-15-4381279d",
+        "created": "2026-10-15"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "task:graph-drift-issue-60",
+      "type": "Task",
+      "label": "Issue #60: measure graph drift: share of graph at risk in kg status, and accuracy vs graph age",
+      "description": "What: (1) kg status (text and --json) reports share of nodes/edges whose source file changed, split by provenance method, listing agent-layer elements at risk; (2) benchmark curve: code fixed, graphs built at N-1, N-5, N-10, N-20 commits via graph_commit in bench/repos.json, run graph/cards/hybrid, plot score and context vs age, check whether metric (1) predicts the fall to get a re-extract threshold.\nWhy: kg status says whether the graph is stale but not how much it matters; the user asked how accuracy degrades with commits.\nWhere: src/kg/update.py, bench/repos.json, docs/benchmark.md; milestone v0.3\nLearned: the metric is an indicator of trust, not accuracy; the kg repo itself is the natural subject (kg-stale is one point today); complements #59.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-15-4381279d",
+        "created": "2026-10-15"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "decision:custom-type-notes",
+      "type": "Decision",
+      "label": "Custom types reported once: warning naming a standard type if similar, otherwise a new 'note' severity",
+      "description": "What: one issue per custom type with all occurrences in a new paths key; a warning names the standard type by near-identical name or a small deterministic synonym table (Tutorial->Document, invokes->calls, links_to->documents, satisfies->implements); anything else is a note, listed on one line in text and in notes in --json (validate, add, extract).\nWhy: custom types are valid by design (RF-02) but every use looked like an error.\nWhere: src/kg/schema/validation.py, src/kg/cli.py, docs/schema.md, agent guide + skill\nLearned: JSON break: custom types without equivalent move from warnings to notes; DESIGN_DECISION fails the type-name pattern so it is a schema error, not a custom type.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-15-4381279d",
+        "created": "2026-10-15"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "decision:custom-types-warn-not-fail",
+      "type": "Decision",
+      "attrs": {
+        "status": "superseded"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "issue:custom-type-warnings-alarming",
+      "type": "Issue",
+      "attrs": {
+        "status": "done"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "decision:ask-the-graph-replaces-demo",
+      "type": "Decision",
+      "label": "#40's separate demo replaced by a README 'Ask the graph' section; v0.2 exit criterion 4 amended",
+      "description": "What: README section: clone python-clean-architecture at its pinned commit, kg init && kg extract ., load the committed agent layer via curl | kg add -, then three real queries (impact of User entity --type Module --brief: 19 modules; query untested --type Module; query node decision:clean-architecture --brief). Criterion 4 in requirements (changelog 1.2) and roadmap point to it and docs/examples.\nWhy: the user felt a demo was redundant: install is checked by CI and docs/examples/README.md already rebuilds each example; the only gap was showing the graph answering a question.\nWhere: README.md, docs/requirements.md, docs/roadmap.md\nLearned: outputs match benchmark references pca-impact-user and pca-untested; no LLM or clone of kg needed; user approved the requirement change.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-15-4381279d",
+        "created": "2026-10-15"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "task:demo-issue-40",
+      "type": "Task",
+      "attrs": {
+        "status": "done"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "issue:repo-id-from-folder-name",
+      "type": "Issue",
+      "label": "Repo node ID comes from the clone folder name, so a published agent layer fails in another folder",
+      "description": "What: kg add rejects an agent layer referencing repo:python-clean-architecture if the repo was cloned under a different folder name.\nWhy: found while testing Ask the graph from scratch.\nWhere: src/kg/extract (Repo ID), README Ask the graph ('keep the folder name')\nLearned: worked around with a README comment; fragile; proposed a v0.3 issue to derive the ID from the git remote when present (not opened, awaiting user).",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-15-4381279d",
+        "created": "2026-10-15"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "decision:plan-html-35-with-overview-55",
+      "type": "Decision",
+      "label": "Address #35 (HTML layout time) and #55 (large-graph overview) together, in v0.3",
+      "description": "What: #35 moved to milestone v0.3; both issues carry a comment to design them as one.\nWhy: they touch the same code and decisions: which nodes are visible at start, how hidden nodes are shown, and a layout precomputed in Python; choose and lay out the initial view once.\nWhere: src/kg/render/, issues #35 and #55\nLearned: user's instruction ('two birds with one stone').",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-15-4381279d",
+        "created": "2026-10-15"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "task:project-site-issue-41",
+      "type": "Task",
+      "label": "Issue #41: project site, a static landing page on GitHub Pages for users and the client (v0.3)",
+      "description": "What: one docs/index.html, no build step or deps: what kg is; benchmark evidence with limits (same accuracy, 63% less context; stale graph answers but costs more), each figure sourced from docs/benchmark.md; a card per example graph (thumbnail, node count, link; scrapy flagged 8 MB); install and Ask the graph; links to docs on GitHub (Pages serves .md as plain text).\nWhy: cristian1a.github.io/kg/ shows nothing; audience is new users and the client equally.\nWhere: docs/index.html (to create), issue #41, milestone v0.3, prio:v0.3 (prio:futuro removed)\nLearned: Streamlit (option B) parked, not discarded: reopen only if results need interactive benchmark comparison or a live graph query, and it needs an exception to requirements section 9; acceptance adds a test that all local links/images exist, mobile and light/dark, example URLs keep working; the user must point the repo About to the site manually (token lacks admin).",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-15-4381279d",
+        "created": "2026-10-15"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "task:version-tags",
+      "type": "Task",
+      "label": "Version tags per milestone: v0.1.0 at 8b9d7b2, v0.2.0 at 05cef90 with a GitHub Release",
+      "description": "What: v0.1.0 tagged retroactively at 8b9d7b2 (message notes the code said 0.1.0.dev0); PR #64 bumped __version__ to 0.2.0; v0.2.0 tagged on its merge 05cef90; Release v0.2.0 published as latest; v0.2 milestone closed 15/15.\nWhy: user confirmed the plan after v0.2 had 0 open issues.\nWhere: git tags, src/kg/__init__.py, GitHub Releases\nLearned: Release notes need absolute links pinned to the tag (relative ones break); extractor ID python-ast@0.1 kept since it is in every node's provenance and changing it rewrites every stored graph.",
+      "attrs": {
+        "status": "done",
+        "session": "session:2026-10-15-4381279d",
+        "created": "2026-10-15"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "task:approve-requirements-1-2-and-v0-3-setup",
+      "type": "Task",
+      "label": "Get client approval of requirements 1.2; v0.3 milestone/label exist and #35, #18 moved",
+      "description": "What: v0.3 milestone and prio:v0.3 label exist; #35, #18, #41, #59, #60 are in v0.3; roadmap boxes ticked; formal client approval of requirements 1.2 is still not recorded.\nWhy: requirements v1.0 were client-approved, so 1.2 changes need approval.\nWhere: docs/requirements.md, GitHub milestones\nLearned: user approved amending v0.2 criterion 4 this session.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-15-4381279d",
+        "created": "2026-10-15"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "task:review-v0-3-roadmap",
+      "type": "Task",
+      "label": "Review the v0.3 table in docs/roadmap.md after closing v0.2",
+      "description": "What: update the v0.3 order: hook done (#59); #41, #55+#35, #60 planned; scrapy (#52 step 3) decides whether v0.3 follows the table or starts a redesign.\nWhy: the roadmap asks to revisit v0.3 order when v0.2 closes, using the benchmark results.\nWhere: docs/roadmap.md\nLearned: proposed as a short first step before scrapy; awaiting the user's go-ahead.",
+      "attrs": {
+        "status": "active",
+        "session": "session:2026-10-15-4381279d",
+        "created": "2026-10-15"
+      },
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    }
+  ],
+  "edges": [
+    {
+      "source": "session:2026-10-15-4381279d",
+      "target": "experiment:bench-stale-reads",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "experiment:bench-stale-reads",
+      "target": "evidence:results-stale-reads",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "experiment:bench-stale-reads",
+      "target": "evidence:pr-58",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "experiment:bench-stale-reads",
+      "target": "evidence:commit-d0f4dd8",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "experiment:bench-stale-reads",
+      "target": "evidence:file-docs-benchmark-md",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:hybrid-read-files-kg-status-reports",
+      "target": "evidence:pr-58",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-15-4381279d",
+      "target": "decision:bench-runs-kg-via-sys-executable",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:bench-runs-kg-via-sys-executable",
+      "target": "evidence:commit-df9beee",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:bench-runs-kg-via-sys-executable",
+      "target": "component:bench",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-15-4381279d",
+      "target": "decision:max-turns-failures-not-rerun",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:max-turns-failures-not-rerun",
+      "target": "component:bench",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:max-turns-failures-not-rerun",
+      "target": "experiment:bench-stale-reads",
+      "type": "decided_because",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-15-4381279d",
+      "target": "task:search-limited-to-changed-files",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:search-limited-to-changed-files",
+      "target": "component:bench",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:search-limited-to-changed-files",
+      "target": "evidence:pr-58",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-15-4381279d",
+      "target": "task:benchmark-v2-issue-52",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:benchmark-v2-issue-52",
+      "target": "evidence:issue-52",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:benchmark-v2-issue-52",
+      "target": "evidence:pr-56",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:benchmark-v2-issue-52",
+      "target": "evidence:pr-57",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:benchmark-v2-issue-52",
+      "target": "evidence:pr-58",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-15-4381279d",
+      "target": "decision:keep-graph-fresh-check-and-hooks",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:keep-graph-fresh-check-and-hooks",
+      "target": "evidence:pr-61",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:keep-graph-fresh-check-and-hooks",
+      "target": "evidence:commit-0c858d5",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:keep-graph-fresh-check-and-hooks",
+      "target": "evidence:file-pre-commit-hooks-yaml",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:keep-graph-fresh-check-and-hooks",
+      "target": "evidence:issue-59",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:keep-graph-fresh-check-and-hooks",
+      "target": "experiment:bench-stale-reads",
+      "type": "decided_because",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:keep-graph-fresh-check-and-hooks",
+      "target": "component:store",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:keep-graph-fresh-check-and-hooks",
+      "target": "component:cli",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-15-4381279d",
+      "target": "decision:kg-does-not-commit-own-graph",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:kg-does-not-commit-own-graph",
+      "target": "evidence:comment-issue-59-no-own-graph",
+      "type": "decided_because",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:kg-does-not-commit-own-graph",
+      "target": "component:repo-workflow",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-15-4381279d",
+      "target": "task:keep-graph-fresh-issue-59",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:keep-graph-fresh-issue-59",
+      "target": "evidence:issue-59",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:keep-graph-fresh-issue-59",
+      "target": "evidence:pr-61",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:keep-graph-fresh-issue-59",
+      "target": "component:store",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-15-4381279d",
+      "target": "task:graph-drift-issue-60",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:graph-drift-issue-60",
+      "target": "evidence:issue-60",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:graph-drift-issue-60",
+      "target": "component:query",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:graph-drift-issue-60",
+      "target": "component:bench",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-15-4381279d",
+      "target": "decision:custom-type-notes",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:custom-type-notes",
+      "target": "evidence:pr-62",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:custom-type-notes",
+      "target": "evidence:commit-e72a49d",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:custom-type-notes",
+      "target": "component:schema",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:custom-type-notes",
+      "target": "decision:custom-types-warn-not-fail",
+      "type": "supersedes",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "issue:custom-type-warnings-alarming",
+      "target": "evidence:pr-62",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-15-4381279d",
+      "target": "decision:ask-the-graph-replaces-demo",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:ask-the-graph-replaces-demo",
+      "target": "evidence:pr-63",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:ask-the-graph-replaces-demo",
+      "target": "evidence:commit-845b8a9",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:ask-the-graph-replaces-demo",
+      "target": "component:docs",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:ask-the-graph-replaces-demo",
+      "target": "component:requirements",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:demo-issue-40",
+      "target": "evidence:pr-63",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-15-4381279d",
+      "target": "issue:repo-id-from-folder-name",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "issue:repo-id-from-folder-name",
+      "target": "component:extract",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "issue:repo-id-from-folder-name",
+      "target": "evidence:pr-63",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-15-4381279d",
+      "target": "decision:plan-html-35-with-overview-55",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:plan-html-35-with-overview-55",
+      "target": "evidence:comment-issue-35-plan-with-55",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "decision:plan-html-35-with-overview-55",
+      "target": "component:render",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:html-main-view-issue-35",
+      "target": "task:large-graph-overview-issue-55",
+      "type": "blocked_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-15-4381279d",
+      "target": "task:project-site-issue-41",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:project-site-issue-41",
+      "target": "evidence:issue-41",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:project-site-issue-41",
+      "target": "component:docs",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:project-site-issue-41",
+      "target": "constraint:token-lacks-pages-permission",
+      "type": "blocked_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-15-4381279d",
+      "target": "task:version-tags",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:version-tags",
+      "target": "evidence:pr-64",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:version-tags",
+      "target": "evidence:commit-053bd2a",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:version-tags",
+      "target": "evidence:commit-05cef90",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-15-4381279d",
+      "target": "task:approve-requirements-1-2-and-v0-3-setup",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:approve-requirements-1-2-and-v0-3-setup",
+      "target": "evidence:pr-62",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "session:2026-10-15-4381279d",
+      "target": "task:review-v0-3-roadmap",
+      "type": "produced",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:review-v0-3-roadmap",
+      "target": "component:docs",
+      "type": "affects",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    },
+    {
+      "source": "task:review-v0-3-roadmap",
+      "target": "evidence:file-docs-roadmap-md",
+      "type": "supported_by",
+      "provenance": {
+        "method": "llm",
+        "extractor": "exp2-agent@1",
+        "confidence": 1.0
+      }
+    }
+  ]
+}
