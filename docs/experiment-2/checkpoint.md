@@ -349,10 +349,13 @@ EOF
   subagent reported a violation. Done after batch 13: 260 of 360.
 - Batch 14 (positions 261–280, session `9c9734c1`): 19 runs answered
   (none above 8 calls) and no subagent reported a violation.
-  `kg-R6.s3.2` was still running (13 calls) when batch 15 was launched.
-- Batch 15 (positions 281–300, session `9c9734c1`): 281–299 launched,
-  300 (`kg-R4.s1.1`) to follow when a slot frees. **In progress.** If
-  this note is still here, check `status`.
+  `kg-R6.s3.2` was still running (13 calls) when batch 15 was launched;
+  it answered with 18. Done after batch 14: 280 of 360.
+- Batch 15 (positions 281–300, session `9c9734c1`): every run answered;
+  none used its 25 calls (`kg-B2.s3.3` came closest with 10) and no
+  subagent reported a violation. Done after batch 15: 300 of 360.
+- Batch 16 (positions 301–320, session `9c9734c1`): **launched, in
+  progress.** If this note is still here, check `status`.
 
 ## Decisions already taken (do not reopen)
 
