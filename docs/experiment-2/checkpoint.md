@@ -3,9 +3,10 @@
 Where the work stands, so a new session can resume it without this one's
 conversation. **Update this file whenever the state below changes.**
 
-Last update: 2026-10-28, G0 passed; **P2 closed**; final G1–G3 pass as
-pre-registered but the graph does not earn its place (see
-[gates.md](gates.md)). Next: agent-written corpus (R2-11).
+Last update: 2026-10-29, R2-11: the agent corpus is written; its 360-run
+session is in progress (see "R2-11" below). P2 closed 2026-10-28: final
+G1–G3 pass as pre-registered but the graph does not earn its place (see
+[gates.md](gates.md)).
 
 ## State
 
@@ -474,7 +475,14 @@ EOF
   `bench/corpus/kg-agent`, prepared at `132fc11`); `order.txt` shuffled with
   seed 71 as before. Launch and resume exactly as for G0 ("Resume" above),
   20 at a time; ask before resetting a cut-off run (or resume it with
-  SendMessage). Transcripts: session `5f715828` from batch 1.
+  SendMessage). Transcripts: session `5f715828` for the first launch of
+  batch 1, `ca7873c0-8960-4fec-b30a-3f13f5f3334b` from 2026-10-29.
+  Batch 1 (positions 1–20) was cut off by the session limit at 00:08 on
+  2026-10-29: 4 runs answered (`kg-S5.s4.1`, `kg-D9.s2r.2`, `kg-D9.s4.1`,
+  `kg-D2.s4.3`), 16 had 1–6 calls and no answer. Their subagents were of
+  the previous session, so they could not be resumed; with the user's
+  approval (2026-10-29) their `calls.jsonl` was deleted and they were
+  launched again from session `ca7873c0`. None had seen an answer.
   Batches done: (none yet).
 - [ ] Report in agent-corpus.md; #71.
 
