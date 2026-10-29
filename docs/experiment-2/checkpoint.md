@@ -491,7 +491,17 @@ EOF
   Batches 2–3 (positions 21–60) done 2026-10-29: every run answered; none
   used its 25 calls (`kg-B1.s4.1` came closest with 16) and no subagent
   reported a violation (`violations.tsv` does not exist).
-  Batches done: 1–3 (60 of 360).
+  Batches 4–6 (positions 61–120) done 2026-10-29: every run answered;
+  none used its 25 calls (`kg-B1.s2.1` came closest with 23, then
+  `kg-R6.s4.3` with 13). **`kg-S5.s2.1`** (position 113) chained
+  `ls .github/workflows` into a tool call and used the listing in its
+  answer; it self-reported, logged in `violations.tsv` (the first of this
+  session). Report its result with and without it.
+  Batch 7 (positions 121–140): the 5-hour limit hit at about 14:20 on
+  2026-10-29 with 13 subagents running (0–5 calls each, none answered).
+  After the reset (16:12) every one was resumed with SendMessage (no
+  reset, no run repeated).
+  Batches done: 1–6 (120 of 360).
 - [ ] Report in agent-corpus.md; #71.
 
 ## Decisions already taken (do not reopen)
