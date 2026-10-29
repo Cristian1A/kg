@@ -501,7 +501,12 @@ EOF
   2026-10-29 with 13 subagents running (0–5 calls each, none answered).
   After the reset (16:12) every one was resumed with SendMessage (no
   reset, no run repeated).
-  Batches done: 1–6 (120 of 360).
+  Batches 7–8 (positions 121–160) done 2026-10-29: every run answered;
+  none used its 25 calls (`kg-B1.s2.3` came closest with 18, then
+  `kg-B1.s4.2` with 17). **`kg-C4.s2r.2`** (position 128, one of the
+  resumed runs) piped `git_log` output through `grep`; self-reported,
+  logged in `violations.tsv` (two in all).
+  Batches done: 1–8 (160 of 360).
 - [ ] Report in agent-corpus.md; #71.
 
 ## Decisions already taken (do not reopen)
