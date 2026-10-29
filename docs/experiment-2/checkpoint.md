@@ -506,7 +506,10 @@ EOF
   `kg-B1.s4.2` with 17). **`kg-C4.s2r.2`** (position 128, one of the
   resumed runs) piped `git_log` output through `grep`; self-reported,
   logged in `violations.tsv` (two in all).
-  Batches done: 1–8 (160 of 360).
+  Batches 9–10 (positions 161–200) done 2026-10-29: every run answered;
+  none used its 25 calls (`kg-M8.s4.1` came closest with 13) and no new
+  violation was reported.
+  Batches done: 1–10 (200 of 360).
 - [ ] Report in agent-corpus.md; #71.
 
 ## Decisions already taken (do not reopen)
