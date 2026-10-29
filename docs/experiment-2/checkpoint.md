@@ -488,7 +488,10 @@ EOF
   Batch 1 (positions 1–20) done 2026-10-29: every run answered; none used
   its 25 calls (`kg-N3.s4.1` came closest with 17) and no subagent
   reported a violation.
-  Batches done: 1.
+  Batches 2–3 (positions 21–60) done 2026-10-29: every run answered; none
+  used its 25 calls (`kg-B1.s4.1` came closest with 16) and no subagent
+  reported a violation (`violations.tsv` does not exist).
+  Batches done: 1–3 (60 of 360).
 - [ ] Report in agent-corpus.md; #71.
 
 ## Decisions already taken (do not reopen)
