@@ -483,7 +483,12 @@ EOF
   the previous session, so they could not be resumed; with the user's
   approval (2026-10-29) their `calls.jsonl` was deleted and they were
   launched again from session `ca7873c0`. None had seen an answer.
-  Batches done: (none yet).
+  From here runs are launched as slots free (at most 20 at once), in
+  `order.txt` order, rather than in strict batches of 20.
+  Batch 1 (positions 1–20) done 2026-10-29: every run answered; none used
+  its 25 calls (`kg-N3.s4.1` came closest with 17) and no subagent
+  reported a violation.
+  Batches done: 1.
 - [ ] Report in agent-corpus.md; #71.
 
 ## Decisions already taken (do not reopen)
